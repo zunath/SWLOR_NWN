@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_plexiplate", 20)
                 .AddItem("damaryllia", 10)
                 .AddItem("jade", 20)
+                .AddItem("agate", 20)
                 .AddItem("mando_shield", 5)
                 .AddItem("mando_cloak", 5)
                 .AddItem("mando_belt", 5)
@@ -65,9 +66,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void MandalorianWarrior()
         {
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR")
-                .AddItem("elec_ruined", 20)
-                .AddItem("fiberp_ruined", 20)
-                .AddItem("man_tags", 5)
+                .AddItem("elec_flawed", 20)
+                .AddItem("fiberp_flawed", 20)
+                .AddItem("herb_m", 20)
+                .AddItem("man_tags", 10)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("mando_blade", 5)
@@ -82,15 +84,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR_RARES")
                 .AddItem("map_048", 20, 1, true)
                 .AddItem("jade", 4, 1, true)
+                .AddItem("agate", 4, 1, true)
                 .AddItem("m_plexiplate", 4, 1, true);
         }
 
         private void MandalorianRanger()
         {
             _builder.Create("VISCARA_MANDALORIAN_RANGER")
-                .AddItem("elec_ruined", 20)
-                .AddItem("fiberp_ruined", 20)
-                .AddItem("man_tags", 5)
+                .AddItem("elec_flawed", 20)
+                .AddItem("fiberp_flawed", 20)
+                .AddItem("herb_m", 20)
+                .AddItem("man_tags", 10)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("mando_shuriken", 5)
@@ -101,18 +105,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_MANDALORIAN_RANGER_RARES")
                 .AddItem("map_048", 20, 1, true)
                 .AddItem("jade", 4, 1, true)
+                .AddItem("agate", 4, 1, true)
                 .AddItem("m_plexiplate", 4, 1, true);
         }
 
         private void MandalorianCrate()
         {
             _builder.Create("VISCARA_MANDALORIAN_CRATE")
-                .AddItem("elec_ruined", 20)
-                .AddItem("fiberp_ruined", 20)
+                .AddItem("herb_m", 30)
+                .AddItem("elec_flawed", 20)
+                .AddItem("fiberp_flawed", 20)
                 .AddItem("man_tags", 5)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("jade", 1, 1, true)
+                .AddItem("agate", 1, 1, true)
                 .AddItem("m_plexiplate", 1, 1, true)
                 .AddGold(30, 10);
 
@@ -121,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_OUTLAW")
                 .AddItem("elec_ruined", 20)
+                .AddItem("elec_flawed", 5)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("outlaw_cloak", 1)
@@ -140,10 +148,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Gimpassa()
         {
             _builder.Create("VISCARA_GIMPASSA")
-                .AddItem("lth_ruined", 20)
+                .AddItem("lth_ruined", 5)
                 .AddItem("gimp_shell", 2, 1, true)
                 .AddItem("gimp_tooth", 8)
-                .AddItem("lth_flawed", 5);
+                .AddItem("lth_flawed", 20);
         }
 
         private void Kinrath()
@@ -152,7 +160,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("kinrath_limb", 5)
                 .AddItem("kinrath_meat", 10)
                 .AddItem("kinrath_silk", 20)
-                .AddItem("lth_ruined", 10);
+                .AddItem("lth_ruined", 10)
+                .AddItem("lth_flawed", 5);
         }
 
         private void Cairnmog()
@@ -161,8 +170,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cairnmog_meat", 7)
                 .AddItem("cairnmog_spine", 9)
                 .AddItem("cairnmog_blood", 2, 1, true)
-                .AddItem("lth_ruined", 20)
-                .AddItem("lth_flawed", 10)
+                .AddItem("lth_ruined", 10)
+                .AddItem("lth_flawed", 20)
 
                 .AddItem("map_049", 1, 1, true);
         }
@@ -194,8 +203,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_VELLEN_FLESHEATER")
                 .AddItem("cox_metal", 5)
                 .AddItem("coonlank_blue", 10)
-                .AddItem("lth_flawed", 5)
-                .AddItem("lth_ruined", 15)
+                .AddItem("lth_flawed", 15)
+                .AddItem("lth_ruined", 5)
                 .AddItem("fiberp_ruined", 15)
                 .AddItem("elec_flawed", 5)
                 .AddGold(30, 20);
@@ -211,9 +220,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_COXXIAN_CRATE")
                 .AddItem("cox_metal", 5)
-                .AddItem("ref_veldite", 20)
-                .AddItem("fiberp_ruined", 15)
-                .AddItem("lth_ruined", 15)
+                .AddItem("ref_veldite", 5)
+                .AddItem("ref_scordspar", 20)
+                .AddItem("fiberp_flawed", 15)
+                .AddItem("lth_flawed", 15)
                 .AddItem("elec_flawed", 5)
                 .AddItem("coonlank_blue", 1, 1, true)
                 .AddItem("coonlank_green", 1, 1, true)

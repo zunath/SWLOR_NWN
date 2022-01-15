@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Aradile()
         {
             _builder.Create("MONCALA_ARADILE")
-                .AddItem("lth_flawed", 20)
+                .AddItem("lth_good", 20)
                 .AddItem("aradile_meat", 10)
                 .AddItem("aradile_skin2", 2, 1, true);
         }
@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Viper()
         {
             _builder.Create("MONCALA_VIPER")
-                .AddItem("lth_flawed", 20)
-                .AddItem("lth_ruined", 10)
+                .AddItem("lth_flawed", 10)
+                .AddItem("lth_good", 20)
                 .AddItem("viper_bile", 5);
         }
 
@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("MONCALA_AMPHIHYDRUS")
                 .AddItem("amphi_brain", 30)
                 .AddItem("amphi_brain2", 30)
-                .AddItem("elec_flawed", 10)
-                .AddItem("fiberp_flawed", 10)
+                .AddItem("elec_good", 10)
+                .AddItem("fiberp_good", 10)
                 .AddGold(20, 20);
 
             _builder.Create("MONCALA_AMPHIHYDRUS_RARES")
@@ -52,8 +52,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void EcoTerrorist()
         {
             _builder.Create("MONCALA_ECOTERRORIST")
-                .AddItem("elec_flawed", 15)
-                .AddItem("fiberp_flawed", 15)
+                .AddItem("elec_good", 15)
+                .AddItem("fiberp_good", 15)
+                .AddItem("herb_c", 15)
                 .AddItem("poach_longsword", 5)
                 .AddItem("poach_knife", 5)
                 .AddItem("poach_gswd", 5)
@@ -127,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_ECOTERRORIST_LEADER_RARES")
                 .AddItem("map_027", 1, 1, true)
+                .AddItem("citrine", 1, 1, true)
                 .AddItem("rruchi", 1, 1, true);
         }
     }

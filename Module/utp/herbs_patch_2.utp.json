@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 82
+    "value": 1781
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -87,7 +87,7 @@
     "id": 16813378,
     "type": "cexolocstring",
     "value": {
-      "0": "Fiberplast Shrub, Growing"
+      "0": "Patch of Herbs"
     }
   },
   "OnClick": {
@@ -164,7 +164,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 440
+    "value": 0
   },
   "Ref": {
     "type": "byte",
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "fiberp_bush_3"
+    "value": "herbs_patch_2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "fiberp_bush_3"
+    "value": "herbs_patch_2"
   },
   "TrapDetectable": {
     "type": "byte",
@@ -221,6 +221,21 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
+          "value": "SCAVENGE_POINT_LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HERBS_2"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
           "value": "SCAVENGE_POINT_LEVEL"
         },
         "Type": {
@@ -229,22 +244,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCAVENGE_POINT_LOOT_TABLE_NAME"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "SCAVENGING_BUSH_3"
+          "value": 2
         }
       }
     ]

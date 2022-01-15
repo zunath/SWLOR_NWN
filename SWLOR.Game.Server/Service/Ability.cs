@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Service
         public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
-            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, feat);
+            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
         }
@@ -306,8 +306,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="activator"></param>
         /// /// <param name="target"></param>
-        /// /// <param name="primaryAbilityType"></param>
-        /// /// <param name="secondaryAbilityType"></param>
         public static bool GetAbilityResisted(uint activator, uint target)
         {
             if (GetAbilityModifier(AbilityType.Willpower, activator) * 10 + d100(1)

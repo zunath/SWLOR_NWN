@@ -328,26 +328,11 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "club_cox"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "InventoryRes": {
-          "type": "resref",
           "value": "npc_pistol"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 1
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",

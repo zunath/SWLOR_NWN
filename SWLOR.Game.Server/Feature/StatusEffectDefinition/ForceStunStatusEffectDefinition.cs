@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceStun1)
                 .Name("Force Stun I")
                 .EffectIcon(17) // 17 = Dazed
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                     }
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.ForceStun1);
                 });
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceStun2)
                 .Name("Force Stun II")
                 .EffectIcon(17) // 17 = Dazed
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
                     if (!Ability.GetAbilityResisted(source, target))
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                     }
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.ForceStun2);
                 });
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceStun3)
                 .Name("Force Stun III")
                 .EffectIcon(17) // 17 = Dazed
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
                     if (!Ability.GetAbilityResisted(source, target))
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                     }
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.ForceStun3);
                 });

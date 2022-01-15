@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed1)
                 .Name("Burst of Speed I")
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectMovementSpeedIncrease(20);
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed1);
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BurstOfSpeed1);
                 });
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed2)
                 .Name("Burst of Speed II")
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectMovementSpeedIncrease(30);
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed2);
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BurstOfSpeed2);
                 });
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed3)
                 .Name("Burst of Speed III")
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectMovementSpeedIncrease(40);
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed3);
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BurstOfSpeed3);
                 });
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed4)
                 .Name("Burst of Speed IV")
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectMovementSpeedIncrease(50);
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed4);
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BurstOfSpeed4);
                 });
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed5)
                 .Name("Burst of Speed V")
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectMovementSpeedIncrease(60);
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed5);
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BurstOfSpeed5);
                 });

@@ -51,5 +51,6 @@
         Shielding2 = 46,
         Shielding3 = 47,
         Shielding4 = 48,
+        Food = 49,
     }
 }

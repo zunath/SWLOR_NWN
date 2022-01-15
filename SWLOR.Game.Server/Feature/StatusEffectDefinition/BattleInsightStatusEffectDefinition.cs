@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.BattleInsight1)
                 .Name("Battle Insight I")
                 .EffectIcon(17) // 17 = Dazed
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectAttackDecrease(5);
                     effect = EffectLinkEffects(effect, EffectACDecrease(5));
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight1);
                 });
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.BattleInsight2)
                 .Name("Battle Insight II")
                 .EffectIcon(17) // 17 = Dazed
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectAttackDecrease(8);
                     effect = EffectLinkEffects(effect, EffectACDecrease(8));
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 })
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight2);
                 });

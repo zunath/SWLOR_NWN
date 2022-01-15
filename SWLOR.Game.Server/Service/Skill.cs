@@ -4,7 +4,9 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -37,7 +39,15 @@ namespace SWLOR.Game.Server.Service
 
             // Bonus for positive Social modifier.
             var social = GetAbilityModifier(AbilityType.Social, player);
-            if (social > 0) xp += (int) (xp * social * 0.05);
+            if (social > 0) 
+                xp += (int) (xp * social * 0.05f);
+
+            // Food bonus
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                xp += (int)(xp * (foodEffect.XPBonusPercent * 0.01f));
+            }
 
             var debtRemoved = 0;
             if (dbPlayer.XPDebt > 0)

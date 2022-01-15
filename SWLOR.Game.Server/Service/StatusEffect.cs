@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service
             public uint Source { get; set; }
             public DateTime Expiration { get; set; }
             public FeatType ConcentrationFeatType { get; set; }
+            public object EffectData { get; set; }
         }
 
         private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
@@ -54,9 +55,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="source">The source of the status effect.</param>
         /// <param name="target">The creature receiving the status effect.</param>
         /// <param name="statusEffectType">The type of status effect to give.</param>
-        /// <param name="length">The amount of time the status effect should last. Set to 0.0f to make it permanent.</param>
+        /// <param name="length">The amount of time, in seconds, the status effect should last. Set to 0.0f to make it permanent.</param>
+        /// <param name="effectData">Effect data used by the effect.</param>
         /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
-        public static void Apply(uint source, uint target, StatusEffectType statusEffectType, float length, FeatType concentrationFeatType = FeatType.Invalid)
+        public static void Apply(
+            uint source, 
+            uint target, 
+            StatusEffectType statusEffectType, 
+            float length, 
+            object effectData = null,
+            FeatType concentrationFeatType = FeatType.Invalid)
         {
             if (!_creaturesWithStatusEffects.ContainsKey(target))
                 _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
@@ -77,10 +85,11 @@ namespace SWLOR.Game.Server.Service
             _creaturesWithStatusEffects[target][statusEffectType].Source = source;
             _creaturesWithStatusEffects[target][statusEffectType].Expiration = expiration;
             _creaturesWithStatusEffects[target][statusEffectType].ConcentrationFeatType = concentrationFeatType;
+            _creaturesWithStatusEffects[target][statusEffectType].EffectData = effectData;
 
             // Run the Grant Action, if applicable.
             var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.AppliedAction?.Invoke(source, target, length);
+            statusEffectDetail.AppliedAction?.Invoke(source, target, length, effectData);
 
             // Add the status effect icon if there is one.
             if (statusEffectDetail.EffectIconId > 0)
@@ -174,7 +183,7 @@ namespace SWLOR.Game.Server.Service
                     else
                     {
                         var detail = _statusEffects[statusEffect];
-                        detail.TickAction?.Invoke(group.Source, creature);
+                        detail.TickAction?.Invoke(group.Source, creature, group.EffectData);
                     }
                 }
 
@@ -215,10 +224,12 @@ namespace SWLOR.Game.Server.Service
         public static void Remove(uint creature, StatusEffectType statusEffectType)
         {
             if (!HasStatusEffect(creature, statusEffectType, true)) return;
+
+            var effectInstance = _creaturesWithStatusEffects[creature][statusEffectType];
             _creaturesWithStatusEffects[creature].Remove(statusEffectType);
 
             var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.RemoveAction?.Invoke(creature);
+            statusEffectDetail.RemoveAction?.Invoke(creature, effectInstance.EffectData);
 
             if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
@@ -275,6 +286,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Retrieves the effect data associated with a creature's effect.
+        /// If creature does not have effect, the default value of T will be returned.
+        /// </summary>
+        /// <typeparam name="T">The type of data to retrieve from the effect.</typeparam>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="effectType">The type of effect.</param>
+        /// <returns>An effect data object or a default object of type T</returns>
+        public static T GetEffectData<T>(uint creature, StatusEffectType effectType)
+        {
+            if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
+                !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
+                return default;
+
+            return (T)_creaturesWithStatusEffects[creature][effectType].EffectData;
         }
     }
 }

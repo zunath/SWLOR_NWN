@@ -267,6 +267,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
         Togruti = 29,
+
         [Skill(SkillCategoryType.Languages,
             "KelDor",
             20,
@@ -275,6 +276,15 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
             KelDor = 30,
+
+            [Skill(SkillCategoryType.Crafting,
+                "Agriculture",
+                50,
+                true,
+                "Ability to farm, fish, and cook.",
+                true,
+                true)]
+            Agriculture = 31,
     }
 
     public class SkillAttribute : Attribute

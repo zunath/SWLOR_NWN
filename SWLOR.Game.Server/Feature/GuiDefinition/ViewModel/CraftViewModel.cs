@@ -362,6 +362,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _venerationPerk = PerkType.VenerationFabrication;
                     _wasteNotPerk = PerkType.WasteNotFabrication;
                     break;
+                case SkillType.Agriculture:
+                    _primaryAbility = AbilityType.Social;
+                    _secondaryAbility = AbilityType.Willpower;
+
+                    _rapidSynthesisPerk = PerkType.RapidSynthesisCooking;
+                    _carefulSynthesisPerk = PerkType.CarefulSynthesisCooking;
+
+                    _basicTouchPerk = PerkType.BasicTouchCooking;
+                    _standardTouchPerk = PerkType.StandardTouchCooking;
+                    _preciseTouchPerk = PerkType.PreciseTouchCooking;
+
+                    _mastersMendPerk = PerkType.MastersMendCooking;
+                    _steadyHandPerk = PerkType.SteadyHandCooking;
+                    _muscleMemoryPerk = PerkType.MuscleMemoryCooking;
+
+                    _venerationPerk = PerkType.VenerationCooking;
+                    _wasteNotPerk = PerkType.WasteNotCooking;
+                    break;
             }
         }
 

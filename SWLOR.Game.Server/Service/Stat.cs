@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
                 var baseStamina = dbPlayer.MaxStamina;
                 var conModifier = GetAbilityModifier(AbilityType.Vitality, creature);
 
-                return baseStamina + (conModifier * 2);
+                return baseStamina + (conModifier * 5);
             }
             // NPCs
             else

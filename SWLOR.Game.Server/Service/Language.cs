@@ -190,8 +190,11 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Dosh: r = 166; g = 181; b = 73; break;
                 case SkillType.Droidspeak: r = 192; g = 192; b = 192; break;
                 case SkillType.Huttese: r = 162; g = 74; b = 10; break;
+                case SkillType.KelDor: r = 162; g = 162; b = 0; break;
                 case SkillType.Mandoa: r = 255; g = 215; b = 0; break;
+                case SkillType.Rodese: r = 82; g = 255; b = 82; break;
                 case SkillType.Shyriiwook: r = 149; g = 125; b = 86; break;
+                case SkillType.Togruti: r = 82; g = 82; b = 255; break;
                 case SkillType.Twileki: r = 65; g = 105; b = 225; break;
                 case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
@@ -212,8 +215,11 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Dosh: return "Dosh";
                 case SkillType.Droidspeak: return "Droidspeak";
                 case SkillType.Huttese: return "Huttese";
+                case SkillType.KelDor: return "KelDor";
                 case SkillType.Mandoa: return "Mandoa";
+                case SkillType.Rodese: return "Rodese";
                 case SkillType.Shyriiwook: return "Shyriiwook";
+                case SkillType.Togruti: return "Togruti";
                 case SkillType.Twileki: return "Twi'leki";
                 case SkillType.Zabraki: return "Zabraki";
                 case SkillType.Mirialan: return "Mirialan";
@@ -265,10 +271,13 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Dosh", SkillType.Dosh, new []{"dosh"}),
                         new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
                         new LanguageCommand("Huttese", SkillType.Huttese, new []{"huttese"}),
+                        new LanguageCommand("KelDor", SkillType.KelDor, new []{"keldor"}),
                         new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
                         new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
                         new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Rodese", SkillType.Rodese, new []{"rodese", "rodian"}),
                         new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
+                        new LanguageCommand("Togruti", SkillType.Togruti, new []{"togruti"}),
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),

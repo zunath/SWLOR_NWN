@@ -68,6 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
@@ -87,7 +89,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -99,7 +100,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -111,7 +111,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

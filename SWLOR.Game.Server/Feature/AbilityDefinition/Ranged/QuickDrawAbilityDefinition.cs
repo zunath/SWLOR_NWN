@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);

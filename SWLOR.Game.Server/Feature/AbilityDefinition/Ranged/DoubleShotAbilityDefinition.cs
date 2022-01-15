@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -60,6 +61,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             // First attack
@@ -89,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     ImpactAction(activator, target, level, targetLocation);
-                    ImpactAction(activator, target, level, targetLocation);
                 });
         }
         private static void DoubleShot2(AbilityBuilder builder)
@@ -107,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     ImpactAction(activator, target, level, targetLocation);
-                    ImpactAction(activator, target, level, targetLocation);
                 });
         }
         private static void DoubleShot3(AbilityBuilder builder)
@@ -124,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    ImpactAction(activator, target, level, targetLocation);
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }

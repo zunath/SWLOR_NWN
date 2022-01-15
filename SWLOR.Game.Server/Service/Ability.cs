@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Hostility check
-            if (!GetIsReactionTypeHostile(target, activator) && ability.IsHostileAbility)
+            if (GetIsObjectValid(target) && !GetIsReactionTypeHostile(target, activator) && ability.IsHostileAbility)
             {
                 SendMessageToPC(activator, "You may only use this ability on enemies.");
                 return false;

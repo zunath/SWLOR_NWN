@@ -47,6 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+
             Enmity.ModifyEnmityOnAll(activator, 1);
             if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
             {

@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .Name("Knockdown")
                 .HasRecastDelay(RecastGroup.Knockdown, 60f)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

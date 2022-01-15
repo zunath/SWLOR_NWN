@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             if (attacker.m_pStats.HasFeat((ushort)FeatType.WeaponFinesse) == 1 &&
-                attackerStats.m_nDexterityBase > attackerStats.m_nStrengthBase &&
+                ((int)attackerStats.m_nDexterityBase - (int)defenderStats.m_nDexterityBase) > ((int)attackerStats.m_nStrengthBase - (int)defenderStats.m_nStrengthBase) &&
                 attackType == (uint) AttackType.Melee && 
                 bFinessable)
             {
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Native
                 (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 
                  offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
             {
-                var log = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
+                var logstring = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
                 // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
                 // in to the proficiency perks rather than granting them separately. 
 
@@ -264,12 +264,12 @@ namespace SWLOR.Game.Server.Native
                 {
                     // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
                     modifiers -= 10;
-                    log += "- offhand weapon is unwieldy -";
+                    logstring += "- offhand weapon is unwieldy -";
                 }
 
                 // Apply the base two weapon fighting penalty. 
                 modifiers -= 10;
-                Log.Write(LogGroup.Attack, log);
+                Log.Write(LogGroup.Attack, logstring);
             }
 
             // Defender not targeting the attacker.
@@ -366,17 +366,17 @@ namespace SWLOR.Game.Server.Native
             pAttackData.m_nToHitMod = (byte) (bonus / 4);
             var result = roll - 50 + bonus;
 
-            var criticalRange = 40;
+            var criticalRange = 45;
             if (weapon != null)
             {
                 var threatRange = Item.GetCriticalThreatRange((BaseItem)weapon.m_nBaseItem);
                 if (threatRange == 3)
                 {
-                    criticalRange = 20;
+                    criticalRange = 25;
                 }
                 else if (threatRange == 2)
                 {
-                    criticalRange = 30;
+                    criticalRange = 35;
                 }
             }
 
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Native
 
             // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
             // accurate.
-            attacker.ResolveDefensiveEffects(defender, result >= 0 ? 1 : 0) ;
+            attacker.ResolveDefensiveEffects(defender, result >= 0 ? 1 : 0) ;            
         }
 
 
@@ -532,7 +532,6 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, "No weapon focus feat found.");
             return 0;
         }
-
 
         private static int HasImprovedCritical(CNWSCreature attacker, CNWSItem weapon)
         {

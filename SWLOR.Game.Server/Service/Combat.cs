@@ -3,7 +3,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -127,5 +129,25 @@ namespace SWLOR.Game.Server.Service
             return 0;
         }
 
+        /// <summary>
+        /// Return a damage bonus equal to 0.15 of the player's relevant skill.  This helps abilities 
+        /// as the player progresses. 
+        ///
+        /// Global scaling on gear is closer to 0.25 DMG per player skill level so low tier abilities will still
+        /// become less useful over time, and get replaced by higher tier ones.  But they will have some utility still.
+        /// </summary>
+        /// <returns> 0.15 * the player's rank in the specified skill, or 0 for NPCs. </returns>
+
+        public static float GetAbilityDamageBonus(uint player, SkillType skill)
+        {
+            if (!GetIsPC(player)) return 0.0f;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var pcSkill = dbPlayer.Skills[skill];
+
+            return (float)(0.15 * pcSkill.Rank);
+        }
     }
 }

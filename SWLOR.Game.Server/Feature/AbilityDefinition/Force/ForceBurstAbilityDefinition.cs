@@ -46,7 +46,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     dmg = 13.5f;
                     break;
             }
-            
+
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Force);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);

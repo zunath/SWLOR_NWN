@@ -493,7 +493,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> RifleBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Longbow
+            BaseItem.Longbow,
+            BaseItem.Rifle,
+            BaseItem.Cannon
         };
 
         /// <summary>

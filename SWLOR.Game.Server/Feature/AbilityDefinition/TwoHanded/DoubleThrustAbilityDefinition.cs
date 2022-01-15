@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
 

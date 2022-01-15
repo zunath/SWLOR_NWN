@@ -49,23 +49,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             switch (level)
             {
                 case 1:
-                    dmg = 7.0f;
+                    dmg = 2.5f;
                     duration = 30f;
                     if (d2() == 1) inflict = true;
                     break;
                 case 2:
-                    dmg = 8.5f;
+                    dmg = 6.0f;
                     duration = 60f;
                     if (d4() > 1) inflict = true;
                     break;
                 case 3:
-                    dmg = 12.0f;
+                    dmg = 9.5f;
                     duration = 60f;
                     inflict = true;
                     break;
                 default:
                     break;
             }
+
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
@@ -85,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -97,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -109,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

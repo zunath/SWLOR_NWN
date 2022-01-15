@@ -63,6 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+
             if (abs((int)(GetFacing(activator) - GetFacing(target))) > 200f ||
                 abs((int)(GetFacing(activator) - GetFacing(target))) < 160f ||
                 GetDistanceBetween(activator, target) > 5f)

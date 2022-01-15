@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 

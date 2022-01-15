@@ -68,6 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);

@@ -642,19 +642,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 7.0 DMG and has a 50% chance to inflict Bind for 30 seconds.")
+                .Description("Your next attack deals an additional 2.5 DMG and has a 50% chance to inflict Bind for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.CripplingShot1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 8.5 DMG and has a 75% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 12 DMG and has a 100% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 9.5 DMG and has a 100% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)

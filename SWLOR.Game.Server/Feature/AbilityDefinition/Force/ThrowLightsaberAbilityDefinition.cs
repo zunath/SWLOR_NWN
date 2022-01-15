@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+
             // apply to target
             DelayCommand(delay, () =>
             {

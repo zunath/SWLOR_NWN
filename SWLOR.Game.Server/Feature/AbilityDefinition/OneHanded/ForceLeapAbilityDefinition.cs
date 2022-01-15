@@ -66,6 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+
             const float Delay = 1.2f;
             ClearAllActions();
             AssignCommand(activator, () =>

@@ -59,6 +59,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)

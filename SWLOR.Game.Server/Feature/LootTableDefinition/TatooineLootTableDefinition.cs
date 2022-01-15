@@ -49,9 +49,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void SandDemon()
         {
             _builder.Create("TATOOINE_SAND_DEMON")
-                .AddItem("fiberp_imperfect", 20)
-                .AddItem("sanddemonclaw", 1)
-                .AddItem("sanddemonhide", 1);
+                .AddItem("fiberp_high", 20)
+                .AddItem("herb_t", 20)
+                .AddItem("lth_high", 15)
+                .AddItem("sanddemonclaw", 5)
+                .AddItem("sanddemonhide", 5)
+                .AddItem("ruby", 3, 1, true);
         }
 
         private void SandWorm()

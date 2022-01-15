@@ -29,6 +29,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(5)
 
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(30)
+
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
                 .WithFrequency(40)
 
@@ -47,6 +50,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
+                .WithFrequency(30)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
                 .WithFrequency(40)

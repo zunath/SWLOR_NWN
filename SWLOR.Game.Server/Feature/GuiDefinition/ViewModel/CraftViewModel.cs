@@ -508,6 +508,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.WeaponEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Structure)
+            {
+                typeIP = ItemPropertyType.StructureEnhancement;
+            }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Food)
+            {
+                typeIP = ItemPropertyType.FoodEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {

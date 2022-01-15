@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(1)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 2)
 				.Component("fiberp_ruined", 1);
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(1)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fiberp_ruined", 2)
 				.Component("lth_ruined", 1);
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(2)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 3)
 				.Component("fiberp_ruined", 1);
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(2)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 3)
 				.Component("fiberp_ruined", 1);
 
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(3)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 4)
 				.Component("fiberp_ruined", 2);
 
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(3)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 4)
 				.Component("ref_veldite", 2);
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(3)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 4)
 				.Component("ref_veldite", 2);
 
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(4)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fiberp_ruined", 5)
 				.Component("lth_ruined", 2);
 
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(4)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 5)
 				.Component("fiberp_ruined", 2);
 
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(4)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 5)
 				.Component("ref_veldite", 2);
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 6)
 				.Component("fiberp_ruined", 3);
 
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 6)
 				.Component("ref_veldite", 3);
 
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 6)
 				.Component("ref_veldite", 3);
 
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(6)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 7)
 				.Component("ref_veldite", 3);
 
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(6)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 7)
 				.Component("wood", 3);
 
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(6)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 7)
 				.Component("ref_veldite", 3);
 
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(7)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 8)
 				.Component("ref_veldite", 4);
 
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(7)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 8)
 				.Component("fiberp_ruined", 4);
 
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(7)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 8)
 				.Component("ref_veldite", 4);
 
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(8)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("lth_ruined", 9)
 				.Component("fiberp_ruined", 4);
 
@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(8)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 9)
 				.Component("wood", 4);
 
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(9)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 10)
 				.Component("wood", 5);
 
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(9)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 10)
 				.Component("wood", 5);
 
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(10)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 11)
 				.Component("wood", 6);
 
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(10)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_veldite", 11)
 				.Component("wood", 6);
 
@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(10)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood", 11)
 				.Component("ref_veldite", 6);
 
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(11)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 2)
 				.Component("ref_scordspar", 1);
 
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(11)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 2)
 				.Component("lth_flawed", 1);
 
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(11)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 2)
 				.Component("ref_scordspar", 1);
 
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(12)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 3)
 				.Component("ref_scordspar", 2);
 
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(12)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 3)
 				.Component("ref_scordspar", 2);
 
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(13)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 4)
 				.Component("ref_scordspar", 2);
 
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(13)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 4)
 				.Component("lth_flawed", 2);
 
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(14)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 5)
 				.Component("lth_flawed", 3);
 
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(14)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 5)
 				.Component("fine_wood", 3);
 
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 6)
 				.Component("fine_wood", 3);
 
@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 6)
 				.Component("lth_flawed", 3);
 
@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(16)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 7)
 				.Component("fine_wood", 4);
 
@@ -453,7 +453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(16)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 7)
 				.Component("fiberp_flawed", 4);
 
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(17)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 8)
 				.Component("fine_wood", 4);
 
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(17)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 8)
 				.Component("fine_wood", 4);
 
@@ -486,7 +486,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(18)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("elec_flawed", 9)
 				.Component("ref_scordspar", 5);
 
@@ -497,7 +497,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(18)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 9)
 				.Component("fiberp_flawed", 5);
 
@@ -508,7 +508,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(19)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 10)
 				.Component("fine_wood", 5);
 
@@ -519,7 +519,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(19)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 10)
 				.Component("fiberp_flawed", 5);
 
@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(20)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("ref_scordspar", 11)
 				.Component("lth_flawed", 6);
 
@@ -541,7 +541,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(20)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 1)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 11)
 				.Component("fiberp_flawed", 6);
 
@@ -557,7 +557,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(21)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 2)
 				.Component("ancient_wood", 1);
 
@@ -568,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(21)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 2)
 				.Component("ancient_wood", 1);
 
@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(22)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 2)
 				.Component("lth_good", 1);
 
@@ -590,7 +590,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(22)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 3)
 				.Component("lth_good", 2);
 
@@ -601,7 +601,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(23)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 3)
 				.Component("ancient_wood", 2);
 
@@ -612,7 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(23)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 4)
 				.Component("fiberp_good", 2);
 
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(24)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 4)
 				.Component("ancient_wood", 2);
 
@@ -634,7 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(24)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 5)
 				.Component("ancient_wood", 3);
 
@@ -645,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 5)
 				.Component("ancient_wood", 3);
 
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 6)
 				.Component("ancient_wood", 3);
 
@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 6)
 				.Component("lth_good", 3);
 
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(26)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 7)
 				.Component("lth_good", 4);
 
@@ -689,7 +689,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(26)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 7)
 				.Component("fiberp_good", 4);
 
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(27)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 8)
 				.Component("fiberp_good", 4);
 
@@ -711,7 +711,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(27)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 8)
 				.Component("fiberp_good", 4);
 
@@ -722,7 +722,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(28)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 9)
 				.Component("lth_good", 5);
 
@@ -733,7 +733,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(28)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 9)
 				.Component("lth_good", 5);
 
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(29)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("fiberp_good", 10)
 				.Component("lth_good", 5);
 
@@ -755,7 +755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(29)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("lth_good", 10)
 				.Component("fiberp_good", 5);
 
@@ -766,7 +766,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(30)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_plagionite", 11)
 				.Component("lth_good", 6);
 
@@ -777,7 +777,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(30)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 11)
 				.Component("ref_plagionite", 6);
 
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(31)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 2)
 				.Component("aracia_wood", 1);
 
@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(31)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("aracia_wood", 2)
 				.Component("ref_keromber", 1);
 
@@ -815,7 +815,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(32)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 3)
 				.Component("fiberp_imperfect", 2);
 
@@ -826,7 +826,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(32)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("aracia_wood", 3)
 				.Component("ref_keromber", 2);
 
@@ -837,7 +837,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(33)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 4)
 				.Component("aracia_wood", 2);
 
@@ -848,7 +848,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(33)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("fiberp_imperfect", 4)
 				.Component("lth_imperfect", 2);
 
@@ -859,7 +859,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(34)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 5)
 				.Component("aracia_wood", 3);
 
@@ -870,7 +870,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(34)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("aracia_wood", 5)
 				.Component("ref_keromber", 3);
 
@@ -881,7 +881,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 6)
 				.Component("aracia_wood", 3);
 
@@ -892,7 +892,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 6)
 				.Component("aracia_wood", 3);
 
@@ -903,7 +903,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(36)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 7)
 				.Component("aracia_wood", 4);
 
@@ -914,7 +914,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(36)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("aracia_wood", 7)
 				.Component("ref_keromber", 4);
 
@@ -925,7 +925,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(37)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 8)
 				.Component("aracia_wood", 4);
 
@@ -936,7 +936,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(38)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 9)
 				.Component("aracia_wood", 5);
 
@@ -947,7 +947,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(38)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 9)
 				.Component("aracia_wood", 5);
 
@@ -958,7 +958,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(39)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 10)
 				.Component("aracia_wood", 5);
 
@@ -969,7 +969,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(39)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("aracia_wood", 10)
 				.Component("ref_keromber", 5);
 
@@ -980,7 +980,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(40)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 11)
 				.Component("aracia_wood", 6);
 
@@ -991,7 +991,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(40)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 11)
 				.Component("aracia_wood", 6);
 
@@ -1007,7 +1007,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(41)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 2)
 				.Component("hyphae_wood", 1);
 
@@ -1018,7 +1018,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(41)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 2)
 				.Component("lth_high", 1);
 
@@ -1029,7 +1029,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(42)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 3)
 				.Component("hyphae_wood", 2);
 
@@ -1040,7 +1040,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(42)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("fiberp_high", 3)
 				.Component("lth_high", 2);
 
@@ -1051,7 +1051,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(43)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 4)
 				.Component("fiberp_high", 2);
 
@@ -1062,7 +1062,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(43)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 4)
 				.Component("ref_jasioclase", 2);
 
@@ -1073,7 +1073,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(44)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 5)
 				.Component("hyphae_wood", 3);
 
@@ -1084,7 +1084,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(44)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 5)
 				.Component("hyphae_wood", 3);
 
@@ -1095,7 +1095,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 6)
 				.Component("ref_jasioclase", 3);
 
@@ -1106,7 +1106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 6)
 				.Component("ref_jasioclase", 3);
 
@@ -1117,7 +1117,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(46)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 7)
 				.Component("hyphae_wood", 4);
 
@@ -1128,7 +1128,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(46)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 7)
 				.Component("hyphae_wood", 4);
 
@@ -1139,7 +1139,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(47)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("lth_high", 8)
 				.Component("fiberp_high", 4);
 
@@ -1150,7 +1150,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(47)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 8)
 				.Component("ref_jasioclase", 4);
 
@@ -1161,7 +1161,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(48)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 9)
 				.Component("ref_jasioclase", 5);
 
@@ -1172,7 +1172,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(48)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 9)
 				.Component("ref_jasioclase", 5);
 
@@ -1183,7 +1183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(49)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 10)
 				.Component("ref_jasioclase", 5);
 
@@ -1194,7 +1194,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(49)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 10)
 				.Component("ref_jasioclase", 5);
 
@@ -1205,7 +1205,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(50)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
-				.EnhancementSlots(RecipeEnhancementType.Furniture, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("hyphae_wood", 11)
 				.Component("lth_high", 6);
         }

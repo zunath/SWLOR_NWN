@@ -388,8 +388,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     enhancementSlotType = "Weapon";
                 else if (detail.EnhancementType == RecipeEnhancementType.Armor)
                     enhancementSlotType = "Armor";
-                else if (detail.EnhancementType == RecipeEnhancementType.Furniture)
-                    enhancementSlotType = "Furniture";
+                else if (detail.EnhancementType == RecipeEnhancementType.Structure)
+                    enhancementSlotType = "Structure";
+                else if (detail.EnhancementType == RecipeEnhancementType.Food)
+                    enhancementSlotType = "Food";
 
                 RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
                 RecipeLevel = $"Level: {detail.Level}";

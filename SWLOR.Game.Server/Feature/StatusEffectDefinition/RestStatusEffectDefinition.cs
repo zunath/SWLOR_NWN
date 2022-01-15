@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     if (foodEffect != null)
                     {
                         hpAmount += foodEffect.RestRegen * 5;
-                        fpAmount += foodEffect.RestRegen * 5;
-                        stmAmount += foodEffect.RestRegen * 5;
+                        fpAmount += foodEffect.RestRegen * 2;
+                        stmAmount += foodEffect.RestRegen * 2;
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);

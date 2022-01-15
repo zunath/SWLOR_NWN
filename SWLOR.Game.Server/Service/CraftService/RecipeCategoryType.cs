@@ -81,7 +81,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         [RecipeCategory("Starship", true)]
         Starship = 35,
         [RecipeCategory("Ship Module", true)]
-        ShipModule = 36
+        ShipModule = 36,
+
+        [RecipeCategory("Food", true)]
+        Food = 37,
+        [RecipeCategory("Ingredients", true)]
+        Ingredients = 38,
     }
 
     public class RecipeCategoryAttribute : Attribute

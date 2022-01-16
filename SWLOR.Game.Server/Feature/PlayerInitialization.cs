@@ -312,6 +312,16 @@ namespace SWLOR.Game.Server.Feature
             SetName(item, GetName(player) + "'s Survival Knife");
             SetItemCursedFlag(item, true);
 
+            item = CreateItemOnObject("fresh_bread", player);
+            SetItemCursedFlag(item, true);
+
+            item = CreateItemOnObject("traveler_clothes", player);
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionEquipItem(item, InventorySlot.Chest);
+            });
+
             GiveGoldToCreature(player, 100);
         }
 

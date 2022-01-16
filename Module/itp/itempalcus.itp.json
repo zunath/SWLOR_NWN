@@ -714,6 +714,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Traveler's Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "traveler_clothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Robes"
                     },
                     "RESREF": {
@@ -13759,6 +13770,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_ex"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fresh Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fresh_bread"
                     }
                   },
                   {

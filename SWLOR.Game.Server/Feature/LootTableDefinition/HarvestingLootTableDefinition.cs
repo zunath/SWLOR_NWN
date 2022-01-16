@@ -107,7 +107,11 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("v_pebble", 20)
                 .AddItem("herb_v", 5);
 
-            _builder.Create("VEGETABLES_PATCH_2");
+            _builder.Create("VEGETABLES_PATCH_2")
+                .AddItem("v_apple", 20)
+                .AddItem("v_peas", 20)
+                .AddItem("passion_fruit", 20)
+                .AddItem("herb_m", 5);
 
             _builder.Create("VEGETABLES_PATCH_3");
 

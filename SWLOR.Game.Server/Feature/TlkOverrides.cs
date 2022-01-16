@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(66751, "Holonet");
             SetTlkOverride(66755, "Comms");
+
+            SetTlkOverride(83393, "Poison"); // Acid
         }
 
         private static string BuildRecommendedButtonText()

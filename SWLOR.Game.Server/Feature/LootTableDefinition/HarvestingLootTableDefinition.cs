@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Trees();
             Bushes();
             Herbs();
+            VegetablePatches();
 
             return _builder.Build();
         }
@@ -96,6 +97,23 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("herb_t", 50);
             _builder.Create("HERBS_5")
                 .AddItem("herb_x", 50);
+        }
+
+        private void VegetablePatches()
+        {
+            _builder.Create("VEGETABLES_PATCH_1")
+                .AddItem("v_orange", 20)
+                .AddItem("v_lemon", 20)
+                .AddItem("v_pebble", 20)
+                .AddItem("herb_v", 5);
+
+            _builder.Create("VEGETABLES_PATCH_2");
+
+            _builder.Create("VEGETABLES_PATCH_3");
+
+            _builder.Create("VEGETABLES_PATCH_4");
+
+            _builder.Create("VEGETABLES_PATCH_5");
         }
     }
 }

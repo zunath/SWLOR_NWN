@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_ruined", 5)
                 .AddItem("fiberp_ruined", 50)
                 .AddItem("wood", 50)
+                .AddItem("v_pebble", 10)
                 .AddGold(10, 15);
         }
 

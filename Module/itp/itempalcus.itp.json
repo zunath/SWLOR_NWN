@@ -9064,6 +9064,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Oregano"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_x"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Destroyed Electronics"
                     },
                     "RESREF": {
@@ -9102,6 +9113,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ls_parts_dest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Distilled Water"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "distilled_water"
                     }
                   },
                   {
@@ -9449,17 +9471,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Food Example"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "food_example"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Force Armor Core"
                     },
                     "RESREF": {
@@ -9542,6 +9553,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gemstone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gimpassa Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gimp_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gimpassa Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gimp_meat"
                     }
                   },
                   {
@@ -10021,6 +10054,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Kath Hound Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kath_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Hound Claw"
                     },
                     "RESREF": {
@@ -10241,17 +10285,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalore Herb"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "herb_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Mandalorian Blaster Parts"
                     },
                     "RESREF": {
@@ -10345,6 +10378,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "m_polearm_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Thyme"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_m"
                     }
                   },
                   {
@@ -10488,6 +10532,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "padding_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Calan Seaweed"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_c"
                     }
                   },
                   {
@@ -11027,6 +11082,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qion_tiger_fang"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_meat"
                     }
                   },
                   {
@@ -12067,6 +12133,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sugar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sugar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sygium Gemstone"
                     },
                     "RESREF": {
@@ -12094,6 +12171,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "equ_ferraille"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tattooine Desert Sage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_t"
                     }
                   },
                   {
@@ -12353,22 +12441,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Herb"
+                      "value": "Viscara Wild Wheat"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "herb_v"
+                      "value": "wild_wheat_v"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Wild Wheat"
+                      "value": "Viscaran Flour"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "wild_wheat_v"
+                      "value": "v_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Honey"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_honey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Lemon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_lemon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Pebble"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_pebble"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Rosemary"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_v"
                     }
                   },
                   {
@@ -12413,17 +12556,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_feathers"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Water"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "water_0"
                     }
                   },
                   {

@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
                 .WithFrequency(30)
 
+                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .WithFrequency(10)
+
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
                 .WithFrequency(20)
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
@@ -48,6 +51,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
                 .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
                 .WithFrequency(10)

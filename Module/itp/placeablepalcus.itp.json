@@ -67902,6 +67902,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fiberplast Shrub, Flourishing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fiberp_bush_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fiberplast Shrub, Growing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fiberp_bush_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fiberplast Shrub, Healthy"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fiberp_bush_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fiberplast Shrub, Struggling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fiberp_bush_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fiberplast Shrub, Withered"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fiberp_bush_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Flawed Crystal Cluster"
                     },
                     "RESREF": {
@@ -68122,6 +68177,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_crate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Medical Registration Terminal"
                     },
                     "RESREF": {
@@ -68204,6 +68270,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "herbs_patch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herbs_patch_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herbs_patch_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herbs_patch_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herbs_patch_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Vegetables"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "patch_veggies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Vegetables"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "patch_veggies2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Vegetables"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "patch_veggies3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Vegetables"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "patch_veggies4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patch of Vegetables"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "patch_veggies5"
                     }
                   },
                   {

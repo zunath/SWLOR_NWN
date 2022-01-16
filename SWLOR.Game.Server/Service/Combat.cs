@@ -149,5 +149,21 @@ namespace SWLOR.Game.Server.Service
 
             return (float)(0.15 * pcSkill.Rank);
         }
+
+        /// <summary>
+        /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
+        /// </summary>
+        [NWNEventHandler("interval_pc_6s")]
+        public static void ClearCombatState()
+        {
+            uint player = OBJECT_SELF;
+
+            // Clear combat state.
+            if (!GetIsInCombat(player))
+            {
+                DeleteLocalFloat(player, "ATTACK_ORIENTATION_X");
+                DeleteLocalFloat(player, "ATTACK_ORIENTATION_Y");
+            }
+        }
     }
 }

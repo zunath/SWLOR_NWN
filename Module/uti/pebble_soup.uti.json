@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 30
+    "value": 11
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 311
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 30
+    "value": 11
   },
   "Cursed": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Test Food"
+      "0": "Pebble Soup"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 99
+    "value": 161
   },
   "PaletteID": {
     "type": "byte",
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -118,7 +118,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 7
+          "value": 5
         }
       }
     ]
@@ -137,6 +137,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "test_food"
+    "value": "pebble_soup"
   }
 }

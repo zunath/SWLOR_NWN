@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Test Food"
+      "0": "Gimpassa Sandwich"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 99
+    "value": 108
   },
   "PaletteID": {
     "type": "byte",
@@ -120,6 +120,37 @@
           "type": "word",
           "value": 7
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 8
+        }
       }
     ]
   },
@@ -137,6 +168,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "test_food"
+    "value": "g_sandwich"
   }
 }

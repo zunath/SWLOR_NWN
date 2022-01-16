@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 30
+    "value": 20
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 30
+    "value": 20
   },
   "Cursed": {
     "type": "byte",
@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Test Food"
+      "0": "Warocas Pot Pie"
     }
   },
   "ModelPart1": {
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -118,7 +118,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 7
+          "value": 1
         }
       }
     ]
@@ -137,6 +137,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "test_food"
+    "value": "waro_potpie"
   }
 }

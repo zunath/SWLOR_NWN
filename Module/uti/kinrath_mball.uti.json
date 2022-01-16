@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Test Food"
+      "0": "Kinrath Meat Ball"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 99
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
@@ -137,6 +137,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "test_food"
+    "value": "kinrath_mball"
   }
 }

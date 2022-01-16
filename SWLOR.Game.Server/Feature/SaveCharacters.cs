@@ -8,7 +8,6 @@ namespace SWLOR.Game.Server.Feature
     {
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
-        /// Also cleans up some combat state while we're cycling through all players anyway.
         /// </summary>
         [NWNEventHandler("mod_heartbeat")]
         public static void HandleSaveCharacters()
@@ -23,13 +22,6 @@ namespace SWLOR.Game.Server.Feature
                     if (GetLocalBool(player, "IS_BARTERING")) continue;
 
                     ExportSingleCharacter(player);
-
-                    // Clear combat state.
-                    if (!GetIsInCombat(player))
-                    {
-                        DeleteLocalFloat(player, "ATTACK_ORIENTATION_X");
-                        DeleteLocalFloat(player, "ATTACK_ORIENTATION_Y");
-                    }
                 }
 
                 tick = 0;

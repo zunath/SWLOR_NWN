@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants +1 to your attack roll and damage when your target is within 15 feet.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 10)
+                .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.PointBlankShot);
         }
 

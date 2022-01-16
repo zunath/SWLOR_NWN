@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.MarketBuying)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 1000f, 600f)
                 .BindTitle(model => model.WindowTitle)
 
                 .AddColumn(col =>

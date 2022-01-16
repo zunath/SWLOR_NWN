@@ -196,7 +196,176 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
         private void Tier2()
         {
+            _builder.Create(RecipeType.RaivorMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("raivor_mball")
+                .Level(11)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("raivor_meat", 3)
+                .Component("raivor_scale", 2)
+                .Component("distilled_water", 1);
 
+            _builder.Create(RecipeType.CairnmogPotPie, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cairn_potpie")
+                .Level(11)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("cairnmog_meat", 3)
+                .Component("cairnmog_tooth", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.ChocolateCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("choco_cookies")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("bubble_choc", 4)
+                .Component("b_flour", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.AppleJuice, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("apple_juice")
+                .Level(13)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("v_apple", 3)
+                .Component("distilled_water", 1);
+
+
+            _builder.Create(RecipeType.PeaSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("pea_soup")
+                .Level(13)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("v_peas", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.RaivorBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("raivor_broth")
+                .Level(13)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("raivor_scale", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.SobaNoodles, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("soba_noodles")
+                .Level(14)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("b_flour", 4)
+                .Component("sweet_butter", 1)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.CairnmogSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cairn_sandwich")
+                .Level(14)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("cairnmog_meat", 3)
+                .Component("b_flour", 2);
+
+            _builder.Create(RecipeType.NashtahMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("nash_mball")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("nashtah_meat", 3)
+                .Component("nashtah_foot", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.MysteryCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("mystery_cookies")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("sugar", 2)
+                .Component("b_flour", 1)
+                .Component("passion_fruit", 3);
+
+            _builder.Create(RecipeType.MandoHerbSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("mando_herbsoup")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("herb_m", 3)
+                .Component("distilled_water", 1)
+                .Component("sugar", 2);
+
+            _builder.Create(RecipeType.GreenCurry, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("green_curry")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("passion_fruit", 4)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.AppleAuLait, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("apple_aulait")
+                .Level(17)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("v_apple", 3)
+                .Component("distilled_water", 2)
+                .Component("herb_m", 3);
+
+            _builder.Create(RecipeType.RaivorBloodBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("raiv_bloodbroth")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("raivor_blood", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_m", 2);
+
+            _builder.Create(RecipeType.NashtahSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("nash_sandwich")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("nashtah_meat", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_m", 3);
+
+            _builder.Create(RecipeType.NashtahStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("nash_stew")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("nash_blood", 2)
+                .Component("nashtah_meat", 2);
         }
 
         private void Tier3()

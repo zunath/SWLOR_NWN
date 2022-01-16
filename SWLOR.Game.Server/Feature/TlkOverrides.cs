@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(462, "Willpower represents the attunement to the Force of your character. It improves your force attack and force defense.");
             SetTlkOverride(478, "Social measures the ability to negotiate and influence others. It improves your ability to negotiate mission rewards and improves Roleplay XP.");
             
+            SetTlkOverride(1027, "Poison"); // Acid
+
             SetTlkOverride(7099, "Evasion");
 
             SetTlkOverride(66751, "Holonet");

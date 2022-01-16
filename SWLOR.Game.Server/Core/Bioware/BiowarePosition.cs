@@ -91,6 +91,9 @@ namespace SWLOR.Game.Server.Core.Bioware
             // X/Y so that we're taking angle relative to the Y axis (X is opposite, Y adjacent)
             var angle = (float)Math.Atan(diffX / diffY);
 
+            // @@@ PROBABLE BUG - this should probably be NWScript.atan not Math.Atan as the latter
+            // returns a result in radians. 
+
             // atan returns -90 to +90.  We need to turn it into a 360 degree facing based on 
             // whether diffX and diffY are positive.  
             // if diffX and diffY are positive, we should have a facing of 0-90.

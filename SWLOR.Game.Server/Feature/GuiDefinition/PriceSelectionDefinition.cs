@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.PriceSelection)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 321f, 162f)
+                .SetInitialGeometry(0, 0, 400f, 240f)
                 .SetTitle("Change Price")
                 
                 .AddColumn(col =>

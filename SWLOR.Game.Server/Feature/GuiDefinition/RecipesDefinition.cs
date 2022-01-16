@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Recipes)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 545f, 600f)
                 .SetTitle("Recipes")
 
                 .AddColumn(col =>

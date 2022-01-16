@@ -263,6 +263,25 @@
                 "type": "word",
                 "value": 1
               }
+            },
+            {
+              "__struct_id": 10,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "bread"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
             }
           ]
         }

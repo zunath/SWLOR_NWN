@@ -849,7 +849,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 227
+    "value": 228
   },
   "Width": {
     "type": "int",

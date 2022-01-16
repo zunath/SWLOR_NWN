@@ -130,6 +130,25 @@
                 "type": "word",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "bread"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
             }
           ]
         }

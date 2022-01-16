@@ -4420,6 +4420,25 @@
                 "type": "word",
                 "value": 3
               }
+            },
+            {
+              "__struct_id": 14,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "bread"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 4
+              }
             }
           ]
         }

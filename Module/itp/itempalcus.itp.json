@@ -13688,6 +13688,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Byysk Bag"
                     },
                     "RESREF": {

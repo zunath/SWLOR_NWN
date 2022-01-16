@@ -49,10 +49,12 @@ namespace SWLOR.Game.Server.Native
             if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID) return 0;
 
             uint attackType = (uint) AttackType.Melee;
-            // Developer note - the native functions to retrieve a combat round don't work at this point.
             CNWSItem weapon = bOffHand == 1
                     ? attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand)
                     : attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+
+            // Twin blades need special handling. 
+            if (bOffHand == 1 && weapon == null) weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand); 
 
             if (weapon == null)
             {
@@ -120,6 +122,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Ice] = 0;
             var physicalDamage = 0;
             var specializationDMGBonus = 0f;
+            var foundDMG = false;
 
             // Calculate attacker's base DMG
             if (attacker != null)
@@ -150,9 +153,16 @@ namespace SWLOR.Game.Server.Native
                             var dmg = dmgValues[(CombatDamageType)damageType];
                             dmg += Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
                             dmgValues[(CombatDamageType)damageType] = dmg;
+                            foundDMG = true;
                         }
                     }
                 }
+            }
+
+            if (!foundDMG)
+            {
+                // If no properties default to 0.5 physical.
+                dmgValues[CombatDamageType.Physical] = 0.5f;
             }
 
             int attackAttribute = attackerStats.m_nStrengthModifier;

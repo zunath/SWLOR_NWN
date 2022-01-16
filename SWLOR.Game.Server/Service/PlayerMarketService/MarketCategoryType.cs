@@ -65,6 +65,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         [MarketCategory("Starship Parts", true)]
         StarshipParts = 27,
 
+        [MarketCategory("Enhancement", true)]
+        Enhancement = 28,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

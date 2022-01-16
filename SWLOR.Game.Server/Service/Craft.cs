@@ -176,6 +176,28 @@ namespace SWLOR.Game.Server.Service
             return _componentResrefs.Contains(resref);
         }
 
+        /// <summary>
+        /// Determines if an item is an enhancement used in crafting.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if item is an enhancement, false otherwise</returns>
+        public static bool IsItemEnhancement(uint item)
+        {
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.ArmorEnhancement ||
+                    type == ItemPropertyType.WeaponEnhancement ||
+                    type == ItemPropertyType.StructureEnhancement ||
+                    type == ItemPropertyType.FoodEnhancement)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes()
         {
             return _recipes;

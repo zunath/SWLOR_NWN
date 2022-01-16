@@ -587,6 +587,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
+                else if (type == ItemPropertyType.StructureEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Structure)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.FoodEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Food)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
             }
 
             return progressPenalty;

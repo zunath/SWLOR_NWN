@@ -94970,7 +94970,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -95020,7 +95020,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -95040,7 +95040,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -95049,7 +95049,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -95106,7 +95106,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -95179,22 +95179,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -95202,7 +95187,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -95232,7 +95217,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -95282,7 +95267,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -95302,7 +95287,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -95311,7 +95296,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -95368,7 +95353,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -95441,22 +95426,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -95464,7 +95434,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -96398,7 +96368,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -96448,7 +96418,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -96468,7 +96438,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -96477,7 +96447,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -96534,7 +96504,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -96607,22 +96577,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -96630,7 +96585,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -96660,7 +96615,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -96710,7 +96665,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -96730,7 +96685,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -96739,7 +96694,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -96796,7 +96751,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -96869,22 +96824,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -96892,7 +96832,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -97372,7 +97312,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -97422,7 +97362,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -97442,7 +97382,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -97451,7 +97391,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -97508,7 +97448,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -97581,22 +97521,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -97604,7 +97529,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -97634,7 +97559,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20606
+          "value": 4892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -97684,7 +97609,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -97704,7 +97629,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -97713,7 +97638,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Grill Table"
+            "0": "Cookpot"
           }
         },
         "OnClick": {
@@ -97770,7 +97695,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "craft_on_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -97843,22 +97768,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.CraftingDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CRAFT_DEVICE_ID"
+                "value": "CRAFTING_SKILL_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
@@ -97866,7 +97776,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 3
+                "value": 31
               }
             }
           ]
@@ -136804,7 +136714,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -137051,7 +136961,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -137298,7 +137208,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -137545,7 +137455,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",

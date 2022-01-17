@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("MONCALA_ARADILE")
                 .AddItem("lth_good", 20)
                 .AddItem("aradile_meat", 10)
+                .AddItem("aradile_tail", 10)
+                .AddItem("aradile_innards", 5)
                 .AddItem("aradile_skin2", 2, 1, true);
         }
 
@@ -31,7 +33,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("MONCALA_VIPER")
                 .AddItem("lth_flawed", 10)
                 .AddItem("lth_good", 20)
-                .AddItem("viper_bile", 5);
+                .AddItem("viper_meat", 10)
+                .AddItem("viper_bile", 5)
+                .AddItem("viper_guts", 5);
         }
 
         private void AmphiHydrus()
@@ -39,8 +43,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("MONCALA_AMPHIHYDRUS")
                 .AddItem("amphi_brain", 30)
                 .AddItem("amphi_brain2", 30)
+                .AddItem("amphi_blood", 15)
                 .AddItem("elec_good", 10)
                 .AddItem("fiberp_good", 10)
+                .AddItem("c_butter", 5)
                 .AddGold(20, 20);
 
             _builder.Create("MONCALA_AMPHIHYDRUS_RARES")
@@ -65,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("poach_twinblade", 5)
                 .AddItem("poach_rifle", 5)
                 .AddItem("poach_shuriken", 5)
+                .AddItem("c_butter", 1)
                 .AddGold(40, 20);
 
             _builder.Create("MONCALA_ECOTERRORIST_RARES")

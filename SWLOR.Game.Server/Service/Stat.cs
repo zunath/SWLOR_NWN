@@ -24,7 +24,6 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_enter")]
         public static void ApplyPlayerStats()
         {
-            ReapplyHitPoints();
             ApplyTemporaryPlayerStats();
         }
 
@@ -40,14 +39,6 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
-        }
-
-        /// <summary>
-        /// When a player enters the server, reapply their HP.
-        /// </summary>
-        public static void ReapplyHitPoints()
-        {
-            const int BaseHP = 0;
         }
 
         /// <summary>

@@ -109,13 +109,15 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
 
-            if (!_loggedOutPlayersWithEffects.ContainsKey(player))
-                return;
+            if (_loggedOutPlayersWithEffects.ContainsKey(player))
+            {
+                var effects = _loggedOutPlayersWithEffects[player].ToDictionary(x => x.Key, y => y.Value);
+                _creaturesWithStatusEffects[player] = effects;
 
-            var effects = _loggedOutPlayersWithEffects[player].ToDictionary(x => x.Key, y => y.Value);
-            _creaturesWithStatusEffects[player] = effects;
+                _loggedOutPlayersWithEffects.Remove(player);
+            }
 
-            _loggedOutPlayersWithEffects.Remove(player);
+            ExecuteScript("assoc_stateffect", player);
         }
 
         /// <summary>

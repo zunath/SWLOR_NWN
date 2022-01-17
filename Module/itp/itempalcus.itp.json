@@ -8679,6 +8679,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bright Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "b_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bubble Chocolate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bubble_choc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Building"
                     },
                     "RESREF": {
@@ -12452,6 +12474,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sweet Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sweet_butter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sygium Gemstone"
                     },
                     "RESREF": {
@@ -12859,6 +12892,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscaran Apple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_apple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscaran Flour"
                     },
                     "RESREF": {
@@ -12897,6 +12941,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "v_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Peas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_peas"
                     }
                   },
                   {

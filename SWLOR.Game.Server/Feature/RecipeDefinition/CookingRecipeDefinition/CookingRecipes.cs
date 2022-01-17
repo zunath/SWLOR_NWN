@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sugar", 4)
-                .Component("flour", 3)
+                .Component("v_flour", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.OrangeJuice, SkillType.Agriculture)
@@ -93,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
-                .Component("flour", 4)
-                .Component("butter", 1)
+                .Component("v_flour", 4)
+                .Component("butter_1", 1)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KathSandwich, SkillType.Agriculture)
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sugar", 2)
-                .Component("flour", 1)
+                .Component("v_flour", 1)
                 .Component("v_lemon", 3);
 
             _builder.Create(RecipeType.ViscaranHerbSoup, SkillType.Agriculture)

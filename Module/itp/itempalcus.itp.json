@@ -13930,6 +13930,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dath Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_hsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Deck Bag"
                     },
                     "RESREF": {
@@ -14023,6 +14034,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ging_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gradiose Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grand_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Grandiose Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grand_sandwich"
                     }
                   },
                   {
@@ -14155,6 +14188,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "melon_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miso Ramen"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "miso_ramen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miso Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "miso_soup"
                     }
                   },
                   {
@@ -14577,6 +14632,28 @@
                   },
                   {
                     "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
                     "RESREF": {
                       "type": "resref",
                       "value": "torch"
@@ -14650,6 +14727,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_bbroth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wizard Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wizard_cookies"
                     }
                   },
                   {

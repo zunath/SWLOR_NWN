@@ -8668,6 +8668,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bread Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bread_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Building"
                     },
                     "RESREF": {
@@ -9075,6 +9086,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cultured Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cultured_butter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Currian Ore"
                     },
                     "RESREF": {
@@ -9245,6 +9267,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dough"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dried Bonito"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dried_bonito"
                     }
                   },
                   {
@@ -12507,11 +12540,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tofu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tofu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Torporand Juice"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turnip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turnip"
                     }
                   },
                   {
@@ -12919,6 +12985,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "weevina"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_innards"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_meat"
                     }
                   },
                   {

@@ -378,7 +378,10 @@
         WizardCookies = 2074,
         DathHerbSoup = 2075,
         WildCurry = 2076,
-        TomatoAuLait = 2077
+        TomatoAuLait = 2077,
+        WildBloodBroth = 2078,
+        GrandioseSandwich = 2079,
+        WildStew = 2080
 
 
 

@@ -128,7 +128,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cornucopia", 5)
                 .AddItem("herb_t", 5);
 
-            _builder.Create("VEGETABLES_PATCH_5");
+            _builder.Create("VEGETABLES_PATCH_5")
+                .AddItem("herb_x", 5)
+                .AddItem("turnip", 20)
+                .AddItem("tofu", 20)
+                .AddItem("dried_bonito", 10)
+                .AddItem("tomato", 10);
         }
     }
 }

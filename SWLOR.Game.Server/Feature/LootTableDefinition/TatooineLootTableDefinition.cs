@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("TATOOINE_SAND_BEETLE")
                 .AddItem("shat_beetle_chit", 20)
-                .AddItem("beetle_chitin", 1);
+                .AddItem("beetle_chitin", 1)
+                .AddItem("wild_leg", 1);
         }
 
         private void SandDemon()
@@ -65,6 +66,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("TATOOINE_SAND_WORM")
                 .AddItem("fiberp_high", 20)
                 .AddItem("lth_high", 20)
+                .AddItem("wild_meat", 10)
+                .AddItem("wild_innards", 10)
                 .AddItem("sandwormtooth", 5, 1, true)
                 .AddItem("emerald", 1, 1, true)
                 .AddItem("ruby", 2, 1, true);
@@ -91,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("tusken_blood", 10)
                 .AddItem("r_flour", 5)
 
+                .AddItem("bread_flour", 1, 1, true)
                 .AddItem("ruby", 2, 1, true);
 
             _builder.Create("TATOOINE_TUSKEN_RAIDER_RARES")
@@ -105,6 +109,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("fiberp_imperfect", 15)
                 .AddItem("plant_butter", 10)
                 .AddItem("r_flour", 10)
+                .AddItem("cultured_butter", 1)
+                .AddItem("dried_bonito", 1)
                 .AddItem("ruby", 2, 1, true)
                 .AddGold(100,30);
 

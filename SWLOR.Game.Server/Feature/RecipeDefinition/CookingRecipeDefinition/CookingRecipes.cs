@@ -720,7 +720,177 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
         private void Tier5()
         {
+            _builder.Create(RecipeType.WildMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_mball")
+                .Level(41)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 3)
+                .Component("wild_innards", 2)
+                .Component("distilled_water", 1);
 
+            _builder.Create(RecipeType.WildPotPie, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_potpie")
+                .Level(41)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 3)
+                .Component("wild_leg", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WildCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_cookies")
+                .Level(42)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("turnip", 4)
+                .Component("bread_flour", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.TomatoJuice, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tomato_juice")
+                .Level(43)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tomato", 3)
+                .Component("distilled_water", 1);
+
+
+            _builder.Create(RecipeType.MisoSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("miso_soup")
+                .Level(43)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tofu", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WildBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_broth")
+                .Level(43)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_innards", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.MisoRamen, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("miso_ramen")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("bread_flour", 4)
+                .Component("cultured_butter", 1)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WildSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_sandwich")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 3)
+                .Component("bread_flour", 2);
+
+            _builder.Create(RecipeType.GrandioseMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("grand_mball")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 3)
+                .Component("wild_leg", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WizardCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wizard_cookies")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sugar", 2)
+                .Component("bread_flour", 1)
+                .Component("tomato", 3);
+
+            _builder.Create(RecipeType.DathHerbSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dath_hsoup")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("herb_x", 3)
+                .Component("distilled_water", 1)
+                .Component("sugar", 2);
+
+            _builder.Create(RecipeType.WildCurry, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_curry")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tofu", 2)
+                .Component("distilled_water", 1)
+                .Component("dried_bonito", 2);
+
+            _builder.Create(RecipeType.TomatoAuLait, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tomato_aulait")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tomato", 3)
+                .Component("distilled_water", 2)
+                .Component("herb_x", 3);
+
+            _builder.Create(RecipeType.WildBloodBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_bbroth")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_blood", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_x", 2);
+
+            _builder.Create(RecipeType.GrandioseSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("grand_sandwich")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_x", 3);
+
+            _builder.Create(RecipeType.WildStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_stew")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_leg", 2)
+                .Component("wild_meat", 2);
         }
     }
 }

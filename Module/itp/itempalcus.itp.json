@@ -714,6 +714,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Traveler's Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "traveler_clothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Robes"
                     },
                     "RESREF": {
@@ -8382,6 +8393,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Amphi-Hydrus Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "amphi_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Amphi-Hydrus Brain"
                     },
                     "RESREF": {
@@ -8426,6 +8448,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Aradile Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aradile_innards"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Aradile Meat"
                     },
                     "RESREF": {
@@ -8442,6 +8475,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aradile_skin2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Tail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aradile_tail"
                     }
                   },
                   {
@@ -8624,6 +8668,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bread Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bread_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bright Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "b_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bubble Chocolate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bubble_choc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Building"
                     },
                     "RESREF": {
@@ -8657,6 +8734,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Tail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_tail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cairnmog Blood"
                     },
                     "RESREF": {
@@ -8684,6 +8783,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cairnmog_spine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cairnmog Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cairnmog_tooth"
                     }
                   },
                   {
@@ -8899,6 +9009,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cornucopia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cornucopia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corylus"
                     },
                     "RESREF": {
@@ -8970,6 +9091,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cox_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Creamy Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_butter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cultured Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cultured_butter"
                     }
                   },
                   {
@@ -9064,6 +9207,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Oregano"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_x"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Destroyed Electronics"
                     },
                     "RESREF": {
@@ -9108,6 +9262,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Distilled Water"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "distilled_water"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Doncedryn"
                     },
                     "RESREF": {
@@ -9124,6 +9289,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dough"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dried Bonito"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dried_bonito"
                     }
                   },
                   {
@@ -9449,17 +9625,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Food Example"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "food_example"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Force Armor Core"
                     },
                     "RESREF": {
@@ -9548,6 +9713,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gimpassa Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gimp_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gimpassa Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gimp_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Shell"
                     },
                     "RESREF": {
@@ -9564,6 +9751,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gimp_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ginger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ginger"
                     }
                   },
                   {
@@ -9856,6 +10054,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Acorn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "h_acorn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hyperdrive"
                     },
                     "RESREF": {
@@ -10015,6 +10224,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "japor_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kath Hound Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kath_blood"
                     }
                   },
                   {
@@ -10241,17 +10461,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalore Herb"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "herb_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Mandalorian Blaster Parts"
                     },
                     "RESREF": {
@@ -10345,6 +10554,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "m_polearm_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Thyme"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_m"
                     }
                   },
                   {
@@ -10472,6 +10692,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Melon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "melon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Metal Baton Frame"
                     },
                     "RESREF": {
@@ -10488,6 +10719,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "padding_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Calan Seaweed"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mushroom"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mushroom"
                     }
                   },
                   {
@@ -10532,6 +10785,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nails"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashtah Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nash_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashtah Foot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nashtah_foot"
                     }
                   },
                   {
@@ -10725,6 +11000,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Passion Fruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "passion_fruit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pastry Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "p_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pawisis"
                     },
                     "RESREF": {
@@ -10840,6 +11137,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "milk_0"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plant-Based Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plant_butter"
                     }
                   },
                   {
@@ -11033,6 +11341,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Tiger Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Paw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "q_tiger_paw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Quality Electronics"
                     },
                     "RESREF": {
@@ -11165,6 +11495,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Raivor Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raivor Claw"
                     },
                     "RESREF": {
@@ -11181,6 +11522,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raivor_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raivor Scales"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_scale"
                     }
                   },
                   {
@@ -11583,6 +11935,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rising Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rruchi"
                     },
                     "RESREF": {
@@ -11687,6 +12050,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sanddemonhide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sand_demon_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemon_meat"
                     }
                   },
                   {
@@ -12056,11 +12441,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Strange Pineapple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_pineapple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stronidium"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "stronidium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sugar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sugar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sweet_butter"
                     }
                   },
                   {
@@ -12094,6 +12512,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "equ_ferraille"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tattooine Desert Sage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_t"
                     }
                   },
                   {
@@ -12144,11 +12573,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tofu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tofu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Torporand Juice"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turnip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turnip"
                     }
                   },
                   {
@@ -12171,6 +12633,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tsk_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Bones"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_bones"
                     }
                   },
                   {
@@ -12204,6 +12688,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusk_highe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_meat"
                     }
                   },
                   {
@@ -12298,6 +12793,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vegetable Clump"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "veggie_clump"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vegetables"
                     },
                     "RESREF": {
@@ -12342,22 +12848,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Berry Fruit"
+                      "value": "Viper Guts"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "berry_fruit_b"
+                      "value": "viper_guts"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Herb"
+                      "value": "Viper Meat"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "herb_v"
+                      "value": "viper_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Berry Fruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "berry_fruit_b"
                     }
                   },
                   {
@@ -12375,11 +12892,110 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscaran Apple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_apple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Honey"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_honey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Lemon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_lemon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Peas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_peas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Pebble"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_pebble"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Rosemary"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Volatile Power Cell"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "v_power_cell"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Walnut"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "walnut"
                     }
                   },
                   {
@@ -12419,22 +13035,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Water"
+                      "value": "Weevina"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "water_0"
+                      "value": "weevina"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weevina"
+                      "value": "Wild Blood"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "weevina"
+                      "value": "wild_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_innards"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_meat"
                     }
                   },
                   {
@@ -12457,6 +13106,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "womprathide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womprat Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womp_innards"
                     }
                   },
                   {
@@ -13545,11 +14205,99 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Acorn Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "acorn_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amphi-hydrus Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "amphi_bbroth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apple au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "apple_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apple Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "apple_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ara_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aradile_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ara_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bread"
                     }
                   },
                   {
@@ -13567,6 +14315,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cairnmog Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cairn_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cairnmog Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cairn_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Capsule remplie d'eau"
                     },
                     "RESREF": {
@@ -13578,11 +14359,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chocolate Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "choco_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinna-Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinna_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dath Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_hsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Deck Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "deckbag"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Desert Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_herbsoup"
                     }
                   },
                   {
@@ -13622,11 +14447,132 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fresh Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fresh_bread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gimpassa Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "g_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gimpassa Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "g_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ginger Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ging_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gradiose Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grand_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Grandiose Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grand_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Green Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "green_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kath Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "k_blood_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kath Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kath_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kinrath Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kinrath_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Large Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_lg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lemon Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lemon_cookies"
                     }
                   },
                   {
@@ -13644,11 +14590,297 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mando Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_herbsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Medium Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_md"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Melon au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "melon_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Melon Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "melon_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miso Ramen"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "miso_ramen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miso Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "miso_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moncal_hsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mushroom Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mush_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mynock Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mynock_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mynock Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mynock_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mystery Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mystery_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashtah Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nash_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashtah Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nash_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashtah Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nash_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Noodles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "noodles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orange au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "o_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orange Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "orange_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orange Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "orange_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pea Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pea_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pebble Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pebble_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pineapple au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pine_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pineapple Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pine_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raivor Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raiv_bloodbroth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raivor Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raivor Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ramen Noodles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ramen_noodles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "red_curry"
                     }
                   },
                   {
@@ -13666,11 +14898,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Demon Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddem_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dem_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "demon_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Small Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_sm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snake Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "snake_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snake Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "snake_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soba Noodles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "soba_noodles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soy Ramen"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "soy_ramen"
                     }
                   },
                   {
@@ -13730,6 +15039,72 @@
                   },
                   {
                     "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sugar Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sugar_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Surprise Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "surprise_sandwic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Test Food"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "test_food"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tiger Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato au Lait"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato_aulait"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tomato Juice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tomato_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
                     "RESREF": {
                       "type": "resref",
                       "value": "torch"
@@ -13737,6 +15112,204 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 180
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusk_b_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vegetable Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "veg_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscaran Herb Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_herb_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Walnut Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "walnut_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warocas Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Blood Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_bbroth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Pot Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Sandwich"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wild Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wizard Cookies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wizard_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womp Rat Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womp_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womp Rat Meat Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womp_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yellow Curry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yellow_curry"
                     }
                   }
                 ]
@@ -17328,143 +18901,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Abyssal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Animal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_8"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Book of Player Voice Commands"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "dmfi_playerbook"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Celestial"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_101"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_102"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_103"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_104"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_105"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 6"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_106"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 7"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_107"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 8"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_108"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Custom Language 9"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_109"
                     }
                   },
                   {
@@ -17504,94 +18945,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Draconic"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Drow"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_13"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dwarven"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Elven"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gnome"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_6"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Halfling"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Infernal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_12"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Malak's Lightsaber"
                     },
                     "RESREF": {
@@ -17608,17 +18961,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hlslang_016"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Orc"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_5"
                     }
                   },
                   {
@@ -17685,39 +19027,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "item030"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Submit Items"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "qst_submit"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sylvan"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_014"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Thieves' Cant"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hlslang_9"
                     }
                   },
                   {

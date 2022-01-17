@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -362,6 +363,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _venerationPerk = PerkType.VenerationFabrication;
                     _wasteNotPerk = PerkType.WasteNotFabrication;
                     break;
+                case SkillType.Agriculture:
+                    _primaryAbility = AbilityType.Social;
+                    _secondaryAbility = AbilityType.Willpower;
+
+                    _rapidSynthesisPerk = PerkType.RapidSynthesisCooking;
+                    _carefulSynthesisPerk = PerkType.CarefulSynthesisCooking;
+
+                    _basicTouchPerk = PerkType.BasicTouchCooking;
+                    _standardTouchPerk = PerkType.StandardTouchCooking;
+                    _preciseTouchPerk = PerkType.PreciseTouchCooking;
+
+                    _mastersMendPerk = PerkType.MastersMendCooking;
+                    _steadyHandPerk = PerkType.SteadyHandCooking;
+                    _muscleMemoryPerk = PerkType.MuscleMemoryCooking;
+
+                    _venerationPerk = PerkType.VenerationCooking;
+                    _wasteNotPerk = PerkType.WasteNotCooking;
+                    break;
             }
         }
 
@@ -489,6 +508,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.WeaponEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Structure)
+            {
+                typeIP = ItemPropertyType.StructureEnhancement;
+            }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Food)
+            {
+                typeIP = ItemPropertyType.FoodEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {
@@ -556,6 +583,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (type == ItemPropertyType.WeaponEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Weapon)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.StructureEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Structure)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.FoodEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Food)
                 {
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
@@ -931,6 +970,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var delta =  recipe.Level - dbPlayer.Skills[recipe.Skill].Rank;
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
+            var qualityPercent = (float)_quality / (float)_maxQuality; 
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             foreach (var ip in _itemPropertiesEnhancement1)
@@ -958,6 +998,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
+            // Food items have increased duration based on quality percentage
+            if (recipe.Category == RecipeCategoryType.Food && (int)qualityPercent > 0)
+            {
+                var durationBonus = (int)qualityPercent;
+                var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            }
+
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
             {
@@ -966,12 +1014,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Give XP plus a percent bonus based on the quality achieved.
-            var qualityBonus = (float)_quality / (float)_maxQuality;
             var xp = Skill.GetDeltaXP(delta);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
-            xp += (int)(xp * qualityBonus);
+            xp += (int)(xp * qualityPercent);
 
             Skill.GiveSkillXP(Player, recipe.Skill, xp);
 

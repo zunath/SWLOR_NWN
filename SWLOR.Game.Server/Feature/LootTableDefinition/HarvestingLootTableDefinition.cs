@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Trees();
             Bushes();
             Herbs();
+            VegetablePatches();
 
             return _builder.Build();
         }
@@ -96,6 +97,43 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("herb_t", 50);
             _builder.Create("HERBS_5")
                 .AddItem("herb_x", 50);
+        }
+
+        private void VegetablePatches()
+        {
+            _builder.Create("VEGETABLES_PATCH_1")
+                .AddItem("v_orange", 20)
+                .AddItem("v_lemon", 20)
+                .AddItem("v_pebble", 20)
+                .AddItem("herb_v", 5);
+
+            _builder.Create("VEGETABLES_PATCH_2")
+                .AddItem("v_apple", 20)
+                .AddItem("v_peas", 20)
+                .AddItem("passion_fruit", 20)
+                .AddItem("herb_m", 5);
+
+            _builder.Create("VEGETABLES_PATCH_3")
+                .AddItem("herb_c", 5)
+                .AddItem("h_acorn", 20)
+                .AddItem("s_pineapple", 20)
+                .AddItem("veggie_clump", 20);
+
+            _builder.Create("VEGETABLES_PATCH_4")
+                .AddItem("ginger", 10)
+                .AddItem("melon", 10)
+                .AddItem("mushroom", 10)
+                .AddItem("plant_butter", 10)
+                .AddItem("walnut", 10)
+                .AddItem("cornucopia", 5)
+                .AddItem("herb_t", 5);
+
+            _builder.Create("VEGETABLES_PATCH_5")
+                .AddItem("herb_x", 5)
+                .AddItem("turnip", 20)
+                .AddItem("tofu", 20)
+                .AddItem("dried_bonito", 10)
+                .AddItem("tomato", 10);
         }
     }
 }

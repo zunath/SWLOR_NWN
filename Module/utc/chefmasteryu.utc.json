@@ -134,7 +134,7 @@
   },
   "Conversation": {
     "type": "resref",
-    "value": ""
+    "value": "chefmasteryu"
   },
   "CRAdjust": {
     "type": "int",
@@ -178,7 +178,7 @@
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 3
   },
   "FeatList": {
     "type": "list",

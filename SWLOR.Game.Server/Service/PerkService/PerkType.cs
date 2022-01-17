@@ -187,6 +187,17 @@
         Dash = 180,
         TreasureHunter = 181,
         CreditFinder = 182,
+        RapidSynthesisCooking = 183,
+        CarefulSynthesisCooking = 184,
+        BasicTouchCooking = 185,
+        StandardTouchCooking = 186,
+        PreciseTouchCooking = 187,
+        MastersMendCooking = 188,
+        SteadyHandCooking = 189,
+        MuscleMemoryCooking = 190,
+        VenerationCooking = 191,
+        WasteNotCooking = 192,
+        CookingRecipes = 193,
 
         GuildRelations = 1004,
 

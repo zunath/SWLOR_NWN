@@ -60,5 +60,15 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             ClearBusy(player);
         }
+
+        /// <summary>
+        /// When a player dies, wipe their temporary "busy" status.
+        /// </summary>
+        [NWNEventHandler("mod_death")]
+        public static void WipeStatusOnDeath()
+        {
+            var player = GetLastPlayerDied();
+            ClearBusy(player);
+        }
     }
 }

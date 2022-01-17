@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             CrystalSpider();
 
             MandalorianCrate();
-            CoxxianCrate();
+            CoxxionCrate();
 
             return _builder.Build();
         }
@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("k_hound_fur", 20)
                 .AddItem("k_hound_tooth", 20)
                 .AddItem("lth_ruined", 20)
-                .AddItem("kath_meat_1", 10);
+                .AddItem("kath_meat_1", 10)
+                .AddItem("kath_blood", 5);
 
             _builder.Create("VISCARA_KATH_HOUND_RARES")
                 .AddItem("k_hound_claw", 1, 1, true);
@@ -79,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mando_katar", 5)
                 .AddItem("mando_staff", 5)
                 .AddItem("mando_twinblade", 5)
+                .AddItem("bubble_choc", 8)
                 .AddGold(30, 10);
 
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR_RARES")
@@ -100,6 +102,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mando_shuriken", 5)
                 .AddItem("mando_pistol", 5)
                 .AddItem("mando_rifle", 5)
+                .AddItem("b_flour", 8)
+                .AddItem("sweet_butter", 2, 1, true)
                 .AddGold(30, 10);
 
             _builder.Create("VISCARA_MANDALORIAN_RANGER_RARES")
@@ -121,6 +125,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("jade", 1, 1, true)
                 .AddItem("agate", 1, 1, true)
                 .AddItem("m_plexiplate", 1, 1, true)
+                .AddItem("v_honey", 5)
+                .AddItem("sweet_butter", 2, 1, true)
                 .AddGold(30, 10);
 
         }
@@ -139,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("outlaw_cap", 1)
                 .AddItem("outlaw_gloves", 1)
                 .AddItem("outlaw_boots", 1)
+                .AddItem("v_flour", 5)
                 .AddGold(20, 10);
 
             _builder.Create("VISCARA_OUTLAW_RARES")
@@ -151,7 +158,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_ruined", 5)
                 .AddItem("gimp_shell", 2, 1, true)
                 .AddItem("gimp_tooth", 8)
-                .AddItem("lth_flawed", 20);
+                .AddItem("lth_flawed", 20)
+                .AddItem("gimp_blood", 5)
+                .AddItem("gimp_meat", 10);
         }
 
         private void Kinrath()
@@ -172,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cairnmog_blood", 2, 1, true)
                 .AddItem("lth_ruined", 10)
                 .AddItem("lth_flawed", 20)
+                .AddItem("cairnmog_tooth", 4)
 
                 .AddItem("map_049", 1, 1, true);
         }
@@ -207,6 +217,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_ruined", 5)
                 .AddItem("fiberp_ruined", 15)
                 .AddItem("elec_flawed", 5)
+                .AddItem("bubble_choc", 10)
+                .AddItem("sweet_butter", 8)
+                .AddItem("b_flour", 10)
                 .AddGold(30, 20);
 
 
@@ -216,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("babonsch", 5, 1, true);
         }
 
-        private void CoxxianCrate()
+        private void CoxxionCrate()
         {
             _builder.Create("VISCARA_COXXIAN_CRATE")
                 .AddItem("cox_metal", 5)
@@ -225,6 +238,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("fiberp_flawed", 15)
                 .AddItem("lth_flawed", 15)
                 .AddItem("elec_flawed", 5)
+                .AddItem("v_honey", 10)
+                .AddItem("sweet_butter", 2)
                 .AddItem("coonlank_blue", 1, 1, true)
                 .AddItem("coonlank_green", 1, 1, true)
                 .AddItem("coonlank_red", 1, 1, true)
@@ -238,6 +253,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("raivor_meat", 10)
                 .AddItem("raivor_claw", 10)
                 .AddItem("raivor_tail_bone", 10)
+                .AddItem("raivor_scale", 5)
+                .AddItem("raivor_blood", 8)
                 
                 .AddItem("map_042", 1, 1, true);
         }
@@ -248,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("warocas_beak", 20)
                 .AddItem("waro_feathers", 5)
                 .AddItem("lth_ruined", 20)
+                .AddItem("warocas_meat", 10)
                 .AddItem("waro_leg", 2, 1, true);
 
             _builder.Create("VISCARA_WAROCAS_RARES")
@@ -262,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("nashtah_meat", 30)
                 .AddItem("nash_scale", 10)
                 .AddItem("nash_tail", 2)
+                .AddItem("nashtah_foot", 8)
 
                 .AddItem("map_049", 1, 1, true);
         }

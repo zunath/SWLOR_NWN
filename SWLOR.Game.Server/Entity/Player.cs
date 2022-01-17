@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Entity
         public int HP { get; set; }
         public int FP { get; set; }
         public int Stamina { get; set; }
+        public int TemporaryFoodHP { get; set; }
         public int BAB { get; set; }
         public int Fortitude { get; set; }
         public int Reflex { get; set; }

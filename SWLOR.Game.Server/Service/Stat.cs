@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -16,12 +17,21 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new Dictionary<uint, Dictionary<CombatDamageType, int>>();
+        
+        /// <summary>
+        /// When a player enters the server, reapply HP and temporary stats.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void ApplyPlayerStats()
+        {
+            ReapplyHitPoints();
+            ApplyTemporaryPlayerStats();
+        }
 
         /// <summary>
         /// When a player enters the server, apply any temporary stats which do not persist.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
-        public static void ApplyTemporaryPlayerStats()
+        private static void ApplyTemporaryPlayerStats()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -33,14 +43,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the maximum hit points on a creature.
-        /// This will include any base NWN calculations used when determining max HP.
+        /// When a player enters the server, reapply their HP.
         /// </summary>
-        /// <param name="creature">The creature object</param>
-        /// <returns>The max amount of HP</returns>
-        public static int GetMaxHP(uint creature)
+        public static void ReapplyHitPoints()
         {
-            return GetMaxHitPoints(creature);
+            const int BaseHP = 0;
         }
 
         /// <summary>
@@ -65,8 +72,15 @@ namespace SWLOR.Game.Server.Service
                 }
                 var baseFP = dbPlayer.MaxFP;
                 var modifier = GetAbilityModifier(AbilityType.Vitality, creature);
+                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+                var foodBonus = 0;
 
-                return baseFP + (modifier * 10);
+                if (foodEffect != null)
+                {
+                    foodBonus = foodEffect.FP;
+                }
+
+                return baseFP + modifier * 10 + foodBonus;
             }
             // NPCs
             else
@@ -132,8 +146,15 @@ namespace SWLOR.Game.Server.Service
 
                 var baseStamina = dbPlayer.MaxStamina;
                 var conModifier = GetAbilityModifier(AbilityType.Vitality, creature);
+                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+                var foodBonus = 0;
 
-                return baseStamina + (conModifier * 5);
+                if (foodEffect != null)
+                {
+                    foodBonus = foodEffect.STM;
+                }
+
+                return baseStamina + conModifier * 5 + foodBonus;
             }
             // NPCs
             else
@@ -337,9 +358,30 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// After a player's status effects are reassociated,
+        /// adjust any food HP if necessary.
+        /// </summary>
+        [NWNEventHandler("assoc_stateffect")]
+        public static void ReapplyFoodHP()
+        {
+            var player = OBJECT_SELF;
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            // Player returned after the server restarted. They no longer have the food status effect.
+            // Reduce their HP by the amount tracked in the DB.
+            if (dbPlayer.TemporaryFoodHP > 0 && !StatusEffect.HasStatusEffect(player, StatusEffectType.Food))
+            {
+                Stat.AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
+                dbPlayer.TemporaryFoodHP = 0;
+                DB.Set(dbPlayer);
+            }
+        }
+
+        /// <summary>
         /// Increases or decreases a player's HP by a specified amount.
-        /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 5 by default, so this
-        /// gives 255 * 5 = 1275 HP maximum. If the player's HP would go over this amount, it will be set to 1275.
+        /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 40 by default, so this
+        /// gives 255 * 40 = 10,200 HP maximum. If the player's HP would go over this amount, it will be set to 10,200.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>

@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
@@ -174,6 +174,28 @@ namespace SWLOR.Game.Server.Service
         {
             var resref = GetResRef(item);
             return _componentResrefs.Contains(resref);
+        }
+
+        /// <summary>
+        /// Determines if an item is an enhancement used in crafting.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if item is an enhancement, false otherwise</returns>
+        public static bool IsItemEnhancement(uint item)
+        {
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.ArmorEnhancement ||
+                    type == ItemPropertyType.WeaponEnhancement ||
+                    type == ItemPropertyType.StructureEnhancement ||
+                    type == ItemPropertyType.FoodEnhancement)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes()
@@ -375,18 +397,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines whether an item is an enhancement of the specified type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <param name="type">The type to expect.</param>
-        /// <returns>true if item is an enhancement of the specified type. false otherwise.</returns>
-        public static bool IsItemEnhancement(uint item, RecipeEnhancementType type)
-        {
-            // todo: check item properties
-            return true;
-        }
-
-        /// <summary>
         /// Retrieves a recipe's level detail by the given level number.
         /// </summary>
         /// <param name="level">The level to search by.</param>
@@ -457,6 +467,31 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
                 case 26: // Attack Bonus
                     return ItemPropertyAttackBonus(amount);
+                case 27: // Recast Reduction
+                    return ItemPropertyCustom(ItemPropertyType.AbilityRecastReduction, -1, amount);
+                case 28: // Structure Bonus
+                    return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
+                case 29: // Food Bonus - HP Regen
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HPRegen, amount);
+                case 30: // Food Bonus - FP Regen
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FPRegen, amount);
+                case 31: // Food Bonus - STM Regen
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STMRegen, amount);
+                case 32: // Food Bonus - Rest Regen
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
+                case 33: // Food Bonus - XP Bonus
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
+                case 34: // Food Bonus - Recast Reduction
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RecastReduction, amount);
+                case 35: // Food Bonus - Duration
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
+                case 36: // Food Bonus - HP
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HP, amount);
+                case 37: // Food Bonus - FP
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FP, amount);
+                case 38: // Food Bonus - STM
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STM, amount);
+
             }
 
             throw new Exception("Unsupported enhancement type.");

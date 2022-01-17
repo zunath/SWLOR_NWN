@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Rest)
                 .Name("Rest")
                 .EffectIcon(8) // 8 = Fatigue
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     AssignCommand(target, () =>
                     {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     Activity.SetBusy(target, ActivityStatusType.Resting);
                     Ability.EndConcentrationAbility(target);
                 })
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var position = GetPosition(target);
 
@@ -81,11 +82,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     if (fpAmount < 1)
                         fpAmount = 1;
 
+                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(target, StatusEffectType.Food);
+
+                    if (foodEffect != null)
+                    {
+                        hpAmount += foodEffect.RestRegen * 5;
+                        fpAmount += foodEffect.RestRegen * 2;
+                        stmAmount += foodEffect.RestRegen * 2;
+                    }
+
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);
                     Stat.RestoreStamina(target, stmAmount);
                     Stat.RestoreFP(target, fpAmount);
                 })
-                .RemoveAction(target =>
+                .RemoveAction((target, effectData) =>
                 {
                     // Clean up position information.
                     DeleteLocalFloat(target, "REST_POSITION_X");

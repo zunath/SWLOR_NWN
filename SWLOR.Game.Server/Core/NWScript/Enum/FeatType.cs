@@ -1706,7 +1706,13 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         CityManagement4 = 1773,
         Upkeep1 = 1774,
         Upkeep2 = 1775,
-        CitySpecialization = 1776
+        CitySpecialization = 1776,
+
+        CookingRecipes1 = 1777,
+        CookingRecipes2 = 1778,
+        CookingRecipes3 = 1779,
+        CookingRecipes4 = 1780,
+        CookingRecipes5 = 1781,
 
     }
 }

@@ -104,6 +104,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         PrimaryStat = 103,
         EnhancementLevel = 104,
         StructureBonus = 105,
+        FoodBonus = 106,
+        StructureEnhancement = 107,
+        FoodEnhancement = 108,
 
         Evasion = 117,
         AbilityRecastReduction = 118,

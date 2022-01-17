@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -369,7 +370,6 @@ namespace SWLOR.Game.Server.Feature
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
 
-
             // NPCs and DM-possessed NPCs
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
@@ -382,8 +382,16 @@ namespace SWLOR.Game.Server.Feature
             {
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = DB.Get<Entity.Player>(playerId);
+                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
 
-                var recastPercentage = dbPlayer.AbilityRecastReduction * 0.01f;
+                var recastReduction = dbPlayer.AbilityRecastReduction;
+
+                if (foodEffect != null)
+                {
+                    recastReduction += foodEffect.RecastReductionPercent;
+                }
+
+                var recastPercentage = recastReduction * 0.01f;
                 if (recastPercentage > 0.5f)
                     recastPercentage = 0.5f;
 

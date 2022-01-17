@@ -3575,7 +3575,7 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Hostile"
+                      "value": "Merchant"
                     },
                     "NAME": {
                       "type": "cexostring",

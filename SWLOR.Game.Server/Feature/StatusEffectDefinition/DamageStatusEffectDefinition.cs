@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Bleed)
                 .Name("Bleed")
                 .EffectIcon(129) // 129 = Wounding
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d2());
                     ApplyEffectToObject(DurationType.Instant, damage, target);
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Poison)
                 .Name("Poison")
                 .EffectIcon(20) // 20 = Poison
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(3, 7);
                     var damage = EffectDamage(amount, DamageType.Acid);
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
                 .EffectIcon(115) // 115 =  DAMAGE_IMMUNITY_ELECTRICAL 
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d4(), DamageType.Electrical);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Tranquilize)
                 .Name("Tranquilize")
                 .EffectIcon(18) // 18 = Stunned
-                .GrantAction((source, target, length) =>
+                .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectDazed();
                     effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     ApplyEffectToObject(DurationType.Permanent, effect, target, length);
                 })
-                .RemoveAction((target) =>
+                .RemoveAction((target, effectData) =>
                 {
                     RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.Tranquilize);
                 });
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.Burn)
                 .Name("Burn")
                 .EffectIcon(20) // 20 = Poison todo: need a better icon
-                .TickAction((source, target) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(2, 4);
                     var damage = EffectDamage(amount, DamageType.Fire);

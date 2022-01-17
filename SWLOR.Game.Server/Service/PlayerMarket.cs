@@ -108,6 +108,10 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.Throwing;
             if (Item.RifleBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Rifle;
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.TwinBlade;
+            if (Item.KatarBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Katar;
 
             // Universal armor classes
             switch (baseItemType)
@@ -166,6 +170,9 @@ namespace SWLOR.Game.Server.Service
             // Components
             if (Craft.IsItemComponent(item))
                 return MarketCategoryType.Components;
+            // Enhancements
+            if (Craft.IsItemEnhancement(item))
+                return MarketCategoryType.Enhancement;
 
             // Ship Deeds
             if (Space.IsItemShip(item))

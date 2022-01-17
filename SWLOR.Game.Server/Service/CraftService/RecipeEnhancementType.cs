@@ -5,6 +5,7 @@
         None = 0,
         Weapon = 1,
         Armor = 2,
-        Furniture = 3,
+        Structure = 3,
+        Food = 4,
     }
 }

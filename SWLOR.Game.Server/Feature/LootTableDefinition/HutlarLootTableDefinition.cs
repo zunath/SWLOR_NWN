@@ -60,6 +60,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("agent_gloves", 5)
                 .AddItem("agent_boots", 5)
 
+                .AddItem("byysk_meat", 20)
+                .AddItem("byysk_tail", 10)
+
                 .AddGold(40, 10)
                 ;
 
@@ -82,7 +85,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HUTLAR_QION_TIGERS")
                 .AddItem("lth_good", 20)
                 .AddItem("qion_tiger_fang", 10)
-                .AddItem("tiger_blood", 8);
+                .AddItem("tiger_blood", 8)
+                .AddItem("tiger_meat", 5)
+                .AddItem("q_tiger_paw", 2, 1, true);
         }
     }
 }

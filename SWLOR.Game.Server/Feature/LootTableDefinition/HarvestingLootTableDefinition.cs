@@ -119,7 +119,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("s_pineapple", 20)
                 .AddItem("veggie_clump", 20);
 
-            _builder.Create("VEGETABLES_PATCH_4");
+            _builder.Create("VEGETABLES_PATCH_4")
+                .AddItem("ginger", 10)
+                .AddItem("melon", 10)
+                .AddItem("mushroom", 10)
+                .AddItem("plant_butter", 10)
+                .AddItem("walnut", 10)
+                .AddItem("cornucopia", 5)
+                .AddItem("herb_t", 5);
 
             _builder.Create("VEGETABLES_PATCH_5");
         }

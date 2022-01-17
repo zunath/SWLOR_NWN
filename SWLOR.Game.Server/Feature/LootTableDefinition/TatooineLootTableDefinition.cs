@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("womprathide", 5)
                 .AddItem("womprattooth", 5)
                 .AddItem("wompratclaw", 5)
-                .AddItem("wompratmeat", 5);
+                .AddItem("wompratmeat", 5)
+                .AddItem("womp_innards", 5);
         }
 
         private void Sandswimmer()
@@ -54,6 +55,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_high", 15)
                 .AddItem("sanddemonclaw", 5)
                 .AddItem("sanddemonhide", 5)
+                .AddItem("sand_demon_leg", 10)
+                .AddItem("sanddemon_meat", 5)
                 .AddItem("ruby", 3, 1, true);
         }
 
@@ -83,6 +86,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("raider_shuriken", 5)
                 .AddItem("raider_twinblade", 5)
                 .AddItem("raider_rifle", 5)
+                .AddItem("tusken_meat", 10)
+                .AddItem("tusken_bones", 5)
+                .AddItem("tusken_blood", 10)
+                .AddItem("r_flour", 5)
 
                 .AddItem("ruby", 2, 1, true);
 
@@ -96,6 +103,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("TATOOINE_TUSKEN_CRATE")
                 .AddItem("elec_imperfect", 20)
                 .AddItem("fiberp_imperfect", 15)
+                .AddItem("plant_butter", 10)
+                .AddItem("r_flour", 10)
                 .AddItem("ruby", 2, 1, true)
                 .AddGold(100,30);
 

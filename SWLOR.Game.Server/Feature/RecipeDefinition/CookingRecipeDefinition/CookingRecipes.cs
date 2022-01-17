@@ -545,7 +545,177 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
         private void Tier4()
         {
+            _builder.Create(RecipeType.WompRatMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("womp_mball")
+                .Level(31)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wompratmeat", 3)
+                .Component("womp_innards", 2)
+                .Component("distilled_water", 1);
 
+            _builder.Create(RecipeType.SandDemonPotPie, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sanddem_potpie")
+                .Level(31)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sanddemon_meat", 3)
+                .Component("sand_demon_leg", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.GingerCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("ging_cookies")
+                .Level(32)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ginger", 4)
+                .Component("r_flour", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.MelonJuice, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("melon_juice")
+                .Level(33)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("melon", 3)
+                .Component("distilled_water", 1);
+
+
+            _builder.Create(RecipeType.MushroomSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("mush_soup")
+                .Level(33)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("mushroom", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WompRatBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("womp_broth")
+                .Level(33)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("womp_innards", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.SoyRamen, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("soy_ramen")
+                .Level(34)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("r_flour", 4)
+                .Component("plant_butter", 1)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.SurpriseSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("surprise_sandwich")
+                .Level(34)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sanddemon_meat", 3)
+                .Component("r_flour", 2);
+
+            _builder.Create(RecipeType.TuskenMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tusken_mball")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tusken_meat", 3)
+                .Component("tusken_bones", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.WalnutCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("walnut_cookies")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sugar", 2)
+                .Component("r_flour", 1)
+                .Component("walnut", 3);
+
+            _builder.Create(RecipeType.DesertHerbSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("des_herbsoup")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("herb_t", 3)
+                .Component("distilled_water", 1)
+                .Component("sugar", 2);
+
+            _builder.Create(RecipeType.YellowCurry, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("yellow_curry")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ginger", 2)
+                .Component("distilled_water", 1)
+                .Component("cornucopia", 2);
+
+            _builder.Create(RecipeType.MelonAuLait, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("melon_aulait")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("melon", 3)
+                .Component("distilled_water", 2)
+                .Component("herb_t", 3);
+
+            _builder.Create(RecipeType.TuskenBloodBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tusk_b_broth")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tusken_blood", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_t", 2);
+
+            _builder.Create(RecipeType.SandDemonSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dem_sandwich")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sanddemon_meat", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_t", 3);
+
+            _builder.Create(RecipeType.SandDemonStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("demon_stew")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sand_demon_leg", 2)
+                .Component("sanddemon_meat", 2);
         }
 
         private void Tier5()

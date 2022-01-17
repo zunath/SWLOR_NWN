@@ -357,7 +357,7 @@
         MushroomSoup = 2053,
         WompRatBroth = 2054, 
         SoyRamen = 2055,
-        // todo: Recipe 2056
+        SurpriseSandwich = 2056,
         TuskenMeatBall = 2057,
         WalnutCookies = 2058,
         DesertHerbSoup = 2059,
@@ -366,16 +366,15 @@
         TuskenBloodBroth = 2062,
         SandDemonSandwich = 2063,
         SandDemonStew = 2064,
-
-        // todo: Recipe 2065
-        // todo: Recipe 2066,
+        WildMeatBall = 2065,
+        WildPotPie = 2066,
         WildCookies = 2067,
         TomatoJuice = 2068,
         MisoSoup = 2069,
-        // todo: Recipe 2070
+        WildBroth = 2070,
         MisoRamen = 2071,
-        // todo: Recipe 2072
-        // todo: Recipe 2073
+        WildSandwich = 2072,
+        GrandioseMeatBall = 2073,
         WizardCookies = 2074,
         DathHerbSoup = 2075,
         WildCurry = 2076,

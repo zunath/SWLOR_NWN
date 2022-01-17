@@ -8976,6 +8976,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cornucopia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cornucopia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corylus"
                     },
                     "RESREF": {
@@ -9685,6 +9696,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gimp_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ginger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ginger"
                     }
                   },
                   {
@@ -10615,6 +10637,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Melon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "melon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Metal Baton Frame"
                     },
                     "RESREF": {
@@ -10642,6 +10675,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mushroom"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mushroom"
                     }
                   },
                   {
@@ -11038,6 +11082,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "milk_0"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plant-Based Butter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plant_butter"
                     }
                   },
                   {
@@ -11825,6 +11880,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rising Flour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rruchi"
                     },
                     "RESREF": {
@@ -11929,6 +11995,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sanddemonhide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sand_demon_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemon_meat"
                     }
                   },
                   {
@@ -12452,6 +12540,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tusken Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Bones"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_bones"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Construction Parts"
                     },
                     "RESREF": {
@@ -12479,6 +12589,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusk_highe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_meat"
                     }
                   },
                   {
@@ -12749,6 +12870,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Walnut"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "walnut"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Warocas Leg"
                     },
                     "RESREF": {
@@ -12809,6 +12941,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "womprathide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womprat Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womp_innards"
                     }
                   },
                   {

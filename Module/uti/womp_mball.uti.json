@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 9
+    "value": 30
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 9
+    "value": 30
   },
   "Cursed": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Lemon Cookies"
+      "0": "Womp Rat Meat Ball"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -118,7 +118,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 8
+          "value": 7
         }
       }
     ]
@@ -137,6 +137,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "lemon_cookies"
+    "value": "womp_mball"
   }
 }

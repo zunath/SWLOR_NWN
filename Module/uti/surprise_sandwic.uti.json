@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 9
+    "value": 30
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 9
+    "value": 30
   },
   "Cursed": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Lemon Cookies"
+      "0": "Surprise Sandwich"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
+    "value": 108
   },
   "PaletteID": {
     "type": "byte",
@@ -102,7 +102,69 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 7
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -137,6 +199,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "lemon_cookies"
+    "value": "surprise_sandwic"
   }
 }

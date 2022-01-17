@@ -370,7 +370,177 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
         private void Tier3()
         {
+            _builder.Create(RecipeType.AradileMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("aradile_mball")
+                .Level(21)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("aradile_meat", 3)
+                .Component("aradile_tail", 2)
+                .Component("distilled_water", 1);
 
+            _builder.Create(RecipeType.TigerPotPie, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tiger_potpie")
+                .Level(21)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tiger_meat", 3)
+                .Component("q_tiger_paw", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.AcornCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("acorn_cookies")
+                .Level(22)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("h_acorn", 4)
+                .Component("p_flour", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.PineappleJuice, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("pine_juice")
+                .Level(23)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("s_pineapple", 3)
+                .Component("distilled_water", 1);
+
+
+            _builder.Create(RecipeType.VegetableSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("veg_soup")
+                .Level(23)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("veggie_clump", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.AradileBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("ara_broth")
+                .Level(23)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("aradile_innards", 3)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.RamenNoodles, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("ramen_noodles")
+                .Level(24)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("p_flour", 4)
+                .Component("c_butter", 1)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.AradileSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("ara_sandwich")
+                .Level(24)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("aradile_meat", 3)
+                .Component("p_flour", 2);
+
+            _builder.Create(RecipeType.ByyskMeatBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("byysk_mball")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("byysk_meat", 3)
+                .Component("byysk_tail", 2)
+                .Component("distilled_water", 1);
+
+            _builder.Create(RecipeType.CinnaCookies, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cinna_cookies")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("sugar", 2)
+                .Component("p_flour", 1)
+                .Component("h_acorn", 3);
+
+            _builder.Create(RecipeType.MonCalaHerbSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("moncal_hsoup")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("herb_c", 3)
+                .Component("distilled_water", 1)
+                .Component("sugar", 2);
+
+            _builder.Create(RecipeType.RedCurry, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("red_curry")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("h_acorn", 2)
+                .Component("distilled_water", 1)
+                .Component("veggie_clump", 2);
+
+            _builder.Create(RecipeType.PineappleAuLait, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("pine_aulait")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("s_pineapple", 3)
+                .Component("distilled_water", 2)
+                .Component("herb_c", 3);
+
+            _builder.Create(RecipeType.AmphiHydrusBloodBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("amphi_bbroth")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("amphi_blood", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_c", 2);
+
+            _builder.Create(RecipeType.SnakeSandwich, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("snake_sandwich")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("viper_meat", 3)
+                .Component("distilled_water", 1)
+                .Component("herb_c", 3);
+
+            _builder.Create(RecipeType.SnakeStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("snake_stew")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("viper_guts", 2)
+                .Component("viper_meat", 2);
         }
 
         private void Tier4()

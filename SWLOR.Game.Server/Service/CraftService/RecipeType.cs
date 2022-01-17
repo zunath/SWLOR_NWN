@@ -343,7 +343,7 @@
         AradileSandwich = 2040,
         ByyskMeatBall = 2041,
         CinnaCookies = 2042,
-        HutlarHerbSoup = 2043,
+        MonCalaHerbSoup = 2043,
         OrangeCurry = 2044,
         PineappleAuLait = 2045,
         AmphiHydrusBloodBroth = 2046,

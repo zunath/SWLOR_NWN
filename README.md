@@ -1,3 +1,5 @@
+NOTE: The Master branch is currently in maintenance mode and will only be updated for certain contributions. Heavy development is happening on the feature/ffo-rewrite branch: https://github.com/zunath/SWLOR_NWN/tree/feature/ffo-rewrite
+
 # Star Wars: Legends of the Old Republic
 Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old Republic module.
 

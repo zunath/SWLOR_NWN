@@ -5785,11 +5785,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Feathered Hat"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf001"
+                            "value": "raggedcloak001"
                           }
                         },
                         {
@@ -5807,6 +5807,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Jester's Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jestermantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Jeweled Cloak"
                           },
                           "RESREF": {
@@ -5818,11 +5829,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Kick Me Sign"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kickmesign"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "One-Shoulder Cloak"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "basicscarf"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ragged Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raggedcloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Raven Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "basicscarf001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Wizard Hat"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wizardhat"
                           }
                         }
                       ]
@@ -17678,17 +17733,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Hohenfel's Saber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "hohenfelssaber"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "NPC Lightsaber (Keyan)"
                           },
                           "RESREF": {
@@ -18865,17 +18909,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusken_gaffi"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item002"
                     }
                   },
                   {

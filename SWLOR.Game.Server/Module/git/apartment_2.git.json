@@ -7466,7 +7466,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -9901,7 +9901,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "0": "Small Player Apartment Style 1"
+            "0": "Property Entrance"
           }
         },
         "MapNote": {
@@ -9914,7 +9914,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "PLAYER_HOME_ENTRANCE"
+          "value": "PROPERTY_ENTRANCE"
         },
         "TemplateResRef": {
           "type": "resref",

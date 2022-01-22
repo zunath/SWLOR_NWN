@@ -2730,6 +2730,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Arc's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arc_outfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Art's Robes"
                     },
                     "RESREF": {
@@ -3010,6 +3021,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shu_clothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] The Dark One outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "darkonegear"
                     }
                   },
                   {
@@ -5752,22 +5774,22 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Basic Cowl"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf"
+                            "value": "cowl"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Feathered Hat"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf001"
+                            "value": "raggedcloak001"
                           }
                         },
                         {
@@ -5785,11 +5807,77 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Jester's Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jestermantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Jeweled Cloak"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kick Me Sign"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kickmesign"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "One-Shoulder Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "basicscarf"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ragged Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raggedcloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Raven Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "basicscarf001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Wizard Hat"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wizardhat"
                           }
                         }
                       ]
@@ -17014,6 +17102,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Arc's Sword of the Hero"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "archerosword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Basic Vibroblade BS"
                           },
                           "RESREF": {
@@ -17628,17 +17727,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "lightsaber_g"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Hohenfel's Saber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "hohenfelssaber"
                           }
                         },
                         {
@@ -18821,17 +18909,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusken_gaffi"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item002"
                     }
                   },
                   {

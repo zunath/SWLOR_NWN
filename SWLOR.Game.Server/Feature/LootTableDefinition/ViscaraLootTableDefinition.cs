@@ -191,7 +191,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_VELLEN_FLESHLEADER")
                 .AddItem("babonsch", 5, 1, true)
                 .AddItem("cox_metal", 5)
-                .AddItem("coonlank_blue", 10)
                 .AddItem("lth_flawed", 5)
                 .AddItem("elec_flawed", 5)
                 .AddItem("flesh_cloak", 5)
@@ -212,7 +211,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_VELLEN_FLESHEATER")
                 .AddItem("cox_metal", 5)
-                .AddItem("coonlank_blue", 10)
                 .AddItem("lth_flawed", 15)
                 .AddItem("lth_ruined", 5)
                 .AddItem("fiberp_ruined", 15)

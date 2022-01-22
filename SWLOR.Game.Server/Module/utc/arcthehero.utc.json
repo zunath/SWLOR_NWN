@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 35
+    "value": 52
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 100
+    "value": 90
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 175.0
+    "value": 37.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 52
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 20
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 62
+    "value": 15
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 62
+    "value": 5
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 62
+    "value": 42
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 4
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 200
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This oddly cheery Arkanian man carries himself with the calm confidence of an elder, despite looking hardly halfway into his twenties. He regards you with a friendly and serene smile, seemingly unafraid of the unknowns of the world around him. His nose is pointed but small, his jawline pronounced and with cheekbones just as defined. His eyes are normal for an Arkanian; pure white without pupils.\n\nHe wears loose-fitting tunics that are either covering a suit of fur armour or simply his bare chest, with tight pants that are met at the top of his calves by leather boots. On his back and belt are a great many trinkets, vials and scrolls, suggesting an origin of adventure and life on the road. Wrapped around his neck at all times would be a snugly fit leather necklace with a silver pendant on it near his throat, in the shape of a pine tree."
+      "0": "What a lad."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Disarmable": {
     "type": "byte",
@@ -173,7 +173,21 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "hohenfel"
+          "value": "arc_outfit"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "archerosword"
+        }
+      },
+      {
+        "__struct_id": 64,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "basicscarf"
         }
       }
     ]
@@ -210,6 +224,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 408
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 6
         }
       },
@@ -231,6 +259,27 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 69
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 68
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 23
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 26
         }
       },
@@ -239,6 +288,13 @@
         "Feat": {
           "type": "word",
           "value": 1089
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 27
         }
       },
       {
@@ -259,7 +315,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 30
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 392
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 107
         }
       },
       {
@@ -282,18 +359,25 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 144
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hohenfel"
+      "0": "Arc"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 40
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -301,19 +385,19 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "HitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 200
   },
   "Int": {
     "type": "byte",
-    "value": 55
+    "value": 90
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -331,7 +415,7 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "Lootable": {
     "type": "byte",
@@ -339,11 +423,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5040
+    "value": 1000
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 90
+    "value": 30
   },
   "NoPermDeath": {
     "type": "byte",
@@ -351,7 +435,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 1
+    "value": 110
   },
   "PerceptionRange": {
     "type": "byte",
@@ -367,7 +451,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1040
+    "value": 1062
   },
   "Race": {
     "type": "byte",
@@ -632,230 +716,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 432
+    "value": 229
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 143
+    "value": 4
   },
   "Str": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Subrace": {
     "type": "cexostring",
@@ -863,7 +736,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hohenmaster"
+    "value": "Arc"
   },
   "Tail_New": {
     "type": "dword",
@@ -875,15 +748,15 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hohenmaster"
+    "value": "arcthehero"
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",
-    "value": 12
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",

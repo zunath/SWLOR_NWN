@@ -1,96 +1,20 @@
 {
   "__data_type": "UTC ",
-  "Appearance_Head": {
-    "type": "byte",
-    "value": 35
-  },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 1
+    "value": 6305
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
   },
-  "BodyPart_Belt": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFoot": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Neck": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Pelvis": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_RThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Torso": {
-    "type": "byte",
-    "value": 1
-  },
   "Cha": {
     "type": "byte",
-    "value": 100
+    "value": 90
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 175.0
+    "value": 567.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +23,14 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 52
+          "value": 11
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 1
         }
       }
     ]
-  },
-  "Color_Hair": {
-    "type": "byte",
-    "value": 62
-  },
-  "Color_Skin": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Tattoo1": {
-    "type": "byte",
-    "value": 62
-  },
-  "Color_Tattoo2": {
-    "type": "byte",
-    "value": 62
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 9999
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This oddly cheery Arkanian man carries himself with the calm confidence of an elder, despite looking hardly halfway into his twenties. He regards you with a friendly and serene smile, seemingly unafraid of the unknowns of the world around him. His nose is pointed but small, his jawline pronounced and with cheekbones just as defined. His eyes are normal for an Arkanian; pure white without pupils.\n\nHe wears loose-fitting tunics that are either covering a suit of fur armour or simply his bare chest, with tight pants that are met at the top of his calves by leather boots. On his back and belt are a great many trinkets, vials and scrolls, suggesting an origin of adventure and life on the road. Wrapped around his neck at all times would be a snugly fit leather necklace with a silver pendant on it near his throat, in the shape of a pine tree."
+      "0": "This being promises ruin and destruction for sake of rebuilding to do so all over again. The Dark One brings you a sense of absolute dread, not for sake of his overwhelming power, but because you know this is nothing you could have ever dreamed of. The pure darkness that radiates from this ancient being is indescribable. All know that this is a representation of ultimate evil."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Disarmable": {
     "type": "byte",
@@ -168,15 +76,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "hohenfel"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",
@@ -210,28 +110,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 10
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 391
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 26
         }
       },
       {
@@ -288,12 +167,12 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hohenfel"
+      "0": "The Dark One"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 40
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -301,23 +180,23 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "HitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 9999
   },
   "Int": {
     "type": "byte",
-    "value": 55
+    "value": 90
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsPC": {
     "type": "byte",
@@ -331,7 +210,7 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "Lootable": {
     "type": "byte",
@@ -339,23 +218,23 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5040
+    "value": 10039
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 90
+    "value": 35
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 1
+    "value": 110
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Phenotype": {
     "type": "int",
@@ -367,7 +246,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1040
+    "value": 935
   },
   "Race": {
     "type": "byte",
@@ -632,230 +511,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 432
+    "value": 65535
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 372
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 15
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 887
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 143
+    "value": 0
   },
   "Str": {
     "type": "byte",
-    "value": 62
+    "value": 90
   },
   "Subrace": {
     "type": "cexostring",
@@ -863,11 +531,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hohenmaster"
+    "value": "TheDarkOne"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 0
+    "value": 1925
   },
   "TemplateList": {
     "type": "list",
@@ -875,19 +543,19 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hohenmaster"
+    "value": "thedarkone"
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",
-    "value": 12
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",
-    "value": 0
+    "value": 712
   },
   "Wis": {
     "type": "byte",

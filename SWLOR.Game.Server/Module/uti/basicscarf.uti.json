@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 88
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 99
+    "value": 37
   },
   "Comment": {
     "type": "cexostring",
@@ -48,25 +48,25 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 52
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 52
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Basic Scarf"
+      "0": "One-Shoulder Cloak"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 15
+    "value": 58
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 49
+    "value": 164
   },
   "ModelPart1": {
     "type": "byte",
@@ -94,7 +94,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "BasicScarf"
+    "value": "oneShouldercloak"
   },
   "TemplateResRef": {
     "type": "resref",

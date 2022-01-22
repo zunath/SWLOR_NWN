@@ -2989,6 +2989,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Arc"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arcthehero"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 16.0
                     },
                     "FACTION": {
@@ -3173,6 +3192,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 567.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Dark One"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedarkone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 442.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Dark One"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedarkone002"
                     }
                   }
                 ]
@@ -4533,7 +4590,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.5
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -5179,7 +5236,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.5
+                      "value": 4.0
                     },
                     "FACTION": {
                       "type": "cexostring",

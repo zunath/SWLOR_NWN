@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 135
+    "value": 40
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 23
+    "value": 20
   },
   "Comment": {
     "type": "cexostring",
@@ -48,29 +48,29 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 134
+    "value": 88
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 175
+    "value": 61
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Raven Cloak"
+      "0": "Wizard Hat"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 135
+    "value": 58
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 135
+    "value": 61
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 40
+    "value": 70
   },
   "PaletteID": {
     "type": "byte",
@@ -94,10 +94,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "BasicScarf"
+    "value": "WizardHat"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "basicscarf001"
+    "value": "wizardhat"
   }
 }

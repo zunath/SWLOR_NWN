@@ -39913,7 +39913,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -39986,21 +39986,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -40009,7 +39994,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "BuildingExit"
+                "value": "PropertyExitDialog"
               }
             }
           ]
@@ -40052,7 +40037,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "IS_BUILDING"
+          "value": "IS_BUILDABLE"
         },
         "Type": {
           "type": "dword",
@@ -40090,7 +40075,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "0": "Small Player Apartment Style 1"
+            "0": "Property Entrance"
           }
         },
         "MapNote": {
@@ -40103,7 +40088,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "PLAYER_HOME_ENTRANCE"
+          "value": "PROPERTY_ENTRANCE"
         },
         "TemplateResRef": {
           "type": "resref",

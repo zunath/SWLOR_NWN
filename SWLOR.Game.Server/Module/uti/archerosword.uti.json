@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 511
+    "value": 3
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 36753
+    "value": 70
   },
   "Cursed": {
     "type": "byte",
@@ -26,41 +26,46 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
+    "id": 168,
     "type": "cexolocstring",
     "value": {
-      "0": "Nulaa's Saber"
+      "0": "[NPC] Arc's Sword of the Hero"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 172
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 11
+    "value": 223
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 12
+    "value": 211
   },
   "PaletteID": {
     "type": "byte",
-    "value": 46
+    "value": 33
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -73,11 +78,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
+          "value": 4
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -89,11 +94,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 1
+          "value": 16
         },
         "Subtype": {
           "type": "word",
-          "value": 65535
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 2
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 20
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 6
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 43
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       },
       {
@@ -120,42 +187,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 16
+          "value": 74
         },
         "Subtype": {
           "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 2
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 4
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
           "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 6
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 65535
         }
       },
       {
@@ -182,42 +218,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 35
+          "value": 83
         },
         "Subtype": {
           "type": "word",
-          "value": 65535
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 24
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 48
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 11
+          "value": 5
         }
       }
     ]
@@ -232,10 +237,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NulaasSaber"
+    "value": "ArcSword"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "item002"
+    "value": "archerosword"
   }
 }

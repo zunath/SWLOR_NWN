@@ -30441,7 +30441,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -30544,7 +30544,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -30647,7 +30647,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -30752,7 +30752,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -30857,7 +30857,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -30962,7 +30962,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31065,7 +31065,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31141,7 +31141,7 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Not even that bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
+                        "0": "Not even the bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
                       }
                     },
                     "Description": {
@@ -31161,7 +31161,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Mysetrious Mithreas"
+                        "0": "Mysterious Mithreas"
                       }
                     },
                     "ModelPart1": {
@@ -31170,7 +31170,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31273,7 +31273,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31378,7 +31378,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31483,7 +31483,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31588,7 +31588,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31693,7 +31693,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31796,7 +31796,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -31899,7 +31899,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -32004,7 +32004,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -32107,7 +32107,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -32210,7 +32210,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -32271,7 +32271,487 @@
               "__struct_id": 3
             },
             {
-              "__struct_id": 1
+              "__struct_id": 1,
+              "ItemList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 13
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 79
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 14
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Distilled Water"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 4
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "distilled_water"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "distilled_water"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 1.10842708528093e-042
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 1,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 15
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 311
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 15
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Butter"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 36
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "butter_1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "butter_1"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 2,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 18
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 311
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 18
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Sugar"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 174
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "sugar"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "sugar"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 3,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 10
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 29
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 10
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Bread"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 108
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 7
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "FOOD"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "bread"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  }
+                ]
+              }
             }
           ]
         },

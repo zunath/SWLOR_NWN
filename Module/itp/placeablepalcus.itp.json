@@ -68826,17 +68826,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Supplies Crate"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "supp_crate"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Tatooine Market Terminal"
                     },
                     "RESREF": {

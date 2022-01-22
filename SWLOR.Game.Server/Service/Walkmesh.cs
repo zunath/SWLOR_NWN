@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
-        private const int AreaBakeStep = 5;
+        private const int AreaBakeStep = 2;
         private static bool _bakingRan;
 
         /// <summary>

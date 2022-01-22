@@ -94,6 +94,13 @@
           "type": "resref",
           "value": "fleshleader_ls"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "fleshleader_skin"
+        }
       }
     ]
   },

@@ -1721,44 +1721,6 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 29
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
-                "value": 28
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 2,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
                 "value": 27
               },
               "IsChild": {
@@ -1783,108 +1745,12 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Well, how about that! You're really something else, you know? While you were gone, I went and picked up some experimental capacitors the engineering guys were working on. I didn't know which one you wanted so I brought one of each. They'll add a mod slot to any item you create. \n\nWhich do you want?"
+            "0": "Well, how about that! You're really something else, you know? Here's your reward."
           }
         }
       },
       {
         "__struct_id": 21,
-        "ActionParams": {
-          "type": "list",
-          "value": []
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "RepliesList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
-                "value": 29
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 1
-              },
-              "LinkComment": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
-                "value": 27
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 1
-              },
-              "LinkComment": {
-                "type": "cexostring",
-                "value": ""
-              }
-            }
-          ]
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Speaker": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Well, all of the mods you'll find are color coded and can only be placed into slots of a matching color. The red ones are combat focused, the blue for force abilities, green for crafting and harvesting, and finally yellow which are considered \"special\" as they do a bunch of different things.\n\nThese capacitors I have will let you add a mod slot to any item you create. Want to take a look?"
-          }
-        }
-      },
-      {
-        "__struct_id": 22,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -1936,7 +1802,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 906
+    "value": 776
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -3504,116 +3370,6 @@
         "__struct_id": 27,
         "ActionParams": {
           "type": "list",
-          "value": []
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": []
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "I need some time to consider."
-          }
-        }
-      },
-      {
-        "__struct_id": 28,
-        "ActionParams": {
-          "type": "list",
-          "value": []
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
-                "value": 21
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "What's the difference between them?"
-          }
-        }
-      },
-      {
-        "__struct_id": 29,
-        "ActionParams": {
-          "type": "list",
           "value": [
             {
               "__struct_id": 0,
@@ -3663,7 +3419,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Thanks. I'll take this one. [Select reward]"
+            "0": "Thanks. [Accept Reward]"
           }
         }
       }
@@ -3696,7 +3452,7 @@
         },
         "Index": {
           "type": "dword",
-          "value": 22
+          "value": 21
         }
       },
       {

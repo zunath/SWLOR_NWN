@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Perks)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 545f, 750f)
+                .SetInitialGeometry(0, 0, 545f, 600f)
                 .SetTitle("Perks")
                 .AddColumn(col =>
                 {

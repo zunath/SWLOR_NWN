@@ -20549,17 +20549,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Shock Baton"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shock_prod"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Taris' Cane"
                           },
                           "RESREF": {

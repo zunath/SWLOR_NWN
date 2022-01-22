@@ -16322,7 +16322,7 @@
         },
         "FactionID": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "FeatList": {
           "type": "list",
@@ -17036,7 +17036,7 @@
         },
         "FactionID": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "FeatList": {
           "type": "list",

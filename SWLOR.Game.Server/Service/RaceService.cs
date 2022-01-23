@@ -283,6 +283,37 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftShin = 1;
                     femaleLeftFoot = 1;
                     break;
+                case RacialType.Togruta:
+                    skinColor = 72;
+                    hairColor = 21;
+                    maleHead = 212;
+                    femaleHead = 200;
+
+                    break;
+                case RacialType.Rodian:
+                    skinColor = 81;
+                    hairColor = 79;
+                    maleHead = 54;
+                    femaleHead = 10;
+                    maleRightHand = 44;
+                    maleLeftHand = 44;
+                    appearance = AppearanceType.Elf;
+                    femaleRightHand = 44;
+                    femaleLeftHand = 44;
+
+                    break;
+                case RacialType.KelDor:
+                    skinColor = 2;
+                    hairColor = 22;
+                    maleHead = 223;
+                    femaleHead = 228;
+                    maleRightHand = 45;
+                    maleLeftHand = 45;
+                    appearance = AppearanceType.Elf;
+                    femaleRightHand = 201;
+                    femaleLeftHand = 201;
+
+                    break;
                 default:
                     {
                         _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");

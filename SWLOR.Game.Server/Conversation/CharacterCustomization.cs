@@ -230,6 +230,12 @@ namespace SWLOR.Game.Server.Conversation
 
             int[] UgnaughtSkinColors = HumanSkinColors;
 
+            int[] TogrutaSkinColors = HumanSkinColors;
+
+            int[] RodianSkinColors = HumanSkinColors;
+
+            int[] KelDorSkinColors = HumanSkinColors;
+
             RacialType race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
 
@@ -270,6 +276,15 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case RacialType.Ugnaught:
                     colorsToUse = UgnaughtSkinColors;
+                    break;
+                case RacialType.Togruta:
+                    colorsToUse = TogrutaSkinColors;
+                    break;
+                case RacialType.Rodian:
+                    colorsToUse = RodianSkinColors;
+                    break;
+                case RacialType.KelDor:
+                    colorsToUse = KelDorSkinColors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -386,6 +401,9 @@ namespace SWLOR.Game.Server.Conversation
             int[] MaleWookieeHeads = {117, 119, 192, 193};
             int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 120, 127 };
             int[] MaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
+            int[] MaleTogrutaHeads = { 212, 213, 214, 215, 216, 217, 128, 219, 220, 221, 222 };
+            int[] MaleRodianHeads = { 39, 54, 55, 56, 57, 58, 59, 60, 61, 62 };
+            int[] MaleKelDorHeads = { 223, 224, 225, 226, 227, 228, 229, 233, 234 };
 
             int[] FemaleHumanHeads = { 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 22, 23, 25, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 44, 45, 46, 48, 49, 52, 53, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 116, 117, 118, 121, 123, 124, 125, 127, 130, 132, 134, 136, 137, 138, 140, 141, 142, 164, 167, 168, 171, 172, 173, 174, 175, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 199, 220, 221 };
             int[] FemaleBothanHeads = { 109, 162, };
@@ -400,6 +418,9 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleWookieeHeads = {110, 185, 186, 190, 192, 193, 195};
             int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
             int[] FemaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
+            int[] FemaleTogrutaHeads = { 200, 201, 202, 203, 204, 210, 211, 212, 213, 214, 215 };
+            int[] FemaleRodianHeads = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+            int[] FemaleKelDorHeads = { 223, 224, 225, 226, 227, 228, 229, 230, 231 };
 
             RacialType race = (RacialType)GetPC().RacialType;
             var gender = GetPC().Gender;
@@ -454,6 +475,15 @@ namespace SWLOR.Game.Server.Conversation
                 case RacialType.Ugnaught:
                     headsToUse = gender == Gender.Male ? MaleUgnaughtHeads : FemaleUgnaughtHeads;
                     break;
+                case RacialType.Togruta:
+                    headsToUse = gender == Gender.Male ? MaleTogrutaHeads : FemaleTogrutaHeads;
+                    break;
+                case RacialType.Rodian:
+                    headsToUse = gender == Gender.Male ? MaleRodianHeads : FemaleRodianHeads;
+                    break;
+                case RacialType.KelDor:
+                    headsToUse = gender == Gender.Male ? MaleKelDorHeads : FemaleKelDorHeads;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -483,6 +513,9 @@ namespace SWLOR.Game.Server.Conversation
             int[] WookieeHairColors = {};// All
             int[] MonCalamariHairColors = { }; // All
             int[] UgnaughtHairColors = { };// All
+            int[] TogrutaHairColors = { };// All
+            int[] RodianHairColors = { };// All
+            int[] KelDorHairColors = { };// All
 
             RacialType race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
@@ -527,6 +560,15 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case RacialType.Ugnaught:
                     colorsToUse = UgnaughtHairColors;
+                    break;
+                case RacialType.Togruta:
+                    colorsToUse = TogrutaHairColors;
+                    break;
+                case RacialType.Rodian:
+                    colorsToUse = RodianHairColors;
+                    break;
+                case RacialType.KelDor:
+                    colorsToUse = KelDorHairColors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -644,6 +686,12 @@ namespace SWLOR.Game.Server.Conversation
                         default:
                             model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
                             break;
+                        case RacialType.Rodian:
+                            model.Parts = new[] { 44 };
+                            break;
+                        case RacialType.KelDor:
+                            model.Parts = new[] { 45 };
+                            break;
                     }
                     model.PartName = "Right Hand";
                     break;
@@ -721,6 +769,12 @@ namespace SWLOR.Game.Server.Conversation
                         case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
+                        case RacialType.Rodian:
+                            model.Parts = new[] { 44 };
+                            break;
+                        case RacialType.KelDor:
+                            model.Parts = new[] { 45 };
+                            break;
                         default:
                             model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
                             break;
@@ -740,6 +794,7 @@ namespace SWLOR.Game.Server.Conversation
                         default:
                             model.Parts = new[] { 1, 2, 154 };
                             break;
+
                     }
                     model.PartName = "Left Thigh";
                     break;

@@ -29,7 +29,10 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Zabraki, typeof(TranslatorZabraki) },
                 { SkillType.Mirialan, typeof(TranslatorMirialan) },
                 { SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) },
-                { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
+                { SkillType.Ugnaught, typeof(TranslatorUgnaught) },
+                { SkillType.Togruti, typeof(TranslatorTogruti) },
+                { SkillType.Rodese, typeof(TranslatorRodese) },
+                { SkillType.KelDor, typeof(TranslatorKelDor) }
             };
 
             Type type = typeof(TranslatorGeneric);

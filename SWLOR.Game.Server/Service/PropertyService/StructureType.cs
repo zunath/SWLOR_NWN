@@ -52,6 +52,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         MiningWell = 10,
+
+        // 11 is free
+
         [Structure("Statue, Wizard", 
             "x3_plc_gg001", 
             "", 
@@ -70,6 +73,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         StatueMonster = 14,
+
+        // 15-16 free
+
         [Structure("Brazier, Stone", 
             "plc_brazier", 
             "", 
@@ -172,6 +178,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         PillarStone = 33,
+
+        // 34 is free
+
         [Structure("Statue of Lathander", 
             "x2_plc_statue_la", 
             "", 
@@ -238,6 +247,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         Easel = 45,
+
+        // 46 is free
+
         [Structure("Keg", 
             "plc_keg", 
             "", 
@@ -250,6 +262,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         DranStatue = 48,
+
+        // 49-50 free
+
         [Structure("Net", 
             "nw_plc_net", 
             "", 
@@ -262,6 +277,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         BedExtraLarge = 52,
+
+        // 53 is free
+
         [Structure("Carpet, Round, Blue", 
             "x0_roundrugorien", 
             "", 
@@ -315,6 +333,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         Candle = 62,
+
+        // 63 is free
+
         [Structure("Bear Skin Rug", 
             "x0_bearskinrug1", 
             "", 
@@ -327,6 +348,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         Chandelier = 65,
+
+        // 66 is free
+
         [Structure("Urn", 
             "plc_urn", 
             "", 
@@ -351,6 +375,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         TableWood = 70,
+
+        // 71 is free
+
         [Structure("Throw Rug", 
             "plc_throwrug", 
             "", 
@@ -441,6 +468,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         Ottoman = 86,
+
+        // 87 is free
+
         [Structure("Pillar, Rounded", 
             "x0_ruinedpillar", 
             "", 
@@ -477,6 +507,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         CarpetFancy = 93,
+
+        // 94 is free
+
         [Structure("Illithid Table", 
             "x2_plc_tablemind", 
             "", 
@@ -537,6 +570,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         RunePillar = 104,
+
+        // 105 is free
+
         [Structure("Mirror", 
             "x2_plc_mirror", 
             "", 
@@ -555,6 +591,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         DrowTable = 108,
+
+        // 109-110 free
+
         [Structure("Bench, Stone, Dwarven", 
             "bench_stonedwarf", 
             "", 
@@ -669,13 +708,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         StatueRobedWoman = 129,
-        [Structure("Armchair, High  Back (Orange)", 
+        [Structure("Armchair, High Back (Orange)", 
             "_mdrn_pl_chair09", 
             "", 
             true, 
             1)]
         ArmchairHighBackOrange = 130,
-        [Structure("Armchair, High  Back (Blue)", 
+        [Structure("Armchair, High Back (Blue)", 
             "_mdrn_pl_chair10", 
             "", 
             true, 
@@ -699,7 +738,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         Bathtub = 134,
-        [Structure("Bed, High Back (Black/Grey) ", 
+        [Structure("Bed, High Back (Black/Grey)", 
             "_mdrn_pl_beddbgr", 
             "", 
             true, 
@@ -824,7 +863,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "", 
             true, 
             1)]
-        DeskCornerwTerminal = 155,
+        DeskCornerWithTerminal = 155,
         [Structure("Desk, Information/Control Center", 
             "_mdrn_pl_df_dicc", 
             "", 
@@ -962,7 +1001,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "", 
             true, 
             1)]
-        PipesConduitwithPowerControls = 178,
+        PipesConduitWithPowerControls = 178,
         [Structure("Cylinder, Cross Top", 
             "_mdrn_pl_conta38", 
             "", 

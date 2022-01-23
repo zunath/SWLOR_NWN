@@ -155,32 +155,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Structure blueprints.")
-                .Price(2)
+                .Price(6)
+                .RequirementSkill(SkillType.Fabrication, 20)
                 .GrantsFeat(FeatType.StructureBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Structure blueprints.")
-                .Price(2)
-                .RequirementSkill(SkillType.Fabrication, 10)
-                .GrantsFeat(FeatType.StructureBlueprints2)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 3 Structure blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 20)
-                .GrantsFeat(FeatType.StructureBlueprints3)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 4 Structure blueprints.")
-                .Price(4)
-                .RequirementSkill(SkillType.Fabrication, 30)
-                .GrantsFeat(FeatType.StructureBlueprints4)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 5 Structure blueprints.")
-                .Price(4)
+                .Price(6)
                 .RequirementSkill(SkillType.Fabrication, 40)
-                .GrantsFeat(FeatType.StructureBlueprints5);
+                .GrantsFeat(FeatType.StructureBlueprints2);
         }
 
         private void StarshipBlueprints()

@@ -169,6 +169,9 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
                 case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
+                case SkillType.Togruti: r = 82; g = 82; b = 255; break;
+                case SkillType.Rodese: r = 82; g = 255; b = 82; break;
+                case SkillType.KelDor: r = 162; g = 162; b = 0; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -191,6 +194,9 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: return "Mirialan";
                 case SkillType.MonCalamarian: return "Mon Calamarian";
                 case SkillType.Ugnaught: return "Ugnaught";
+                case SkillType.Togruti: return "Togruti";
+                case SkillType.Rodese: return "Rodese";
+                case SkillType.KelDor: return "Kel Dor";
             }
 
             return "Basic";
@@ -236,6 +242,15 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case RacialType.Ugnaught:
                     languages.Add(SkillType.Ugnaught);
+                    break;
+                case RacialType.Togruta:
+                    languages.Add(SkillType.Togruti);
+                    break;
+                case RacialType.Rodian:
+                    languages.Add(SkillType.Rodese);
+                    break;
+                case RacialType.KelDor:
+                    languages.Add(SkillType.KelDor);
                     break;
             }
 
@@ -315,6 +330,9 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                        new LanguageCommand("Togruti", SkillType.Togruti, new []{"togruti", "togruta", "togrutan"}),
+                        new LanguageCommand("Rodese", SkillType.Rodese, new []{"rodian", "rodese"}),
+                        new LanguageCommand("Kel Dor", SkillType.KelDor, new []{"keldor", "dorian", "dorese", "keldorese"}),
                     };
 
                     _languages = languages;

@@ -1,15 +1,14 @@
 using System.Text;
 
-namespace SWLOR.Game.Server.Service.LanguageService
-{
+namespace SWLOR.Game.Server.Language
     public class TranslatorTogruti : ITranslator
     {
-        public string Translate(string message)
-        {
-            var sb = new StringBuilder();
+    public string Translate(string message)
+    {
+        StringBuilder sb = new StringBuilder();
 
-            foreach (var ch in message)
-            {
+        foreach (char ch in message)
+        {
                 switch (ch)
                 {
                     case 'a': sb.Append("k"); break;

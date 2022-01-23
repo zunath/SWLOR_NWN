@@ -1,14 +1,14 @@
 using System.Text;
 
-namespace SWLOR.Game.Server.Service.LanguageService
+namespace SWLOR.Game.Server.Language
 {
     public class TranslatorKelDor : ITranslator
     {
         public string Translate(string message)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            foreach (var ch in message)
+            foreach (char ch in message)
             {
                 switch (ch)
                 {

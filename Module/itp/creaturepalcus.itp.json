@@ -9425,25 +9425,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sand Worm"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sandworm"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 41.0
                     },
                     "FACTION": {
@@ -9558,6 +9539,63 @@
         "LIST": {
           "type": "list",
           "value": [
+            {
+              "__struct_id": 0,
+              "CR": {
+                "type": "float",
+                "value": 0.125
+              },
+              "FACTION": {
+                "type": "cexostring",
+                "value": "Hostile"
+              },
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holographic Gimpassa"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "holo_gimpassa"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "CR": {
+                "type": "float",
+                "value": 0.125
+              },
+              "FACTION": {
+                "type": "cexostring",
+                "value": "Hostile"
+              },
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holographic Kath Hound"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "holo_kathhound"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "CR": {
+                "type": "float",
+                "value": 0.125
+              },
+              "FACTION": {
+                "type": "cexostring",
+                "value": "Hostile"
+              },
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holographic Kinrath"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "holo_kinrath"
+              }
+            },
             {
               "__struct_id": 0,
               "CR": {
@@ -10024,6 +10062,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sanddemon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandworm"
                     }
                   },
                   {

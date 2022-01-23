@@ -17242,6 +17242,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ship Deed: Condor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_condor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Consular"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_consular"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Falchion"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_falchion"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_hound"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ship Deed: Light Escort"
                     },
                     "RESREF": {
@@ -17258,6 +17302,72 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sdeed_freighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Merchant"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_merchant"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Mule"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_mule"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Panther"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_panther"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_saber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Striker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_striker"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Throne"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_throne"
                     }
                   },
                   {

@@ -15,6 +15,16 @@
 
         LightFreighter1 = 10,
         LightEscort1 = 11,
+        Condor = 12,
+        Consular = 13,
+        Falchion = 14,
+        Hound = 15,
+        Merchant = 16,
+        Mule = 17,
+        Panther = 18,
+        Saber = 19,
+        Striker = 20,
+        Throne = 21,
 
         City = 92,
         CityHallStyle1 = 93,

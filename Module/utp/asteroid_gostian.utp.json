@@ -219,7 +219,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "ASTEROID_ORE_RESREF"
+          "value": "LOOT_TABLE_ID"
         },
         "Type": {
           "type": "dword",
@@ -227,7 +227,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ore_gostian"
+          "value": "ASTEROID_BARINIUM"
         }
       },
       {

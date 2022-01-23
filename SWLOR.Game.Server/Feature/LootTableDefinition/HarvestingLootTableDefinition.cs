@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Bushes();
             Herbs();
             VegetablePatches();
+            AsteroidMining();
 
             return _builder.Build();
         }
@@ -134,6 +135,24 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("tofu", 20)
                 .AddItem("dried_bonito", 10)
                 .AddItem("tomato", 10);
+        }
+
+        private void AsteroidMining()
+        {
+            _builder.Create("ASTEROID_TILARIUM")
+                .AddItem("ore_tilarium", 20);
+            
+            _builder.Create("ASTEROID_CURRIAN")
+                .AddItem("ore_currian", 20);
+            
+            _builder.Create("ASTEROID_IDAILIA")
+                .AddItem("ore_idailia", 20);
+            
+            _builder.Create("ASTEROID_BARINIUM")
+                .AddItem("ore_barinium", 20);
+
+            _builder.Create("ASTEROID_GOSTIAN")
+                .AddItem("ore_gostian", 20);
         }
     }
 }

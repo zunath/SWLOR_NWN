@@ -8811,17 +8811,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cellule d'énergie pour fusil Tusken"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "equ_cell_tusken"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Cereal"
                     },
                     "RESREF": {
@@ -11264,6 +11253,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Power Supply Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pow_supp_unit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Premium Electronics"
                     },
                     "RESREF": {
@@ -11808,6 +11808,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "regvis_gem"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reinforced Construction Parts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_const_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reinforced Power Supply Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_pow_supp_unit"
                     }
                   },
                   {

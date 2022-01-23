@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidationAction((activator, status, target, shipStatus) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
-                    var oreResref = GetLocalString(target, "ASTEROID_ORE_RESREF");
-                    if (string.IsNullOrWhiteSpace(oreResref))
+                    var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
+                    if (string.IsNullOrWhiteSpace(lootTableId))
                     {
                         return "Only asteroids may be targeted with this module.";
                     }
@@ -92,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         remainingUnits -= amountToMine;
 
                         // Refresh remaining units (could have changed since the start)
-                        var oreResref = GetLocalString(target, "ASTEROID_ORE_RESREF");
+                        var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
+                        var lootTable = Loot.GetLootTableByName(lootTableId);
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)
@@ -109,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         // Spawn the units.
                         for (var count = 1; count <= amountToMine; count++)
                         {
-                            CreateItemOnObject(oreResref, activator);
+                            var item = lootTable.GetRandomItem();
+                            CreateItemOnObject(item.Resref, activator);
                         }
                     });
                 });

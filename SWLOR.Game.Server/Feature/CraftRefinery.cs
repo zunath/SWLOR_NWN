@@ -33,10 +33,22 @@ namespace SWLOR.Game.Server.Feature
         {
             {"power_core", new OreDetail(1, string.Empty, 10)},
             {"raw_veldite", new OreDetail(1, "ref_veldite", 25)},
+            {"ore_tilarium", new OreDetail(1, "ref_tilarium", 25)},
+
             {"raw_scordspar", new OreDetail(2, "ref_scordspar", 50)},
+            {"ore_currian", new OreDetail(2, "ref_currian", 50)},
+
+
             {"raw_plagionite", new OreDetail(3, "ref_plagionite", 75)},
+            {"ore_idailia", new OreDetail(3, "ref_idailia", 75)},
+
             {"raw_keromber", new OreDetail(4, "ref_keromber", 100)},
+            {"ore_barinium", new OreDetail(4, "ref_barinium", 100)},
+
             {"raw_jasioclase", new OreDetail(5, "ref_jasioclase", 125)},
+            {"ore_gostian", new OreDetail(5, "ref_gostian", 125)},
+
+            // Options below are for further expansion down the road.
             {"raw_hemorgite", new OreDetail(99, "ref_hemorgite", 150)},
             {"raw_ochne", new OreDetail(99, "ref_ochne", 175)},
             {"raw_croknor", new OreDetail(99, "ref_croknor", 200)},

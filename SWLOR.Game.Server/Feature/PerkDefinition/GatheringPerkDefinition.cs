@@ -104,30 +104,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Refining")
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite.")
+                .Description("You can refine Veldite and Tilarium.")
                 .Price(1)
                 .GrantsFeat(FeatType.Refining1)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite and Scordspar.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, and Currian.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
                 .GrantsFeat(FeatType.Refining2)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite, Scordspar, and Plagionite.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idalia.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
                 .GrantsFeat(FeatType.Refining3)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite, Scordspar, Plagionite, and Keromber.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, and Barinium.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
                 .GrantsFeat(FeatType.Refining4)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite, Scordspar, Plagionite, Keromber, and Jasioclase.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, Barinium, Jasioclase, and Gostian.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Refining5);

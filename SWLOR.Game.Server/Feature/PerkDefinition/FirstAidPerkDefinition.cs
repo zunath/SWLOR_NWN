@@ -154,7 +154,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Revives a single target back from the brink of death with 1 HP. Consumes medical supplies on use.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 20)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Resuscitation1)
 
                 .AddPerkLevel()

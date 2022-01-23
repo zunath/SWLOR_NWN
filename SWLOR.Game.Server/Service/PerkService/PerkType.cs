@@ -155,8 +155,8 @@
         BasicTouchFabrication = 148,
         FurnitureBlueprints = 149,
         StructureBlueprints = 150,
-        StarshipBlueprints = 151,
-        ModuleBlueprints = 152,
+        // 151 is free
+        StarshipBlueprints = 152,
         StandardTouchFabrication = 153,
         PreciseTouchFabrication = 154,
         MastersMendFabrication= 155,

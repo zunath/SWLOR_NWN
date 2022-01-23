@@ -189,7 +189,9 @@ namespace SWLOR.Game.Server.Service
                 if (type == ItemPropertyType.ArmorEnhancement ||
                     type == ItemPropertyType.WeaponEnhancement ||
                     type == ItemPropertyType.StructureEnhancement ||
-                    type == ItemPropertyType.FoodEnhancement)
+                    type == ItemPropertyType.FoodEnhancement ||
+                    type == ItemPropertyType.StarshipEnhancement ||
+                    type == ItemPropertyType.ModuleEnhancement)
                 {
                     return true;
                 }

@@ -14,10 +14,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Synthesis();
             Touch();
             Abilities();
-
             FurnitureBlueprints();
             StructureBlueprints();
-            StarshipBlueprints();
 
             return _builder.Build();
         }
@@ -163,41 +161,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Fabrication, 40)
                 .GrantsFeat(FeatType.StructureBlueprints2);
-        }
-
-        private void StarshipBlueprints()
-        {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.StarshipBlueprints)
-                .Name("Starship Blueprints")
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 1 Ship and Module blueprints.")
-                .Price(2)
-                .GrantsFeat(FeatType.StarshipBlueprints1)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 2 Ship and Module blueprints.")
-                .Price(2)
-                .RequirementSkill(SkillType.Fabrication, 10)
-                .GrantsFeat(FeatType.StarshipBlueprints2)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 3 Ship and Module blueprints.")
-                .Price(4)
-                .RequirementSkill(SkillType.Fabrication, 20)
-                .GrantsFeat(FeatType.StarshipBlueprints3)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 4 Ship and Module blueprints.")
-                .Price(5)
-                .RequirementSkill(SkillType.Fabrication, 30)
-                .GrantsFeat(FeatType.StarshipBlueprints4)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 5 Ship and Module blueprints.")
-                .Price(5)
-                .RequirementSkill(SkillType.Fabrication, 40)
-                .GrantsFeat(FeatType.StarshipBlueprints5);
         }
     }
 }

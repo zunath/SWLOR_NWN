@@ -102,6 +102,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Agriculture", true)]
         Agriculture = 32,
+
+        [PerkCategory("Engineering", true)]
+        Engineering = 33,
     }
 
     public class PerkCategoryAttribute : Attribute

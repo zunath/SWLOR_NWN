@@ -11704,6 +11704,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Refined Barinium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_barinium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Refined Bisteiss"
                     },
                     "RESREF": {
@@ -11726,11 +11737,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Refined Currian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_currian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Refined Gostian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_gostian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Refined Hemorgite"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "ref_hemorgite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Refined Idailia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_idailia"
                     }
                   },
                   {
@@ -11786,6 +11830,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ref_scordspar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Refined Tilarium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_tilarium"
                     }
                   },
                   {

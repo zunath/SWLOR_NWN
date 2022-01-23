@@ -381,6 +381,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _venerationPerk = PerkType.VenerationCooking;
                     _wasteNotPerk = PerkType.WasteNotCooking;
                     break;
+                case SkillType.Engineering:
+                    _primaryAbility = AbilityType.Vitality;
+                    _secondaryAbility = AbilityType.Perception;
+
+                    _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
+                    _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;
+
+                    _basicTouchPerk = PerkType.BasicTouchEngineering;
+                    _standardTouchPerk = PerkType.StandardTouchEngineering;
+                    _preciseTouchPerk = PerkType.PreciseTouchEngineering;
+
+                    _mastersMendPerk = PerkType.MastersMendEngineering;
+                    _steadyHandPerk = PerkType.SteadyHandEngineering;
+                    _muscleMemoryPerk = PerkType.MuscleMemoryEngineering;
+
+                    _venerationPerk = PerkType.VenerationEngineering;
+                    _wasteNotPerk = PerkType.WasteNotEngineering;
+                    break;
             }
         }
 
@@ -516,6 +534,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.FoodEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Starship)
+            {
+                typeIP = ItemPropertyType.StarshipEnhancement;
+            }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Module)
+            {
+                typeIP = ItemPropertyType.ModuleEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {
@@ -595,6 +621,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (type == ItemPropertyType.FoodEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Food)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.StarshipEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Starship)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.ModuleEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Module)
                 {
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);

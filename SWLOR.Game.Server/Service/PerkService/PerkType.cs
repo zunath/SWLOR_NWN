@@ -198,6 +198,16 @@
         VenerationCooking = 191,
         WasteNotCooking = 192,
         CookingRecipes = 193,
+        RapidSynthesisEngineering = 194,
+        CarefulSynthesisEngineering = 195,
+        BasicTouchEngineering = 196,
+        StandardTouchEngineering = 197,
+        PreciseTouchEngineering = 198,
+        MastersMendEngineering = 199,
+        SteadyHandEngineering = 200,
+        MuscleMemoryEngineering = 201,
+        VenerationEngineering = 202,
+        WasteNotEngineering = 203,
 
         GuildRelations = 1004,
 

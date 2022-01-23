@@ -75573,6 +75573,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Engineering Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engineering_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fabrication Terminal"
                     },
                     "RESREF": {

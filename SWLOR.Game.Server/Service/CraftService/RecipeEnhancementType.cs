@@ -7,5 +7,7 @@
         Armor = 2,
         Structure = 3,
         Food = 4,
+        Starship = 5,
+        Module = 6,
     }
 }

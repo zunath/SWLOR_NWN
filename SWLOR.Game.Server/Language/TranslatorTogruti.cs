@@ -1,6 +1,7 @@
 using System.Text;
 
 namespace SWLOR.Game.Server.Language
+{ 
     public class TranslatorTogruti : ITranslator
     {
     public string Translate(string message)

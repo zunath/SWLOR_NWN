@@ -591,7 +591,6 @@ namespace SWLOR.Game.Server.Conversation
                          * 13          = sith mask
                          * 22 - 26     = alien heads
                          * 27          = sith mask
-                         * 39 - 44     = creature heads
                          * 80 - 82     = alien heads
                          * 84 - 94     = invalid
                          * 96 - 98     = alien heads

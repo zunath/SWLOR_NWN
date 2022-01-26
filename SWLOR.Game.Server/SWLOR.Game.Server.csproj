@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\2022-01-25.sql" />
     <None Remove="Data\Migrations\2020-06-20.1.sql" />
     <None Remove="Data\Migrations\2020-07-02.1.sql" />
     <None Remove="Data\Migrations\2020-07-02.2.sql" />
@@ -28,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Data\2022-01-25.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-06-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-07-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-07-02.2.sql" />

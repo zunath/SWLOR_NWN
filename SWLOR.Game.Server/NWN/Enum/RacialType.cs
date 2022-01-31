@@ -44,7 +44,10 @@ namespace SWLOR.Game.Server.NWN.Enum
         Mirialan = 160,
         Echani = 161,
         MonCalamari = 162,
-        Ugnaught = 163
+        Ugnaught = 163,
+        Togruta = 164,
+        Rodian = 165,
+        KelDor = 166
 
     }
 }

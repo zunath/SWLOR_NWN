@@ -40,6 +40,9 @@
         Huttese = 35,
         Piloting = 36,
         MonCalamarian = 37,
-        Ugnaught = 38
+        Ugnaught = 38,
+        Togruti = 39,
+        Rodese = 40,
+        KelDor = 41
     }
 }

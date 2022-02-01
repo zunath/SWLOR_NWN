@@ -57,168 +57,7 @@
   },
   "List": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "AddCost": {
-          "type": "dword",
-          "value": 0
-        },
-        "BaseItem": {
-          "type": "int",
-          "value": 74
-        },
-        "Charges": {
-          "type": "byte",
-          "value": 0
-        },
-        "Cost": {
-          "type": "dword",
-          "value": 1
-        },
-        "Cursed": {
-          "type": "byte",
-          "value": 1
-        },
-        "DescIdentified": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Teaches you about a skill of your choice."
-          }
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "Identified": {
-          "type": "byte",
-          "value": 1
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Greater XP Tome"
-          }
-        },
-        "ModelPart1": {
-          "type": "byte",
-          "value": 38
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertiesList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "ChanceAppear": {
-                "type": "byte",
-                "value": 100
-              },
-              "CostTable": {
-                "type": "byte",
-                "value": 3
-              },
-              "CostValue": {
-                "type": "word",
-                "value": 13
-              },
-              "Param1": {
-                "type": "byte",
-                "value": 255
-              },
-              "Param1Value": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertyName": {
-                "type": "word",
-                "value": 15
-              },
-              "Subtype": {
-                "type": "word",
-                "value": 335
-              }
-            }
-          ]
-        },
-        "StackSize": {
-          "type": "word",
-          "value": 1
-        },
-        "Stolen": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "xp_tome_4"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "xp_tome_4"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "XPTome"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "XP_TOME_AMOUNT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 160000
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 18.93972015380859
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 30.93219184875488
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.384185791015625e-007
-        }
-      }
-    ]
+    "value": []
   },
   "Placeable List": {
     "type": "list",
@@ -34113,7 +33952,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0
+          "value": -0.04906796291470528
         },
         "XPosition": {
           "type": "float",
@@ -34121,7 +33960,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -0.9987954497337341
         },
         "YPosition": {
           "type": "float",

@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
             int[] FemaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
             int[] FemaleTogrutaHeads = { 200, 201, 202, 203, 204, 210, 211, 212, 213, 214, 215 };
-            int[] FemaleRodianHeads = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+            int[] FemaleRodianHeads = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 182 };
             int[] FemaleKelDorHeads = { 223, 224, 225, 226, 227, 228, 229, 230, 231 };
 
             RacialType race = (RacialType)GetPC().RacialType;

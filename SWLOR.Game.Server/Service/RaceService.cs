@@ -309,8 +309,8 @@ namespace SWLOR.Game.Server.Service
                     femaleHead = 228;
                     maleRightHand = 45;
                     maleLeftHand = 45;
-                    femaleRightHand = 201;
-                    femaleLeftHand = 201;
+                    femaleRightHand = 45;
+                    femaleLeftHand = 45;
 
                     break;
                 default:

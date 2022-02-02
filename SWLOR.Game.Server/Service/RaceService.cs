@@ -293,8 +293,8 @@ namespace SWLOR.Game.Server.Service
                 case RacialType.Rodian:
                     skinColor = 81;
                     hairColor = 79;
-                    maleHead = 54;
-                    femaleHead = 10;
+                    maleHead = 39;
+                    femaleHead = 182;
                     maleRightHand = 44;
                     maleLeftHand = 44;
                     appearance = AppearanceType.Elf;
@@ -309,7 +309,6 @@ namespace SWLOR.Game.Server.Service
                     femaleHead = 228;
                     maleRightHand = 45;
                     maleLeftHand = 45;
-                    appearance = AppearanceType.Elf;
                     femaleRightHand = 201;
                     femaleLeftHand = 201;
 

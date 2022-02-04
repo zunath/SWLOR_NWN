@@ -11871,7 +11871,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "PROPERTY_ENTRANCE"
+          "value": "PLAYER_HOME_ENTRANCE"
         },
         "TemplateResRef": {
           "type": "resref",

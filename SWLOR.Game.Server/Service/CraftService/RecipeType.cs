@@ -574,5 +574,15 @@
         ShieldRepairer4 = 3069,
         TargetingSystem4 = 3070,
 
+        Striker = 3071,
+        Condor = 3072,
+        Hound = 3073,
+        Panther = 3074,
+        Saber = 3075,
+        Falchion = 3076,
+        Mule = 3077,
+        Merchant = 3078,
+        Throne = 3079,
+        Consular = 3080,
     }
 }

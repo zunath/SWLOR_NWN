@@ -140,19 +140,24 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void AsteroidMining()
         {
             _builder.Create("ASTEROID_TILARIUM")
-                .AddItem("ore_tilarium", 20);
+                .AddItem("ore_tilarium", 20)
+                .AddItem("aluminum", 2);
             
             _builder.Create("ASTEROID_CURRIAN")
-                .AddItem("ore_currian", 20);
+                .AddItem("ore_currian", 20)
+                .AddItem("steel", 2);
             
             _builder.Create("ASTEROID_IDAILIA")
-                .AddItem("ore_idailia", 20);
+                .AddItem("ore_idailia", 20)
+                .AddItem("obsidian", 2);
             
             _builder.Create("ASTEROID_BARINIUM")
-                .AddItem("ore_barinium", 20);
+                .AddItem("ore_barinium", 20)
+                .AddItem("crystal", 2);
 
             _builder.Create("ASTEROID_GOSTIAN")
-                .AddItem("ore_gostian", 20);
+                .AddItem("ore_gostian", 20)
+                .AddItem("diamond", 2);
         }
     }
 }

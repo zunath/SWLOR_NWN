@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 5
+    "value": 14
   },
   "BaseItem": {
     "type": "int",
-    "value": 515
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 5
+    "value": 14
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Used to power bases. One fuel cell powers a Small tower for 45 minutes (real world time). Medium Tower for 15 minutes, and Large Tower for 5 minutes."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fuel Cell"
+      "0": "Aluminum"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 156
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
@@ -72,10 +70,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "fuel_cell"
+    "value": "aluminum"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "fuel_cell"
+    "value": "aluminum"
   }
 }

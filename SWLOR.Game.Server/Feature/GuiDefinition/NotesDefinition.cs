@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetInitialGeometry(0, 0, 638f, 336f)
                 .SetTitle("Notes")
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnCloseWindow())
 
                 .AddColumn(col =>

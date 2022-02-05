@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Craft)
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Craft Item")
                 .BindIsClosable(model => model.IsClosable)

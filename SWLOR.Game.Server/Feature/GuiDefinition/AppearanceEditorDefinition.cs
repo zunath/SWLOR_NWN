@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 476.57895f, 600f)
                 .SetTitle("Appearance Editor")
                 .BindOnClosed(model => model.OnCloseWindow())

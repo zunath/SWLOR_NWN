@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.PriceSelection)
                 .SetIsResizable(true)
+                .SetIsCollapsible(false)
                 .SetInitialGeometry(0, 0, 400f, 240f)
                 .SetTitle("Change Price")
                 

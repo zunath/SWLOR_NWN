@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.RenameItem)
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .SetInitialGeometry(200f, 200f, 500f, 300f)
                 .SetTitle("Rename Item")
                 .AddColumn(col =>

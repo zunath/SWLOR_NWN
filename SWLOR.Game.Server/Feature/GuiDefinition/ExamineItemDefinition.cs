@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.ExamineItem)
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 385f, 379f)
                 .BindTitle(model => model.WindowTitle)
 

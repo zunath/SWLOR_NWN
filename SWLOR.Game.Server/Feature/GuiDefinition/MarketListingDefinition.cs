@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             _builder.CreateWindow(GuiWindowType.MarketListing)
                 .SetIsResizable(true)
+                .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .BindTitle(model => model.WindowTitle)
 

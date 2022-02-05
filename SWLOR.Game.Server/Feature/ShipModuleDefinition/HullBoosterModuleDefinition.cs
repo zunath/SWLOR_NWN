@@ -31,11 +31,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .EquippedAction((creature, shipStatus) =>
                 {
+                    shipStatus.Hull += hullBoostAmount;
                     shipStatus.MaxHull += hullBoostAmount;
                 })
                 .UnequippedAction((creature, shipStatus) =>
                 {
                     shipStatus.MaxHull -= hullBoostAmount;
+
+                    if (shipStatus.Hull > shipStatus.MaxHull)
+                        shipStatus.Hull = shipStatus.MaxHull;
                 });
         }
     }

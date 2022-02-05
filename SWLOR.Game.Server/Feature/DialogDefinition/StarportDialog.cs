@@ -84,6 +84,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
             });
 
+            page.AddResponse("View Shop", () =>
+            {
+                var store = GetNearestObjectByTag("dockhand_store", OBJECT_SELF);
+                OpenStore(store, player);
+                EndConversation();
+            });
         }
     }
 }

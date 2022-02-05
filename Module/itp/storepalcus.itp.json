@@ -38,6 +38,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dockhand Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "dockhand_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Galaxy Bar"
               },
               "RESREF": {

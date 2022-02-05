@@ -1204,7 +1204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!ValidateModuleEquip(dbShip, item))
                         return;
 
-                    if (moduleDetails.PowerType != ShipModulePowerType.High)
+                    if (moduleDetails.PowerType != ShipModulePowerType.Low)
                     {
                         SendMessageToPC(Player, "Only low-powered modules may be installed to this slot.");
                         return;

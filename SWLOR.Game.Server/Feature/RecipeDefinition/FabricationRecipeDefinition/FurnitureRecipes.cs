@@ -868,17 +868,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ancient_wood", 2)
 				.Component("lth_good", 1);
 
-			// Power Supply Unit
-			_builder.Create(RecipeType.PowerSupplyUnit, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Structure)
-				.Resref("pow_supp_unit")
-				.Level(21)
-				.Quantity(1)
-				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 0)
-				.Component("ref_plagionite", 8)
-				.Component("ref_scordspar", 8);
-
 			// Female Statue
 			_builder.Create(RecipeType.FemaleStatue, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Statues)
@@ -922,17 +911,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 3)
 				.Component("lth_good", 2);
-
-			// Construction Parts
-			_builder.Create(RecipeType.ConstructionParts, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Structure)
-				.Resref("const_parts")
-				.Level(23)
-				.Quantity(1)
-				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 0)
-				.Component("ref_plagionite", 6)
-				.Component("ref_scordspar", 6);
 
 			// Pedestal, Sword
 			_builder.Create(RecipeType.PedestalSword, SkillType.Fabrication)
@@ -1289,18 +1267,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
 		private void Tier4()
         {
-
-			// Reinforced Construction Parts
-			_builder.Create(RecipeType.ReinforcedConstructionParts, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Structure)
-				.Resref("r_const_parts")
-				.Level(31)
-				.Quantity(1)
-				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 0)
-				.Component("const_parts", 2)
-				.Component("ref_keromber", 4);
-
 			// Table, Stone, Small
 			_builder.Create(RecipeType.TableStoneSmall, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Surfaces)
@@ -1344,17 +1310,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 2)
 				.Component("aracia_wood", 1);
-
-			// Reinforced Power Supply Unit
-			_builder.Create(RecipeType.ReinforcedPowerSupplyUnit, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Structure)
-				.Resref("r_pow_supp_unit")
-				.Level(32)
-				.Quantity(1)
-				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 0)
-				.Component("pow_supp_unit", 2)
-				.Component("ref_keromber", 4);
 
 			// Statue, Wizard
 			_builder.Create(RecipeType.StatueWizard, SkillType.Fabrication)

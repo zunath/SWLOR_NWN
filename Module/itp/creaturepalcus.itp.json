@@ -1397,6 +1397,30 @@
                       "type": "byte",
                       "value": 7
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 2.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tuk'ata"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tukata"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6697
@@ -1430,6 +1454,30 @@
                       "type": "byte",
                       "value": 9
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.125
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Shyrack"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "shyrack"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 201
@@ -1461,6 +1509,25 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "ghostviperking"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 3.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Moraband Serpent"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithsnake"
                           }
                         }
                       ]
@@ -1858,6 +1925,30 @@
                       "type": "byte",
                       "value": 10
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 2.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Squellbug"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "squellbug"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6701
@@ -2125,6 +2216,49 @@
                     "ID": {
                       "type": "byte",
                       "value": 32
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 10.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Apprentice Ghost"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_ghost"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 10.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Apprentice Ghost"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_ghost_male"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",

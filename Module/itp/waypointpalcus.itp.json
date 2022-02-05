@@ -365,6 +365,77 @@
                 "type": "byte",
                 "value": 3
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Ghost Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Ghost Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_m_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sithsnake Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsnake_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Squellbug Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "squellbug_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tukata Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_spn"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691

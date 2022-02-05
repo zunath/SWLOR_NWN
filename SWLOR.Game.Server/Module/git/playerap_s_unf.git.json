@@ -2126,7 +2126,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "IS_BUILDABLE"
+          "value": "IS_BUILDING"
         },
         "Type": {
           "type": "dword",

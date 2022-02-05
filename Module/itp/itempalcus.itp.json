@@ -8393,6 +8393,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Aluminum"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aluminum"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Amphi-Hydrus Blood"
                     },
                     "RESREF": {
@@ -9097,6 +9108,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cultured Butter"
                     },
                     "RESREF": {
@@ -9245,6 +9267,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ls_parts_dest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Diamond"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diamond"
                     }
                   },
                   {
@@ -9663,17 +9696,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "lth_freyna"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fuel Cell"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fuel_cell"
                     }
                   },
                   {
@@ -10906,6 +10928,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "noodles_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Obsidian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "obsidian"
                     }
                   },
                   {
@@ -12463,11 +12496,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Starship Fuel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starship_fuel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starship Production Unit"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "star_prod_unit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Steel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel"
                     }
                   },
                   {

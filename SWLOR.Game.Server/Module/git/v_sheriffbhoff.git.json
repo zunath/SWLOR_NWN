@@ -17422,7 +17422,7 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Description": {
           "type": "cexolocstring",
@@ -17446,11 +17446,11 @@
         },
         "Hardness": {
           "type": "byte",
-          "value": 5
+          "value": 75
         },
         "HP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Interruptable": {
           "type": "byte",
@@ -17487,7 +17487,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Alien Door 3"
+            "0": "Force Containment Cell"
           }
         },
         "OnClick": {
@@ -17552,7 +17552,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -19106,7 +19106,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Reckon y'oughta ask 'fore tryin' ta get into a man's bedroom, fella."
+                "value": "Reckon y'oughta ask 'fore tryin' ta get into a woman's bedroom, fella."
               }
             },
             {
@@ -19605,7 +19605,7 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Description": {
           "type": "cexolocstring",
@@ -19629,11 +19629,11 @@
         },
         "Hardness": {
           "type": "byte",
-          "value": 5
+          "value": 50
         },
         "HP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Interruptable": {
           "type": "byte",
@@ -19735,7 +19735,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -19887,7 +19887,7 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Description": {
           "type": "cexolocstring",
@@ -19911,11 +19911,11 @@
         },
         "Hardness": {
           "type": "byte",
-          "value": 5
+          "value": 50
         },
         "HP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Interruptable": {
           "type": "byte",
@@ -20017,7 +20017,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -20169,7 +20169,7 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Description": {
           "type": "cexolocstring",
@@ -20193,11 +20193,11 @@
         },
         "Hardness": {
           "type": "byte",
-          "value": 5
+          "value": 50
         },
         "HP": {
           "type": "short",
-          "value": 10
+          "value": 500
         },
         "Interruptable": {
           "type": "byte",
@@ -20299,7 +20299,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -20516,7 +20516,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -20798,7 +20798,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -21065,7 +21065,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -21347,7 +21347,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -21629,7 +21629,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",

@@ -6,13 +6,11 @@ using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Dialog = SWLOR.Game.Server.Service.Dialog;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -20,11 +18,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class CharacterChatCommand: IChatCommandListDefinition
     {
+        private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-            var builder = new ChatCommandBuilder();
 
-            builder.Create("cdkey")
+            _builder.Create("cdkey")
                 .Description("Displays your public CD key.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
@@ -33,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
                 });
 
-            builder.Create("save")
+            _builder.Create("save")
                 .Description("Manually saves your character. Your character also saves automatically every few minutes.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Character saved successfully.");
                 });
 
-            builder.Create("skills")
+            _builder.Create("skills")
                 .Description("Toggles the skills menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
@@ -50,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
                 });
 
-            builder.Create("endcall")
+            _builder.Create("endcall")
                 .Description("Ends your current HoloCom call.")
                 .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
                 });
 
-            builder.Create("recipe", "recipes")
+            _builder.Create("recipe", "recipes")
                 .Description("Toggles the recipes menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user,  GuiWindowType.Recipes);
                 });
 
-            builder.Create("perk", "perks")
+            _builder.Create("perk", "perks")
                 .Description("Toggles the perks menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
@@ -74,20 +73,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
-            DeleteCommand(builder);
-            LanguageCommand(builder);
-            ToggleDualPistolMode(builder);
-            ToggleEmoteStyle(builder);
-            ChangeItemName(builder);
-            ChangeItemDescription(builder);
-            ConcentrationAbility(builder);
+            DeleteCommand();
+            LanguageCommand();
+            ToggleEmoteStyle();
+            ChangeItemName();
+            ChangeItemDescription();
+            ConcentrationAbility();
             
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private static void LanguageCommand(ChatCommandBuilder builder)
+        private void LanguageCommand()
         {
-            builder.Create("language")
+            _builder.Create("language")
                 .Description("Switches the active language. Use /language help for more information.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
@@ -158,9 +156,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void DeleteCommand(ChatCommandBuilder builder)
+        private void DeleteCommand()
         {
-            builder.Create("delete")
+            _builder.Create("delete")
                 .Description("Permanently deletes your character.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
@@ -221,21 +219,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-
-        private static void ToggleDualPistolMode(ChatCommandBuilder builder)
+        
+        private void ToggleEmoteStyle()
         {
-            builder.Create("toggledualpistolmode")
-                .Description("Toggles whether or not your pistol will be dual wielded when equipped.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    DualPistolService.ToggleDualPistolMode(user);
-                });
-        }
-
-        private static void ToggleEmoteStyle(ChatCommandBuilder builder)
-        {
-            builder.Create("emotestyle")
+            _builder.Create("emotestyle")
                 .Description("Toggles your emote style between regular and novel.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
@@ -247,9 +234,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ChangeItemName(ChatCommandBuilder builder)
+        private void ChangeItemName()
         {
-            builder.Create("changeitemname", "itemname")
+            _builder.Create("changeitemname", "itemname")
                 .Description("Changes the name of an item in your inventory. Example: /changeitemname New Name")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
@@ -275,9 +262,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ChangeItemDescription(ChatCommandBuilder builder)
+        private void ChangeItemDescription()
         {
-            builder.Create("changeitemdescription", "itemdesc")
+            _builder.Create("changeitemdescription", "itemdesc")
                 .Description("Changes the description of an item in your inventory. Example: /changeitemdescription New Name")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
@@ -303,9 +290,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ConcentrationAbility(ChatCommandBuilder builder)
+        private void ConcentrationAbility()
         {
-            builder.Create("concentration", "conc")
+            _builder.Create("concentration", "conc")
                 .Description("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off. Example: /concentration end")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>

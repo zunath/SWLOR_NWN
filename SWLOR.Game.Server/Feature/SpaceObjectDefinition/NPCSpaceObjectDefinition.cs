@@ -35,7 +35,9 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("pirate_night")
                 .ItemTag("NPC_Nightmare")
-                .ShipModule("com_laser_1");
+                .ShipModule("ion_cann_1")
+                .ShipModule("shld_boost_1")
+                .ShipModule("eva_boost_1");
 
             _builder.Create("pirate_ferron")
                 .ItemTag("NPC_Ferron")
@@ -48,12 +50,15 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("pirate_storm")
                 .ItemTag("NPC_Storm")
-                .ShipModule("com_laser_2");
+                .ShipModule("msl_launch_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("hull_rep_2");
 
             _builder.Create("pirate_ranger")
                 .ItemTag("NPC_Ranger")
-                .ShipModule("com_laser_2")
-                .ShipModule("msl_launch_2")
+                .ShipModule("ion_cann_2")
+                .ShipModule("ion_cann_2")
+                .ShipModule("ion_cann_2")
                 .ShipModule("shld_rep_2");
         }
 
@@ -61,11 +66,15 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("pirate_hammer")
                 .ItemTag("NPC_Hammer")
-                .ShipModule("com_laser_3");
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("tgt_sys_3");
 
             _builder.Create("pirate_drake")
                 .ItemTag("NPC_Drake")
-                .ShipModule("com_laser_3")
+                .ShipModule("ion_cann_3")
+                .ShipModule("msl_launch_3")
                 .ShipModule("msl_launch_3")
                 .ShipModule("shld_rep_3");
         }
@@ -74,11 +83,15 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("pirate_borealis")
                 .ItemTag("NPC_Sybil")
-                .ShipModule("com_laser_4");
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("hull_rep_4");
 
             _builder.Create("pirate_eleyna")
                 .ItemTag("NPC_Eleyna")
-                .ShipModule("com_laser_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("shld_rep_4");
         }

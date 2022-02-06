@@ -1105,7 +1105,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 1.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1113,18 +1113,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pirate Corvette"
+                      "value": "Pirate Borealis"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pirate_corvette1"
+                      "value": "pirate_borealis"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 15.0
+                      "value": 1.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1132,18 +1132,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pirate Fighter"
+                      "value": "Pirate Drake"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pirate_fighter_1"
+                      "value": "pirate_drake"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 1.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1151,11 +1151,144 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pirate Fighter"
+                      "value": "Pirate Eleyna"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pirate_fighter_2"
+                      "value": "pirate_eleyna"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Ferron"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_ferron"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Hammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_hammer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Nightmare"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_nightmare"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Ranger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_ranger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Storm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_storm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Sybil"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_sybil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Terror"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pirate_terror"
                     }
                   },
                   {

@@ -5,16 +5,16 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 {
     public class AsteroidSpaceObjectDefinition : ISpaceObjectListDefinition
     {
-        private readonly SpaceObjectBuilder _builder = new SpaceObjectBuilder();
+        private readonly SpaceObjectBuilder _builder = new();
 
         public Dictionary<string, SpaceObjectDetail> BuildSpaceObjects()
         {
-            DemoEnemy();
+            Asteroid();
 
             return _builder.Build();
         }
 
-        private void DemoEnemy()
+        private void Asteroid()
         {
             _builder.Create("spc_asteroid")
                 .ItemTag("asteroid");

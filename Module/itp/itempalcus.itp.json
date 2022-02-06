@@ -4330,6 +4330,116 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pirate Borealis Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "borealis_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Drake Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "drake_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Eleyna Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eleyna_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Ferron Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ferron_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Hammer Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hammer_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Nightmare Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nightmare_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Ranger Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ranger_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Storm Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "storm_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Sybil Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sybil_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Terror Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "terror_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Slug Hide"
                     },
                     "RESREF": {

@@ -807,6 +807,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Destroy the NPC clone.
+            DestroyPilotClone(player);
+
+            DB.Set(dbPlayer);
+            DB.Set(dbShip);
+        }
+
+        private static void DestroyPilotClone(uint player)
+        {
             var copy = GetLocalObject(player, "SPACE_PILOT_CLONE");
             if (GetIsObjectValid(copy))
             {
@@ -814,9 +822,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             DeleteLocalObject(player, "SPACE_PILOT_CLONE");
-
-            DB.Set(dbPlayer);
-            DB.Set(dbShip);
         }
 
         /// <summary>
@@ -1400,6 +1405,7 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);
                 }
 
+                _shipClones.Remove(dbPlayer.ActiveShipId);
                 dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                 // Removing the current position of the ship will automatically send it back to the last dock it was at.
@@ -1421,6 +1427,8 @@ namespace SWLOR.Game.Server.Service
 
                     FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
                 }
+
+                DestroyPilotClone(creature);
             }
 
             // Apply normal death mechanics on top of the ship ones.

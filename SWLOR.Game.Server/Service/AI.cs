@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and EP as local variables.
+        /// When a creature spawns, store their STM and FP as local variables.
         /// Also load their HP per their skin, if specified.
         /// </summary>
         private static void LoadCreatureStats()
@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Service
                 ObjectPlugin.SetCurrentHitPoints(self, maxHP);
             }
 
-            SetLocalInt(self, "EP", Stat.GetMaxFP(self));
+            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
             SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
         }
 
@@ -358,16 +358,19 @@ namespace SWLOR.Game.Server.Service
         {
             // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
-            int VFX = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
-            if (VFX > 0) ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)VFX), OBJECT_SELF);
+            var vfx = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
+            if (vfx > 0) 
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), OBJECT_SELF);
 
             // Cutscene paralysis - for statues.
-            int paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
-            if (paralyze > 0) ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
+            var paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
+            if (paralyze > 0) 
+                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
 
             // Daze - for creatures that should not be able to attack.
-            int daze = GetLocalInt(OBJECT_SELF, "DAZE");
-            if (daze > 0) ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
+            var daze = GetLocalInt(OBJECT_SELF, "DAZE");
+            if (daze > 0) 
+                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
         }
 
         /// <summary>

@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly List<SkillType> _viewableSkills = new();
 
+        public string AvailableXP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> SkillNames
         {
             get => Get<GuiBindingList<string>>();
@@ -126,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 distributeRPXPTooltips.Add($"Distribute RP XP ({dbPlayer.UnallocatedXP})");
             }
 
+            AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
             SkillNames = skillNames;
             Levels = levels;
             Titles = titles;

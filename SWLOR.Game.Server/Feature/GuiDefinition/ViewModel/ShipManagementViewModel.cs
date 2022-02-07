@@ -1096,6 +1096,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
+            if (GetItemPossessor(item) != Player)
+            {
+                SendMessageToPC(Player, "Item must be in your inventory.");
+                return false;
+            }
+
             var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
             var shipDetails = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
 

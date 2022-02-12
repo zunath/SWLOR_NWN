@@ -65,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("HP")
                             .SetColor(139, 0, 0)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Hit Points - When these hit zero, you die.");
 
                         row.AddLabel()
                             .BindText(model => model.HP)
@@ -86,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("FP")
                             .SetColor(0, 138, 250)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Force Points - Resource used to activate force abilities. Force sensitive characters only.");
 
                         row.AddLabel()
                             .BindText(model => model.FP)
@@ -107,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("STM")
                             .SetColor(0, 139, 0)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Stamina - Resource used to activate non-force abilities.");
 
                         row.AddLabel()
                             .BindText(model => model.STM)
@@ -127,7 +130,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Evasion")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Evasion - Improves your ability to dodge attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.Evasion)
@@ -146,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("SP")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Skill Points - Used to purchase Perks.");
 
                         row.AddLabel()
                             .BindText(model => model.SP)
@@ -165,7 +170,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("AP")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Ability Points - Used to increase your attributes.");
 
                         row.AddLabel()
                             .BindText(model => model.AP)
@@ -184,7 +190,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Might")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Might - Used to attack and defend in melee combat. Also affects carrying capacity.");
 
                         row.AddLabel()
                             .BindText(model => model.Might)
@@ -204,7 +211,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Perception")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Perception - Used to attack and defend in ranged combat.");
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
@@ -224,7 +232,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Vitality")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Vitality - Used to resist damage and increases total HP, FP, and STM.");
 
                         row.AddLabel()
                             .BindText(model => model.Vitality)
@@ -244,7 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Willpower")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Willpower - Used to attack and defend in mental combat.");
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
@@ -264,7 +274,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Social")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Social - Used for diplomacy. Increases mission rewards and used in property management.");
 
                         row.AddLabel()
                             .BindText(model => model.Social)
@@ -296,7 +307,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Phys. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Physical Defense - Reduces the amount of damage taken by physical attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefensePhysical)
@@ -309,7 +321,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Force DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Force Defense - Reduces the amount of damage taken by force attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseForce)
@@ -322,7 +335,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Fire DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Fire Defense - Reduces the amount of damage taken by fire attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseFire)
@@ -335,7 +349,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Pois. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Poison Defense - Reduces the amount of damage taken by poison attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefensePoison)
@@ -348,7 +363,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Elec. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Electrical Defense - Reduces the amount of damage taken by electrical attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseElectrical)
@@ -361,7 +377,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Ice DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Ice Defense - Reduces the amount of damage taken by ice attacks.");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseIce)
@@ -374,7 +391,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Control")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Control - Improves quality of crafted items. Also improves chance to auto-craft items.");
 
                         row.AddLabel()
                             .BindText(model => model.Control)
@@ -387,7 +405,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetText("Craftsmanship")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Craftsmanship - Improves progress of crafted items. Also improves chance to auto-craft items.");
 
                         row.AddLabel()
                             .BindText(model => model.Craftsmanship)

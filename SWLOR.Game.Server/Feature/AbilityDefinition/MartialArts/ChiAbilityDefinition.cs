@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
@@ -27,6 +29,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(recovery), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
+
+            Enmity.ModifyEnmityOnAll(activator, recovery + 10);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private void Chi1()

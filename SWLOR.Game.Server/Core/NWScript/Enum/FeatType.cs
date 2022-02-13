@@ -1563,7 +1563,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         StructureBlueprints3 = 1630,
         StructureBlueprints4 = 1631,
         StructureBlueprints5 = 1632,
-
+        Chi1 = 1633,
+        Chi2 = 1634,
+        Chi3 = 1635,
         StarshipBlueprints1 = 1636,
         StarshipBlueprints2 = 1637,
         StarshipBlueprints3 = 1638,

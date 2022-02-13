@@ -121,6 +121,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         CombatEnhancement = 56,
         [RecastGroup("Shielding", "Shielding")]
         Shielding = 57,
+        [RecastGroup("Chi", "Chi")]
+        Chi = 58,
     }
 
     public class RecastGroupAttribute: Attribute

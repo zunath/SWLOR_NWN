@@ -12,31 +12,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class MartialArtsPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new PerkBuilder();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            Knockdown(builder);
-            FlurryOfBlows(builder);
-            InnerStrength(builder);
-            WeaponFocusKatars(builder);
-            ImprovedCriticalKatars(builder);
-            KatarProficiency(builder);
-            KatarMastery(builder);
-            ElectricFist(builder);
-            StrikingCobra(builder);
-            WeaponFocusStaves(builder);
-            ImprovedCriticalStaves(builder);
-            StaffProficiency(builder);
-            StaffMastery(builder);
-            Slam(builder);
-            SpinningWhirl(builder);
+            Knockdown();
+            FlurryOfBlows();
+            InnerStrength();
+            Chi();
+            WeaponFocusKatars();
+            ImprovedCriticalKatars();
+            KatarProficiency();
+            KatarMastery();
+            ElectricFist();
+            StrikingCobra();
+            WeaponFocusStaves();
+            ImprovedCriticalStaves();
+            StaffProficiency();
+            StaffMastery();
+            Slam();
+            SpinningWhirl();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void Knockdown(PerkBuilder builder)
+        private void Knockdown()
         {
-            builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Knockdown)
+            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Knockdown)
                 .Name("Knockdown")
 
                 .AddPerkLevel()
@@ -46,9 +48,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Knockdown);
         }
 
-        private void FlurryOfBlows(PerkBuilder builder)
+        private void FlurryOfBlows()
         {
-            builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.FlurryOfBlows)
+            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.FlurryOfBlows)
                 .Name("Flurry of Blows")
 
                 .AddPerkLevel()
@@ -59,9 +61,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FlurryOfBlows);
         }
 
-        private void InnerStrength(PerkBuilder builder)
+        private void InnerStrength()
         {
-            builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.InnerStrength)
+            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.InnerStrength)
                 .Name("Inner Strength")
 
                 .AddPerkLevel()
@@ -88,9 +90,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 });
         }
 
-        private void WeaponFocusKatars(PerkBuilder builder)
+        private void Chi()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.WeaponFocusKatars)
+            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Chi)
+                .Name("Chi")
+
+                .AddPerkLevel()
+                .Description("Restores your HP by a base amount of 45 points.")
+                .Price(3)
+                .RequirementSkill(SkillType.MartialArts, 5)
+                .GrantsFeat(FeatType.Chi1)
+
+                .AddPerkLevel()
+                .Description("Restores your HP by a base amount of 115 points.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 25)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.Chi2)
+
+                .AddPerkLevel()
+                .Description("Restores your HP by a base amount of 170 points.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 40)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.Chi3);
+        }
+
+        private void WeaponFocusKatars()
+        {
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.WeaponFocusKatars)
                 .Name("Weapon Focus - Katars")
 
                 .AddPerkLevel()
@@ -107,9 +135,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationKatars);
         }
 
-        private void ImprovedCriticalKatars(PerkBuilder builder)
+        private void ImprovedCriticalKatars()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ImprovedCriticalKatars)
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ImprovedCriticalKatars)
                 .Name("Improved Critical - Katars")
 
                 .AddPerkLevel()
@@ -120,9 +148,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalKatars);
         }
 
-        private void KatarProficiency(PerkBuilder builder)
+        private void KatarProficiency()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarProficiency)
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarProficiency)
                 .Name("Katar Proficiency")
 
                 .AddPerkLevel()
@@ -155,9 +183,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KatarProficiency5);
         }
 
-        private void KatarMastery(PerkBuilder builder)
+        private void KatarMastery()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarMastery)
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarMastery)
                 .Name("Katar Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -218,9 +246,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KatarMastery2);
         }
 
-        private void ElectricFist(PerkBuilder builder)
+        private void ElectricFist()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ElectricFist)
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ElectricFist)
                 .Name("Electric Fist")
 
                 .AddPerkLevel()
@@ -244,9 +272,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ElectricFist3);
         }
 
-        private void StrikingCobra(PerkBuilder builder)
+        private void StrikingCobra()
         {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.StrikingCobra)
+            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.StrikingCobra)
                 .Name("Striking Cobra")
 
                 .AddPerkLevel()
@@ -269,9 +297,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StrikingCobra3);
         }
 
-        private void WeaponFocusStaves(PerkBuilder builder)
+        private void WeaponFocusStaves()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.WeaponFocusStaves)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.WeaponFocusStaves)
                 .Name("Weapon Focus - Staves")
 
                 .AddPerkLevel()
@@ -288,9 +316,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationStaves);
         }
 
-        private void ImprovedCriticalStaves(PerkBuilder builder)
+        private void ImprovedCriticalStaves()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.ImprovedCriticalStaves)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.ImprovedCriticalStaves)
                 .Name("Improved Critical - Staves")
 
                 .AddPerkLevel()
@@ -301,9 +329,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalStaff);
         }
 
-        private void StaffProficiency(PerkBuilder builder)
+        private void StaffProficiency()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffProficiency)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffProficiency)
                 .Name("Staff Proficiency")
 
                 .AddPerkLevel()
@@ -336,9 +364,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StaffProficiency5);
         }
 
-        private void StaffMastery(PerkBuilder builder)
+        private void StaffMastery()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffMastery)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffMastery)
                 .Name("Staff Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -399,9 +427,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StaffMastery2);
         }
 
-        private void Slam(PerkBuilder builder)
+        private void Slam()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.Slam)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.Slam)
                 .Name("Slam")
 
                 .AddPerkLevel()
@@ -425,9 +453,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Slam3);
         }
 
-        private void SpinningWhirl(PerkBuilder builder)
+        private void SpinningWhirl()
         {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SpinningWhirl)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl")
 
                 .AddPerkLevel()

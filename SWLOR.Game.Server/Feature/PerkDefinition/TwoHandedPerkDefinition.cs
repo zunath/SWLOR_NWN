@@ -846,7 +846,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon.")
-                .Price(10)
+                .Price(6)
                 .RequirementSkill(SkillType.TwoHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingOneHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);

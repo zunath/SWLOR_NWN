@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables the use of two one-handed weapons at the same time at -20%/-20% to hit.")
-                .Price(10)
+                .Price(6)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.DualWield);
         }
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon.")
-                .Price(10)
+                .Price(6)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingTwoHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);

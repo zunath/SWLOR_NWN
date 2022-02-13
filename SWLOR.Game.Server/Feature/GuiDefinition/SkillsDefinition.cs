@@ -84,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddCell(cell =>
                             {
                                 cell.AddLabel()
-                                    .BindText(model => model.SkillNames);
+                                    .BindText(model => model.SkillNames)
+                                    .BindTooltip(model => model.Descriptions);
                             });
                             template.AddCell(cell =>
                             {

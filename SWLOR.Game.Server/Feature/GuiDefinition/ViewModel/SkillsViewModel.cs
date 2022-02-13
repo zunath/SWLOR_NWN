@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> Descriptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> DecayLockTexts
         {
             get => Get<GuiBindingList<string>>();
@@ -110,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var levels = new GuiBindingList<int>();
             var titles = new GuiBindingList<string>();
             var progresses = new GuiBindingList<float>();
+            var descriptions = new GuiBindingList<string>();
             var decayLockTexts = new GuiBindingList<string>();
             var decayLockColors = new GuiBindingList<GuiColor>();
             var decayLockButtonEnabled = new GuiBindingList<bool>();
@@ -125,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 levels.Add(playerSkill.Rank);
                 titles.Add(GetTitle(playerSkill.Rank));
                 progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
+                descriptions.Add(skill.Description);
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
@@ -137,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Levels = levels;
             Titles = titles;
             Progresses = progresses;
+            Descriptions = descriptions;
             DecayLockTexts = decayLockTexts;
             DecayLockColors = decayLockColors;
             DecayLockButtonEnabled = decayLockButtonEnabled;

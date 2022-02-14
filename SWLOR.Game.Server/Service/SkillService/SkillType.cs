@@ -290,6 +290,15 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             true)]
         Engineering = 32,
+
+        [Skill(SkillCategoryType.Combat,
+            "Devices",
+            50,
+            true,
+            "Ability to use grenades, bombs, and other electronics.",
+            true,
+            false)]
+        Devices = 33,
     }
 
     public class SkillAttribute : Attribute

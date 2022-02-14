@@ -618,7 +618,33 @@ namespace SWLOR.Game.Server.Service
             if (_npcDefenses.ContainsKey(OBJECT_SELF))
                 _npcDefenses.Remove(OBJECT_SELF);
         }
-        
+
+        /// <summary>
+        /// Modifies defense value based on effects found on creature.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="defense">The current defense value which will be modified.</param>
+        /// <returns>A modified defense value.</returns>
+        private static int CalculateEffectDefense(uint creature, int defense)
+        {
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
+                defense += 20;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
+                defense += 5;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
+                defense += 10;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
+                defense += 15;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
+                defense += 20;
+
+            return defense;
+        }
+
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// </summary>
@@ -646,20 +672,7 @@ namespace SWLOR.Game.Server.Service
 
             if (type == CombatDamageType.Physical)
             {
-                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
-                    defense += 20;
-
-                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
-                    defense += 5;
-
-                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
-                    defense += 10;
-
-                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
-                    defense += 15;
-
-                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
-                    defense += 20;
+                defense = CalculateEffectDefense(creature, defense);
             }
 
             return defense;
@@ -693,20 +706,7 @@ namespace SWLOR.Game.Server.Service
 
             if (type == CombatDamageType.Physical)
             {
-                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.IronShell))
-                    defense += 20;
-
-                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding1))
-                    defense += 5;
-
-                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding2))
-                    defense += 10;
-
-                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding3))
-                    defense += 15;
-
-                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding4))
-                    defense += 20;
+                defense = CalculateEffectDefense(creature.m_idSelf, defense);
             }
 
             return defense;

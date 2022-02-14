@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return "Your target is too far away.";
             }
 
-            if (!HasMedicalSupplies(activator))
+            if (!HasStimPack(activator))
             {
                 return "You have no stim packs.";
             }

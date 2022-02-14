@@ -123,6 +123,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Shielding = 57,
         [RecastGroup("Chi", "Chi")]
         Chi = 58,
+        [RecastGroup("Bombs", "Bombs")]
+        Bombs = 59,
+        [RecastGroup("Electronics", "Electronics")]
+        Electronics = 60
     }
 
     public class RecastGroupAttribute: Attribute

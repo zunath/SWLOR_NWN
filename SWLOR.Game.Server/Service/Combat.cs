@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackAttribute">Attack attribute of the attacker. Typically Might/Perception for melee/ranged or Willpower for ether</param>
         /// <param name="defense">The total defense value of the target</param>
         /// <param name="defenseAttribute">The defense attribute of the target. Typically Vitality for melee/ranged or Willpower for ether</param>
-        /// <param name="isCritical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
         /// <returns>A damage value to apply to the target.</returns>
         public static int CalculateDamage(
             float dmg,

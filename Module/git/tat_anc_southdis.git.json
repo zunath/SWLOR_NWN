@@ -99064,7 +99064,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.954957953994743e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -99823,7 +99823,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.070413556927651e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -100076,7 +100076,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.400457685246222e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -100710,7 +100710,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.581191771286313e-042
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -100880,7 +100880,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.087934711843977e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -101050,7 +101050,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.594677652401642e-042
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -101282,7 +101282,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.681558157189781e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -102158,7 +102158,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.681558157189781e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -102394,7 +102394,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 1.594677652401642e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -102630,7 +102630,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.087934711843977e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -102866,7 +102866,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 2.581191771286313e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -103537,7 +103537,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.400457685246222e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -103760,7 +103760,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.070413556927651e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -104493,7 +104493,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.954957953994743e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -105988,7 +105988,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.146190913914611e-023
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -109605,7 +109605,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.146190913914611e-023
                     },
                     "XPosition": {
                       "type": "float",
@@ -112317,7 +112317,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.068771459779309e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -113804,7 +113804,215 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.068771459779309e-038
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 12,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Explosives"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 6
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "explosives"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "explosives"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 1.069431891745546e-038
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 13,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Explosives"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 6
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "explosives"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "explosives50"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 3.694943790731678e-041
                     },
                     "XPosition": {
                       "type": "float",

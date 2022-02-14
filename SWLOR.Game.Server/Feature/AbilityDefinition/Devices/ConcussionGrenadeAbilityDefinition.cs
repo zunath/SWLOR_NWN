@@ -37,6 +37,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void Impact(uint activator, uint target, float dmg, int knockdownChance, float knockdownLength)
         {
+            if (GetFactionEqual(activator, target))
+                return;
+
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
@@ -100,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 4.5f, 30, 30f);
+                        Impact(activator, target, 4.5f, 30, 6f);
                     });
                 });
         }
@@ -123,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 7.5f, 50, 60f);
+                        Impact(activator, target, 7.5f, 50, 8f);
                     });
                 });
         }

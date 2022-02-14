@@ -38,6 +38,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void Impact(uint activator, uint target, float dmg, int bleedChance, float bleedLength)
         {
+            if (GetFactionEqual(activator, target))
+                return;
+
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);

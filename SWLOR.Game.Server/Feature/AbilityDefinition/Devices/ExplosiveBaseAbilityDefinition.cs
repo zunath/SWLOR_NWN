@@ -64,7 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             DelayCommand(delay, () =>
             {
-                PlaySound(sound);
+                if(!string.IsNullOrWhiteSpace(sound))
+                    PlaySound(sound);
                 ApplyEffectAtLocation(DurationType.Instant, vfxEffect, targetLocation);
             });
 

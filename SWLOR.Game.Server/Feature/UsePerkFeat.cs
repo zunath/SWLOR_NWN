@@ -101,7 +101,15 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                    if (GetIsObjectValid(target))
+                    {
+                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                    }
+                    else
+                    {
+                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                    }
+                    
                     ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
                 }
             }

@@ -83,5 +83,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             TakeExplosives(activator);
         }
+
+        protected void ExplosiveAOEImpact(
+            uint activator,
+            Location targetLocation,
+            AreaOfEffect aoe,
+            string enterScript,
+            string heartbeatScript,
+            float duration)
+        {
+            var activatorLocation = GetLocation(activator);
+            var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
+
+            DelayCommand(delay, () =>
+            {
+                ApplyEffectAtLocation(
+                    DurationType.Temporary, 
+                    EffectAreaOfEffect(aoe, enterScript, heartbeatScript), 
+                    targetLocation, 
+                    duration);
+
+            });
+
+            TakeExplosives(activator);
+        }
     }
 }

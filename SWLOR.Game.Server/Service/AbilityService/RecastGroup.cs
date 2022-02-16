@@ -125,8 +125,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Chi = 58,
         [RecastGroup("Bombs", "Bombs")]
         Bombs = 59,
-        [RecastGroup("Electronics", "Electronics")]
-        Electronics = 60
+        [RecastGroup("Stealth Generator", "Stealth Gen.")]
+        StealthGenerator = 60,
+        [RecastGroup("Flamethrower", "Flamethrower")]
+        Flamethrower = 61,
+        [RecastGroup("Wrist Rocket", "W. Rocket")]
+        WristRocket = 62,
+        [RecastGroup("Deflector Shield", "D. Shield")]
+        DeflectorShield = 63,
     }
 
     public class RecastGroupAttribute: Attribute

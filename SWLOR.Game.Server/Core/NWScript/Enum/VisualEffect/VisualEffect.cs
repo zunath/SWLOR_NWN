@@ -543,6 +543,5 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         VFX_IMP_KIN_L = 824,
         Vfx_Beam_Drain = 825,
 
-
     }
 }

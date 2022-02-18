@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("hangbyhands")
                 .Description("Plays a hanging by hands animation.")
                 .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.HangByhands)
+                .AnimationLoopingAction(Animation.HangByHands)
                 .IsEmote();
             builder.Create("dig")
                 .Description("Plays a dig animation.")

@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Updates the max range of this ability (default is 2.0, i.e. melee range).
+        /// Updates the max range of this ability (default is 5.0, i.e. melee range).
         /// </summary>
         /// <param name="maxRange">The maximum range of the ability.</param>
         /// <returns>An ability builder with the configured options</returns>

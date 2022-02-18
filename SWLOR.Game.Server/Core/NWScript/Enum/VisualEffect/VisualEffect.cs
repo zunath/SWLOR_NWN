@@ -542,7 +542,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         Vfx_Imp_Mirv_Fireball = 823,
         VFX_IMP_KIN_L = 824,
         Vfx_Beam_Drain = 825,
-
+        Vfx_Flamethrower = 826,
 
     }
 }

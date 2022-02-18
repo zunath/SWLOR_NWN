@@ -14365,6 +14365,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Explosives"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "explosives"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Explosives"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "explosives50"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lightsaber Upgrade Kit"
                     },
                     "RESREF": {

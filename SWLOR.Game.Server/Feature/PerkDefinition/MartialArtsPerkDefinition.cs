@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             StaffProficiency();
             StaffMastery();
             Slam();
-            SpinningWhirl();
+            LegSweep();
 
             return _builder.Build();
         }
@@ -453,29 +453,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Slam3);
         }
 
-        private void SpinningWhirl()
+        private void LegSweep()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SpinningWhirl)
-                .Name("Spinning Whirl")
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.LegSweep)
+                .Name("Leg Sweep")
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
-                .Price(2)
+                .Description("Your next attack deals an additional 2.0 DMG and has a 25% chance to inflict knockdown on your target for 6 seconds.")
+                .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
-                .GrantsFeat(FeatType.SpinningWhirl1)
+                .GrantsFeat(FeatType.LegSweep1)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
+                .Description("Your next attack deals an additional 4.5 DMG and has a 40% chance to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
-                .GrantsFeat(FeatType.SpinningWhirl2)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.LegSweep2)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 7.0 DMG each.")
+                .Description("Your next attack deals an additional 7.0 DMG and has a 50% chance to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.SpinningWhirl3);
+                .GrantsFeat(FeatType.LegSweep3);
         }
+
     }
 }

@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Must be within line of sight.
-            if (!LineOfSightObject(activator, target))
+            if (GetIsObjectValid(target) && !LineOfSightObject(activator, target))
             {
                 SendMessageToPC(activator, "You cannot see your target.");
                 return false;

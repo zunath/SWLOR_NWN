@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ImprovedCriticalTwinBlades();
             TwinBladeProficiency();
             TwinBladeMastery();
-            LegSweep();
+            SpinningWhirl();
             CrossCut();
             WeaponFocusSaberstaffs();
             ImprovedCriticalSaberstaffs();
@@ -597,30 +597,29 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
-        private void LegSweep()
+        private void SpinningWhirl()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.LegSweep)
-                .Name("Leg Sweep")
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.SpinningWhirl)
+                .Name("Spinning Whirl")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2.0 DMG and has a 25% chance to inflict knockdown on your target for 6 seconds.")
-                .Price(3)
+                .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
+                .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .GrantsFeat(FeatType.LegSweep1)
+                .GrantsFeat(FeatType.SpinningWhirl1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 4.5 DMG and has a 40% chance to inflict knockdown on your target for 6 seconds.")
+                .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.LegSweep2)
+                .GrantsFeat(FeatType.SpinningWhirl2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 7.0 DMG and has a 50% chance to inflict knockdown on your target for 6 seconds.")
+                .Description("Attacks up to 3 nearby enemies for 7.0 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.LegSweep3);
+                .GrantsFeat(FeatType.SpinningWhirl3);
         }
 
         private void CrossCut()

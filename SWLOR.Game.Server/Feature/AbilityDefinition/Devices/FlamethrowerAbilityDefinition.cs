@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -26,18 +28,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location location, float dmg, int burningChance)
+        private void Impact(uint activator, Location targetLocation, float dmg, int burningChance)
         {
-            var origin = GetPositionFromLocation(location);
             const float ConeSize = 10f;
 
             AssignCommand(activator, () =>
             {
-                // todo: fix the burning hands flame and play it here
+                ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f);
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Flamethrower), activator, 2f);
             });
 
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
-            var target = GetFirstObjectInShape(Shape.Cone, ConeSize, location, true, ObjectType.Creature, origin);
+            var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
@@ -59,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
                 }
 
-                target = GetNextObjectInShape(Shape.Cone, ConeSize, location, true, ObjectType.Creature, origin);
+                target = GetNextObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             }
         }
 
@@ -70,13 +72,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Flamethrower, 180f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    var location = GetLocation(activator);
-                    Impact(activator, location, 3.0f, 0);
+                    Impact(activator, targetLocation, 3.0f, 0);
                 });
         }
 
@@ -87,13 +87,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Flamethrower, 180f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    var location = GetLocation(activator);
-                    Impact(activator, location,5.0f, 30);
+                    Impact(activator, targetLocation, 5.0f, 30);
                 });
         }
 
@@ -104,13 +102,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Flamethrower, 180f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    var location = GetLocation(activator);
-                    Impact(activator, location, 8.0f, 50);
+                    Impact(activator, targetLocation, 8.0f, 50);
                 });
         }
     }

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             CityManagement();
             Upkeep();
+            GuildRelations();
 
             return _builder.Build();
         }
@@ -103,6 +104,32 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 20)
                 .GrantsFeat(FeatType.Upkeep2);
+        }
+
+        private void GuildRelations()
+        {
+            _builder.Create(PerkCategoryType.Leadership, PerkType.GuildRelations)
+                .Name("Guild Relations")
+
+                .AddPerkLevel()
+                .Description("Improves GP and credit rewards from guild tasks by 5%.")
+                .Price(2)
+                .RequirementSkill(SkillType.Leadership, 5)
+
+                .AddPerkLevel()
+                .Description("Improves GP and credit rewards from guild tasks by 10%.")
+                .Price(2)
+                .RequirementSkill(SkillType.Leadership, 10)
+
+                .AddPerkLevel()
+                .Description("Improves GP and credit rewards from guild tasks by 15%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Leadership, 15)
+
+                .AddPerkLevel()
+                .Description("Improves GP and credit rewards from guild tasks by 20%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Leadership, 20);
         }
     }
 }

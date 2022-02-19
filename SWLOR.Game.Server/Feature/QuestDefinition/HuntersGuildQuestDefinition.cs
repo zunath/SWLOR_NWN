@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             }
         }
 
-        private Dictionary<int, RewardDetails> _rewardDetails { get; set; }
+        private Dictionary<int, RewardDetails> _rewardDetails;
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {

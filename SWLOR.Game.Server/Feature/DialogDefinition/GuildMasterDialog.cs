@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Show me the task list.", () =>
             {
-
+                ChangePage(TaskListPageId);
             });
 
             page.AddResponse("Show me the guild shop.", () =>
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
             {
                 var task = Quest.GetQuestById(questId);
-                if (task.GuildType == GuildType.Invalid) continue; // Not a guild task quest
+                if (task.GuildType != model.Guild) continue; // This quest isn't associated with this guild type.
                 if (pcQuest.DateLastCompleted != null) continue; // Has already been completed.
                 if (currentTasks.ContainsKey(questId)) continue; // This task is currently offered
 
@@ -143,10 +143,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     dbPlayer.Quests[task.QuestId].DateLastCompleted >= Guild.DateTasksLoaded)
                     continue;
 
+                // Player doesn't have the requisite guild rank to accept this task. Skip over it.
+                var playerRank = 0;
+                if (dbPlayer.Guilds.ContainsKey(task.GuildType))
+                    playerRank = dbPlayer.Guilds[task.GuildType].Rank;
+
+                if (playerRank < task.GuildRank)
+                    continue;
+
                 var status = ColorToken.Green("{ACCEPTED}");
                 // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
                 if (!dbPlayer.Quests.ContainsKey(task.QuestId) ||
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted == null)
+                    dbPlayer.Quests[task.QuestId].DateLastCompleted == null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0)
                 {
                     status = ColorToken.Yellow("{Available}");
                 }

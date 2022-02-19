@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddGoldReward(int amount, bool isSelectable = true)
         {
-            var reward = new GoldReward(amount, isSelectable);
+            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid);
             _activeQuest.Rewards.Add(reward);
 
             return this;

@@ -223,8 +223,7 @@
         WristRocket = 216,
         DeflectorShield = 217,
         DemolitionExpert = 218,
-
-        GuildRelations = 1004,
+        GuildRelations = 219,
 
     }
 }

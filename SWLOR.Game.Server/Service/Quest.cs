@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -16,10 +15,10 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Quest
     {
-        private static readonly Dictionary<string, QuestDetail> _quests = new Dictionary<string, QuestDetail>();
-        private static readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new Dictionary<NPCGroupType, NPCGroupAttribute>();
-        private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new Dictionary<NPCGroupType, List<string>>();
-        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
+        private static readonly Dictionary<string, QuestDetail> _quests = new();
+        private static readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new();
+        private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
+        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
@@ -80,6 +79,9 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+
+            Console.WriteLine($"Loaded {_quests.Count} quests.");
+            ExecuteScript("qsts_registered", GetModule());
         }
 
         /// <summary>
@@ -99,8 +101,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all of the NPCGroupTypes are iterated over and their data is stored into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
-        public static void RegisterNPCGroups()
+        private static void RegisterNPCGroups()
         {
             var npcGroups = Enum.GetValues(typeof(NPCGroupType)).Cast<NPCGroupType>();
             foreach (var npcGroupType in npcGroups)
@@ -108,6 +109,8 @@ namespace SWLOR.Game.Server.Service
                 var npcGroupDetail = npcGroupType.GetAttribute<NPCGroupType, NPCGroupAttribute>();
                 _npcGroups[npcGroupType] = npcGroupDetail;
             }
+
+            Console.WriteLine($"Loaded {_npcGroups.Count} NPC groups.");
         }
 
         /// <summary>

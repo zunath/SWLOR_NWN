@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -36,11 +37,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " Credits";
+        public bool IsGuildQuest { get; }
 
-        public GoldReward(int amount, bool isSelectable)
+        public GoldReward(int amount, bool isSelectable, bool isGuildQuest)
         {
             Amount = amount;
             IsSelectable = isSelectable;
+            IsGuildQuest = isGuildQuest;
         }
 
         public void GiveReward(uint player)
@@ -48,7 +51,17 @@ namespace SWLOR.Game.Server.Service.QuestService
             // 5% credit bonus per social modifier.
             var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
 
-            var amount = Amount + (int)(Amount * social);
+            // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
+            var guildRelations = 0f;
+            if (IsGuildQuest)
+            {
+                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
+                guildRelations = perkLevel * 0.05f;
+            }
+
+            var amount = Amount + 
+                         (int)(Amount * social) +
+                         (int)(Amount * guildRelations);
             GiveGoldToCreature(player, amount);
         }
     }

@@ -3713,11 +3713,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armorsmith Guild Master"
+                      "value": "Agriculture Guild Master"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "arm_guildmaster"
+                      "value": "agr_guildmaster"
                     }
                   },
                   {
@@ -4060,6 +4060,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "eng_guildmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fabrication Guild Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fab_guildmaster"
                     }
                   },
                   {
@@ -5054,25 +5073,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mon Cala Impound Manager"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "plan_imp_ma_mc"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -5347,25 +5347,6 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Planetary Impound Manager"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "plan_imp_man"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Receptionist"
                     },
                     "RESREF": {
@@ -5504,6 +5485,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wook_shaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smithery Guild Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_guildmaster"
                     }
                   },
                   {
@@ -6112,25 +6112,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mcdce_waitress"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weaponsmith Guild Master"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_guildmaster"
                     }
                   },
                   {

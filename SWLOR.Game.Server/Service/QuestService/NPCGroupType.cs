@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         [NPCGroup("Sandswimmer")]
         Tatooine_Sandswimmer = 24,
         [NPCGroup("Sand Beetle")]
-        Tatooine_Wraid = 25,
+        Tatooine_SandBeetle = 25,
         [NPCGroup("Sand Demon")]
         Tatooine_SandDemon = 26,
         [NPCGroup("Tusken Raider")]

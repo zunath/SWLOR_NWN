@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("SPACE_HAMMER")
                 .AddItem("elec_imperfect", 20)
                 .AddItem("ref_barinium", 3)
-                .AddItem("aluminum", 1, 1, true);
+                .AddItem("obsidian", 1, 1, true);
 
             _builder.Create("SPACE_DRAKE")
                 .AddItem("elec_imperfect", 20)

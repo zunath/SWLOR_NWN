@@ -19,69 +19,141 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             }
         }
 
-        private Dictionary<int, RewardDetails> _rewardDetails;
+        private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
+        {
+            { 0, new RewardDetails(23, 7)},
+            { 1, new RewardDetails(84, 27)},
+            { 2, new RewardDetails(122, 39)},
+            { 3, new RewardDetails(184, 52)},
+            { 4, new RewardDetails(245, 65)},
+            { 5, new RewardDetails(312, 82)},
+        };
+        private readonly QuestBuilder _builder = new();
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            _rewardDetails = new Dictionary<int, RewardDetails>
-            {
-                { 0, new RewardDetails(23, 7)},
-                { 1, new RewardDetails(84, 27)},
-                { 2, new RewardDetails(122, 39)},
-                { 3, new RewardDetails(184, 52)},
-                { 4, new RewardDetails(245, 65)},
-                { 5, new RewardDetails(312, 82)},
-            };
 
-            var builder = new QuestBuilder();
-            AmphiHydrusBrain(builder);
-            AmphiHydrusBrainStem(builder);
-            CrystalSpider(builder);
-            ColicoidExperiment(builder);
-            MalfunctioningDroid(builder);
-            Mynock(builder);
-            DamagedBlueCrystal(builder);
-            DamagedGreenCrystal(builder);
-            DamagedRedCrystal(builder);
-            DamagedYellowCrystal(builder);
-            KathHoundFur(builder);
-            KathHoundMeat(builder);
-            KathHoundTooth(builder);
-            MandaloreHerb(builder);
-            MandalorianBlasterParts(builder);
-            MandalorianDogTags(builder);
-            MandalorianLargeVibrobladeParts(builder);
-            MandalorianLeader(builder);
-            MandalorianLightsaberParts(builder);
-            MandalorianPlexiplate(builder);
-            MandalorianPolearmParts(builder);
-            MandalorianRanger(builder);
-            MandalorianVibrobladeParts(builder);
-            MandalorianWarrior(builder);
-            MonCalaAmphiHydrus(builder);
-            MonCalaAradile(builder);
-            MonCalaViper(builder);
-            MynockTooth(builder);
-            MynockWing(builder);
-            ValleyCairnmog(builder);
-            ValleyNashtah(builder);
-            ValleyRaivor(builder);
-            VellenFlesheater(builder);
-            VellenFleshleader(builder);
-            ViscaraKathHound(builder);
-            ViscaraWarocas(builder);
-            WarocasLeg(builder);
-            WarocasMeat(builder);
-            WarocasSpine(builder);
-            WildwoodsGimpassa(builder);
-            WildwoodsKinrath(builder);
-            WildwoodsOutlaw(builder);
 
-            return builder.Build();
+            // Tier 1 (Rank 0)
+            BuildKillTask("hun_tsk_001", NPCGroupType.CZ220_ColicoidExperiment, 3, 0);
+            BuildKillTask("hun_tsk_002", NPCGroupType.CZ220_MalfunctioningDroids, 10, 0);
+            BuildKillTask("hun_tsk_003", NPCGroupType.CZ220_Mynocks, 10, 0);
+            BuildItemTask("hun_tsk_004", "k_hound_fur", 6, 0);
+            BuildItemTask("hun_tsk_005", "kath_meat_1", 6, 0);
+            BuildItemTask("hun_tsk_006", "k_hound_tooth", 6, 0);
+            BuildItemTask("hun_tsk_007", "mynock_tooth", 6, 0);
+            BuildItemTask("hun_tsk_008", "mynock_wing", 6, 0);
+            BuildKillTask("hun_tsk_009", NPCGroupType.Viscara_WildlandKathHounds, 10, 0);
+            BuildKillTask("hun_tsk_010", NPCGroupType.Viscara_WildlandsWarocas, 10, 0);
+            BuildItemTask("hun_tsk_011", "waro_leg", 6, 0);
+            BuildItemTask("hun_tsk_012", "warocas_meat", 6, 0);
+            BuildItemTask("hun_tsk_013", "waro_feathers", 6, 0);
+            BuildKillTask("hun_tsk_014", NPCGroupType.Viscara_WildwoodsGimpassas, 8, 0);
+            BuildKillTask("hun_tsk_015", NPCGroupType.Viscara_WildwoodsKinraths, 10, 0);
+            BuildKillTask("hun_tsk_016", NPCGroupType.Viscara_WildwoodsOutlaws, 10, 0);
+            BuildItemTask("hun_tsk_017", "aluminum", 3, 0);
+            BuildItemTask("hun_tsk_018", "elec_ruined", 10, 0);
+
+            // Tier 2 (Rank 1)
+            BuildItemTask("hun_tsk_200", "herb_m", 6, 1);
+            BuildItemTask("hun_tsk_201", "m_blast_parts", 6, 1);
+            BuildItemTask("hun_tsk_202", "man_tags", 6, 1);
+            BuildItemTask("hun_tsk_203", "m_lvibro_parts", 6, 1);
+            BuildKillTask("hun_tsk_204", NPCGroupType.Viscara_MandalorianLeader, 1, 1);
+            BuildItemTask("hun_tsk_205", "m_ls_parts", 6, 1);
+            BuildItemTask("hun_tsk_206", "m_plexiplate", 6, 1);
+            BuildItemTask("hun_tsk_207", "m_polearm_parts", 6, 1);
+            BuildKillTask("hun_tsk_208", NPCGroupType.Viscara_MandalorianRangers, 10, 1);
+            BuildItemTask("hun_tsk_209", "m_vibro_parts", 6, 1);
+            BuildKillTask("hun_tsk_210", NPCGroupType.Viscara_MandalorianWarriors, 10, 1);
+            BuildKillTask("hun_tsk_211", NPCGroupType.Viscara_ValleyCairnmogs, 10, 1);
+            BuildKillTask("hun_tsk_212", NPCGroupType.Viscara_ValleyNashtah, 10, 1);
+            BuildKillTask("hun_tsk_213", NPCGroupType.Viscara_DeepMountainRaivors, 10, 1);
+            BuildKillTask("hun_tsk_214", NPCGroupType.Viscara_CrystalSpider, 10, 1);
+            BuildItemTask("hun_tsk_215", "steel", 3, 1);
+            BuildItemTask("hun_tsk_216", "elec_flawed", 10, 1);
+
+            // Tier 3 (Rank 2)
+            BuildItemTask("hun_tsk_400", "amphi_brain", 6, 2);
+            BuildItemTask("hun_tsk_401", "amphi_brain2", 6, 2);
+            BuildKillTask("hun_tsk_402", NPCGroupType.MonCala_AmphiHydrus, 10, 2);
+            BuildKillTask("hun_tsk_403", NPCGroupType.MonCala_Aradile, 10, 2);
+            BuildKillTask("hun_tsk_404", NPCGroupType.MonCala_Viper, 10, 2);
+            BuildKillTask("hun_tsk_405", NPCGroupType.Viscara_VellenFlesheater, 10, 2);
+            BuildKillTask("hun_tsk_406", NPCGroupType.Viscara_VellenFleshleader, 1, 2);
+            BuildKillTask("hun_tsk_407", NPCGroupType.Hutlar_Byysk, 10, 2);
+            BuildKillTask("hun_tsk_408", NPCGroupType.Hutlar_QionSlugs, 10, 2);
+            BuildKillTask("hun_tsk_409", NPCGroupType.Hutlar_QionTigers, 10, 2);
+            BuildItemTask("hun_tsk_410", "obsidian", 3, 2);
+            BuildItemTask("hun_tsk_411", "elec_good", 10, 2);
+            BuildItemTask("hun_tsk_412", "byysk_longsword", 3, 2);
+            BuildItemTask("hun_tsk_413", "byysk_knife", 3, 2);
+            BuildItemTask("hun_tsk_414", "byysk_gswd", 3, 2);
+            BuildItemTask("hun_tsk_415", "byysk_spear", 3, 2);
+            BuildItemTask("hun_tsk_416", "byysk_katar", 3, 2);
+            BuildItemTask("hun_tsk_417", "byysk_staff", 3, 2);
+            BuildItemTask("hun_tsk_418", "byysk_pistol", 3, 2);
+            BuildItemTask("hun_tsk_419", "byysk_shuriken", 3, 2);
+            BuildItemTask("hun_tsk_420", "byysk_twinblade", 3, 2);
+            BuildItemTask("hun_tsk_421", "byysk_rifle", 3, 2);
+            BuildItemTask("hun_tsk_422", "byysk_meat", 6, 2);
+            BuildItemTask("hun_tsk_423", "byysk_tail", 6, 2);
+            BuildItemTask("hun_tsk_424", "citrine", 3, 2);
+            BuildItemTask("hun_tsk_425", "slug_bile", 6, 2);
+            BuildItemTask("hun_tsk_426", "slug_tooth", 6, 2);
+            BuildItemTask("hun_tsk_427", "qion_tiger_fang", 6, 2);
+            BuildItemTask("hun_tsk_428", "tiger_blood", 6, 2);
+            BuildItemTask("hun_tsk_429", "tiger_meat", 6, 2);
+            BuildItemTask("hun_tsk_430", "q_tiger_paw", 3, 2);
+
+            // Tier 4 (Rank 3)
+            BuildKillTask("hun_tsk_600", NPCGroupType.Tatooine_Womprat, 10, 3);
+            BuildKillTask("hun_tsk_601", NPCGroupType.Tatooine_Sandswimmer, 10, 3);
+            BuildKillTask("hun_tsk_602", NPCGroupType.Tatooine_SandBeetle, 10, 3);
+            BuildKillTask("hun_tsk_603", NPCGroupType.Tatooine_SandDemon, 10, 3);
+            BuildKillTask("hun_tsk_604", NPCGroupType.Tatooine_TuskenRaider, 10, 3);
+            BuildItemTask("hun_tsk_605", "crystal", 3, 3);
+            BuildItemTask("hun_tsk_606", "elec_imperfect", 10, 3);
+            BuildItemTask("hun_tsk_607", "womprathide", 6, 3);
+            BuildItemTask("hun_tsk_608", "womprattooth", 6, 3);
+            BuildItemTask("hun_tsk_609", "wompratclaw", 6, 3);
+            BuildItemTask("hun_tsk_610", "wompratmeat", 6, 3);
+            BuildItemTask("hun_tsk_611", "womp_innards", 6, 3);
+            BuildItemTask("hun_tsk_612", "sandswimmerfin", 6, 3);
+            BuildItemTask("hun_tsk_613", "sandswimmerh", 6, 3);
+            BuildItemTask("hun_tsk_614", "sandswimmerleg", 6, 3);
+            BuildItemTask("hun_tsk_615", "shat_beetle_chit", 6, 3);
+            BuildItemTask("hun_tsk_616", "beetle_chitin", 6, 3);
+            BuildItemTask("hun_tsk_617", "wild_leg", 6, 3);
+            BuildItemTask("hun_tsk_618", "sanddemonclaw", 6, 3);
+            BuildItemTask("hun_tsk_619", "sanddemonhide", 6, 3);
+            BuildItemTask("hun_tsk_620", "sand_demon_leg", 6, 3);
+            BuildItemTask("hun_tsk_621", "ruby", 3, 3);
+            BuildItemTask("hun_tsk_622", "sandwormtooth", 3, 3);
+            BuildItemTask("hun_tsk_623", "raider_longsword", 3, 3);
+            BuildItemTask("hun_tsk_624", "raider_knife", 3, 3);
+            BuildItemTask("hun_tsk_625", "raider_gswd", 3, 3);
+            BuildItemTask("hun_tsk_626", "raider_spear", 3, 3);
+            BuildItemTask("hun_tsk_627", "raider_katar", 3, 3);
+            BuildItemTask("hun_tsk_628", "raider_staff", 3, 3);
+            BuildItemTask("hun_tsk_629", "raider_pistol", 3, 3);
+            BuildItemTask("hun_tsk_630", "raider_shuriken", 3, 3);
+            BuildItemTask("hun_tsk_631", "raider_twinblade", 3, 3);
+            BuildItemTask("hun_tsk_632", "raider_rifle", 3, 3);
+            BuildItemTask("hun_tsk_633", "tusken_meat", 6, 3);
+            BuildItemTask("hun_tsk_634", "tusken_bones", 6, 3);
+            BuildItemTask("hun_tsk_635", "tusken_blood", 6, 3);
+
+            // Tier 5 (Rank 4)
+            BuildItemTask("hun_tsk_800", "diamond", 3, 4);
+            BuildItemTask("hun_tsk_801", "elec_high", 10, 4);
+            BuildItemTask("hun_tsk_802", "emerald", 6, 3);
+
+
+            return _builder.Build();
         }
 
         private void BuildItemTask(
-            QuestBuilder builder, 
             string questId, 
             string resref, 
             int amount, 
@@ -90,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
-            builder.Create(questId, $"{amount}x {itemName}")
+            _builder.Create(questId, $"{amount}x {itemName}")
                 .IsRepeatable()
                 .IsGuildTask(GuildType.HuntersGuild, guildRank)
 
@@ -102,7 +174,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
         }
         private void BuildKillTask(
-            QuestBuilder builder,
             string questId,
             NPCGroupType group,
             int amount,
@@ -111,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             var groupDetail = Quest.GetNPCGroup(group);
             var rewardDetails = _rewardDetails[guildRank];
 
-            builder.Create(questId, $"Kill {amount}x {groupDetail.Name}")
+            _builder.Create(questId, $"Kill {amount}x {groupDetail.Name}")
                 .IsRepeatable()
                 .IsGuildTask(GuildType.HuntersGuild, guildRank)
 
@@ -125,181 +196,5 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
         }
-
-        private void AmphiHydrusBrain(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_608", "amphi_brain", 6, 2);
-        }
-
-        private void AmphiHydrusBrainStem(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_607", "amphi_brain2", 6, 2);
-        }
-
-        private void CrystalSpider(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_603", NPCGroupType.Viscara_CrystalSpider, 10, 2);
-        }
-
-        private void ColicoidExperiment(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_569", NPCGroupType.CZ220_ColicoidExperiment, 10, 0);
-        }
-
-        private void MalfunctioningDroid(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_568", NPCGroupType.CZ220_MalfunctioningDroids, 10, 0);
-        }
-
-        private void Mynock(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_567", NPCGroupType.CZ220_Mynocks, 10, 0);
-        }
-
-        private void DamagedBlueCrystal(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_599", "p_crystal_blue", 6, 2);
-        }
-        private void DamagedGreenCrystal(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_600", "p_crystal_green", 6, 2);
-        }
-        private void DamagedRedCrystal(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_601", "p_crystal_red", 6, 2);
-        }
-        private void DamagedYellowCrystal(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_602", "p_crystal_yellow", 6, 2);
-        }
-        private void KathHoundFur(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_579", "k_hound_fur", 6, 0);
-        }
-        private void KathHoundMeat(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_580", "kath_meat_1", 6, 0);
-        }
-        private void KathHoundTooth(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_581", "k_hound_tooth", 6, 0);
-        }
-        private void MandaloreHerb(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_591", "herb_m", 6, 1);
-        }
-        private void MandalorianBlasterParts(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_594", "m_blast_parts", 6, 1);
-        }
-        private void MandalorianDogTags(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_592", "man_tags", 6, 1);
-        }
-        private void MandalorianLargeVibrobladeParts(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_595", "m_lvibro_parts", 6, 1);
-        }
-        private void MandalorianLeader(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_587", NPCGroupType.Viscara_MandalorianLeader, 1, 1);
-        }
-        private void MandalorianLightsaberParts(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_596", "m_ls_parts", 6, 1);
-        }
-        private void MandalorianPlexiplate(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_593", "m_plexiplate", 6, 1);
-        }
-        private void MandalorianPolearmParts(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_597", "m_polearm_parts", 6, 1);
-        }
-        private void MandalorianRanger(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_586", NPCGroupType.Viscara_MandalorianRangers, 10, 1);
-        }
-        private void MandalorianVibrobladeParts(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_598", "m_vibro_parts", 6, 1);
-        }
-        private void MandalorianWarrior(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_585", NPCGroupType.Viscara_MandalorianWarriors, 10, 1);
-        }
-        private void MonCalaAmphiHydrus(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_606", NPCGroupType.MonCala_AmphiHydrus, 10, 2);
-        }
-        private void MonCalaAradile(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_604", NPCGroupType.MonCala_Aradile, 10, 2);
-        }
-        private void MonCalaViper(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_605", NPCGroupType.MonCala_Viper, 10, 2);
-        }
-        private void MynockTooth(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_576", "mynock_tooth", 6, 0);
-        }
-        private void MynockWing(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_575", "mynock_wing", 6, 0);
-        }
-        private void ValleyCairnmog(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_588", NPCGroupType.Viscara_ValleyCairnmogs, 10, 1);
-        }
-        private void ValleyNashtah(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_590", NPCGroupType.Viscara_ValleyNashtah, 10, 1);
-        }
-        private void ValleyRaivor(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_589", NPCGroupType.Viscara_DeepMountainRaivors, 10, 1);
-        }
-        private void VellenFlesheater(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_610", NPCGroupType.Viscara_VellenFlesheater, 10, 2);
-        }
-        private void VellenFleshleader(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_609", NPCGroupType.Viscara_VellenFleshleader, 1, 2);
-        }
-        private void ViscaraKathHound(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_570", NPCGroupType.Viscara_WildlandKathHounds, 10, 0);
-        }
-        private void ViscaraWarocas(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_571", NPCGroupType.Viscara_WildlandsWarocas, 10, 0);
-        }
-        private void WarocasLeg(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_582", "waro_leg", 6, 0);
-        }
-        private void WarocasMeat(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_583", "warocas_meat", 6, 0);
-        }
-        private void WarocasSpine(QuestBuilder builder)
-        {
-            BuildItemTask(builder, "hun_tsk_584", "waro_feathers", 6, 0);
-        }
-        private void WildwoodsGimpassa(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_573", NPCGroupType.Viscara_WildwoodsGimpassas, 8, 0);
-        }
-        private void WildwoodsKinrath(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_574", NPCGroupType.Viscara_WildwoodsKinraths, 10, 0);
-        }
-        private void WildwoodsOutlaw(QuestBuilder builder)
-        {
-            BuildKillTask(builder, "hun_tsk_572", NPCGroupType.Viscara_WildwoodsOutlaws, 10, 0);
-        }
-
     }
 }

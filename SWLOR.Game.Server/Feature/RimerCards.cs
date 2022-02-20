@@ -58,73 +58,64 @@ namespace SWLOR.Game.Server.Feature
         }
 
         [NWNEventHandler("rimer_cpu_1")]
-        public static int RimerCPU1()
+        public static void RimerCPU1()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Training);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_2")]
-        public static int RimerCPU2()
+        public static void RimerCPU2()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Easy);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_3")]
-        public static int RimerCPU3()
+        public static void RimerCPU3()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Random;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Easy);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_4")]
-        public static int RimerCPU4()
+        public static void RimerCPU4()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.FastCreatures : RimerDeckType.BigCreatures;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Normal);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_5")]
-        public static int RimerCPU5()
+        public static void RimerCPU5()
         {
             ConfigureGameSettings(OBJECT_SELF, RimerDeckType.Random, RimerAIDifficulty.Normal);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_6")]
-        public static int RimerCPU6()
+        public static void RimerCPU6()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Spells : RimerDeckType.Angels;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Normal);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_7")]
-        public static int RimerCPU7()
+        public static void RimerCPU7()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Undead : RimerDeckType.Random;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Hard);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_8")]
-        public static int RimerCPU8()
+        public static void RimerCPU8()
         {
             var deck = Random.Next(4) <= 3 ? RimerDeckType.Angels : RimerDeckType.Animals;
             ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Hard);
-            return 0;
         }
 
         [NWNEventHandler("rimer_cpu_9")]
-        public static int RimerCPU9()
+        public static void RimerCPU9()
         {
             ConfigureGameSettings(OBJECT_SELF, RimerDeckType.Random, RimerAIDifficulty.Hard);
-            return 0;
         }
     }
 }

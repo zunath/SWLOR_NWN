@@ -28,11 +28,11 @@
   },
   "MarkDown": {
     "type": "int",
-    "value": 65
+    "value": 40
   },
   "MarkUp": {
     "type": "int",
-    "value": 500
+    "value": 100
   },
   "MaxBuyPrice": {
     "type": "int",

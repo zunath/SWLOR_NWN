@@ -7422,7 +7422,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -11643,7 +11643,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
@@ -11681,7 +11681,7 @@
                     "__struct_id": 0,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -11777,7 +11777,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -12008,7 +12008,7 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -12104,7 +12104,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -12335,7 +12335,7 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -12431,7 +12431,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -12662,7 +12662,7 @@
                     "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 781
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -12758,7 +12758,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 782
                     },
                     "Cursed": {
                       "type": "byte",
@@ -12989,7 +12989,7 @@
                     "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -13085,7 +13085,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -13316,7 +13316,7 @@
                     "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -13412,7 +13412,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -13569,6 +13569,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -13643,7 +13674,7 @@
                     "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -13739,7 +13770,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -13896,6 +13927,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -13970,7 +14032,7 @@
                     "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 781
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -14066,7 +14128,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 782
                     },
                     "Cursed": {
                       "type": "byte",
@@ -14223,6 +14285,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -14297,7 +14390,7 @@
                     "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -14393,7 +14486,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -14624,7 +14717,7 @@
                     "__struct_id": 9,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -14720,7 +14813,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -14846,6 +14939,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -14951,7 +15075,7 @@
                     "__struct_id": 10,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -15047,7 +15171,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -15173,6 +15297,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -15278,7 +15433,7 @@
                     "__struct_id": 11,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 781
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
@@ -15374,7 +15529,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 782
                     },
                     "Cursed": {
                       "type": "byte",
@@ -15500,6 +15655,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -15605,7 +15791,7 @@
                     "__struct_id": 12,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 39
                     },
                     "BaseItem": {
                       "type": "int",
@@ -15625,7 +15811,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 40
                     },
                     "Cursed": {
                       "type": "byte",
@@ -15860,7 +16046,7 @@
                     "__struct_id": 13,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 39
                     },
                     "BaseItem": {
                       "type": "int",
@@ -15880,7 +16066,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 40
                     },
                     "Cursed": {
                       "type": "byte",
@@ -16113,7 +16299,7 @@
                     "__struct_id": 14,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 624
                     },
                     "BaseItem": {
                       "type": "int",
@@ -16133,7 +16319,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 625
                     },
                     "Cursed": {
                       "type": "byte",
@@ -16366,7 +16552,7 @@
                     "__struct_id": 15,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 249
                     },
                     "BaseItem": {
                       "type": "int",
@@ -16386,7 +16572,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 250
                     },
                     "Cursed": {
                       "type": "byte",
@@ -16514,6 +16700,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -16619,7 +16836,7 @@
                     "__struct_id": 16,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 624
                     },
                     "BaseItem": {
                       "type": "int",
@@ -16639,7 +16856,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 625
                     },
                     "Cursed": {
                       "type": "byte",
@@ -16798,6 +17015,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -16872,7 +17120,7 @@
                     "__struct_id": 17,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 249
                     },
                     "BaseItem": {
                       "type": "int",
@@ -16892,7 +17140,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 250
                     },
                     "Cursed": {
                       "type": "byte",
@@ -17051,6 +17299,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -17125,7 +17404,7 @@
                     "__struct_id": 18,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 39
                     },
                     "BaseItem": {
                       "type": "int",
@@ -17145,7 +17424,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 40
                     },
                     "Cursed": {
                       "type": "byte",
@@ -17378,7 +17657,7 @@
                     "__struct_id": 19,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 99
                     },
                     "BaseItem": {
                       "type": "int",
@@ -17398,7 +17677,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 100
                     },
                     "Cursed": {
                       "type": "byte",
@@ -17631,7 +17910,7 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 99
                     },
                     "BaseItem": {
                       "type": "int",
@@ -17651,7 +17930,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 100
                     },
                     "Cursed": {
                       "type": "byte",
@@ -17779,6 +18058,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -17884,7 +18194,7 @@
                     "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 99
                     },
                     "BaseItem": {
                       "type": "int",
@@ -17904,7 +18214,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 100
                     },
                     "Cursed": {
                       "type": "byte",
@@ -18063,6 +18373,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -18137,7 +18478,7 @@
                     "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 249
                     },
                     "BaseItem": {
                       "type": "int",
@@ -18157,7 +18498,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 250
                     },
                     "Cursed": {
                       "type": "byte",
@@ -18390,7 +18731,7 @@
                     "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 624
                     },
                     "BaseItem": {
                       "type": "int",
@@ -18410,7 +18751,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 3
+                      "value": 625
                     },
                     "Cursed": {
                       "type": "byte",
@@ -18538,6 +18879,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -18643,7 +19015,7 @@
                     "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 14
                     },
                     "BaseItem": {
                       "type": "int",
@@ -18655,7 +19027,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 50
+                      "value": 15
                     },
                     "Cursed": {
                       "type": "byte",
@@ -18844,7 +19216,7 @@
                     "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 37
                     },
                     "BaseItem": {
                       "type": "int",
@@ -18856,7 +19228,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 50
+                      "value": 38
                     },
                     "Cursed": {
                       "type": "byte",
@@ -19076,7 +19448,7 @@
                     "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 234
                     },
                     "BaseItem": {
                       "type": "int",
@@ -19088,7 +19460,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 50
+                      "value": 235
                     },
                     "Cursed": {
                       "type": "byte",
@@ -19308,7 +19680,7 @@
                     "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 93
                     },
                     "BaseItem": {
                       "type": "int",
@@ -19320,7 +19692,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 50
+                      "value": 94
                     },
                     "Cursed": {
                       "type": "byte",
@@ -19540,7 +19912,7 @@
                     "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -19552,7 +19924,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -19772,7 +20144,7 @@
                     "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 9
                     },
                     "BaseItem": {
                       "type": "int",
@@ -19784,7 +20156,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 10
                     },
                     "Cursed": {
                       "type": "byte",
@@ -19973,7 +20345,7 @@
                     "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 9
                     },
                     "BaseItem": {
                       "type": "int",
@@ -19985,7 +20357,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 10
                     },
                     "Cursed": {
                       "type": "byte",
@@ -20143,7 +20515,7 @@
                     "__struct_id": 31,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -20155,7 +20527,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -20260,6 +20632,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -20375,7 +20778,7 @@
                     "__struct_id": 32,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -20387,7 +20790,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -20533,6 +20936,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -20607,7 +21041,7 @@
                     "__struct_id": 33,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -20619,7 +21053,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -20839,7 +21273,7 @@
                     "__struct_id": 34,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -20851,7 +21285,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -20997,6 +21431,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -21071,7 +21536,7 @@
                     "__struct_id": 35,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 9
                     },
                     "BaseItem": {
                       "type": "int",
@@ -21083,7 +21548,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 10
                     },
                     "Cursed": {
                       "type": "byte",
@@ -21241,7 +21706,7 @@
                     "__struct_id": 36,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -21253,7 +21718,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -21358,6 +21823,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -21473,7 +21969,7 @@
                     "__struct_id": 37,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -21485,7 +21981,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -21705,7 +22201,7 @@
                     "__struct_id": 38,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -21717,7 +22213,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -21822,6 +22318,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -21937,7 +22464,7 @@
                     "__struct_id": 39,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -21949,7 +22476,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -22095,6 +22622,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -22169,7 +22727,7 @@
                     "__struct_id": 40,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -22181,7 +22739,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -22407,7 +22965,7 @@
                     "__struct_id": 41,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -22419,7 +22977,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -22614,7 +23172,7 @@
                     "__struct_id": 42,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -22626,7 +23184,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -22819,7 +23377,7 @@
                     "__struct_id": 43,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -22831,7 +23389,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -22950,6 +23508,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -23055,7 +23644,7 @@
                     "__struct_id": 44,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -23067,7 +23656,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -23217,6 +23806,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -23291,7 +23911,7 @@
                     "__struct_id": 45,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -23303,7 +23923,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -23529,7 +24149,7 @@
                     "__struct_id": 46,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -23541,7 +24161,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -23691,6 +24311,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -23765,7 +24416,7 @@
                     "__struct_id": 47,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -23777,7 +24428,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -24001,7 +24652,7 @@
                     "__struct_id": 48,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -24013,7 +24664,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -24132,6 +24783,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -24237,7 +24919,7 @@
                     "__struct_id": 49,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -24249,7 +24931,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -24475,7 +25157,7 @@
                     "__struct_id": 50,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -24487,7 +25169,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -24606,6 +25288,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -24711,7 +25424,7 @@
                     "__struct_id": 51,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -24723,7 +25436,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -24873,6 +25586,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -24947,7 +25691,7 @@
                     "__struct_id": 52,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 468
                     },
                     "BaseItem": {
                       "type": "int",
@@ -24959,7 +25703,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -25179,7 +25923,7 @@
                     "__struct_id": 53,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 29
                     },
                     "BaseItem": {
                       "type": "int",
@@ -25191,7 +25935,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -25380,7 +26124,7 @@
                     "__struct_id": 54,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 187
                     },
                     "BaseItem": {
                       "type": "int",
@@ -25392,7 +26136,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -25612,7 +26356,7 @@
                     "__struct_id": 55,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 74
                     },
                     "BaseItem": {
                       "type": "int",
@@ -25624,7 +26368,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -25844,7 +26588,7 @@
                     "__struct_id": 56,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -25864,7 +26608,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -26098,7 +26842,7 @@
                     "__struct_id": 57,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -26118,7 +26862,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -26321,7 +27065,7 @@
                     "__struct_id": 58,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -26341,7 +27085,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -26544,7 +27288,7 @@
                     "__struct_id": 59,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -26564,7 +27308,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -26693,6 +27437,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -26798,7 +27573,7 @@
                     "__struct_id": 60,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -26818,7 +27593,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -26980,6 +27755,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -27054,7 +27860,7 @@
                     "__struct_id": 61,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -27074,7 +27880,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -27308,7 +28114,7 @@
                     "__struct_id": 62,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -27328,7 +28134,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -27490,6 +28296,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -27564,7 +28401,7 @@
                     "__struct_id": 63,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -27584,7 +28421,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -27820,7 +28657,7 @@
                     "__struct_id": 64,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -27840,7 +28677,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -27969,6 +28806,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -28074,7 +28942,7 @@
                     "__struct_id": 65,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -28094,7 +28962,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -28328,7 +29196,7 @@
                     "__struct_id": 66,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -28348,7 +29216,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -28477,6 +29345,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -28582,7 +29481,7 @@
                     "__struct_id": 67,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -28602,7 +29501,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -28764,6 +29663,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -28838,7 +29768,7 @@
                     "__struct_id": 68,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 29
                     },
                     "BaseItem": {
                       "type": "int",
@@ -28850,7 +29780,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29008,7 +29938,7 @@
                     "__struct_id": 69,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 187
                     },
                     "BaseItem": {
                       "type": "int",
@@ -29020,7 +29950,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29125,6 +30055,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -29240,7 +30201,7 @@
                     "__struct_id": 70,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 468
                     },
                     "BaseItem": {
                       "type": "int",
@@ -29252,7 +30213,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29398,6 +30359,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -29472,7 +30464,7 @@
                     "__struct_id": 71,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 187
                     },
                     "BaseItem": {
                       "type": "int",
@@ -29484,7 +30476,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29630,6 +30622,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -29704,7 +30727,7 @@
                     "__struct_id": 72,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 29
                     },
                     "BaseItem": {
                       "type": "int",
@@ -29716,7 +30739,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29874,7 +30897,7 @@
                     "__struct_id": 73,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 468
                     },
                     "BaseItem": {
                       "type": "int",
@@ -29886,7 +30909,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -29991,6 +31014,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -30106,7 +31160,7 @@
                     "__struct_id": 74,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 74
                     },
                     "BaseItem": {
                       "type": "int",
@@ -30118,7 +31172,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -30223,6 +31277,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -30338,7 +31423,7 @@
                     "__struct_id": 75,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 74
                     },
                     "BaseItem": {
                       "type": "int",
@@ -30350,7 +31435,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -30496,6 +31581,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -30578,7 +31694,7 @@
                     "__struct_id": 0,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 28
                     },
                     "BaseItem": {
                       "type": "int",
@@ -30590,7 +31706,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -30751,7 +31867,7 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 73
                     },
                     "BaseItem": {
                       "type": "int",
@@ -30763,7 +31879,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -30924,7 +32040,7 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 186
                     },
                     "BaseItem": {
                       "type": "int",
@@ -30936,7 +32052,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31097,7 +32213,7 @@
                     "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 467
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31109,7 +32225,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31270,7 +32386,7 @@
                     "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31282,7 +32398,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31443,7 +32559,7 @@
                     "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 58
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31455,7 +32571,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 60
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31618,7 +32734,7 @@
                     "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 148
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31630,7 +32746,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31793,7 +32909,7 @@
                     "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 373
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31805,7 +32921,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 375
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31968,7 +33084,7 @@
                     "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 936
                     },
                     "BaseItem": {
                       "type": "int",
@@ -31980,7 +33096,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 938
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32143,7 +33259,7 @@
                     "__struct_id": 9,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2342
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32155,7 +33271,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 2344
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32318,7 +33434,7 @@
                     "__struct_id": 10,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 8788
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32330,7 +33446,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 8790
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32505,7 +33621,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32668,7 +33784,7 @@
                     "__struct_id": 12,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 73
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32680,7 +33796,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32843,7 +33959,7 @@
                     "__struct_id": 13,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 186
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32855,7 +33971,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33018,7 +34134,7 @@
                     "__struct_id": 14,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 467
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33030,7 +34146,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33193,7 +34309,7 @@
                     "__struct_id": 15,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33205,7 +34321,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33368,7 +34484,7 @@
                     "__struct_id": 16,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2928
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33380,7 +34496,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33543,7 +34659,7 @@
                     "__struct_id": 17,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 28
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33555,7 +34671,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33717,7 +34833,7 @@
                     "__struct_id": 18,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 73
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33729,7 +34845,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33891,7 +35007,7 @@
                     "__struct_id": 19,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 186
                     },
                     "BaseItem": {
                       "type": "int",
@@ -33903,7 +35019,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34065,7 +35181,7 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 467
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34077,7 +35193,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34239,7 +35355,7 @@
                     "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34251,7 +35367,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34413,7 +35529,7 @@
                     "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2928
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34425,7 +35541,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34587,7 +35703,7 @@
                     "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 28
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34599,7 +35715,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34760,7 +35876,7 @@
                     "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 58
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34772,7 +35888,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 60
                     },
                     "Cursed": {
                       "type": "byte",
@@ -34933,7 +36049,7 @@
                     "__struct_id": 25,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 73
                     },
                     "BaseItem": {
                       "type": "int",
@@ -34945,7 +36061,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35106,7 +36222,7 @@
                     "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 148
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35118,7 +36234,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35279,7 +36395,7 @@
                     "__struct_id": 27,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 186
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35291,7 +36407,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35452,7 +36568,7 @@
                     "__struct_id": 28,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 373
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35464,7 +36580,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 375
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35625,7 +36741,7 @@
                     "__struct_id": 29,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 467
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35637,7 +36753,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35798,7 +36914,7 @@
                     "__struct_id": 30,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 936
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35810,7 +36926,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 938
                     },
                     "Cursed": {
                       "type": "byte",
@@ -35971,7 +37087,7 @@
                     "__struct_id": 31,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -35983,7 +37099,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -36144,7 +37260,7 @@
                     "__struct_id": 32,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2342
                     },
                     "BaseItem": {
                       "type": "int",
@@ -36156,7 +37272,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 2344
                     },
                     "Cursed": {
                       "type": "byte",
@@ -36317,7 +37433,7 @@
                     "__struct_id": 33,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2928
                     },
                     "BaseItem": {
                       "type": "int",
@@ -36329,7 +37445,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -36490,7 +37606,7 @@
                     "__struct_id": 34,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 8788
                     },
                     "BaseItem": {
                       "type": "int",
@@ -36502,7 +37618,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 8790
                     },
                     "Cursed": {
                       "type": "byte",
@@ -36663,7 +37779,7 @@
                     "__struct_id": 35,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2928
                     },
                     "BaseItem": {
                       "type": "int",
@@ -36675,7 +37791,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 4
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -36836,7 +37952,7 @@
                     "__struct_id": 36,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 58
                     },
                     "BaseItem": {
                       "type": "int",
@@ -36848,7 +37964,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 60
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37009,7 +38125,7 @@
                     "__struct_id": 37,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 148
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37021,7 +38137,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37182,7 +38298,7 @@
                     "__struct_id": 38,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 373
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37194,7 +38310,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 375
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37355,7 +38471,7 @@
                     "__struct_id": 39,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 936
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37367,7 +38483,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 938
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37530,7 +38646,7 @@
                     "__struct_id": 40,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2342
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37542,7 +38658,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 2344
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37705,7 +38821,7 @@
                     "__struct_id": 41,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 8788
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37717,7 +38833,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 8790
                     },
                     "Cursed": {
                       "type": "byte",
@@ -37880,7 +38996,7 @@
                     "__struct_id": 42,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 28
                     },
                     "BaseItem": {
                       "type": "int",
@@ -37892,7 +39008,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38084,7 +39200,7 @@
                     "__struct_id": 43,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 73
                     },
                     "BaseItem": {
                       "type": "int",
@@ -38096,7 +39212,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38288,7 +39404,7 @@
                     "__struct_id": 44,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 186
                     },
                     "BaseItem": {
                       "type": "int",
@@ -38300,7 +39416,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38492,7 +39608,7 @@
                     "__struct_id": 45,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 467
                     },
                     "BaseItem": {
                       "type": "int",
@@ -38504,7 +39620,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38696,7 +39812,7 @@
                     "__struct_id": 46,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -38708,7 +39824,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38900,7 +40016,7 @@
                     "__struct_id": 47,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2928
                     },
                     "BaseItem": {
                       "type": "int",
@@ -38912,7 +40028,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39104,7 +40220,7 @@
                     "__struct_id": 48,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 58
                     },
                     "BaseItem": {
                       "type": "int",
@@ -39116,7 +40232,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 60
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39310,7 +40426,7 @@
                     "__struct_id": 49,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 148
                     },
                     "BaseItem": {
                       "type": "int",
@@ -39516,7 +40632,7 @@
                     "__struct_id": 50,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 373
                     },
                     "BaseItem": {
                       "type": "int",
@@ -39528,7 +40644,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 375
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39722,7 +40838,7 @@
                     "__struct_id": 51,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 936
                     },
                     "BaseItem": {
                       "type": "int",
@@ -39734,7 +40850,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 938
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39928,7 +41044,7 @@
                     "__struct_id": 52,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2342
                     },
                     "BaseItem": {
                       "type": "int",
@@ -39940,7 +41056,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 2344
                     },
                     "Cursed": {
                       "type": "byte",
@@ -40134,7 +41250,7 @@
                     "__struct_id": 53,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 8788
                     },
                     "BaseItem": {
                       "type": "int",
@@ -40146,7 +41262,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 8790
                     },
                     "Cursed": {
                       "type": "byte",
@@ -40340,7 +41456,7 @@
                     "__struct_id": 54,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 30
                     },
                     "BaseItem": {
                       "type": "int",
@@ -40352,7 +41468,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -40505,7 +41621,7 @@
                     "__struct_id": 55,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 75
                     },
                     "BaseItem": {
                       "type": "int",
@@ -40517,7 +41633,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 75
                     },
                     "Cursed": {
                       "type": "byte",
@@ -40670,7 +41786,7 @@
                     "__struct_id": 56,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 188
                     },
                     "BaseItem": {
                       "type": "int",
@@ -40682,7 +41798,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 188
                     },
                     "Cursed": {
                       "type": "byte",
@@ -40835,7 +41951,7 @@
                     "__struct_id": 57,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 469
                     },
                     "BaseItem": {
                       "type": "int",
@@ -40847,7 +41963,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 469
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41002,7 +42118,7 @@
                     "__struct_id": 58,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1172
                     },
                     "BaseItem": {
                       "type": "int",
@@ -41014,7 +42130,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 1172
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41169,7 +42285,7 @@
                     "__struct_id": 59,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2930
                     },
                     "BaseItem": {
                       "type": "int",
@@ -41181,7 +42297,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 2930
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41348,7 +42464,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 47
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41555,7 +42671,7 @@
                     "__struct_id": 0,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -41567,7 +42683,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41764,7 +42880,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -41787,7 +42903,7 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -41799,7 +42915,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -41965,7 +43081,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -41988,7 +43104,7 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -42000,7 +43116,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -42166,7 +43282,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -42189,7 +43305,7 @@
                     "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -42201,7 +43317,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -42316,6 +43432,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -42398,7 +43545,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -42421,7 +43568,7 @@
                     "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -42433,7 +43580,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -42579,6 +43726,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -42630,7 +43808,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -42653,7 +43831,7 @@
                     "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -42665,7 +43843,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -42862,7 +44040,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -42885,7 +44063,7 @@
                     "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 124
                     },
                     "BaseItem": {
                       "type": "int",
@@ -42897,7 +44075,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 125
                     },
                     "Cursed": {
                       "type": "byte",
@@ -43043,6 +44221,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -43094,7 +44303,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -43117,7 +44326,7 @@
                     "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 19
                     },
                     "BaseItem": {
                       "type": "int",
@@ -43129,7 +44338,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 20
                     },
                     "Cursed": {
                       "type": "byte",
@@ -43295,7 +44504,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -43318,7 +44527,7 @@
                     "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 312
                     },
                     "BaseItem": {
                       "type": "int",
@@ -43330,7 +44539,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 313
                     },
                     "Cursed": {
                       "type": "byte",
@@ -43445,6 +44654,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -43527,7 +44767,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -43550,7 +44790,7 @@
                     "__struct_id": 9,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -43562,7 +44802,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -43759,7 +44999,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -43782,7 +45022,7 @@
                     "__struct_id": 10,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -43794,7 +45034,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -43909,6 +45149,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -43991,7 +45262,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -44014,7 +45285,7 @@
                     "__struct_id": 11,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -44026,7 +45297,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 50
                     },
                     "Cursed": {
                       "type": "byte",
@@ -44172,6 +45443,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -44223,7 +45525,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -44246,7 +45548,7 @@
                     "__struct_id": 12,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -44258,7 +45560,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -44455,7 +45757,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -44478,7 +45780,7 @@
                     "__struct_id": 13,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -44490,7 +45792,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -44656,7 +45958,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -44679,7 +45981,7 @@
                     "__struct_id": 14,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -44691,7 +45993,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -44826,7 +46128,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -44849,7 +46151,7 @@
                     "__struct_id": 15,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -44861,7 +46163,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -44976,6 +46278,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -45058,7 +46391,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -45081,7 +46414,7 @@
                     "__struct_id": 16,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -45093,7 +46426,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -45239,6 +46572,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -45290,7 +46654,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -45313,7 +46677,7 @@
                     "__struct_id": 17,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -45325,7 +46689,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -45522,7 +46886,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -45545,7 +46909,7 @@
                     "__struct_id": 18,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 156
                     },
                     "BaseItem": {
                       "type": "int",
@@ -45557,7 +46921,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 157
                     },
                     "Cursed": {
                       "type": "byte",
@@ -45703,6 +47067,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -45777,7 +47172,7 @@
                     "__struct_id": 19,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 24
                     },
                     "BaseItem": {
                       "type": "int",
@@ -45789,7 +47184,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 25
                     },
                     "Cursed": {
                       "type": "byte",
@@ -45947,7 +47342,7 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 389
                     },
                     "BaseItem": {
                       "type": "int",
@@ -45959,7 +47354,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 390
                     },
                     "Cursed": {
                       "type": "byte",
@@ -46074,6 +47469,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 36
                           },
                           "CostValue": {
@@ -46156,7 +47582,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -46179,7 +47605,7 @@
                     "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -46191,7 +47617,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -46411,7 +47837,7 @@
                     "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -46423,7 +47849,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -46528,6 +47954,37 @@
                           "Subtype": {
                             "type": "word",
                             "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
                           }
                         },
                         {
@@ -46643,7 +48100,7 @@
                     "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -46655,7 +48112,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 1
+                      "value": 63
                     },
                     "Cursed": {
                       "type": "byte",
@@ -46787,6 +48244,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 91
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
                           },
                           "Subtype": {
                             "type": "word",
@@ -47157,7 +48645,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 500
+                      "value": 486
                     },
                     "Cursed": {
                       "type": "byte",
@@ -48055,7 +49543,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 100
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -49157,7 +50645,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
@@ -50915,7 +52403,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",

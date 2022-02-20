@@ -26453,7 +26453,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
@@ -31845,7 +31845,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 13
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -31972,7 +31972,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 13
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",

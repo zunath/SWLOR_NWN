@@ -5663,7 +5663,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 4
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -5896,7 +5896,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 4
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -7007,7 +7007,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 60
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -9010,7 +9010,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -11089,7 +11089,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 60
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -68931,7 +68931,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
@@ -74448,7 +74448,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.304644030316835e-020
                     },
                     "XPosition": {
                       "type": "float",
@@ -76453,7 +76453,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.21286370314613e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -78028,7 +78028,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -78238,7 +78238,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.605193857299268e-045
                     },
                     "XPosition": {
                       "type": "float",

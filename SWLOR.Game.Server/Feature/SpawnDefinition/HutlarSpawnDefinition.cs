@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Byysk();
             QionAnimals();
             Valley();
+            Wastes();
+            Frzcave();
 
             return _builder.Build();
         }
@@ -49,6 +51,28 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "qion_tiger")
                 .WithFrequency(8)
+                .RandomlyWalks();
+        }
+        private void Wastes()
+        {
+            _builder.Create("HUTLAR_WASTES", "Hutlar Frozen Wastes")
+                .AddSpawn(ObjectType.Creature, "frost_saber")
+                .WithFrequency(8)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "frost_saber_cub")
+                .WithFrequency(6)
+                .RandomlyWalks();
+        }
+        private void Frzcave()
+        {
+            _builder.Create("HUTLAR_FRZ_CAVE", "Hutlar Frozen Cave")
+                .AddSpawn(ObjectType.Creature, "cave_yeti")
+                .WithFrequency(8)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "cave_yeti_sm")
+                .WithFrequency(6)
                 .RandomlyWalks();
         }
     }

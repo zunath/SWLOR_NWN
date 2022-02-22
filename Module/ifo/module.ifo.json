@@ -32,6 +32,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "tutorial001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "house_int_1"
         }
       },
@@ -173,13 +180,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "velescolony"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "visc_forcevision"
         }
       },
       {
@@ -361,6 +361,20 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "foszfacility"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "foszrobotis"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "moncalacifacilit"
         }
       },
@@ -432,6 +446,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "anchor_entreesud"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "anchor_jawa_int"
         }
       },
       {
@@ -858,6 +879,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "deepmountrepub"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "v_repubbase_1"
         }
       },
@@ -1068,7 +1096,21 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "v_jeditemple_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_base"
         }
       },
       {
@@ -1152,84 +1194,14 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "hutlar_smuggleba"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "hutlar_testsite"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "hutlar_valley"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "narshadaar_midoc"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalabeachside"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalacoralunde"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncaladungeon1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalajungelsu"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalawildjungl"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalacoralhcav"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalasunkenlab"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "jeditemp_int"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_sithlake_int"
         }
       },
       {
@@ -1250,189 +1222,7 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_jeditemple_ext"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "v_sheriffbhoff"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_sithlake_int"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "city_hall"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "bank"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "medical_center"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "cantina"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "starport"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "yavin"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_swamp_base"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_condor_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_consul_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_falchion_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_hound_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_merchant_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_mule_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_panth_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_saber_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_strike_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ship_throne_z"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "korr_crypt_zil"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "korr_waste2_zil"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "korr_waste_zil"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "korribanlandingp"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "hutlar_frozen_wa"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "hutlar_wastes_ca"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "hutlar_wht_woods"
         }
       }
     ]
@@ -1443,7 +1233,7 @@
   },
   "Mod_CustomTlk": {
     "type": "cexostring",
-    "value": "swlor2_tlk"
+    "value": "swlor_tlk"
   },
   "Mod_CutSceneList": {
     "type": "list",
@@ -1455,9 +1245,7 @@
   },
   "Mod_Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Mod_DuskHour": {
     "type": "byte",
@@ -1477,15 +1265,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.0
+    "value": 18.97829627990723
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 6.0
+    "value": 5.520429611206055
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 0.0
+    "value": -5.7220458984375e-006
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1502,238 +1290,259 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_2da"
+          "value": "swlor_2da"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_mtr"
+          "value": "swlor_dds"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_dds"
+          "value": "swlor_dwk"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_dwk"
+          "value": "swlor_gui"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_gui"
+          "value": "swlor_ini"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ini"
+          "value": "swlor_itp"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_itp"
+          "value": "swlor_mdl"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_mdl"
+          "value": "swlor_mdl_p"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_music"
+          "value": "swlor_mtr"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_plt"
+          "value": "swlor_music"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_portraits"
+          "value": "swlor_plt"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_pwk"
+          "value": "swlor_portraits"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_set"
+          "value": "swlor_pwk"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_shd"
+          "value": "swlor_set"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ssf"
+          "value": "swlor_shd"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_tga"
+          "value": "swlor_ssf"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_txi"
+          "value": "swlor_tga"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_utp"
+          "value": "swlor_tga_ip"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_wav"
+          "value": "swlor_txi"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_wok"
+          "value": "swlor_utp"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_doors"
+          "value": "swlor_wav"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_loads"
+          "value": "swlor_wok"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_skies"
+          "value": "swlor_add_doors"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ext_tiles"
+          "value": "swlor_add_loads"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_tiles"
+          "value": "swlor_add_skies"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core0"
+          "value": "swlor_ext_tiles"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core1"
+          "value": "swlor_add_tiles1"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core2"
+          "value": "swlor_add_tiles2"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core3"
+          "value": "swlor_core0"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core4"
+          "value": "swlor_core1"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core5"
+          "value": "swlor_core2"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core6"
+          "value": "swlor_core3"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core7"
+          "value": "swlor_core4"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor_core5"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor_core6"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor_core7"
         }
       }
     ]
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",
@@ -1741,7 +1550,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.86"
+    "value": "1.80"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -1856,25 +1665,5 @@
   "Mod_XPScale": {
     "type": "byte",
     "value": 0
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "X2_L_NOTREASURE"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      }
-    ]
   }
 }

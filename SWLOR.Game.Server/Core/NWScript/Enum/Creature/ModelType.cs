@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum.Creature
+namespace SWLOR.Game.Server.NWN.Enum.Creature
 {
     public enum ModelType
     {

@@ -1,6 +1,11 @@
+<<<<<<< HEAD:SWLOR.Game.Server/Core/Bioware/BiowarePosition.cs
 ﻿using System;
 using System.Numerics;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+=======
+﻿using System.Numerics;
+using SWLOR.Game.Server.GameObject;
+>>>>>>> 880785d77ae9beee2b365bc9278f9a758b9fda9b:SWLOR.Game.Server/Bioware/BiowarePosition.cs
 
 namespace SWLOR.Game.Server.Core.Bioware
 {
@@ -71,7 +76,11 @@ namespace SWLOR.Game.Server.Core.Bioware
             if (changedY < 0.0)
                 changedY = -changedY;
 
+<<<<<<< HEAD:SWLOR.Game.Server/Core/Bioware/BiowarePosition.cs
             return Vector3(changedX, changedY, changedZ);
+=======
+            return _.Vector3(changedX, changedY, changedZ);
+>>>>>>> 880785d77ae9beee2b365bc9278f9a758b9fda9b:SWLOR.Game.Server/Bioware/BiowarePosition.cs
         }
 
         /// <summary>

@@ -5877,7 +5877,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "generic_convo"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -5958,7 +5958,22 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "PropertyExitDialog"
+                "value": "BuildingExit"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.GenericConversation"
               }
             }
           ]
@@ -8995,7 +9010,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "PROPERTY_ENTRANCE"
+          "value": "PLAYER_HOME_ENTRANCE"
         },
         "TemplateResRef": {
           "type": "resref",

@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+
+  db:
+    hostname: db
+    image: mariadb:10
+    environment:
+    - MARIADB_ROOT_PASSWORD=rootPass
+    - MARIADB_DATABASE=swlor
+    - MARIADB_USER=server
+    - MARIADB_PASSWORD=serverPassword   
+    restart: unless-stopped
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"     
+    networks:
+      - backend   
+
+  nwserver:
+    hostname: nwserver
+    env_file: ${PWD-.}/swlor.env
+    image: nwnxee/unified:8e1e895
+    volumes:
+    - ${PWD-.}/:/nwn/home
+    - ${PWD-.}/logs:/nwn/run/logs.0
+    - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
+    restart: unless-stopped
+    depends_on:
+    - db
+    ports:
+    - '5121:5121/udp'
+    links:
+    - "db:database"
+    networks:
+    - backend
+
+networks:
+    backend:

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum.Item.Property
+namespace SWLOR.Game.Server.NWN.Enum.Item.Property
 {
     public enum OnHitCastSpell
     {

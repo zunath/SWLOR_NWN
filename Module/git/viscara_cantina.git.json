@@ -5663,7 +5663,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 4
               },
               "Cursed": {
                 "type": "byte",
@@ -5896,7 +5896,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 4
               },
               "Cursed": {
                 "type": "byte",
@@ -7007,7 +7007,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 60
               },
               "Cursed": {
                 "type": "byte",
@@ -7692,7 +7692,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 0.5
+          "value": 4.0
         },
         "ClassList": {
           "type": "list",
@@ -7705,7 +7705,7 @@
               },
               "ClassLevel": {
                 "type": "short",
-                "value": 1
+                "value": 5
               }
             }
           ]
@@ -7728,7 +7728,7 @@
         },
         "Con": {
           "type": "byte",
-          "value": 16
+          "value": 20
         },
         "Conversation": {
           "type": "resref",
@@ -7756,7 +7756,7 @@
         },
         "Dex": {
           "type": "byte",
-          "value": 13
+          "value": 18
         },
         "Disarmable": {
           "type": "byte",
@@ -7773,15 +7773,15 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 0
+                "value": 100
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 111
+                "value": 102
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 1
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -7789,7 +7789,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 1
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -7801,7 +7801,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 241
+                "value": 240
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -7809,15 +7809,15 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 102
+                "value": 237
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 111
+                "value": 102
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 167
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -7825,7 +7825,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 1
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -7841,7 +7841,7 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 241
+                "value": 240
               },
               "ArmorPart_Torso": {
                 "type": "byte",
@@ -7857,7 +7857,7 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 107
+                "value": 111
               },
               "Cloth2Color": {
                 "type": "byte",
@@ -7889,7 +7889,7 @@
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 173
               },
               "LocalizedName": {
                 "type": "cexolocstring",
@@ -7899,11 +7899,11 @@
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 6
+                "value": 94
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 7
+                "value": 94
               },
               "Plot": {
                 "type": "byte",
@@ -7970,7 +7970,7 @@
               },
               "Cursed": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -7988,7 +7988,7 @@
                 "id": 1522,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Security Officer Baton"
+                  "0": "Shock Baton"
                 }
               },
               "ModelPart1": {
@@ -7997,15 +7997,15 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 121
+                "value": 51
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 121
+                "value": 111
               },
               "Plot": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "PropertiesList": {
                 "type": "list",
@@ -8018,11 +8018,42 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 4
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 16
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 9
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 2
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 1
+                      "value": 4
                     },
                     "Param1": {
                       "type": "byte",
@@ -8034,69 +8065,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 128
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
+                      "value": 6
                     },
                     "Subtype": {
                       "type": "word",
@@ -8115,11 +8084,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "club_s"
+                "value": "shockprod"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "club_s"
+                "value": "shock_prod"
               },
               "XOrientation": {
                 "type": "float",
@@ -8284,11 +8253,11 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 13
+          "value": 35
         },
         "NaturalAC": {
           "type": "byte",
-          "value": 0
+          "value": 10
         },
         "NoPermDeath": {
           "type": "byte",
@@ -8573,7 +8542,7 @@
         },
         "SoundSetFile": {
           "type": "word",
-          "value": 413
+          "value": 113
         },
         "SpecAbilityList": {
           "type": "list",
@@ -8585,7 +8554,7 @@
         },
         "Str": {
           "type": "byte",
-          "value": 16
+          "value": 20
         },
         "Subrace": {
           "type": "cexostring",
@@ -9010,7 +8979,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 150
               },
               "Cursed": {
                 "type": "byte",
@@ -11089,7 +11058,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 60
               },
               "Cursed": {
                 "type": "byte",
@@ -68931,7 +68900,7 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 40
+          "value": 65
         },
         "MarkUp": {
           "type": "int",
@@ -74448,7 +74417,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.304644030316835e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -76453,7 +76422,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.21286370314613e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -78028,7 +77997,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -78238,7 +78207,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.605193857299268e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",

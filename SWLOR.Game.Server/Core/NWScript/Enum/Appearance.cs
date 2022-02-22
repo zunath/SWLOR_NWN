@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum
+namespace SWLOR.Game.Server.NWN.Enum
 {
     public enum AppearanceType
     {
@@ -432,46 +432,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         StarDestroyer = 2169,
         MonCalaCruiser = 2170,
 
-        NeutralDropship = 10054,
-        NeutralCondor = 10055,
-        NeutralGunship = 10056,
-        NeutralStriker = 10057,
-        RepublicBomberA = 10058,
-        RepublicBomberB = 10059,
-        RepublicBomberC = 10060,
-        RepublicGunshipA = 10061,
-        RepublicGunshipB = 10062,
-        RepublicGunshipC = 10063,
-        RepublicInfiltratorA = 10064,
-        RepublicInfiltratorB = 10065,
-        RepublicInfiltratorC = 10066,
-        RepublicInfiltratorD = 10067,
-        RepublicScoutA = 10068,
-        RepublicScoutB = 10069,
-        RepublicScoutC = 10070,
-        RepublicStrikerA = 10071,
-        RepublicStrikerB = 10072,
-        RepublicStrikerC = 10073,
-        RepublicAurek = 10074,
-        RepublicForay = 10075,
-        RepublicHammerhead = 10076,
-        SithBomberA = 10077,
-        SithBomberB = 10078,
-        SithBomberC = 10079,
-        SithGunshipA = 10080,
-        SithGunshipB = 10081,
-        SithGunshipC = 10082,
-        SithInfiltratorA = 10083,
-        SithInfiltratorB = 10084,
-        SithInfiltratorC = 10085,
-        SithScoutA = 10086,
-        SithScoutB = 10087,
-        SithScoutC = 10088,
-        SithStrikerA = 10089,
-        SithStrikerB = 10090,
-        SithStrikerC = 10091,
-        SithFighter = 10092,
-        SithLeviathan = 10093,
 
     }
 }

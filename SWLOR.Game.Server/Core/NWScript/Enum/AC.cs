@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.NWScript.Enum
+﻿namespace SWLOR.Game.Server.NWN.Enum
 {
     public enum AC
     {

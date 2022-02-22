@@ -1,12 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+<<<<<<< HEAD
     <TargetFramework>net6.0</TargetFramework>
+=======
+    <TargetFramework>net5.0</TargetFramework>
+>>>>>>> 880785d77ae9beee2b365bc9278f9a758b9fda9b
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>9</LangVersion>
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
+<<<<<<< HEAD
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -14,6 +19,51 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+=======
+  <ItemGroup>
+    <None Remove="Data\Migrations\2020-06-20.1.sql" />
+    <None Remove="Data\Migrations\2020-07-02.1.sql" />
+    <None Remove="Data\Migrations\2020-07-02.2.sql" />
+    <None Remove="Data\Migrations\2020-07-02.3.sql" />
+    <None Remove="Data\Migrations\2020-09-29.2.sql" />
+    <None Remove="Data\Migrations\2020-10-22.1.sql" />
+    <None Remove="Data\Migrations\2020-10-26.1.sql" />
+    <None Remove="Data\Migrations\2020-10-29.1.sql" />
+    <None Remove="Data\Migrations\2020-12-02.1.sql" />
+    <None Remove="Data\Migrations\2021-08-29.1.sql" />
+    <None Remove="Data\Migrations\2021-10-09.1.sql" />
+    <None Remove="Data\Migrations\2021-10-18.1.sql" />
+    <None Remove="Data\Migrations\2021-10-19.1.sql" />
+    <None Remove="Data\Migrations\2021-11-16.1.sql" />
+    <None Remove="Data\Migrations\2021-11-21.1.sql" />
+    <None Remove="Data\Migrations\2021-12-06.1.sql" />
+    <None Remove="Data\Migrations\2021-12-06.2.sql" />
+    <None Remove="Data\Migrations\2022-01-31.1.sql" />
+    <None Remove="Data\Migrations\Initialization.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\2020-06-20.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-07-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-07-02.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-07-02.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-09-29.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-26.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-29.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-12-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2022-01-31.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-08-29.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-10-09.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-10-18.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-10-19.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-11-16.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-11-21.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-12-06.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2021-12-06.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
+  </ItemGroup>
+>>>>>>> 880785d77ae9beee2b365bc9278f9a758b9fda9b
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.3.2" />
@@ -27,6 +77,10 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.2.88" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Event\Door\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Byysk();
             QionSlugs();
             QionTigers();
+            FrostSaber();
+            CaveYeti();
 
             return _builder.Build();
         }
@@ -88,6 +90,26 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("tiger_blood", 8)
                 .AddItem("tiger_meat", 5)
                 .AddItem("q_tiger_paw", 2, 1, true);
+        }
+
+        private void FrostSaber()
+        {
+            _builder.Create("HUTLAR_FROST_SABER")
+                .AddItem("lth_good", 20)
+                .AddItem("f_saber_fur", 10)
+                .AddItem("f_saber_claw", 8)
+                .AddItem("f_saber_meat", 15)
+                .AddItem("f_saber_tooth", 8)
+                .AddItem("f_saber_heart", 2, 1, true);
+        }
+        private void CaveYeti()
+        {
+            _builder.Create("HUTLAR_CAVE_YETI")
+                .AddItem("lth_good", 20)
+                .AddItem("c_yeti_fur", 10)
+                .AddItem("c_yeti_claw", 8)
+                .AddItem("c_yeti_meat", 15)
+                .AddItem("c_yeti_horn", 2, 1, true);
         }
     }
 }

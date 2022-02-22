@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 14.0
+    "value": 16.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 12
         }
       },
       {
@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 17
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -169,7 +169,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 29
+    "value": 60
   },
   "Disarmable": {
     "type": "byte",
@@ -197,13 +197,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "tuskenblasterrif"
-        }
-      },
-      {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "tusken_skin"
         }
       }
     ]
@@ -234,13 +227,6 @@
         "Feat": {
           "type": "word",
           "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1155
         }
       },
       {
@@ -290,6 +276,13 @@
         "Feat": {
           "type": "word",
           "value": 721
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1155
         }
       },
       {
@@ -440,7 +433,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 394
+    "value": 376
   },
   "NaturalAC": {
     "type": "byte",
@@ -452,7 +445,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 154
+    "value": 4
   },
   "PerceptionRange": {
     "type": "byte",
@@ -520,7 +513,7 @@
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": "dt_tusken_spawn"
   },
   "ScriptSpellAt": {
     "type": "resref",
@@ -745,7 +738,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 13
   },
   "Subrace": {
     "type": "cexostring",
@@ -778,11 +771,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 3
+          "value": 1
         },
         "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER,40,2"
+          "type": "int",
+          "value": 106
         }
       },
       {
@@ -798,21 +791,6 @@
         "Value": {
           "type": "int",
           "value": 27
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER_RARES,5,1"
         }
       }
     ]

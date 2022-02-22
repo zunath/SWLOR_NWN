@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 220
+    "value": 115
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10096
+    "value": 10004
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -22,11 +22,11 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
@@ -34,7 +34,7 @@
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
@@ -58,15 +58,15 @@
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 44
+    "value": 149
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 50
+    "value": 45
   },
   "DecayTime": {
     "type": "dword",
@@ -171,7 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "noble_gr"
+          "value": "npc_smuggler_m"
         }
       }
     ]
@@ -265,7 +265,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Agriculture Guild Master"
+      "0": "Weaponsmith Guild Master"
     }
   },
   "fortbonus": {
@@ -282,7 +282,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 50
+    "value": 45
   },
   "Int": {
     "type": "byte",
@@ -316,7 +316,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 53
+    "value": 48
   },
   "NaturalAC": {
     "type": "byte",
@@ -344,11 +344,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3712
+    "value": 3638
   },
   "Race": {
     "type": "byte",
-    "value": 164
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -609,7 +609,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 928
+    "value": 940
   },
   "SpecAbilityList": {
     "type": "list",
@@ -621,7 +621,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -629,7 +629,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "agr_guildmaster"
+    "value": "wpn_guildmaster"
   },
   "Tail_New": {
     "type": "dword",
@@ -641,7 +641,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "agr_guildmaster"
+    "value": "wpn_guildmaster"
   },
   "VarTable": {
     "type": "list",
@@ -658,7 +658,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "GuildMasterDialog"
+          "value": "GuildMaster"
         }
       },
       {
@@ -673,7 +673,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 5
+          "value": 3
         }
       },
       {
@@ -688,7 +688,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "gp_agr_1"
+          "value": "gp_wpn_1"
         }
       },
       {
@@ -703,7 +703,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "gp_agr_2"
+          "value": "gp_wpn_2"
         }
       },
       {
@@ -718,7 +718,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "gp_agr_3"
+          "value": "gp_wpn_3"
         }
       },
       {
@@ -733,7 +733,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "gp_agr_4"
+          "value": "gp_wpn_4"
         }
       },
       {
@@ -748,7 +748,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "gp_agr_5"
+          "value": "gp_wpn_5"
         }
       }
     ]

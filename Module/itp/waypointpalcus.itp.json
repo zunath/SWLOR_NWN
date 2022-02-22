@@ -76,6 +76,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar - Cave Critters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_cave_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Frost Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frost_saber_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Cala - Animals"
                     },
                     "RESREF": {
@@ -328,6 +350,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ore_vein_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Resource Nodes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_vein_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Resource Nodes (CAVE)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "resources_frz_ca"
                     }
                   },
                   {

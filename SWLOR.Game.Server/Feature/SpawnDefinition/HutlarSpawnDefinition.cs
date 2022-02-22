@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             QionAnimals();
             Valley();
             Wastes();
-            Frzcave();
+            Frozencave();
 
             return _builder.Build();
         }
@@ -64,9 +64,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(6)
                 .RandomlyWalks();
         }
-        private void Frzcave()
+        private void Frozencave()
         {
-            _builder.Create("HUTLAR_FRZ_CAVE", "Hutlar Frozen Cave")
+            _builder.Create("HUTLAR_FROZEN_CAVE", "Hutlar Frozen Cave")
                 .AddSpawn(ObjectType.Creature, "cave_yeti")
                 .WithFrequency(8)
                 .RandomlyWalks()

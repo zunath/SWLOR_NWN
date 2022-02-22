@@ -147,55 +147,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Agriculture Guild Store: Rank 1"
+                      "value": "Armorsmith Guild Store: Rank 1"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_agr_1"
+                      "value": "gp_arm_1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Agriculture Guild Store: Rank 2"
+                      "value": "Armorsmith Guild Store: Rank 2"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_agr_2"
+                      "value": "gp_arm_2"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Agriculture Guild Store: Rank 3"
+                      "value": "Armorsmith Guild Store: Rank 3"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_agr_3"
+                      "value": "gp_arm_3"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Agriculture Guild Store: Rank 4"
+                      "value": "Armorsmith Guild Store: Rank 4"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_agr_4"
+                      "value": "gp_arm_4"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Agriculture Guild Store: Rank 5"
+                      "value": "Armorsmith Guild Store: Rank 5"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_agr_5"
+                      "value": "gp_arm_5"
                     }
                   },
                   {
@@ -257,61 +257,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Fabrication Guild Store: Rank 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gp_fab_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fabrication Guild Store: Rank 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gp_fab_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fabrication Guild Store: Rank 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gp_fab_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fabrication Guild Store: Rank 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gp_fab_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fabrication Guild Store: Rank 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gp_fab_5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Hunter's Guild Store: Rank 1"
                     },
                     "RESREF": {
@@ -367,55 +312,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smithery Guild Store: Rank 1"
+                      "value": "Weaponsmith Guild Store: Rank 1"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_smth_1"
+                      "value": "gp_wpn_1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smithery Guild Store: Rank 2"
+                      "value": "Weaponsmith Guild Store: Rank 2"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_smth_2"
+                      "value": "gp_wpn_2"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smithery Guild Store: Rank 3"
+                      "value": "Weaponsmith Guild Store: Rank 3"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_smth_3"
+                      "value": "gp_wpn_3"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smithery Guild Store: Rank 4"
+                      "value": "Weaponsmith Guild Store: Rank 4"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_smth_4"
+                      "value": "gp_wpn_4"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smithery Guild Store: Rank 5"
+                      "value": "Weaponsmith Guild Store: Rank 5"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "gp_smth_5"
+                      "value": "gp_wpn_5"
                     }
                   }
                 ]

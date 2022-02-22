@@ -8932,6 +8932,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cave Yeti Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_yeti_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cave Yeti Fur"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_yeti_fur"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cave Yeti Horn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_yeti_horn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cave Yeti Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_yeti_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cereal"
                     },
                     "RESREF": {
@@ -9806,6 +9850,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "lth_freyna"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frost Saber Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "f_saber_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frost Saber Fang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "f_saber_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frost Saber Fur"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "f_saber_fur"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frost Saber Heart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "f_saber_heart"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frost Saber Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "f_saber_meat"
                     }
                   },
                   {
@@ -20555,6 +20654,61 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Lightsaber Blue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_blu"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lightsaber Green"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_grn"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lightsaber Orange"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_orn"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lightsaber Red"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_red"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lightsaber White"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_wht"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Mandalorian Blade"
                           },
                           "RESREF": {
@@ -21347,6 +21501,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_blu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_grn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_orn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_red"
                     }
                   },
                   {

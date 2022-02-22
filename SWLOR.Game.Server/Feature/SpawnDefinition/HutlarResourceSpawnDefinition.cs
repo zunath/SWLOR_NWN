@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             QionTundra();
             Valley();
             Wastes();
-            Frzcave();
+            Frozencave();
 
             return _builder.Build();
         }
@@ -83,9 +83,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);
         }
-        private void Frzcave()
+        private void Frozencave()
         {
-            _builder.Create("RESOURCES_FRZ_CAVE")
+            _builder.Create("RESOURCES_FROZEN_CAVE")
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(20)
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")

@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature
                 ActionEquipItem(item, InventorySlot.Chest);
             });
 
-            GiveGoldToCreature(player, 100);
+            GiveGoldToCreature(player, 200);
         }
 
         /// <summary>

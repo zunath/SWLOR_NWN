@@ -23,12 +23,12 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Smithery Guild Store: Rank 4"
+      "0": "Armorsmith Guild Store: Rank 1"
     }
   },
   "MarkDown": {
     "type": "int",
-    "value": 40
+    "value": 65
   },
   "MarkUp": {
     "type": "int",
@@ -48,7 +48,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "gp_smth_4"
+    "value": "gp_arm_1"
   },
   "StoreGold": {
     "type": "int",
@@ -82,7 +82,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_lg"
+                "value": "bag_b"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -101,7 +101,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "stallyxunchi"
+                "value": "axkivna"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -120,7 +120,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "wyneevixna"
+                "value": "covixnya"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -139,7 +139,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "nickyln_stone"
+                "value": "envgixna"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -158,7 +158,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "pefoxayntel"
+                "value": "fabrixnyo"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -168,6 +168,44 @@
                 "type": "word",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 5,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "gorrunxchi"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 6,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "harvixnyo"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
             }
           ]
         }
@@ -176,7 +214,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "gp_smth_4"
+    "value": "gp_arm_1"
   },
   "WillNotBuy": {
     "type": "list",

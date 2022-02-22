@@ -23,16 +23,16 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Smithery Guild Store: Rank 5"
+      "0": "Weaponsmith Guild Store: Rank 5"
     }
   },
   "MarkDown": {
     "type": "int",
-    "value": 40
+    "value": 65
   },
   "MarkUp": {
     "type": "int",
-    "value": 100
+    "value": 500
   },
   "MaxBuyPrice": {
     "type": "int",
@@ -48,7 +48,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "gp_smth_5"
+    "value": "gp_wpn_5"
   },
   "StoreGold": {
     "type": "int",
@@ -101,7 +101,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "starlyxn"
+                "value": "rainbow_moncclyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -120,7 +120,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "ultranioxxa"
+                "value": "rainbow_voncclyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -139,7 +139,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "coonlank_rainbow"
+                "value": "stongk_metal"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -158,7 +158,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "rruxanchi"
+                "value": "pow"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -176,7 +176,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "gp_smth_5"
+    "value": "gp_wpn_5"
   },
   "WillNotBuy": {
     "type": "list",

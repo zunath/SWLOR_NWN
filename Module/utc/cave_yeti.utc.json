@@ -1,96 +1,20 @@
 {
   "__data_type": "UTC ",
-  "Appearance_Head": {
-    "type": "byte",
-    "value": 103
-  },
   "Appearance_Type": {
     "type": "word",
-    "value": 10033
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 1
+    "value": 1779
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
   },
-  "BodyPart_Belt": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFoot": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Neck": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Pelvis": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_RThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Torso": {
-    "type": "byte",
-    "value": 1
-  },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 20
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 1.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +23,14 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 4
+          "value": 14
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 9
         }
       }
     ]
-  },
-  "Color_Hair": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Skin": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Tattoo1": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Tattoo2": {
-    "type": "byte",
-    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -10
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 50
+    "value": 132
   },
   "DecayTime": {
     "type": "dword",
@@ -154,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -168,17 +78,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 2,
+        "__struct_id": 65536,
         "EquippedRes": {
           "type": "resref",
-          "value": "robe_dark"
+          "value": "hu_qutig_bite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "v_cairnmog_pr001"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 2
+    "value": 1
   },
   "FeatList": {
     "type": "list",
@@ -187,70 +104,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 2
+          "value": 1745
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 3
+          "value": 291
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1089
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 28
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 258
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 32
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 106
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 45
+          "value": 289
         }
       },
       {
@@ -265,7 +133,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fabrication Guild Master"
+      "0": "Cave Yeti"
     }
   },
   "fortbonus": {
@@ -274,7 +142,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "GoodEvil": {
     "type": "byte",
@@ -282,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 50
+    "value": 132
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -294,7 +162,7 @@
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsPC": {
     "type": "byte",
@@ -316,11 +184,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 53
+    "value": 168
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -328,7 +196,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 44
+    "value": 153
   },
   "PerceptionRange": {
     "type": "byte",
@@ -344,11 +212,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3712
+    "value": 3343
   },
   "Race": {
     "type": "byte",
-    "value": 163
+    "value": 8
   },
   "refbonus": {
     "type": "short",
@@ -609,19 +477,95 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 928
+    "value": 32
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 875
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 875
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 875
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 875
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 875
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 4
+    "value": 76
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -629,11 +573,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "fab_guildmaster"
+    "value": "cave_yeti"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 0
+    "value": 598
   },
   "TemplateList": {
     "type": "list",
@@ -641,7 +585,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "fab_guildmaster"
+    "value": "cave_yeti"
   },
   "VarTable": {
     "type": "list",
@@ -650,7 +594,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "CONVERSATION"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
@@ -658,97 +602,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "GuildMasterDialog"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "GUILD_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORE_TAG_RANK_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "gp_fab_1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORE_TAG_RANK_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "gp_fab_2"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORE_TAG_RANK_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "gp_fab_3"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORE_TAG_RANK_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "gp_fab_4"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORE_TAG_RANK_5"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "gp_fab_5"
+          "value": "HUTLAR_CAVE_YETI,40,2"
         }
       }
     ]
@@ -767,6 +621,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 14
   }
 }

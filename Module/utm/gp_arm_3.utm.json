@@ -23,16 +23,16 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Smithery Guild Store: Rank 2"
+      "0": "Armorsmith Guild Store: Rank 3"
     }
   },
   "MarkDown": {
     "type": "int",
-    "value": 40
+    "value": 65
   },
   "MarkUp": {
     "type": "int",
-    "value": 100
+    "value": 300
   },
   "MaxBuyPrice": {
     "type": "int",
@@ -48,7 +48,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "gp_smth_2"
+    "value": "gp_arm_3"
   },
   "StoreGold": {
     "type": "int",
@@ -82,7 +82,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_sm"
+                "value": "bag_md"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -101,7 +101,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "storyliggien"
+                "value": "ecxedryn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -120,11 +120,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "babonsch"
+                "value": "boncexdryn"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 4
+                "value": 3
               },
               "Repos_Posy": {
                 "type": "word",
@@ -139,11 +139,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "iondeyn"
+                "value": "doncedryn"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 6
+                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
@@ -158,11 +158,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "omedexyna"
+                "value": "lth_freyna"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 8
+                "value": 5
               },
               "Repos_Posy": {
                 "type": "word",
@@ -176,7 +176,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "gp_smth_2"
+    "value": "gp_arm_3"
   },
   "WillNotBuy": {
     "type": "list",

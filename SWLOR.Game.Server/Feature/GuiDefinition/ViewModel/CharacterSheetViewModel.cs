@@ -225,6 +225,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Notes);
         };
 
+        public Action OnClickOpenTrash() => () =>
+        {
+            var location = GetLocation(Player);
+            var trash = CreateObject(ObjectType.Placeable, "reo_trash_can", location);
+            AssignCommand(Player, () => ActionInteractObject(trash));
+            DelayCommand(0.2f, () => SetUseableFlag(trash, false));
+        };
+
         public Action OnClickAppearance() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);

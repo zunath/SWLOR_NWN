@@ -496,6 +496,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col2.AddRow(row2 =>
                                 {
                                     row2.AddButton()
+                                        .SetText("Open Trash")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickOpenTrash());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
                                         .SetText("Settings")
                                         .SetHeight(32f)
                                         .SetWidth(100f)

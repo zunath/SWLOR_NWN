@@ -26,14 +26,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
             var rightHandType = GetBaseItemType(weapon);
-            var leftHandType = GetBaseItemType(offHand);
 
-            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType) &&
-                !Item.LightsaberBaseItemTypes.Contains(leftHandType))
+            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType))
             {
-                return "This is a lightsaber ability.";
+                return "A lightsaber must be equipped in your right hand to use this ability.";
             }
 
             if (GetDistanceBetween(activator, target) < 8)

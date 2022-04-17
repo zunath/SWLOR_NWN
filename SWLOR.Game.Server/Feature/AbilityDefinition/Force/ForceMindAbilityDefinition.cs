@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
             float multiplier = 0;
             switch (level)
             {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
 
             // Recover FP on target.
-            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
+            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * (multiplier + willpowerBonus)));
 
             // Play VFX
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);

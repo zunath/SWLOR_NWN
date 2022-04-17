@@ -71,6 +71,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                })
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
@@ -95,6 +99,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                })
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
@@ -106,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a simple bed roll. You will need to purchase the \"Furniture Blueprints\" perk in order to create this item. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level of CZ-220.")
-                .AddCollectItemObjective("furniture_0085", 1)
+                .AddCollectItemObjective("structure_0085", 1)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
@@ -118,6 +126,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                })
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
@@ -138,6 +150,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                })
+                .OnAbandonAction(player =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "3BA0FF2E61C34FB783905E8A78236A30", VisibilityType.Visible);
                 });
         }
 
@@ -162,7 +178,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("ore_collection", "Ore Collection")
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    CreateItemOnObject("harvest_r_old", player);
+                    var existingHarvester = GetItemPossessedBy(player, "harvest_r_old");
+                    if (GetIsObjectValid(existingHarvester))
+                        return;
+
+                    var harvester = CreateItemOnObject("harvest_r_old", player);
+                    SetItemCursedFlag(harvester, true);
                 })
 
                 .AddState()
@@ -226,6 +247,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
+                })
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 });
         }
     }

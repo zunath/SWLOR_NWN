@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -11,6 +12,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.QuestService
 {
     public delegate void AcceptQuestDelegate(uint player, uint questSourceObject);
+
+    public delegate void AbandonQuestDelegate(uint player);
     public delegate void AdvanceQuestDelegate(uint player, uint questSourceObject, int questState);
     public delegate void CompleteQuestDelegate(uint player, uint questSourceObject);
 
@@ -28,6 +31,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public Dictionary<int, QuestStateDetail> States { get; } = new Dictionary<int, QuestStateDetail>();
         public List<AcceptQuestDelegate> OnAcceptActions { get; } = new List<AcceptQuestDelegate>();
+        public List<AbandonQuestDelegate> OnAbandonActions { get; } = new List<AbandonQuestDelegate>();
         public List<AdvanceQuestDelegate> OnAdvanceActions { get; } = new List<AdvanceQuestDelegate>();
         public List<CompleteQuestDelegate> OnCompleteActions { get; } = new List<CompleteQuestDelegate>();
 
@@ -209,6 +213,11 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             DB.Set(dbPlayer);
             SendMessageToPC(player, $"Quest '{Name}' has been abandoned!");
+
+            foreach (var action in OnAbandonActions)
+            {
+                action.Invoke(player);
+            }
         }
 
         /// <summary>

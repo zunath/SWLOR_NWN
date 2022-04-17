@@ -41,7 +41,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 30f;
 
-            ApplyEffectToObject(DurationType.Temporary, EffectACIncrease(baseAmount, ArmorClassModiferType.Natural), target, length);
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                if(GetEffectTag(effect) == "STASIS_FIELD")
+                    RemoveEffect(target, effect);
+            }
+
+            var acEffect = EffectACIncrease(baseAmount, ArmorClassModiferType.Natural);
+            acEffect = TagEffect(acEffect, "STASIS_FIELD");
+            ApplyEffectToObject(DurationType.Temporary, acEffect, target, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
             TakeStimPack(activator);

@@ -999,13 +999,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return quality;
         }
 
+        private int CalculateXP(int recipeLevel, int playerLevel, bool firstTime, float qualityPercent)
+        {
+            var delta = recipeLevel - playerLevel;
+            var xp = Skill.GetDeltaXP(delta);
+            // 20% bonus for the first time.
+            if (firstTime)
+                xp += (int)(xp * 0.20f);
+            xp += (int)(xp * qualityPercent);
+
+            return xp;
+        }
+
         private void ProcessSuccess()
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
-            var delta =  recipe.Level - dbPlayer.Skills[recipe.Skill].Rank;
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality; 
@@ -1055,12 +1066,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Give XP plus a percent bonus based on the quality achieved.
-            var xp = Skill.GetDeltaXP(delta);
-            // 20% bonus for the first time.
-            if (firstTime)
-                xp += (int)(xp * 0.20f);
-            xp += (int)(xp * qualityPercent);
-
+            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, firstTime, qualityPercent);
             Skill.GiveSkillXP(Player, recipe.Skill, xp);
 
             // Clean up and return to the Set Up mode.
@@ -1078,6 +1084,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ProcessFailure()
         {
+            var recipe = Craft.GetRecipe(_recipe);
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
             const int ChanceToLoseItem = 65;
 
             // Process enhancements
@@ -1113,6 +1122,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Failed to craft the item...";
             StatusColor = _red;
+
+            // 15% of XP is gained for failures.
+            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
+            xp = (int)(xp * 0.15f);
+            Skill.GiveSkillXP(Player, recipe.Skill, xp);
         }
 
         private void HandleAction(

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 2)
+                .Component("ref_veldite", 1)
                 .Component("wood", 1);
 
             // Titan Knife
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 2)
+                .Component("ref_scordspar", 1)
                 .Component("fine_wood", 1);
 
             // Delta Knife
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 2)
+                .Component("ref_plagionite", 1)
                 .Component("ancient_wood", 1);
 
             // Proto Knife
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 2)
+                .Component("ref_keromber", 1)
                 .Component("aracia_wood", 1);
 
             // Ophidian Knife
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 2)
+                .Component("ref_jasioclase", 1)
                 .Component("hyphae_wood", 1);
         }
 
@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 5)
-                .Component("wood", 3);
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
 
             // Titan Longsword
             _builder.Create(RecipeType.TitanLongsword, SkillType.Smithery)
@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 5)
-                .Component("fine_wood", 3);
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
 
             // Delta Longsword
             _builder.Create(RecipeType.DeltaLongsword, SkillType.Smithery)
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 5)
-                .Component("ancient_wood", 3);
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
 
             // Proto Longsword
             _builder.Create(RecipeType.ProtoLongsword, SkillType.Smithery)
@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
 
             // Ophidian Longsword
             _builder.Create(RecipeType.OphidianLongsword, SkillType.Smithery)
@@ -130,8 +130,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 5)
-                .Component("hyphae_wood", 3);
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
         }
 
     }

@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 5)
-                .Component("fiberp_ruined", 3);
+                .Component("ref_veldite", 3)
+                .Component("fiberp_ruined", 2);
 
             // Spiritmaster Cap
             _builder.Create(RecipeType.SpiritmasterCap, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 5)
-                .Component("fiberp_ruined", 3);
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
 
             // Combat Cap
             _builder.Create(RecipeType.CombatCap, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 5)
-                .Component("fiberp_ruined", 3);
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("ref_scordspar", 3)
+                .Component("fiberp_flawed", 2);
 
             // Vivid Cap
             _builder.Create(RecipeType.VividCap, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
 
             // Valor Cap
             _builder.Create(RecipeType.ValorCap, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 5)
-                .Component("fiberp_good", 3);
+                .Component("ref_plagionite", 3)
+                .Component("fiberp_good", 2);
 
             // Reginal Cap
             _builder.Create(RecipeType.ReginalCap, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 5)
-                .Component("fiberp_good", 3);
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
 
             // Forza Cap
             _builder.Create(RecipeType.ForzaCap, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 5)
-                .Component("fiberp_good", 3);
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 5)
-                .Component("fiberp_imperfect", 3);
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 2);
 
             // Grenada Cap
             _builder.Create(RecipeType.GrenadaCap, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 5)
-                .Component("fiberp_imperfect", 3);
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
 
             // Survival Cap
             _builder.Create(RecipeType.SurvivalCap, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 5)
-                .Component("fiberp_imperfect", 3);
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 5)
-                .Component("fiberp_high", 3);
+                .Component("ref_jasioclase", 3)
+                .Component("fiberp_high", 2);
 
             // Transcendent Cap
             _builder.Create(RecipeType.TranscendentCap, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
 
             // Supreme Cap
             _builder.Create(RecipeType.SupremeCap, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
         }
     }
 }

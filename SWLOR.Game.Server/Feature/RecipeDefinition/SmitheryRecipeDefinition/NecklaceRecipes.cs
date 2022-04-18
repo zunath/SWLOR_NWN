@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 3)
-                .Component("jade", 2);
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
 
             // Spiritmaster Necklace
             _builder.Create(RecipeType.SpiritmasterNecklace, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 3)
-                .Component("jade", 2);
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
 
             // Combat Necklace
             _builder.Create(RecipeType.CombatNecklace, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 3)
-                .Component("jade", 2);
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 3)
-                .Component("agate", 2);
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
 
             // Vivid Necklace
             _builder.Create(RecipeType.VividNecklace, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 3)
-                .Component("agate", 2);
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
 
             // Valor Necklace
             _builder.Create(RecipeType.ValorNecklace, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 3)
-                .Component("agate", 2);
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 3)
-                .Component("citrine", 2);
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
 
             // Reginal Necklace
             _builder.Create(RecipeType.ReginalNecklace, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 3)
-                .Component("citrine", 2);
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
 
             // Forza Necklace
             _builder.Create(RecipeType.ForzaNecklace, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 3)
-                .Component("citrine", 2);
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 3)
-                .Component("ruby", 2);
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
 
             // Grenada Necklace
             _builder.Create(RecipeType.GrenadaNecklace, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 3)
-                .Component("ruby", 2);
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
 
             // Survival Necklace
             _builder.Create(RecipeType.SurvivalNecklace, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 3)
-                .Component("ruby", 2);
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("emerald", 2);
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
 
             // Transcendent Necklace
             _builder.Create(RecipeType.TranscendentNecklace, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("emerald", 2);
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
 
             // Supreme Necklace
             _builder.Create(RecipeType.SupremeNecklace, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("emerald", 2);
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
         }
 
     }

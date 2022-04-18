@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 9)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
 
             // Spiritmaster Cloak
             _builder.Create(RecipeType.SpiritmasterCloak, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 9)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
 
             // Combat Cloak
             _builder.Create(RecipeType.CombatCloak, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 9)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 9)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
 
             // Vivid Cloak
             _builder.Create(RecipeType.VividCloak, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 9)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
 
             // Valor Cloak
             _builder.Create(RecipeType.ValorCloak, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 9)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 9)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
 
             // Reginal Cloak
             _builder.Create(RecipeType.ReginalCloak, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 9)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
 
             // Forza Cloak
             _builder.Create(RecipeType.ForzaCloak, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 9)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
 
         }
 
@@ -140,8 +140,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 9)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
 
             // Grenada Cloak
             _builder.Create(RecipeType.GrenadaCloak, SkillType.Smithery)
@@ -151,8 +151,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 9)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
 
             // Survival Cloak
             _builder.Create(RecipeType.SurvivalCloak, SkillType.Smithery)
@@ -162,8 +162,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 9)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
         }
 
         private void Tier5()
@@ -176,8 +176,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 9)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
 
             // Transcendent Cloak
             _builder.Create(RecipeType.TranscendentCloak, SkillType.Smithery)
@@ -187,8 +187,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 9)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
 
             // Supreme Cloak
             _builder.Create(RecipeType.SupremeCloak, SkillType.Smithery)
@@ -198,8 +198,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 9)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
         }
     }
 }

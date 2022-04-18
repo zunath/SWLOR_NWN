@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 4)
-                .Component("fiberp_ruined", 2);
+                .Component("ref_veldite", 2)
+                .Component("fiberp_ruined", 1);
 
             // Spiritmaster Gloves
             _builder.Create(RecipeType.SpiritmasterGloves, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 4)
-                .Component("fiberp_ruined", 2);
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
 
             // Combat Gloves
             _builder.Create(RecipeType.CombatGloves, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 4)
-                .Component("fiberp_ruined", 2);
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("ref_scordspar", 2)
+                .Component("fiberp_flawed", 1);
 
             // Vivid Gloves
             _builder.Create(RecipeType.VividGloves, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
 
             // Valor Gloves
             _builder.Create(RecipeType.ValorGloves, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 4)
-                .Component("fiberp_good", 2);
+                .Component("ref_plagionite", 2)
+                .Component("fiberp_good", 1);
 
             // Reginal Gloves
             _builder.Create(RecipeType.ReginalGloves, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 4)
-                .Component("fiberp_good", 2);
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
 
             // Forza Gloves
             _builder.Create(RecipeType.ForzaGloves, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 4)
-                .Component("fiberp_good", 2);
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 4)
-                .Component("fiberp_imperfect", 2);
+                .Component("ref_keromber", 2)
+                .Component("fiberp_imperfect", 1);
 
             // Grenada Gloves
             _builder.Create(RecipeType.GrenadaGloves, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 4)
-                .Component("fiberp_imperfect", 2);
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
 
             // Survival Gloves
             _builder.Create(RecipeType.SurvivalGloves, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 4)
-                .Component("fiberp_imperfect", 2);
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 2);
+                .Component("ref_jasioclase", 2)
+                .Component("fiberp_high", 1);
 
             // Transcendent Gloves
             _builder.Create(RecipeType.TranscendentGloves, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
+                .Component("lth_high", 2)
+                .Component("fiberp_high", 1);
 
             // Supreme Gloves
             _builder.Create(RecipeType.SupremeGloves, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
+                .Component("lth_high", 2)
+                .Component("fiberp_high", 1);
         }
     }
 }

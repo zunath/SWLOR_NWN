@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 8)
-                .Component("fiberp_ruined", 4);
+                .Component("ref_veldite", 4)
+                .Component("fiberp_ruined", 2);
 
             // Spiritmaster Tunic
             _builder.Create(RecipeType.SpiritmasterTunic, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 8)
-                .Component("fiberp_ruined", 4);
+                .Component("lth_ruined", 4)
+                .Component("fiberp_ruined", 2);
 
             // Combat Tunic
             _builder.Create(RecipeType.CombatTunic, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 8)
-                .Component("fiberp_ruined", 4);
+                .Component("lth_ruined", 4)
+                .Component("fiberp_ruined", 2);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 8)
-                .Component("fiberp_flawed", 4);
+                .Component("ref_scordspar", 4)
+                .Component("fiberp_flawed", 2);
 
             // Vivid Tunic
             _builder.Create(RecipeType.VividTunic, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 8)
-                .Component("fiberp_flawed", 4);
+                .Component("lth_flawed", 4)
+                .Component("fiberp_flawed", 2);
 
             // Valor Tunic
             _builder.Create(RecipeType.ValorTunic, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 8)
-                .Component("fiberp_flawed", 4);
+                .Component("lth_flawed", 4)
+                .Component("fiberp_flawed", 2);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 8)
-                .Component("fiberp_good", 4);
+                .Component("ref_plagionite", 4)
+                .Component("fiberp_good", 2);
 
             // Reginal Tunic
             _builder.Create(RecipeType.ReginalTunic, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 8)
-                .Component("fiberp_good", 4);
+                .Component("lth_good", 4)
+                .Component("fiberp_good", 2);
 
             // Forza Tunic
             _builder.Create(RecipeType.ForzaTunic, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 8)
-                .Component("fiberp_good", 4);
+                .Component("lth_good", 4)
+                .Component("fiberp_good", 2);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 8)
-                .Component("fiberp_imperfect", 4);
+                .Component("ref_keromber", 4)
+                .Component("fiberp_imperfect", 2);
 
             // Grenada Tunic
             _builder.Create(RecipeType.GrenadaTunic, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 8)
-                .Component("fiberp_imperfect", 4);
+                .Component("lth_imperfect", 4)
+                .Component("fiberp_imperfect", 2);
 
             // Survival Tunic
             _builder.Create(RecipeType.SurvivalTunic, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 8)
-                .Component("fiberp_imperfect", 4);
+                .Component("lth_imperfect", 4)
+                .Component("fiberp_imperfect", 2);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 8)
-                .Component("fiberp_high", 4);
+                .Component("ref_jasioclase", 4)
+                .Component("fiberp_high", 2);
 
             // Transcendent Tunic
             _builder.Create(RecipeType.TranscendentTunic, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 8)
-                .Component("fiberp_high", 4);
+                .Component("lth_high", 4)
+                .Component("fiberp_high", 2);
 
             // Supreme Tunic
             _builder.Create(RecipeType.SupremeTunic, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 8)
-                .Component("fiberp_high", 4);
+                .Component("lth_high", 4)
+                .Component("fiberp_high", 2);
         }
     }
 }

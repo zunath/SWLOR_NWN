@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 6)
-                .Component("fiberp_ruined", 3);
+                .Component("ref_veldite", 3)
+                .Component("fiberp_ruined", 2);
 
             // Spiritmaster Boots
             _builder.Create(RecipeType.SpiritmasterBoots, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 6)
-                .Component("fiberp_ruined", 3);
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
 
             // Combat Boots
             _builder.Create(RecipeType.CombatBoots, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 4)
-                .Component("fiberp_ruined", 2);
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 6)
-                .Component("fiberp_flawed", 3);
+                .Component("ref_scordspar", 3)
+                .Component("fiberp_flawed", 2);
 
             // Vivid Boots
             _builder.Create(RecipeType.VividBoots, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 6)
-                .Component("fiberp_flawed", 3);
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
 
             // Valor Boots
             _builder.Create(RecipeType.ValorBoots, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 6)
-                .Component("fiberp_good", 3);
+                .Component("ref_plagionite", 3)
+                .Component("fiberp_good", 2);
 
             // Reginal Boots
             _builder.Create(RecipeType.ReginalBoots, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 6)
-                .Component("fiberp_good", 3);
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
 
             // Forza Boots
             _builder.Create(RecipeType.ForzaBoots, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 4)
-                .Component("fiberp_good", 2);
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 6)
-                .Component("fiberp_imperfect", 3);
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 2);
 
             // Grenada Boots
             _builder.Create(RecipeType.GrenadaBoots, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 6)
-                .Component("fiberp_imperfect", 3);
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
 
             // Survival Boots
             _builder.Create(RecipeType.SurvivalBoots, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 4)
-                .Component("fiberp_imperfect", 2);
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 6)
-                .Component("fiberp_high", 3);
+                .Component("ref_jasioclase", 3)
+                .Component("fiberp_high", 2);
 
             // Transcendent Boots
             _builder.Create(RecipeType.TranscendentBoots, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 6)
-                .Component("fiberp_high", 3);
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
 
             // Supreme Boots
             _builder.Create(RecipeType.SupremeBoots, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
+                .Component("lth_high", 2)
+                .Component("fiberp_high", 1);
         }
     }
 }

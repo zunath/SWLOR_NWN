@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 10)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
 
             // Spiritmaster Belt
             _builder.Create(RecipeType.SpiritmasterBelt, SkillType.Smithery)
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 10)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
 
             // Combat Belt
             _builder.Create(RecipeType.CombatBelt, SkillType.Smithery)
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 10)
-                .Component("fiberp_ruined", 5);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
         }
 
         private void Tier2()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 10)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
 
             // Vivid Belt
             _builder.Create(RecipeType.VividBelt, SkillType.Smithery)
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 10)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
 
             // Valor Belt
             _builder.Create(RecipeType.ValorBelt, SkillType.Smithery)
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_flawed", 10)
-                .Component("fiberp_flawed", 5);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
         }
 
         private void Tier3()
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 10)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
 
             // Reginal Belt
             _builder.Create(RecipeType.ReginalBelt, SkillType.Smithery)
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 10)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
 
             // Forza Belt
             _builder.Create(RecipeType.ForzaBelt, SkillType.Smithery)
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 10)
-                .Component("fiberp_good", 5);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
         }
 
         private void Tier4()
@@ -139,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 10)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
 
             // Grenada Belt
             _builder.Create(RecipeType.GrenadaBelt, SkillType.Smithery)
@@ -150,8 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 10)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
 
             // Survival Belt
             _builder.Create(RecipeType.SurvivalBelt, SkillType.Smithery)
@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 10)
-                .Component("fiberp_imperfect", 5);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
         }
 
         private void Tier5()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 10)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
 
             // Transcendent Belt
             _builder.Create(RecipeType.TranscendentBelt, SkillType.Smithery)
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 10)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
 
             // Supreme Belt
             _builder.Create(RecipeType.SupremeBelt, SkillType.Smithery)
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 10)
-                .Component("fiberp_high", 5);
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
         }
     }
 }

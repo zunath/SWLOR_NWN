@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 4)
-                .Component("wood", 2);
+                .Component("ref_veldite", 2)
+                .Component("wood", 1);
 
             // Titan Katar
             _builder.Create(RecipeType.TitanKatar, SkillType.Smithery)
@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 1);
 
             // Delta Katar
             _builder.Create(RecipeType.DeltaKatar, SkillType.Smithery)
@@ -50,8 +50,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 2)
+                .Component("ancient_wood", 1);
 
             // Proto Katar
             _builder.Create(RecipeType.ProtoKatar, SkillType.Smithery)
@@ -61,8 +61,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 2)
+                .Component("aracia_wood", 1);
 
             // Ophidian Katar
             _builder.Create(RecipeType.OphidianKatar, SkillType.Smithery)
@@ -72,8 +72,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
+                .Component("ref_jasioclase", 2)
+                .Component("hyphae_wood", 1);
         }
 
         private void Staffs()
@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 6)
-                .Component("wood", 3);
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
 
             // Titan Staff
             _builder.Create(RecipeType.TitanStaff, SkillType.Smithery)
@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 6)
-                .Component("fine_wood", 3);
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
 
             // Delta Staff
             _builder.Create(RecipeType.DeltaStaff, SkillType.Smithery)
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 6)
-                .Component("ancient_wood", 3);
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
 
             // Proto Staff
             _builder.Create(RecipeType.ProtoStaff, SkillType.Smithery)
@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 6)
-                .Component("aracia_wood", 3);
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
 
             // Ophidian Staff
             _builder.Create(RecipeType.OphidianStaff, SkillType.Smithery)
@@ -130,8 +130,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 6)
-                .Component("hyphae_wood", 3);
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
         }
 
     }

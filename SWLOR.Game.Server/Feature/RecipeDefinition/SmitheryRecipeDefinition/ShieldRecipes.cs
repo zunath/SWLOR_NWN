@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 7)
-                .Component("wood", 4);
+                .Component("ref_veldite", 4)
+                .Component("wood", 2);
 
             // Titan Shield
             _builder.Create(RecipeType.TitanShield, SkillType.Smithery)
@@ -38,8 +38,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_scordspar", 7)
-                .Component("fine_wood", 4);
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
 
             // Quark Shield
             _builder.Create(RecipeType.QuarkShield, SkillType.Smithery)
@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 7)
-                .Component("ancient_wood", 4);
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 2);
 
             // Argos Shield
             _builder.Create(RecipeType.ArgosShield, SkillType.Smithery)
@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 7)
-                .Component("aracia_wood", 4);
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 2);
 
             // Eclipse Shield
             _builder.Create(RecipeType.EclipseShield, SkillType.Smithery)
@@ -71,8 +71,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 7)
-                .Component("hyphae_wood", 4);
+                .Component("ref_jasioclase", 4)
+                .Component("hyphae_wood", 2);
         }
 
     }

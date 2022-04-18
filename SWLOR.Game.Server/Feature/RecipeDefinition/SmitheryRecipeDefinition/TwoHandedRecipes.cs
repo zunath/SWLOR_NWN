@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 9)
-                .Component("wood", 5);
+                .Component("ref_veldite", 5)
+                .Component("wood", 3);
 
             // Titan Great Sword
             _builder.Create(RecipeType.TitanGreatSword, SkillType.Smithery)
@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 9)
-                .Component("fine_wood", 5);
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3);
 
             // Delta Great Sword
             _builder.Create(RecipeType.DeltaGreatSword, SkillType.Smithery)
@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 9)
-                .Component("ancient_wood", 5);
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3);
 
             // Proto Great Sword
             _builder.Create(RecipeType.ProtoGreatSword, SkillType.Smithery)
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 9)
-                .Component("aracia_wood", 5);
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3);
 
             // Ophidian Great Sword
             _builder.Create(RecipeType.OphidianGreatSword, SkillType.Smithery)
@@ -73,8 +73,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 9)
-                .Component("hyphae_wood", 5);
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 3);
         }
 
         private void Spears()
@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 8)
-                .Component("wood", 4);
+                .Component("ref_veldite", 4)
+                .Component("wood", 2);
 
             // Titan Spear
             _builder.Create(RecipeType.TitanSpear, SkillType.Smithery)
@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 8)
-                .Component("fine_wood", 4);
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
 
             // Delta Spear
             _builder.Create(RecipeType.DeltaSpear, SkillType.Smithery)
@@ -109,8 +109,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 8)
-                .Component("ancient_wood", 4);
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 2);
 
             // Proto Spear
             _builder.Create(RecipeType.ProtoSpear, SkillType.Smithery)
@@ -120,8 +120,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 8)
-                .Component("aracia_wood", 4);
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 2);
 
             // Ophidian Spear
             _builder.Create(RecipeType.OphidianSpear, SkillType.Smithery)
@@ -131,8 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("aracia_wood", 8)
-                .Component("hyphae_wood", 4);
+                .Component("aracia_wood", 4)
+                .Component("hyphae_wood", 2);
         }
 
         private void TwinBlades()
@@ -145,8 +145,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 5)
-                .Component("wood", 3);
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
 
             // Titan Twin Blade
             _builder.Create(RecipeType.TitanTwinBlade, SkillType.Smithery)
@@ -156,8 +156,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_scordspar", 5)
-                .Component("fine_wood", 3);
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
 
             // Delta Twin Blade
             _builder.Create(RecipeType.DeltaTwinBlade, SkillType.Smithery)
@@ -167,8 +167,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 5)
-                .Component("ancient_wood", 3);
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
 
             // Proto Twin Blade
             _builder.Create(RecipeType.ProtoTwinBlade, SkillType.Smithery)
@@ -178,8 +178,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
 
             // Ophidian Twin Blade
             _builder.Create(RecipeType.OphidianTwinBlade, SkillType.Smithery)
@@ -189,8 +189,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 5)
-                .Component("hyphae_wood", 3);
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
         }
 
     }

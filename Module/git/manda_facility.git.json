@@ -3638,7 +3638,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
+                "value": "SliceTerminalDialog"
               }
             },
             {
@@ -3654,21 +3654,6 @@
               "Value": {
                 "type": "int",
                 "value": 12
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
               }
             }
           ]
@@ -3945,22 +3930,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
+                "value": "SliceTerminalDialog"
               }
             },
             {
@@ -4252,22 +4222,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
+                "value": "SliceTerminalDialog"
               }
             },
             {
@@ -4551,21 +4506,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "KEY_ITEM_ID"
               },
               "Type": {
@@ -4589,7 +4529,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
+                "value": "SliceTerminalDialog"
               }
             }
           ]
@@ -4881,22 +4821,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
+                "value": "SliceTerminalDialog"
               }
             }
           ]
@@ -5165,21 +5090,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -5188,7 +5098,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SliceTerminal"
+                "value": "SliceTerminalDialog"
               }
             },
             {

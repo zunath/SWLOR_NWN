@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 1)
-                .Component("ref_tilarium", 4)
-                .Component("aluminum", 2)
-                .Component("fiberp_ruined", 2)
-                .Component("elec_ruined", 2);
+                .Component("ref_tilarium", 2)
+                .Component("aluminum", 1)
+                .Component("fiberp_ruined", 1)
+                .Component("elec_ruined", 1);
 
             // Condor
             _builder.Create(RecipeType.Condor, SkillType.Engineering)
@@ -43,10 +43,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 1)
-                .Component("ref_tilarium", 9)
-                .Component("aluminum", 5)
-                .Component("fiberp_ruined", 5)
-                .Component("elec_ruined", 5);
+                .Component("ref_tilarium", 5)
+                .Component("aluminum", 3)
+                .Component("fiberp_ruined", 3)
+                .Component("elec_ruined", 3);
         }
 
         private void Tier2()
@@ -59,10 +59,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 1)
-                .Component("ref_currian", 4)
-                .Component("steel", 2)
-                .Component("fiberp_flawed", 2)
-                .Component("elec_flawed", 2);
+                .Component("ref_currian", 2)
+                .Component("steel", 1)
+                .Component("fiberp_flawed", 1)
+                .Component("elec_flawed", 1);
 
             // Panther
             _builder.Create(RecipeType.Panther, SkillType.Engineering)
@@ -72,10 +72,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 1)
-                .Component("ref_currian", 9)
-                .Component("steel", 5)
-                .Component("fiberp_flawed", 5)
-                .Component("elec_flawed", 5);
+                .Component("ref_currian", 5)
+                .Component("steel", 3)
+                .Component("fiberp_flawed", 3)
+                .Component("elec_flawed", 3);
         }
 
         private void Tier3()
@@ -88,10 +88,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 4)
-                .Component("obsidian", 2)
-                .Component("fiberp_good", 2)
-                .Component("elec_good", 2);
+                .Component("ref_idailia", 2)
+                .Component("obsidian", 1)
+                .Component("fiberp_good", 1)
+                .Component("elec_good", 1);
 
             // Falchion
             _builder.Create(RecipeType.Falchion, SkillType.Engineering)
@@ -101,10 +101,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 9)
-                .Component("obsidian", 5)
-                .Component("fiberp_good", 5)
-                .Component("elec_good", 5);
+                .Component("ref_idailia", 5)
+                .Component("obsidian", 3)
+                .Component("fiberp_good", 3)
+                .Component("elec_good", 3);
         }
 
         private void Tier4()
@@ -117,10 +117,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 4)
-                .Component("crystal", 2)
-                .Component("fiberp_imperfect", 2)
-                .Component("elec_imperfect", 2);
+                .Component("ref_barinium", 2)
+                .Component("crystal", 1)
+                .Component("fiberp_imperfect", 1)
+                .Component("elec_imperfect", 1);
 
             // Merchant
             _builder.Create(RecipeType.Merchant, SkillType.Engineering)
@@ -130,10 +130,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 9)
-                .Component("crystal", 5)
-                .Component("fiberp_imperfect", 5)
-                .Component("elec_imperfect", 5);
+                .Component("ref_barinium", 5)
+                .Component("crystal", 3)
+                .Component("fiberp_imperfect", 3)
+                .Component("elec_imperfect", 3);
         }
 
         private void Tier5()
@@ -146,10 +146,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 4)
-                .Component("diamond", 2)
-                .Component("fiberp_high", 2)
-                .Component("elec_high", 2);
+                .Component("ref_gostian", 2)
+                .Component("diamond", 1)
+                .Component("fiberp_high", 1)
+                .Component("elec_high", 1);
 
             // Consular
             _builder.Create(RecipeType.Consular, SkillType.Engineering)
@@ -159,10 +159,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 9)
-                .Component("diamond", 5)
-                .Component("fiberp_high", 5)
-                .Component("elec_high", 5);
+                .Component("ref_gostian", 5)
+                .Component("diamond", 3)
+                .Component("fiberp_high", 3)
+                .Component("elec_high", 3);
         }
     }
 }

@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(21)
                 .Quantity(1)
                 .RequirementPerk(PerkType.StructureBlueprints, 1)
-                .Component("ref_plagionite", 8)
-                .Component("ref_scordspar", 8)
-                .Component("elec_good", 8);
+                .Component("ref_plagionite", 4)
+                .Component("ref_scordspar", 4)
+                .Component("elec_good", 4);
 
             _builder.Create(RecipeType.ConstructionParts, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Structure)
@@ -34,9 +34,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(23)
                 .Quantity(1)
                 .RequirementPerk(PerkType.StructureBlueprints, 1)
-                .Component("ref_plagionite", 6)
-                .Component("ref_scordspar", 6)
-                .Component("elec_good", 6);
+                .Component("ref_plagionite", 3)
+                .Component("ref_scordspar", 3)
+                .Component("elec_good", 3);
 
             _builder.Create(RecipeType.ReinforcedConstructionParts, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Structure)

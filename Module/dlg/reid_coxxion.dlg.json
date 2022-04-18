@@ -4100,7 +4100,19 @@
         "__struct_id": 32,
         "ActionParams": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "vanquish_vellen"
+              }
+            }
+          ]
         },
         "Animation": {
           "type": "dword",
@@ -4148,7 +4160,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "next_state_2"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Service.ActivityService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -349,6 +350,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             SendMessageToPC(player, text);
+
+            Activity.SetBusy(player, ActivityStatusType.Quest);
         }
 
         /// <summary>
@@ -357,12 +360,15 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("qst_collect_clsd")]
         public static void CloseItemCollector()
         {
+            var player = GetLastClosedBy();
             for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
             {
                 DestroyObject(item);
             }
 
             DestroyObject(OBJECT_SELF);
+
+            Activity.ClearBusy(player);
         }
 
         /// <summary>

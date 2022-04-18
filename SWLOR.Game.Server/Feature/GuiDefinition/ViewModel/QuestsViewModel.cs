@@ -167,6 +167,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you wish to abandon this quest?", () =>
             {
+                if (Activity.IsBusy(Player))
+                {
+                    SendMessageToPC(Player, "You are busy.");
+                    return;
+                }
+
                 Quest.AbandonQuest(Player, questId);
 
                 _questIds.RemoveAt(SelectedQuestIndex);

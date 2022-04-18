@@ -51,8 +51,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("CZ220_LOOT_MYNOCK")
                 .AddItem("mynock_meat", 50)
                 .AddItem("mynock_tooth", 20)
-                .AddItem("mynock_wing", 30)
                 .AddItem("lth_ruined", 5);
+
+            _builder.Create("CZ220_LOOT_MYNOCK_WINGS")
+                .AddItem("mynock_wing", 10);
         }
 
         private void Droid()

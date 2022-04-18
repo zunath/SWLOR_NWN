@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -9,6 +8,9 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class AchievementProgression
     {
+        /// <summary>
+        /// When a player enters the mod, increase their number of logins
+        /// </summary>
         [NWNEventHandler("mod_enter")]
         public static void LogIn()
         {
@@ -20,6 +22,22 @@ namespace SWLOR.Game.Server.Feature
 
             dbAccount.TimesLoggedIn++;
             DB.Set(dbAccount);
+        }
+
+        /// <summary>
+        /// When a player enters an area, if an achievement is assigned to the area grant it to them.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void EnterArea()
+        {
+            var area = OBJECT_SELF;
+            var player = GetEnteringObject();
+            var exploreAchievementType = (AchievementType)GetLocalInt(area, "EXPLORE_ACHIEVEMENT_ID");
+
+            if (exploreAchievementType == AchievementType.Invalid)
+                return;
+
+            Achievement.GiveAchievement(player, exploreAchievementType);
         }
 
         /// <summary>

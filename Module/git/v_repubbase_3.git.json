@@ -235,7 +235,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -560,7 +560,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -1666,7 +1666,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -1991,7 +1991,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -3097,7 +3097,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -3419,7 +3419,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 200
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -4622,7 +4622,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -4944,7 +4944,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 200
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -6147,7 +6147,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -6469,7 +6469,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -7935,7 +7935,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -8260,7 +8260,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -9366,7 +9366,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -9691,7 +9691,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -34466,6 +34466,21 @@
         "Value": {
           "type": "int",
           "value": 49
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 83
         }
       }
     ]

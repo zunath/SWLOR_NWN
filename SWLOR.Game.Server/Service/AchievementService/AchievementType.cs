@@ -80,6 +80,169 @@ namespace SWLOR.Game.Server.Service.AchievementService
         CraftItems9 = 36,
         [Achievement("Craft Items X", "Craft 5000 Items", true)]
         CraftItems10 = 37,
+
+        [Achievement("Explore Abandoned Station", "Explore the Abandoned Station", true)]
+        ExploreAbandonedStation = 38,
+
+        [Achievement("Explore CZ-220", "Explore CZ-220", true)]
+        ExploreCZ220 = 39,
+
+        [Achievement("Explore Qion Tundra", "Explore the Qion Tundra on Hutlar", true)]
+        ExploreHutlarQionTundra = 40,
+
+        [Achievement("Explore Qion Valley", "Explore the Qion Valley on Hutlar", true)]
+        ExploreQionValley = 41,
+
+        [Achievement("Explore Abandoned Outpost", "Explore the Abandoned Outpost on Hutlar", true)]
+        ExploreHutlarAbandonedOutpost = 42,
+
+        [Achievement("Explore Hutlar Outpost", "Explore the Hutlar Outpost", true)]
+        ExploreHutlarOutpost = 43,
+
+        [Achievement("Explore Dac City", "Explore Dac City on Mon Cala", true)]
+        ExploreMonCalaDacCity = 44,
+
+        [Achievement("Explore Coral Isles Inner", "Explore the Inner Coral Isles on Mon Cala", true)]
+        ExploreMonCalaCoralIslesInner = 45,
+
+        [Achievement("Explore Coral Isles Outer", "Explore the Outer Coral Isles on Mon Cala", true)]
+        ExploreMonCalaCoralIslesOuter = 46,
+
+        [Achievement("Explore Coral Isles Facility", "Explore the Facility on Mon Cala", true)]
+        ExploreMonCalaFacility = 47,
+
+        [Achievement("Explore Player Bank", "Explore a player's bank", true)]
+        ExplorePlayerBank = 48,
+
+        [Achievement("Explore Player Cantina", "Explore a player's cantina", true)]
+        ExplorePlayerCantina = 49,
+
+        [Achievement("Explore Player City Hall", "Explore a player's city hall", true)]
+        ExplorePlayerCityHall = 50,
+
+        [Achievement("Explore Player Medical Center", "Explore a player's medical center", true)]
+        ExplorePlayerMedicalCenter = 51,
+
+        [Achievement("Explore Player Starport", "Explore a player's starport", true)]
+        ExplorePlayerStarport = 52,
+
+        [Achievement("Explore Hutlar Orbit", "Explore Hutlar's Orbit", true)]
+        ExploreHutlarOrbit = 53,
+
+        [Achievement("Explore Mon Cala Orbit", "Explore Mon Cala's Orbit", true)]
+        ExploreMonCalaOrbit = 54,
+
+        [Achievement("Explore Tatooine Orbit", "Explore Tatooine's Orbit", true)]
+        ExploreTatooineOrbit = 55,
+
+        [Achievement("Explore Viscara Orbit", "Explore Viscara's Orbit", true)]
+        ExploreViscaraOrbit = 56,
+
+        [Achievement("Explore Consular Starship", "Explore a Consular class starship", true)]
+        ExploreStarshipConsular = 57,
+
+        [Achievement("Explore Falchion Starship", "Explore a Falchion class starship", true)]
+        ExploreStarshipFalchion = 58,
+
+        [Achievement("Explore Hound Starship", "Explore a Hound class starship", true)]
+        ExploreStarshipHound = 59,
+
+        [Achievement("Explore Merchant Starship", "Explore a Merchant class starship", true)]
+        ExploreStarshipMerchant = 60,
+
+        [Achievement("Explore Mule Starship", "Explore a Mule class starship", true)]
+        ExploreStarshipMule = 61,
+
+        [Achievement("Explore Panther Starship", "Explore a Panther class starship", true)]
+        ExploreStarshipPanther = 62,
+
+        [Achievement("Explore Saber Starship", "Explore a Saber class starship", true)]
+        ExploreStarshipSaber = 63,
+
+        [Achievement("Explore Striker Starship", "Explore a Striker class starship", true)]
+        ExploreStarshipStriker = 64,
+
+        [Achievement("Explore Throne Starship", "Explore a Throne class starship", true)]
+        ExploreStarshipThrone = 65,
+
+        [Achievement("Explore Anchorhead", "Explore Anchorhead on Tatooine", true)]
+        ExploreTatooineAnchorhead = 66,
+
+        [Achievement("Explore Tatooine Desert", "Explore the desert on Tatooine", true)]
+        ExploreTatooineDesert = 67,
+
+        [Achievement("Explore Deep Canyon", "Explore the deep canyon on Tatooine", true)]
+        ExploreTatooineDeepCanyon = 68,
+
+        [Achievement("Explore Mos Esper", "Explore Mos Esper on Tatooine", true)]
+        ExploreTatooineMosEsper = 69,
+
+        [Achievement("Explore Tatooine Dunes", "Explore the dunes on Tatooine", true)]
+        ExploreTatooineDunes = 70,
+
+        [Achievement("Explore Tusken Camp", "Explore the Tusken raider camp on Tatooine", true)]
+        ExploreTatooineTuskenRaiderCamp = 71,
+
+        [Achievement("Explore Tusken Cave", "Explore the Tusken cave on Tatooine", true)]
+        ExploreTatooineTuskenCave = 72,
+
+        [Achievement("Explore Viscara Cavern", "Explore the cavern on Viscara", true)]
+        ExploreViscaraCavern = 73,
+
+        [Achievement("Explore Coxxion Base", "Explore the Coxxion Base on Viscara", true)]
+        ExploreViscaraCoxxionBase = 74,
+
+        [Achievement("Explore Coxxion HQ", "Explore the Coxxion Headquarters on Viscara", true)]
+        ExploreViscaraCoxxionHeadquarters = 75,
+
+        [Achievement("Explore Deep Mountains", "Explore the Deep Mountains on Viscara", true)]
+        ExploreViscaraDeepMountains = 76,
+
+        [Achievement("Explore Deepwoods", "Explore the Deepwoods on Viscara", true)]
+        ExploreViscaraDeepwoods = 77,
+
+        [Achievement("Explore Eastern Swamplands", "Explore the Eastern Swamplands on Viscara", true)]
+        ExploreViscaraEasternSwamplands = 78,
+
+        [Achievement("Explore Viscara Lake", "Explore the Lake on Viscara", true)]
+        ExploreViscaraLake = 79,
+
+        [Achievement("Explore Mandalorian Facility", "Explore the Mandalorian Facility on Viscara", true)]
+        ExploreViscaraMandalorianFacility = 80,
+
+        [Achievement("Explore Mountain Valley", "Explore the Mountain Valley on Viscara", true)]
+        ExploreViscaraMountainValley = 81,
+
+        [Achievement("Explore Racin' Jims", "Explore Racin' Jims Cantina on Viscara", true)]
+        ExploreViscaraRacinJims = 82,
+
+        [Achievement("Explore Republic Base", "Explore the Republic Base on Viscara", true)]
+        ExploreViscaraRepublicBase = 83,
+
+        [Achievement("Explore Sith Lake Outpost", "Explore the Sith Lake Outpost on Viscara", true)]
+        ExploreViscaraSithLakeOutpost = 84,
+
+        [Achievement("Explore Veles Colony", "Explore Veles Colony on Viscara", true)]
+        ExploreViscaraVelesColony = 85,
+
+        [Achievement("Explore Western Swamplands", "Explore the Western Swamplands on Viscara", true)]
+        ExploreViscaraWesternSwamplands = 86,
+
+        [Achievement("Explore Wildlands", "Explore the Wildlands on Viscara", true)]
+        ExploreViscaraWildlands = 87,
+
+        [Achievement("Explore Wildwoods", "Explore the Wildwoods on Viscara", true)]
+        ExploreViscaraWildwoods = 88,
+
+        [Achievement("Explore Rocky Pass", "Explore the Rocky Pass on Tatooine", true)]
+        ExploreTatooineRockyPass = 89,
+
+        [Achievement("Explore Player Apartment", "Explore a player's apartment", true)]
+        ExplorePlayerApartment = 90,
+
+        [Achievement("Explore Player House", "Explore a player's house", true)]
+        ExplorePlayerHouse = 91,
+
     }
 
     public class AchievementAttribute: Attribute

@@ -277,7 +277,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 500
+                "value": 482
               },
               "Cursed": {
                 "type": "byte",
@@ -1350,7 +1350,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 250
+                "value": 172
               },
               "Cursed": {
                 "type": "byte",
@@ -1491,7 +1491,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 750
+                "value": 672
               },
               "Cursed": {
                 "type": "byte",
@@ -12619,7 +12619,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 458
+                "value": 400
               },
               "Cursed": {
                 "type": "byte",
@@ -13457,7 +13457,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -14856,7 +14856,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -16474,7 +16474,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -17708,7 +17708,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -45279,6 +45279,21 @@
         "Value": {
           "type": "int",
           "value": 35
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 66
         }
       }
     ]

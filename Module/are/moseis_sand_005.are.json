@@ -6182,7 +6182,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 47
+    "value": 48
   },
   "Width": {
     "type": "int",

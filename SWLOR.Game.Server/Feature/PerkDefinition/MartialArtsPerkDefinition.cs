@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LegSweep()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.LegSweep)
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.LegSweep)
                 .Name("Leg Sweep")
 
                 .AddPerkLevel()

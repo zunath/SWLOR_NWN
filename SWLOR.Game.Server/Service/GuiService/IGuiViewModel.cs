@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.GuiService.Component;
+﻿using System;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -37,5 +38,25 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// </summary>
         /// <param name="propertyName">The name of the property to update.</param>
         void UpdatePropertyFromClient(string propertyName);
+
+        /// <summary>
+        /// Changes an element's layout to a different partial view.
+        /// The partial view must be defined within the window's definition.
+        /// Only groups may be targeted with this method.
+        /// </summary>
+        /// <param name="elementId">The element Id of the element to target.</param>
+        /// <param name="partialName">The new partial to display.</param>
+        void ChangePartialView(string elementId, string partialName);
+
+        string ModalPromptText { get; }
+
+        string ModalConfirmButtonText { get; }
+
+        string ModalCancelButtonText { get; }
+
+        Action OnModalClose();
+        Action OnModalConfirmClick();
+        Action OnModalCancelClick();
+
     }
 }

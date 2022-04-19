@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Annotations;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -195,6 +194,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             WatchOnClient(model => model.Geometry);
 
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
             var convertedPayload = payload == null ? default : (TPayload)payload;
             Initialize(convertedPayload);
         }
@@ -212,18 +212,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             _propertyValues[propertyName].Value = value;
 
-            if (propertyName != nameof(Geometry))
-            {
-                _propertyValues[propertyName].SkipNotify = true;
-                GetType().GetProperty(propertyName)?.SetValue(this, value);
-                _propertyValues[propertyName].SkipNotify = false;
-            }
-
-            // Update Modal geometry if this VM has it active.
-            if (propertyName == nameof(Geometry))
-            {
-                Gui.GetPlayerModal(Player, WindowType).ViewModel.Geometry = Geometry;
-            }
+            _propertyValues[propertyName].SkipNotify = true;
+            GetType().GetProperty(propertyName)?.SetValue(this, value);
+            _propertyValues[propertyName].SkipNotify = false;
         }
 
         /// <summary>
@@ -259,21 +250,19 @@ namespace SWLOR.Game.Server.Service.GuiService
             string confirmText = "Yes", 
             string cancelText = "No")
         {
-            var playerWindow = Gui.GetPlayerModal(Player, WindowType);
-            var vm = (ModalViewModel) playerWindow.ViewModel;
+            ModalPromptText = prompt;
+            ModalConfirmButtonText = confirmText;
+            ModalCancelButtonText = cancelText;
+            _callerConfirmAction = confirmAction;
+            _callerCancelAction = cancelAction;
 
-            vm.LoadModalInfo(Geometry, prompt, confirmAction, cancelAction, confirmText, cancelText);
-            Gui.ShowModal(Player, WindowType);
+            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
         }
 
-        /// <summary>
-        /// Changes an element's layout to a different partial view.
-        /// The partial view must be defined within the window's definition.
-        /// Only groups may be targeted with this method.
-        /// </summary>
-        /// <param name="elementId">The element Id of the element to target.</param>
-        /// <param name="partialName">The new partial to display.</param>
-        protected void ChangePartialView(string elementId, string partialName)
+        /// <inheritdoc />
+        public void ChangePartialView(string elementId, string partialName)
         {
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
@@ -282,8 +271,62 @@ namespace SWLOR.Game.Server.Service.GuiService
             // The following two lines work around a NUI issue where the new partial view won't display on screen until the window resizes.
             // We force a change to the geometry of the window to ensure it redraws appropriately.
             // If/when a fix is implemented by Beamdog, this can be removed.
-            Geometry.Height += (int)Geometry.Height % 2 == 0 ? 1.0f : -1.0f;
+            Geometry.Height += (int)Geometry.Height % 2 == 0 ? 1f : -1f;
             OnPropertyChanged(nameof(Geometry));
         }
+
+
+        public string ModalPromptText
+        {
+            get => Get<string>();
+            private set => Set(value);
+        }
+
+        public string ModalConfirmButtonText
+        {
+            get => Get<string>();
+            private set => Set(value);
+        }
+
+        public string ModalCancelButtonText
+        {
+            get => Get<string>();
+            private set => Set(value);
+        }
+
+        private Action _callerConfirmAction;
+        private Action _callerCancelAction;
+
+        public Action OnModalClose() => () =>
+        {
+            // Reset to default values.
+            ModalPromptText = "Are you sure?";
+
+            ModalConfirmButtonText = "Yes";
+            ModalCancelButtonText = "No";
+
+            _callerConfirmAction = null;
+            _callerCancelAction = null;
+        };
+
+        public Action OnModalConfirmClick() => () =>
+        {
+            if (_callerConfirmAction != null)
+                _callerConfirmAction();
+
+            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+        };
+
+        public Action OnModalCancelClick() => () =>
+        {
+            if (_callerCancelAction != null)
+                _callerCancelAction();
+
+            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
+            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+        };
     }
 }

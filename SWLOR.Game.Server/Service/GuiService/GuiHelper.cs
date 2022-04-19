@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (propInfo == null)
                 throw new ArgumentException($"Expression '{expression}' refers to a field, not a property.");
 
-            if (type != propInfo.ReflectedType && !type.IsSubclassOf(propInfo.ReflectedType))
-                throw new ArgumentException($"Expression '{expression}' refers to a property that is not from type {type}.");
+            //if (type != propInfo.ReflectedType && !type.IsSubclassOf(propInfo.ReflectedType))
+            //    throw new ArgumentException($"Expression '{expression}' refers to a property that is not from type {type}.");
 
             return propInfo.Name;
         }

@@ -14,7 +14,7 @@
         Settings = 9,
         AppearanceEditor = 10,
         Bank = 11,
-        Modal = 12,
+
         Outfits = 13,
         MarketListing = 14,
         MarketBuying = 15,

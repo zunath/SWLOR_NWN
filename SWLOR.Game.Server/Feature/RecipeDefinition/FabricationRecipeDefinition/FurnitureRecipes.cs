@@ -276,16 +276,27 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("lth_ruined", 4)
 				.Component("fiberp_ruined", 2);
 
-			// Potted Plant
-			_builder.Create(RecipeType.PottedPlant, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Fixtures)
-				.Resref("structure_0091")
-				.Level(7)
-				.Quantity(1)
-				.RequirementPerk(PerkType.FurnitureBlueprints, 1)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
-				.Component("wood", 4)
-				.Component("ref_veldite", 2);
+            // Potted Plant
+            _builder.Create(RecipeType.PottedPlant, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0091")
+                .Level(7)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 4)
+                .Component("ref_veldite", 2);
+
+            // Fridge, Worn
+            _builder.Create(RecipeType.FridgeWorn, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0216")
+                .Level(7)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 4)
+                .Component("elec_ruined", 2);
 
 			// Net
 			_builder.Create(RecipeType.Net, SkillType.Fabrication)
@@ -632,6 +643,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("fine_wood", 4)
 				.Component("fiberp_flawed", 2);
+
+            // Fridge, Dark
+            _builder.Create(RecipeType.FridgeDark, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0217")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_scordspar", 4)
+                .Component("elec_flawed", 2);
 
 			// Flaming Statue
 			_builder.Create(RecipeType.FlamingStatue, SkillType.Fabrication)
@@ -1798,6 +1820,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_jasioclase", 1)
 				.Component("hyphae_wood", 1);
+
+            // Fridge, Stainless
+            _builder.Create(RecipeType.FridgeStainless, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0218")
+                .Level(41)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("elec_high", 1);
 
 			// Dran Statue
 			_builder.Create(RecipeType.DranStatue, SkillType.Fabrication)

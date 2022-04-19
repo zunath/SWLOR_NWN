@@ -5789,6 +5789,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Fridge, Dark"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0217"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fridge, Stainless"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0218"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fridge, Worn"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0216"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Gnomish Contraption"
               },
               "RESREF": {

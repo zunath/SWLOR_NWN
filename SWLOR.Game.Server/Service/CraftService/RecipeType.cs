@@ -213,7 +213,7 @@
         TorchBracket = 1024,
         ObeliskSmall = 1025,
         TableWoodLarge = 1026,
-
+        FridgeWorn = 1027,
         LadderLight = 1028,
         Birdbath = 1029,
         BenchWood = 1030,
@@ -235,7 +235,7 @@
         PillarWood = 1046,
         StatueMonster = 1047,
         Candelabra = 1048,
-
+        FridgeDark = 1049,
         ObeliskLarge = 1050,
         GnomishContraption = 1051,
         FemaleStatue = 1052,
@@ -257,7 +257,7 @@
         CarpetFancy = 1068,
         AltarEvil = 1069,
         IllithidTable = 1070,
-
+        FridgeStainless = 1071,
         TableStoneSmall = 1072,
         BedLarge = 1073,
         StatueWizard = 1074,

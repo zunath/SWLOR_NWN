@@ -1224,7 +1224,24 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             2)]
         WeaponRack = 215,
-
+        [Structure("Fridge, Worn",
+            "_mdrn_pl_fridge3",
+            "",
+            true,
+            1)]
+        FridgeWorn = 216,
+        [Structure("Fridge, Dark",
+            "_mdrn_pl_fridge2",
+            "",
+            true,
+            1)]
+        FridgeDark = 217,
+        [Structure("Fridge, Stainless",
+            "_mdrn_pl_fridge1",
+            "",
+            true,
+            2)]
+        FridgeStainless = 218,
 
         // Buildings start here
 

@@ -48,14 +48,34 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="partialName">The new partial to display.</param>
         void ChangePartialView(string elementId, string partialName);
 
+        /// <summary>
+        /// Retrieves the text used by the modal partial view.
+        /// </summary>
         string ModalPromptText { get; }
 
+        /// <summary>
+        /// Retrieves the text of the Confirm button on the modal partial view.
+        /// </summary>
         string ModalConfirmButtonText { get; }
 
+        /// <summary>
+        /// Retrieves the text of the Cancel button on the modal partial view.
+        /// </summary>
         string ModalCancelButtonText { get; }
 
+        /// <summary>
+        /// Runs when the modal closes.
+        /// </summary>
         Action OnModalClose();
+
+        /// <summary>
+        /// Runs when the modal confirmation button is clicked.
+        /// </summary>
         Action OnModalConfirmClick();
+
+        /// <summary>
+        /// Runs when the modal cancel button is clicked.
+        /// </summary>
         Action OnModalCancelClick();
 
     }

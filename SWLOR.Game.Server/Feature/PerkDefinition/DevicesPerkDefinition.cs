@@ -175,21 +175,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Devices, 4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .Price(2)
-                .GrantsFeat(FeatType.IonGrenade1)
+                .GrantsFeat(FeatType.KoltoGrenade1)
 
                 .AddPerkLevel()
                 .Description("Grants 14 HP regeneration to all party members within range of explosion for 45 seconds. Consumes explosives on use.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.IonGrenade2)
+                .GrantsFeat(FeatType.KoltoGrenade2)
 
                 .AddPerkLevel()
                 .Description("Grants 24 HP regeneration to all party members within range of explosion for 45 seconds. Consumes explosives on use.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.IonGrenade3);
+                .GrantsFeat(FeatType.KoltoGrenade3);
         }
 
         private void AdhesiveGrenade()

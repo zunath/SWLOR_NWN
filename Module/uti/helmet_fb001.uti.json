@@ -1,0 +1,101 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 29
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 17
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 30
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Varke Force Helmet"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 120
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 9
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "helmet_fb"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "helmet_fb001"
+  }
+}

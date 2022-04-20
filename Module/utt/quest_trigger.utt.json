@@ -1,0 +1,171 @@
+{
+  "__data_type": "UTT ",
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cursor": {
+    "type": "byte",
+    "value": 0
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 10
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "HighlightHeight": {
+    "type": "float",
+    "value": 3.0
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "LinkedTo": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "LinkedToFlags": {
+    "type": "byte",
+    "value": 0
+  },
+  "LoadScreenID": {
+    "type": "word",
+    "value": 0
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Quest Explore Trigger"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": ""
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 0
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 0
+  },
+  "ScriptHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptOnEnter": {
+    "type": "resref",
+    "value": "quest_trigger"
+  },
+  "ScriptOnExit": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptUserDefine": {
+    "type": "resref",
+    "value": ""
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "quest_trigger"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "quest_trigger"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 10
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 0
+  },
+  "Type": {
+    "type": "int",
+    "value": 0
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_STATE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_MESSAGE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
+  }
+}

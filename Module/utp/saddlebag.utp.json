@@ -1,0 +1,221 @@
+{
+  "__data_type": "UTP ",
+  "AnimationState": {
+    "type": "byte",
+    "value": 0
+  },
+  "Appearance": {
+    "type": "dword",
+    "value": 18
+  },
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyBag": {
+    "type": "byte",
+    "value": 0
+  },
+  "CloseLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "Reflex Save : \r\n0 : container TAG gets used to index inventory. container with the same tag share the same inventory\r\n\r\n2 : player gets used as the index. use this to make player-vaults. same container will yield a different inventory based on the opener\r\n\r\n\r\nWill Save : \r\nSet this to equal the maximum number of items allowed in the saddlebags\r\n\r\n0: This will have a default of 250 items maximum.\r\n\r\nAny other number for a will save will have that many items as the limit in the saddlebag.  NOTE:  Stacked items count as one item."
+  },
+  "Conversation": {
+    "type": "resref",
+    "value": ""
+  },
+  "CurrentHP": {
+    "type": "short",
+    "value": 5
+  },
+  "Description": {
+    "id": 14594,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Bound in iron and with a heavy lock, this heavy chest was obviously meant to protect something of value."
+    }
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 15
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 3
+  },
+  "Fort": {
+    "type": "byte",
+    "value": 16
+  },
+  "Hardness": {
+    "type": "byte",
+    "value": 5
+  },
+  "HasInventory": {
+    "type": "byte",
+    "value": 1
+  },
+  "HP": {
+    "type": "short",
+    "value": 5
+  },
+  "Interruptable": {
+    "type": "byte",
+    "value": 0
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "KeyRequired": {
+    "type": "byte",
+    "value": 0
+  },
+  "Lockable": {
+    "type": "byte",
+    "value": 1
+  },
+  "Locked": {
+    "type": "byte",
+    "value": 0
+  },
+  "LocName": {
+    "id": 5348,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Saddlebag Inventory"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnClosed": {
+    "type": "resref",
+    "value": "sfps_on_close"
+  },
+  "OnDamaged": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDeath": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnInvDisturbed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnLock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnMeleeAttacked": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnOpen": {
+    "type": "resref",
+    "value": "sfps_on_open"
+  },
+  "OnSpellCastAt": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUnlock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUsed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUserDefined": {
+    "type": "resref",
+    "value": ""
+  },
+  "OpenLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 6
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 376
+  },
+  "Ref": {
+    "type": "byte",
+    "value": 0
+  },
+  "Static": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "saddlebag"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "saddlebag"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 0
+  },
+  "Type": {
+    "type": "byte",
+    "value": 0
+  },
+  "Useable": {
+    "type": "byte",
+    "value": 1
+  },
+  "Will": {
+    "type": "byte",
+    "value": 0
+  }
+}

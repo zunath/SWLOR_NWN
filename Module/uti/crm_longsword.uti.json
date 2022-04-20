@@ -1,0 +1,151 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 24719
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 1
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 24721
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "id": 166,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Ceramic Longsword"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 48
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 48
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 48
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 36
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 34
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 45
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "crm_longsword"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "crm_longsword"
+  }
+}

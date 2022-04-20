@@ -1,0 +1,179 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 1
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 74
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 2
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "== Welcome to Star Wars: Legends of the Old Republic! ==\n\nYou're about to enter a persistent world that's shaped by your actions and the actions of other players. Please take a moment to read the following to learn more about the server.\n\nWebsite: http://starwarsnwn.com/\nDiscord: https://discord.gg/MyQAM6m\n\n\n== Skills & Leveling ==\n\nSWLOR does not use any classes from vanilla NWN. Instead, character progression is in the form of skills and perks. In general, if you want to get better at something you simply need to practice it.\n\nWant to be a Jedi? Equip a lightsaber and use light-side force abilities and start fighting enemies. Want to be an armorsmith? Purchase the perk, get some resources and use an armorsmith bench. Or if you want, do a little bit of everything and be a jack-of-all-trades.\n\nYour experience on SWLOR is entirely defined by what you choose to do and your individual play style.\n\n\n== Perks ==\n\nPerks are upgrades for your character that are purchased with SP. You earn 1 SP every time you raise a skill level.\n\nIn your rest menu, you'll find an option for \"View Perks\". Click this to enter the Perks menu. From here you can purchase perks or view the ones you've already bought.\n\nThere are only a handful of Perks to choose from in the beginning. As you level up your skills, more options will be unlocked.\n\n\n== Crafting ==\n\nCrafting is a core concept in SWLOR. Nearly everything can be either constructed or found in the game world. If you choose not to become a crafter - make friends with one!\n\nEach crafting skill works a little differently. In general, you'll buy the necessary perk, gather the resources needed and finally use a crafting device.\n\nMake sure you purchase the necessary perk before you start making items. Otherwise you won't find any blueprints to select in the crafting menu!\n\nEvery blueprint has at least one main component. Some also have secondary and tertiary components. On the crafting menu you'll be able to select which component type you want to add.\n\nThere are also enhancement slots which can be filled if A.) the blueprint supports it and B.) you have the necessary skills/perks to add enhancements. This option will only be available when you meet all requirements.\n\nThe finished product is a combination of all the components you use. Using higher-quality components will result in a higher-quality item. \n\nKeep in mind that every component you add will also increase the \"Recommended Level\" of the item. If you use an item which has a higher RL than your skill level, you will suffer penalties.\n\nThe trick is to create a high-quality item while keeping the RL within range of your skill. \n\nExperiment! The system is designed to give you loads of freedom in your equipment. Be sure to try new things - there's no right or wrong way to craft.\n\n\n== Abilities ==\n\nAbilities can be learned by buying the appropriate Perk (see the \"Perks\" section). After you buy the perk, a feat will be added to your character. If your hotbar is empty, the feat will be automatically added to it. \n\nAny time you want to use the ability you simply need to use the feat and select a target, if necessary.\n\nMany force abilities require you to expend \"FP\" every time you use them. This is a resource that regenerates automatically over time. There are also abilities and items which will restore FP when used.\n\nForce abilities are split between \"Light-Side\" and \"Dark-Side\". Be sure to review each one's offerings - there are some overlap, but there are also unique options available for each side.\n\nYou're free to mix and match abilities as you like. Keep in mind that heavy armor will double your casting time for all force abilities, though.\n\n\n== Weapon Classes ==\n\nSWLOR uses several custom categories for weapons. They are as follows:\n\n\n**One Handed Weapon Classes**\n\nVibroblades - Bastard Sword, Longsword, Katana, Battleaxe\n\nFinesse Vibroblades - Dagger, Rapier, Short Sword, Kukri\n\nBatons - Club, Mace, Morningstar\n\nLightsabers - Lightsaber\n\n\n**Two-Handed Weapon Classes**\n\nHeavy Vibroblades - Greataxe, Greatsword\n\nPolearms - Halberd, Spear\n\n\n**Twin Blades Weapon Classes**\n\nTwin Vibroblades - Double Axe, Two-Bladed Sword\n\nSaberstaffs - Double-sided lightsaber\n\n\n** Martial Arts Weapon Classes**\n\nMartial Arts - Unarmed, Power Glove, Quarterstaff\n\n\n**Blasters Weapon Classes**\n\nBlaster Pistols - Handguns\n\nBlaster Rifles - Rifles\n\n\n**Throwing Weapon Classes**\n\nThrowing Weapons - Sling, Dart, Shuriken, Throwing Axe\n\n\n== Conclusion ==\n\nWe want to welcome you again to Star Wars: Legends of the Old Republic and hope you enjoy yourself! If you have any questions or concerns be sure to contact us on Discord.\n\nMay the Force be with you!"
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Player Guide"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 249
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 60
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 10
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 11
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "player_guide"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "player_guide"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ACTIVATE_SCRIPT"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "GenericStartConversation"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CONVERSATION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DestroyPlayerGuide"
+        }
+      }
+    ]
+  }
+}

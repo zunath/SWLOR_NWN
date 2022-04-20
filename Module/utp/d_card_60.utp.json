@@ -1,0 +1,219 @@
+{
+  "__data_type": "UTP ",
+  "AnimationState": {
+    "type": "byte",
+    "value": 0
+  },
+  "Appearance": {
+    "type": "dword",
+    "value": 12055
+  },
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyBag": {
+    "type": "byte",
+    "value": 0
+  },
+  "CloseLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Conversation": {
+    "type": "resref",
+    "value": ""
+  },
+  "CurrentHP": {
+    "type": "short",
+    "value": 10
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "These fickle creatures of the woods are known tricksters and best avoided.\n\nWhile in play, drains a point of magic from both players' available magic generators.  If either player has no magic generators, then the Fairy Dragon will switch sides to attack the player with no generators.  If both players have no magic generators, then Fairy Dragon will self-sacrifice, and have its sacrifice effect played on both players.\n\nSacrifice Fairy Dragon to automatically play a randomly selected card from your hand, with a magic cost of up to 2.  Any pumpable casting cost cards played in this manner will consume all magic available as though they had been cast normally, though their initial cost of one magic will be free."
+    }
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "Fort": {
+    "type": "byte",
+    "value": 5
+  },
+  "Hardness": {
+    "type": "byte",
+    "value": 5
+  },
+  "HasInventory": {
+    "type": "byte",
+    "value": 0
+  },
+  "HP": {
+    "type": "short",
+    "value": 10
+  },
+  "Interruptable": {
+    "type": "byte",
+    "value": 1
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "KeyRequired": {
+    "type": "byte",
+    "value": 0
+  },
+  "Lockable": {
+    "type": "byte",
+    "value": 0
+  },
+  "Locked": {
+    "type": "byte",
+    "value": 0
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Fairy Dragon (1/1), cost 1"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnClosed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDamaged": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDeath": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnInvDisturbed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnLock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnMeleeAttacked": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnOpen": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnSpellCastAt": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUnlock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUsed": {
+    "type": "resref",
+    "value": "d1_playcard"
+  },
+  "OnUserDefined": {
+    "type": "resref",
+    "value": ""
+  },
+  "OpenLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 2
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 630
+  },
+  "Ref": {
+    "type": "byte",
+    "value": 0
+  },
+  "Static": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "d_card_60"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "d_card_60"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 0
+  },
+  "Type": {
+    "type": "byte",
+    "value": 0
+  },
+  "Useable": {
+    "type": "byte",
+    "value": 1
+  },
+  "Will": {
+    "type": "byte",
+    "value": 0
+  }
+}

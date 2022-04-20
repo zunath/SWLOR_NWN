@@ -1,0 +1,395 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 162
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 158
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 112
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 8
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 89
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 54
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 151
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 129
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 102
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 158
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 112
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 8
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 89
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 54
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 151
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 168
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 22
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 98
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Practical, pragmatic perfection prepared precisely for prudent peoples in need of powerful paraphernalia."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 22
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Persona's Panache"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 7
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 64
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 58
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 9
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 70
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 73
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 148
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 52
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 119
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "PersonaSwag"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "personapimpsuit"
+  }
+}

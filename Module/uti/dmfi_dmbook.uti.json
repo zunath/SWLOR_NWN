@@ -1,0 +1,79 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 74
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A reference manual for voice commands for DMs\n\nUnlike previous releases of the DMFI tools, there is no requirement for an NPC, summoned creature, familiar or \"voice\" to be within range for these functions to work.  \n\nThis covers voice features other than the *emotes* that are covered in the Player Voice Command book.  The majority of these functions are simply shortcuts for what can be done with the wands, but they are quicker if you are comfortable with them.\n\n\n.set / .get / .got functions\n----------------------------------------\n\nThese allow you to set an NPC to a key like \"!\", \"@\", or \"#\".  Once set you can use them just like using \":\" which is the default setting.\n\nEX:   .set % will set the last voice target to %.\n\nYou can then use \"/dm :text here\" for your default NPC or \"/dm %\" for this character.\n\n.get % - brings this set character to you.\n.got % - takes your avatar to that character.\n\n\n.skill checks\n-------------------\n\n*TARGET NOTE*  This category will reference the last DMFI  target.  This allows you to speak for an NPC (target one with the voice widget) and roll for player (then target player with target widget prior to \"scene\") without manually changing the target.\n\nAll skills and abilities are available.  \"all\" is an optional ending  (for an NPC it rolls for all in the area and for a PC target, it is the party)\n\n.wisdom or .wisdom all\n\n\n.appearance\n--------------------\n\n*NOTE*  This function and the .skill checks use the last DMFI Target.  All other functions use the default voice target (ie one tied to \":\")\n\nChanges the appearance of the target. For a list of \"classic\" appearances accepted, examine the DMFI Target / Appearance Data Widget.  Type must be ALL CAPS like shown in the widget for the \"classic\" appearances. You may also use any appearance from the LABEL column of appearance.2da (case-insensitive), or a row number from that file. \n\n.appearance COW\n.appearance BALOR\n.appearance troglodyte_garm\n.appearance 5\n\n\n.buff commands\n-------------------------\n\n4 general level buffs of .buff low, .buff mid, .buff high, and .buff epic.\n\nOther options are:\n \nbarkskin\nelements\nhaste\ninvis\nunplot\nplot\nstoneskin\ntrues\n\n.lan commands\n------------------------\n\nSet an NPC to speak a particular language\nEX:  .lan drow\n\n.faction commands\n------------------------------\n\nSet target to a default faction\nEX: .fac commoner\n\n\nOther .commands\n----------------------------\n\n.dam - damage by some amount / .dam 8\n.desc - sets the description of the target (use \".desc .\" to reset to original)\n.dism - dismiss the target\n.fle - flee\n.fly - fly away\n.fol - follow me\n.fre - freeze target\n.hea - heal by some amount / .hea 8\n.mut - mute an NPC - disable conversation\n.name - sets the name of the target (use \".name .\" to reset to original)\n.unf - unfreeze target\n.unm - unmute the target\n.vfx - fires a vfx - no way in game to see list though :( / .vfx 30\n"
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Book of DM Voice Commands"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 4
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 53
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 1
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "dmfi_dmbook"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "dmfi_dmbook"
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 2
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 124
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 41
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 242
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 242
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 236
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 2
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 124
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 41
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 242
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 152
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 242
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 236
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 178
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 20
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 101
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A sweet dress for a lovely lass."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 165
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 101
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "[NPC] Leiza's Dress"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 8
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 136
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 58
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 9
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 5
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 65
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "LeizaDress"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "leizadress"
+  }
+}

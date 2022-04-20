@@ -1,0 +1,113 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 24
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "New Feature:  \n\nMake custom encounters that you can change dynamically in game and call with this wand.  See the in game directions in the new DMFI custom encounter area and the tips readme for further information.\n\nThe Encounter Wand allows you to quickly create and replicate (with the Encounter Ditto Widget) various encounters.\n\nTarget a location with the wand. The conversation will pop up showing 9 encounter groups. After selecting a group, select one of 9 \"types\" of encounters. The encounters are ranked from easiest as the top number 1 option to the hardest number 9 option.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com"
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "DMFI Encounter Wand"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 24
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 53
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 329
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 1
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "dmfi_encounter"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "dmfi_encounte"
+  }
+}

@@ -1,0 +1,747 @@
+[campaigndb]
+	[campaigndb.storage]
+		[campaigndb.storage.compression]
+			enabled = true
+[game]
+	[game.language]
+		codepage = ""
+		override = ""
+[io]
+	[io.mmap]
+		enabled = false
+		[io.mmap.experimental]
+			never-close-bif = true
+[masterserver]
+	[masterserver.key-authentication]
+		mode = "always"
+[net]
+	[net.http]
+		max-concurrent-connections = 20
+		[net.http.disk-cache]
+			enabled = true
+			size = 100
+			[net.http.disk-cache.compression]
+				enabled = true
+		[net.http.ssl]
+			cabundle = ""
+			capath = ""
+			require = false
+			[net.http.ssl.verify]
+				ocsp-stapling = false
+	[net.udp]
+		[net.udp.window]
+			timeout = 60000
+[nwscript]
+	[nwscript.debugger]
+		address = "127.0.0.1"
+		enabled = false
+		port = 5122
+	[nwscript.log]
+		[nwscript.log.script-execution]
+			enabled = false
+	[nwscript.vm]
+		[nwscript.vm.profiling]
+			enabled = false
+		[nwscript.vm.runtime-limits]
+			instructions = 524288
+[nwsync]
+	auto-delete-dangling-data = true
+	[nwsync.storage]
+		compression = "zstd"
+	[nwsync.transfer]
+		[nwsync.transfer.flush]
+			async = true
+			max-files = 1000
+			max-megabytes = 3
+[ruleset]
+	always-roll-max-hitpoints-on-levelup = false
+	difficulty = 2
+	enforce-legal-characters = true
+	hide-hitpoints-gained-on-levelup = false
+	item-level-restrictions = false
+	max-character-level = 40
+	min-character-level = 1
+	natural-ones-fail-saving-throws = true
+	show-active-effects = true
+	show-challenge-ratings = false
+	validate-spells = true
+	[ruleset.combat]
+		max-ability-bonus = 12
+		max-ability-penalty = 30
+		max-attack-bonus = 20
+		max-damage-bonus = 100
+		max-saving-throw-bonus = 20
+		max-skill-bonus = 50
+		sticky-modes = true
+	[ruleset.encounters]
+		always-reset = false
+[server]
+	allow-player-pausing = false
+	disallow-shouting = false
+	one-party-only = false
+	player-party-control = false
+	pvp-mode = 1
+	reload-when-empty = true
+	restore-spell-uses-on-login = false
+	savegames-store-characters = true
+	savegames-vault-characters-only = true
+	show-dm-join-messages = false
+	[server.autosave]
+		enabled = false
+		interval = 5
+	[server.identity]
+		game-region = 0
+		game-type = 0
+		name = "Server"
+		public = true
+	[server.log]
+		[server.log.creature-deaths]
+			enabled = false
+		[server.log.debug-mode-sends-to-players]
+			enabled = true
+		[server.log.heartbeats]
+			enabled = false
+		[server.log.rotation]
+			enabled = true
+	[server.login]
+		admin-password = ""
+		dm-password = ""
+		max-players = 6
+		player-password = ""
+		[server.login.player-dm]
+			enabled = false
+	[server.net]
+		accept-relayed-connections = true
+		port = 5121
+	[server.tweaks]
+		2da-engine-cache-size = 11
+		2da-user-cache-size = 10
+		game-object-cache-size = 16
+		threaded-timers-resolution = 100
+		use-threaded-timers = true
+		[server.tweaks.power-saving]
+			clients-required-to-disable = 1
+		[server.tweaks.resman]
+			max-memory-usage = 0.12500000000000000
+	[server.vault]
+		backup-server-characters = false
+		by-player-name = false
+		mode = 1
+		sticky-player-names = false
+		suppress-base = false
+[sqlite3]
+	[sqlite3.busy-timeout]
+		milliseconds = 3000
+	[sqlite3.trace]
+		[sqlite3.trace.profile]
+			enabled = false
+			threshold-msec = 800
+		[sqlite3.trace.stmt]
+			enabled = false
+[taskmanager]
+	[taskmanager.threadpool]
+		max-mutex-wait-time = 5000
+		max-size = 0
+["~~schema"]
+	"##description" = "This config section exists for your convenience so you can understand and manipulate the configuration file programatically. It is write-only; the game doesn't read it back. Making changes here will have no effect."
+	bind-deprecations = ["server.experimental.enhanced-pathfinding", "nwsync.storage.sqlite-shard-count", "nwsync.storage.auto-compact-shards.enabled"]
+	["~~schema".binds]
+		["~~schema".binds."campaigndb.storage.compression.enabled"]
+			default = true
+		["~~schema".binds."game.language.codepage"]
+			default = ""
+			["~~schema".binds."game.language.codepage".constraints]
+				values = ["", "cp1250", "cp1251", "cp1252"]
+		["~~schema".binds."game.language.override"]
+			default = ""
+			["~~schema".binds."game.language.override".constraints]
+				values = ["", "en", "fr", "de", "es", "it", "pl"]
+			["~~schema".binds."game.language.override".ini-mapping]
+				idx = 1
+				label = "Language"
+				section = "Display Options"
+			["~~schema".binds."game.language.override".translations]
+				strref = 10431
+				values-strrefs = [2966, 58268, 58269, 58270, 58347, 58346, 3094]
+		["~~schema".binds."io.mmap.enabled"]
+			default = false
+		["~~schema".binds."io.mmap.experimental.never-close-bif"]
+			default = true
+		["~~schema".binds."masterserver.key-authentication.mode"]
+			default = "always"
+			["~~schema".binds."masterserver.key-authentication.mode".constraints]
+				values = ["always", "last-known", "if-reachable"]
+			[["~~schema".binds."masterserver.key-authentication.mode".ini-deprecations]]
+				idx = 1
+				label = "Master Server Authentication Required For Player Login"
+				section = "Server Options"
+			[["~~schema".binds."masterserver.key-authentication.mode".ini-deprecations]]
+				idx = 1
+				label = "Account validation required during Master Server down times"
+				section = "Server Options"
+		["~~schema".binds."net.http.disk-cache.compression.enabled"]
+			default = true
+		["~~schema".binds."net.http.disk-cache.enabled"]
+			default = true
+		["~~schema".binds."net.http.disk-cache.size"]
+			default = 100
+			["~~schema".binds."net.http.disk-cache.size".constraints]
+				max = 1024
+				min = 10
+		["~~schema".binds."net.http.max-concurrent-connections"]
+			default = 20
+			["~~schema".binds."net.http.max-concurrent-connections".constraints]
+				max = 100
+				min = 1
+			["~~schema".binds."net.http.max-concurrent-connections".ini-mapping]
+				idx = 0
+				label = "Max Concurrent Connections"
+				section = "HTTP"
+		["~~schema".binds."net.http.ssl.cabundle"]
+			default = ""
+			key-adoptions = ["net.ssl.cabundle"]
+		["~~schema".binds."net.http.ssl.capath"]
+			default = ""
+			key-adoptions = ["net.ssl.capath"]
+		["~~schema".binds."net.http.ssl.require"]
+			default = false
+		["~~schema".binds."net.http.ssl.verify.ocsp-stapling"]
+			default = false
+		["~~schema".binds."net.udp.window.timeout"]
+			default = 60000
+			["~~schema".binds."net.udp.window.timeout".constraints]
+				max = 300000
+				min = 30000
+			["~~schema".binds."net.udp.window.timeout".ini-mapping]
+				idx = 1
+				label = "Player Connection Timeout"
+				section = "Server Options"
+		["~~schema".binds."nwscript.debugger.address"]
+			default = "127.0.0.1"
+			["~~schema".binds."nwscript.debugger.address".ini-mapping]
+				idx = 1
+				label = "Debugger IP Address"
+				section = "Server Options"
+		["~~schema".binds."nwscript.debugger.enabled"]
+			default = false
+		["~~schema".binds."nwscript.debugger.port"]
+			default = 5122
+			["~~schema".binds."nwscript.debugger.port".constraints]
+				max = 65535
+				min = 1
+			["~~schema".binds."nwscript.debugger.port".ini-mapping]
+				idx = 1
+				label = "Debugger Port"
+				section = "Server Options"
+		["~~schema".binds."nwscript.log.script-execution.enabled"]
+			default = false
+			["~~schema".binds."nwscript.log.script-execution.enabled".ini-mapping]
+				idx = 1
+				label = "Enable Logging"
+				section = "Script Options"
+		["~~schema".binds."nwscript.vm.profiling.enabled"]
+			default = false
+			["~~schema".binds."nwscript.vm.profiling.enabled".ini-mapping]
+				idx = 1
+				label = "Enable Profiling"
+				section = "Script Options"
+		["~~schema".binds."nwscript.vm.runtime-limits.instructions"]
+			default = 524288
+			["~~schema".binds."nwscript.vm.runtime-limits.instructions".constraints]
+				max = 16777216
+				min = 131072
+			["~~schema".binds."nwscript.vm.runtime-limits.instructions".ini-mapping]
+				idx = 1
+				label = "Instruction Limit"
+				section = "Script Options"
+		["~~schema".binds."nwsync.auto-delete-dangling-data"]
+			default = true
+			["~~schema".binds."nwsync.auto-delete-dangling-data".ini-mapping]
+				idx = 0
+				label = "Auto Delete Dangling Data"
+				section = "NWSync"
+		["~~schema".binds."nwsync.storage.compression"]
+			default = "zstd"
+			["~~schema".binds."nwsync.storage.compression".constraints]
+				values = ["zstd", "none"]
+			["~~schema".binds."nwsync.storage.compression".ini-mapping]
+				idx = 0
+				label = "CompressionProvider"
+				section = "NWSync"
+		["~~schema".binds."nwsync.transfer.flush.async"]
+			default = true
+		["~~schema".binds."nwsync.transfer.flush.max-files"]
+			default = 1000
+			["~~schema".binds."nwsync.transfer.flush.max-files".constraints]
+				max = 32767
+				min = 1000
+		["~~schema".binds."nwsync.transfer.flush.max-megabytes"]
+			default = 3
+			["~~schema".binds."nwsync.transfer.flush.max-megabytes".constraints]
+				max = 15
+				min = 1
+		["~~schema".binds."ruleset.always-roll-max-hitpoints-on-levelup"]
+			default = false
+			["~~schema".binds."ruleset.always-roll-max-hitpoints-on-levelup".ini-mapping]
+				idx = 1
+				label = "Max Hit Points"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-ability-bonus"]
+			default = 12
+			["~~schema".binds."ruleset.combat.max-ability-bonus".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-ability-bonus".ini-mapping]
+				idx = 1
+				label = "AbilityBonusLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-ability-penalty"]
+			default = 30
+			["~~schema".binds."ruleset.combat.max-ability-penalty".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-ability-penalty".ini-mapping]
+				idx = 1
+				label = "AbilityPenaltyLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-attack-bonus"]
+			default = 20
+			["~~schema".binds."ruleset.combat.max-attack-bonus".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-attack-bonus".ini-mapping]
+				idx = 1
+				label = "AttackBonusLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-damage-bonus"]
+			default = 100
+			["~~schema".binds."ruleset.combat.max-damage-bonus".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-damage-bonus".ini-mapping]
+				idx = 1
+				label = "DamageBonusLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-saving-throw-bonus"]
+			default = 20
+			["~~schema".binds."ruleset.combat.max-saving-throw-bonus".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-saving-throw-bonus".ini-mapping]
+				idx = 1
+				label = "SavingThrowBonusLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.max-skill-bonus"]
+			default = 50
+			["~~schema".binds."ruleset.combat.max-skill-bonus".constraints]
+				max = 255
+				min = 0
+			["~~schema".binds."ruleset.combat.max-skill-bonus".ini-mapping]
+				idx = 1
+				label = "SkillBonusLimit"
+				section = "Server Options"
+		["~~schema".binds."ruleset.combat.sticky-modes"]
+			default = false
+			["~~schema".binds."ruleset.combat.sticky-modes".ini-mapping]
+				idx = 1
+				label = "StickyCombatModes"
+				section = "Server Options"
+		["~~schema".binds."ruleset.difficulty"]
+			default = 1
+			["~~schema".binds."ruleset.difficulty".constraints]
+				values = [1, 2, 3, 4]
+			["~~schema".binds."ruleset.difficulty".ini-mapping]
+				idx = 1
+				label = "Difficulty Level"
+				section = "Game Options"
+			["~~schema".binds."ruleset.difficulty".translations]
+				strref = 7212
+				values-description-strrefs = [67578, 67579, 67580, 67581]
+				values-strrefs = [66786, 66788, 66790, 66792]
+		["~~schema".binds."ruleset.encounters.always-reset"]
+			default = false
+			["~~schema".binds."ruleset.encounters.always-reset".ini-mapping]
+				idx = 1
+				label = "Always Reset Encounter Spawns"
+				section = "Server Options"
+		["~~schema".binds."ruleset.enforce-legal-characters"]
+			default = true
+			singleplayer-override = false
+			["~~schema".binds."ruleset.enforce-legal-characters".ini-mapping]
+				idx = 1
+				label = "Enforce Legal Characters"
+				section = "Server Options"
+			["~~schema".binds."ruleset.enforce-legal-characters".translations]
+				strref = 5574
+		["~~schema".binds."ruleset.hide-hitpoints-gained-on-levelup"]
+			default = false
+			["~~schema".binds."ruleset.hide-hitpoints-gained-on-levelup".ini-mapping]
+				idx = 1
+				label = "Hide Hit Points Gained"
+				section = "Server Options"
+		["~~schema".binds."ruleset.item-level-restrictions"]
+			default = false
+			singleplayer-override = false
+			["~~schema".binds."ruleset.item-level-restrictions".ini-mapping]
+				idx = 1
+				label = "ItemLevelRestrictions"
+				section = "Server Options"
+			["~~schema".binds."ruleset.item-level-restrictions".translations]
+				strref = 67446
+		["~~schema".binds."ruleset.max-character-level"]
+			default = 40
+			singleplayer-override = 40
+			["~~schema".binds."ruleset.max-character-level".constraints]
+				max = 40
+				min = 1
+			["~~schema".binds."ruleset.max-character-level".ini-mapping]
+				idx = 1
+				label = "MaxCharLevel"
+				section = "Server Options"
+		["~~schema".binds."ruleset.min-character-level"]
+			default = 1
+			singleplayer-override = 1
+			["~~schema".binds."ruleset.min-character-level".constraints]
+				max = 40
+				min = 1
+			["~~schema".binds."ruleset.min-character-level".ini-mapping]
+				idx = 1
+				label = "MinCharLevel"
+				section = "Server Options"
+		["~~schema".binds."ruleset.natural-ones-fail-saving-throws"]
+			default = true
+			["~~schema".binds."ruleset.natural-ones-fail-saving-throws".ini-mapping]
+				idx = 1
+				label = "Saving Throw Automatic Failure On 1"
+				section = "Server Options"
+		["~~schema".binds."ruleset.show-active-effects"]
+			default = true
+			["~~schema".binds."ruleset.show-active-effects".ini-mapping]
+				idx = 1
+				label = "Examine Effects On Creatures"
+				section = "Server Options"
+		["~~schema".binds."ruleset.show-challenge-ratings"]
+			default = true
+			["~~schema".binds."ruleset.show-challenge-ratings".ini-mapping]
+				idx = 1
+				label = "Examine CR On Creatures"
+				section = "Server Options"
+		["~~schema".binds."ruleset.validate-spells"]
+			default = true
+			["~~schema".binds."ruleset.validate-spells".ini-mapping]
+				idx = 1
+				label = "Validate Spells"
+				section = "Server Options"
+		["~~schema".binds."server.allow-player-pausing"]
+			default = false
+			singleplayer-override = true
+			["~~schema".binds."server.allow-player-pausing".ini-mapping]
+				idx = 1
+				label = "PauseAndPlay"
+				section = "Server Options"
+			["~~schema".binds."server.allow-player-pausing".translations]
+				strref = 66785
+		["~~schema".binds."server.autosave.enabled"]
+			default = false
+			key-adoptions = ["server.autosave-interval"]
+			singleplayer-override = false
+			["~~schema".binds."server.autosave.enabled".ini-mapping]
+				idx = 1
+				label = "Auto Save Interval"
+				section = "Server Options"
+		["~~schema".binds."server.autosave.interval"]
+			default = 5
+			key-adoptions = ["server.autosave-interval"]
+			["~~schema".binds."server.autosave.interval".constraints]
+				max = 30
+				min = 1
+			["~~schema".binds."server.autosave.interval".ini-mapping]
+				idx = 1
+				label = "Auto Save Interval"
+				section = "Server Options"
+		["~~schema".binds."server.disallow-shouting"]
+			default = false
+			["~~schema".binds."server.disallow-shouting".ini-mapping]
+				idx = 1
+				label = "Disallow Shouting"
+				section = "Server Options"
+		["~~schema".binds."server.identity.game-region"]
+			default = 0
+			["~~schema".binds."server.identity.game-region".ini-mapping]
+				idx = 1
+				label = "Game Region"
+				section = "Server Options"
+		["~~schema".binds."server.identity.game-type"]
+			default = 0
+			["~~schema".binds."server.identity.game-type".ini-mapping]
+				idx = 1
+				label = "Game Type"
+				section = "Server Options"
+		["~~schema".binds."server.identity.name"]
+			default = "Server"
+			["~~schema".binds."server.identity.name".ini-mapping]
+				idx = 1
+				label = "Server Name"
+				section = "Server Options"
+			["~~schema".binds."server.identity.name".translations]
+				strref = 5217
+		["~~schema".binds."server.identity.public"]
+			default = true
+			["~~schema".binds."server.identity.public".ini-mapping]
+				idx = 1
+				label = "GameSpy Enabled"
+				section = "Server Options"
+			["~~schema".binds."server.identity.public".translations]
+				strref = 5829
+		["~~schema".binds."server.log.creature-deaths.enabled"]
+			default = false
+			["~~schema".binds."server.log.creature-deaths.enabled".ini-mapping]
+				idx = 1
+				label = "Death Logging"
+				section = "Game Options"
+		["~~schema".binds."server.log.debug-mode-sends-to-players.enabled"]
+			default = true
+		["~~schema".binds."server.log.heartbeats.enabled"]
+			default = false
+			["~~schema".binds."server.log.heartbeats.enabled".ini-mapping]
+				idx = 1
+				label = "Heartbeat Logging"
+				section = "Game Options"
+		["~~schema".binds."server.log.rotation.enabled"]
+			default = true
+			["~~schema".binds."server.log.rotation.enabled".ini-mapping]
+				idx = 1
+				label = "RotateServerLog"
+				section = "Server Options"
+		["~~schema".binds."server.login.admin-password"]
+			default = ""
+			["~~schema".binds."server.login.admin-password".ini-mapping]
+				idx = 1
+				label = "ServerAdminPassword"
+				section = "Server Options"
+		["~~schema".binds."server.login.dm-password"]
+			default = ""
+			["~~schema".binds."server.login.dm-password".ini-mapping]
+				idx = 1
+				label = "DMPassword"
+				section = "Server Options"
+			["~~schema".binds."server.login.dm-password".translations]
+				strref = 5554
+		["~~schema".binds."server.login.max-players"]
+			default = 6
+			["~~schema".binds."server.login.max-players".constraints]
+				max = 255
+				min = 1
+			["~~schema".binds."server.login.max-players".ini-mapping]
+				idx = 1
+				label = "Max Players"
+				section = "Server Options"
+			["~~schema".binds."server.login.max-players".translations]
+				strref = 5551
+		["~~schema".binds."server.login.player-dm.enabled"]
+			default = true
+			singleplayer-override = true
+		["~~schema".binds."server.login.player-password"]
+			default = ""
+			["~~schema".binds."server.login.player-password".ini-mapping]
+				idx = 1
+				label = "PlayerPassword"
+				section = "Server Options"
+			["~~schema".binds."server.login.player-password".translations]
+				strref = 5553
+		["~~schema".binds."server.net.accept-relayed-connections"]
+			default = true
+			["~~schema".binds."server.net.accept-relayed-connections".ini-mapping]
+				idx = 1
+				label = "Network Relays Enabled"
+				section = "Server Options"
+		["~~schema".binds."server.net.port"]
+			default = 5121
+			["~~schema".binds."server.net.port".constraints]
+				max = 65535
+				min = 1
+			["~~schema".binds."server.net.port".ini-mapping]
+				idx = 1
+				label = "Game Port"
+				section = "Server Options"
+			["~~schema".binds."server.net.port".translations]
+				strref = 5830
+		["~~schema".binds."server.one-party-only"]
+			default = true
+			["~~schema".binds."server.one-party-only".ini-mapping]
+				idx = 1
+				label = "One Party Only"
+				section = "Server Options"
+			["~~schema".binds."server.one-party-only".translations]
+				strref = 66769
+		["~~schema".binds."server.player-party-control"]
+			default = false
+		["~~schema".binds."server.pvp-mode"]
+			default = 1
+			["~~schema".binds."server.pvp-mode".constraints]
+				values = [0, 1, 2]
+			["~~schema".binds."server.pvp-mode".ini-mapping]
+				idx = 1
+				label = "PVP Setting"
+				section = "Server Options"
+			["~~schema".binds."server.pvp-mode".translations]
+				strref = 8116
+				values-strrefs = [8146, 8147, 8145]
+		["~~schema".binds."server.reload-when-empty"]
+			default = true
+			["~~schema".binds."server.reload-when-empty".ini-mapping]
+				idx = 1
+				label = "Reload Module When Empty"
+				section = "Server Options"
+		["~~schema".binds."server.restore-spell-uses-on-login"]
+			default = false
+			["~~schema".binds."server.restore-spell-uses-on-login".ini-mapping]
+				idx = 1
+				label = "Restore Spell Uses On Login"
+				section = "Server Options"
+		["~~schema".binds."server.savegames-store-characters"]
+			default = true
+			["~~schema".binds."server.savegames-store-characters".ini-mapping]
+				idx = 1
+				label = "SaveCharsInSaveGame"
+				section = "Server Options"
+		["~~schema".binds."server.savegames-vault-characters-only"]
+			default = false
+			["~~schema".binds."server.savegames-vault-characters-only".ini-mapping]
+				idx = 1
+				label = "VaultCharsOnly"
+				section = "Server Options"
+		["~~schema".binds."server.show-dm-join-messages"]
+			default = true
+			["~~schema".binds."server.show-dm-join-messages".ini-mapping]
+				idx = 1
+				label = "ShowDMJoinedMessage"
+				section = "Server Options"
+		["~~schema".binds."server.tweaks.2da-engine-cache-size"]
+			default = 11
+			["~~schema".binds."server.tweaks.2da-engine-cache-size".constraints]
+				max = 1000
+				min = 1
+			["~~schema".binds."server.tweaks.2da-engine-cache-size".ini-mapping]
+				idx = 1
+				label = "2DA Engine Cache Size"
+				section = "Server Options"
+		["~~schema".binds."server.tweaks.2da-user-cache-size"]
+			default = 10
+			["~~schema".binds."server.tweaks.2da-user-cache-size".constraints]
+				max = 1000
+				min = 1
+			["~~schema".binds."server.tweaks.2da-user-cache-size".ini-mapping]
+				idx = 1
+				label = "2DA Cache Size"
+				section = "Server Options"
+		["~~schema".binds."server.tweaks.game-object-cache-size"]
+			default = 16
+			["~~schema".binds."server.tweaks.game-object-cache-size".constraints]
+				max = 20
+				min = 12
+			["~~schema".binds."server.tweaks.game-object-cache-size".ini-mapping]
+				idx = 1
+				label = "GameObjectCacheSize"
+				section = "Server Options"
+		["~~schema".binds."server.tweaks.power-saving.clients-required-to-disable"]
+			default = 1
+			["~~schema".binds."server.tweaks.power-saving.clients-required-to-disable".constraints]
+				max = 255
+				min = 1
+			["~~schema".binds."server.tweaks.power-saving.clients-required-to-disable".ini-mapping]
+				idx = 1
+				label = "Clients Required To Disable CPU Sleep"
+				section = "Server Options"
+		["~~schema".binds."server.tweaks.resman.max-memory-usage"]
+			default = 0.12500000000000000
+			["~~schema".binds."server.tweaks.resman.max-memory-usage".constraints]
+				max = 0.80000000000000004
+				min = 0.010000000000000000
+			[["~~schema".binds."server.tweaks.resman.max-memory-usage".ini-deprecations]]
+				idx = 1
+				label = "Max Memory Usage"
+				section = "Game Options"
+		["~~schema".binds."server.tweaks.threaded-timers-resolution"]
+			default = 100
+			["~~schema".binds."server.tweaks.threaded-timers-resolution".constraints]
+				max = 1000
+				min = 1
+		["~~schema".binds."server.tweaks.use-threaded-timers"]
+			default = true
+		["~~schema".binds."server.vault.backup-server-characters"]
+			default = false
+			["~~schema".binds."server.vault.backup-server-characters".ini-mapping]
+				idx = 1
+				label = "BackupSavedChars"
+				section = "Server Options"
+		["~~schema".binds."server.vault.by-player-name"]
+			default = false
+			["~~schema".binds."server.vault.by-player-name".ini-mapping]
+				idx = 1
+				label = "Server Vault By Player Name"
+				section = "Server Options"
+		["~~schema".binds."server.vault.mode"]
+			default = 1
+			singleplayer-override = 1
+			["~~schema".binds."server.vault.mode".constraints]
+				values = [0, 1]
+			["~~schema".binds."server.vault.mode".ini-mapping]
+				idx = 1
+				label = "AllowLocalChars"
+				section = "Server Options"
+			["~~schema".binds."server.vault.mode".translations]
+				strref = 304
+				values-strrefs = [305, 306]
+		["~~schema".binds."server.vault.sticky-player-names"]
+			default = false
+			["~~schema".binds."server.vault.sticky-player-names".ini-mapping]
+				idx = 1
+				label = "Sticky Player Names"
+				section = "Server Options"
+		["~~schema".binds."server.vault.suppress-base"]
+			default = false
+			["~~schema".binds."server.vault.suppress-base".ini-mapping]
+				idx = 1
+				label = "Suppress Base Servervault"
+				section = "Server Options"
+		["~~schema".binds."sqlite3.busy-timeout.milliseconds"]
+			default = 3000
+			["~~schema".binds."sqlite3.busy-timeout.milliseconds".constraints]
+				max = 60000
+				min = 0
+		["~~schema".binds."sqlite3.trace.profile.enabled"]
+			default = false
+		["~~schema".binds."sqlite3.trace.profile.threshold-msec"]
+			default = 800
+			["~~schema".binds."sqlite3.trace.profile.threshold-msec".constraints]
+				max = 60000
+				min = 0
+		["~~schema".binds."sqlite3.trace.stmt.enabled"]
+			default = false
+		["~~schema".binds."taskmanager.threadpool.max-mutex-wait-time"]
+			default = 5000
+			["~~schema".binds."taskmanager.threadpool.max-mutex-wait-time".constraints]
+				max = 100000
+				min = 100
+			["~~schema".binds."taskmanager.threadpool.max-mutex-wait-time".ini-mapping]
+				idx = 0
+				label = "Max Thread Mutex Wait Time"
+				section = "Taskmanager"
+		["~~schema".binds."taskmanager.threadpool.max-size"]
+			default = 0
+			["~~schema".binds."taskmanager.threadpool.max-size".constraints]
+				max = 128
+				min = 0
+			["~~schema".binds."taskmanager.threadpool.max-size".ini-mapping]
+				idx = 0
+				label = "Max Threadpool Size"
+				section = "Taskmanager"
+	[["~~schema".ini-deprecations]]
+		idx = 1
+		label = "MPEnabled"
+		section = "Server Options"
+	[["~~schema".ini-deprecations]]
+		idx = 0
+		label = "StorageProvider"
+		section = "NWSync"

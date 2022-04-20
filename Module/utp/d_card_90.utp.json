@@ -1,0 +1,219 @@
+{
+  "__data_type": "UTP ",
+  "AnimationState": {
+    "type": "byte",
+    "value": 0
+  },
+  "Appearance": {
+    "type": "dword",
+    "value": 12090
+  },
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyBag": {
+    "type": "byte",
+    "value": 0
+  },
+  "CloseLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Conversation": {
+    "type": "resref",
+    "value": ""
+  },
+  "CurrentHP": {
+    "type": "short",
+    "value": 10
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An angel of light, a warrior for hope and all that is good, Jysirael stands as a beacon of light against the darkness of evil.  Can trigger a sacrifice effect to fully heal all friendly summons within a 10m radius.  Using this ability does not kill Jysirael, but does reduce her hit points by half.  Only one Jysirael may be in play at one time."
+    }
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "Fort": {
+    "type": "byte",
+    "value": 5
+  },
+  "Hardness": {
+    "type": "byte",
+    "value": 5
+  },
+  "HasInventory": {
+    "type": "byte",
+    "value": 0
+  },
+  "HP": {
+    "type": "short",
+    "value": 10
+  },
+  "Interruptable": {
+    "type": "byte",
+    "value": 1
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "KeyRequired": {
+    "type": "byte",
+    "value": 0
+  },
+  "Lockable": {
+    "type": "byte",
+    "value": 0
+  },
+  "Locked": {
+    "type": "byte",
+    "value": 0
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Mythical - Jysirael (5/5), cost 5"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnClosed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDamaged": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDeath": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnInvDisturbed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnLock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnMeleeAttacked": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnOpen": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnSpellCastAt": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUnlock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUsed": {
+    "type": "resref",
+    "value": "d1_playcard"
+  },
+  "OnUserDefined": {
+    "type": "resref",
+    "value": ""
+  },
+  "OpenLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 2
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 28
+  },
+  "Ref": {
+    "type": "byte",
+    "value": 0
+  },
+  "Static": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "d_card_90"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "d_card_90"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 0
+  },
+  "Type": {
+    "type": "byte",
+    "value": 0
+  },
+  "Useable": {
+    "type": "byte",
+    "value": 1
+  },
+  "Will": {
+    "type": "byte",
+    "value": 0
+  }
+}

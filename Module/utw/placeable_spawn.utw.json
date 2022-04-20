@@ -1,0 +1,69 @@
+{
+  "__data_type": "UTW ",
+  "Appearance": {
+    "type": "byte",
+    "value": 3
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "HasMapNote": {
+    "type": "byte",
+    "value": 0
+  },
+  "LinkedTo": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Placeable Spawn (Edit Variables)"
+    }
+  },
+  "MapNote": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "MapNoteEnabled": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 5
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "placeable_spawn"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "placeable_spawn"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 106
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 249
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 245
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 185
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 220
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 2
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 240
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 106
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 249
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 27
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 245
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 185
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 220
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 35
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 563
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 0
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 103
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Darth Revan's Robes"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 3
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 27
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 5
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 50
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 30
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 117
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 7
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 16
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 23
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 71
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 50
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 146
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 75
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 37
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "revan_robes_001"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "revan_robes_002"
+  }
+}

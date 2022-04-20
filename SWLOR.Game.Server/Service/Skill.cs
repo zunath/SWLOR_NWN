@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -119,6 +120,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(dbPlayer);
+
+            Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(skill));
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)

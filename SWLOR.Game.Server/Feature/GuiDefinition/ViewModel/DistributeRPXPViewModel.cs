@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -90,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Skill.GiveSkillXP(Player, _skillType, amount);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
+                    Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
                 });
         };
 

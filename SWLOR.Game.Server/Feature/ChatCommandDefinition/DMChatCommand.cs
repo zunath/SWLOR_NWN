@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
@@ -484,6 +485,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     
                     DB.Set(dbPlayer);
                     SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
+                    Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
                 });
         }
 

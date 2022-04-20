@@ -5,7 +5,6 @@ using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -18,6 +17,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
         private static readonly Dictionary<string, Dictionary<string, MethodInfo>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
+        private static readonly Dictionary<Type, List<GuiWindowType>> _windowTypesByRefreshEvent = new();
 
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             LoadWindowTemplates();
+            LoadRefreshableViewModels();
         }
 
         /// <summary>
@@ -54,6 +55,35 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
+        }
+
+        /// <summary>
+        /// After the window definitions have been cached, we need to associate refresh events to each window type.
+        /// This will let us individually refresh specific player view models when needed by external events.
+        /// </summary>
+        private static void LoadRefreshableViewModels()
+        {
+            foreach (var (windowType, window) in _windowTemplates)
+            {
+                var tempWindow = window.CreatePlayerWindowAction();
+                var vm = tempWindow.ViewModel;
+                var vmType = vm.GetType();
+
+                var refreshables = vmType
+                    .GetInterfaces()
+                    .Where(x => x.IsGenericType &&
+                                x.GetGenericTypeDefinition() == typeof(IGuiRefreshable<>));
+
+                foreach (var refreshable in refreshables)
+                {
+                    var eventType = refreshable.GenericTypeArguments[0];
+
+                    if (!_windowTypesByRefreshEvent.ContainsKey(eventType))
+                        _windowTypesByRefreshEvent[eventType] = new List<GuiWindowType>();
+
+                    _windowTypesByRefreshEvent[eventType].Add(windowType);
+                }
+            }
         }
 
         /// <summary>
@@ -302,6 +332,29 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Publishes a refresh event. All subscribed view models will be refreshed for this particular player.
+        /// This can be useful for pushing updates to a window based on external circumstances.
+        /// For example: Refreshing the XP bar when a player gains XP.
+        /// If the player does not have the window open on-screen, nothing will happen.
+        /// </summary>
+        /// <param name="player">The player to refresh.</param>
+        /// <param name="payload">The refresh payload.</param>
+        public static void PublishRefreshEvent<T>(uint player, T payload)
+            where T : IGuiRefreshEvent
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            foreach (var windowType in _windowTypesByRefreshEvent[typeof(T)])
+            {
+                var playerId = GetObjectUUID(player);
+                var playerWindow = _playerWindows[playerId][windowType];
+
+                ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
+            }
+        }
+
+        /// <summary>
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
         /// Applies to the Journal and Character Sheet.
         /// </summary>
@@ -357,7 +410,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (type, _) in _windowTemplates)
             {
-                if(IsWindowOpen(player, type))
+                if (IsWindowOpen(player, type))
                     TogglePlayerWindow(player, type);
             }
         }

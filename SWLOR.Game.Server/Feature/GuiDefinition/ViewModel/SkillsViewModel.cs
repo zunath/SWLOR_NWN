@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -10,7 +11,9 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class SkillsViewModel : GuiViewModelBase<SkillsViewModel, GuiPayloadBase>
+    public class SkillsViewModel : GuiViewModelBase<SkillsViewModel, GuiPayloadBase>,
+        IGuiRefreshable<SkillXPRefreshEvent>,
+        IGuiRefreshable<RPXPRefreshEvent>
     {
         private readonly List<SkillType> _viewableSkills = new();
 
@@ -238,5 +241,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP, payload);
         };
 
+        public void Refresh(SkillXPRefreshEvent payload)
+        {
+            var skill = payload.Type;
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var index = _viewableSkills.IndexOf(skill);
+            var pcSkill = dbPlayer.Skills[skill];
+
+            Levels[index] = pcSkill.Rank;
+            Titles[index] = GetTitle(pcSkill.Rank);
+            Progresses[index] = CalculateProgress(pcSkill.Rank, pcSkill.XP);
+        }
+
+        public void Refresh(RPXPRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+        }
     }
 }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.KeyItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -165,6 +166,7 @@ namespace SWLOR.Game.Server.Service
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
+            Gui.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
         }
 
         /// <summary>

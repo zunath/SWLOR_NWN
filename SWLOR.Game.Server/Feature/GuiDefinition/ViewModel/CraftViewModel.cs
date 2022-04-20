@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -22,7 +22,8 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CraftViewModel: GuiViewModelBase<CraftViewModel, CraftPayload>
+    public class CraftViewModel: GuiViewModelBase<CraftViewModel, CraftPayload>,
+        IGuiRefreshable<SkillXPRefreshEvent>
     {
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
@@ -792,17 +793,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return result;
         }
 
+        private void RefreshYourSkill(Player dbPlayer)
+        {
+            var detail = Craft.GetRecipe(_recipe);
+            YourSkill = $"Your Skill: {Skill.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
+        }
+
         private void SwitchToSetUpMode()
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var detail = Craft.GetRecipe(_recipe);
 
             IsInCraftMode = false;
             IsInSetupMode = true;
             IsAutoCraftEnabled = dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             IsClosable = true;
-            YourSkill = $"Your Skill: {Skill.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
+            RefreshYourSkill(dbPlayer);
 
             IsRapidSynthesisEnabled = false;
             IsCarefulSynthesisEnabled = false;
@@ -1310,5 +1316,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _wasteNotStepsRemaining = 4;
             });
         };
+
+        public void Refresh(SkillXPRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            RefreshYourSkill(dbPlayer);
+        }
     }
 }

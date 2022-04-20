@@ -18,15 +18,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CurrentName = GetName(item);
             if (string.IsNullOrWhiteSpace(OriginalName))
                 OriginalName = CurrentName;
-
-            /*
-            Header = "You are renaming an item.\n\n";
-            Header += ColorToken.Green("Original Name: ") + originalName + "\n";
-            Header += ColorToken.Green("Current Name: ") + currentName + "\n";
-            OriginalName = 
-            Header += "Type in a new name, and then select 'Change Name' to make the changes. Click 'Reset Name' to switch back to the item's original name.";
-        */
-
         }
         public string NewName
         {

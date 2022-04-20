@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -17,7 +18,9 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>
+    public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>,
+        IGuiRefreshable<SkillXPRefreshEvent>,
+        IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
@@ -519,6 +522,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature(ColorToken .Green($"You purchase '{detail.Name}' rank {dbPlayer.Perks[selectedPerk]}."), Player, false);
 
                     EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
+                    Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
 
                     // Update UI with latest upgrade changes.
                     LoadCharacterDetails();
@@ -591,6 +595,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Write an audit log and notify the player
                     Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {selectedPerk}");
                     FloatingTextStringOnCreature($"Perk refunded! You reclaimed {refundAmount} SP.", Player, false);
+                    Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
@@ -630,5 +635,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPage = newPage;
         };
 
+        public void Refresh(SkillXPRefreshEvent payload)
+        {
+            LoadCharacterDetails();
+        }
+
+        public void Refresh(PerkResetAcquiredRefreshEvent payload)
+        {
+            LoadCharacterDetails();
+        }
     }
 }

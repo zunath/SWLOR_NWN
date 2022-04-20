@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -10,7 +11,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>
+    public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>,
+        IGuiRefreshable<AchievementUnlockedRefreshEvent>
     {
         private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }
@@ -186,5 +188,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPageIndex = newPage;
         };
+
+        public void Refresh(AchievementUnlockedRefreshEvent payload)
+        {
+            var achievement = payload.Type;
+            if (!_types.Contains(achievement))
+                return;
+
+            var index = _types.IndexOf(achievement);
+            if (SelectedIndex == index)
+            {
+                LoadAchievement();
+            }
+
+            Colors[index] = new GuiColor(0, 255, 0);
+        }
     }
 }

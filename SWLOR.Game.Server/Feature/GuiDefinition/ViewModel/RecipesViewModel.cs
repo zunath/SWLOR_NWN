@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,7 +14,9 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel, RecipesPayload>
+    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel, RecipesPayload>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
@@ -413,6 +416,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _currentRecipeIndex = -1;
                 CanCraftRecipe = false;
             }
+        }
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            Search();
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            Search();
         }
     }
 }

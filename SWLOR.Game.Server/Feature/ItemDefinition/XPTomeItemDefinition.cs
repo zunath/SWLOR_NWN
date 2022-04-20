@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     SendMessageToPC(user, $"You gain a reset token. (Total: {dbPlayer.NumberPerkResetsAvailable})");
                     DestroyObject(item);
+                    Gui.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
         }
         

@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service.AchievementService
         CompleteQuests9 = 26,
         [Achievement("Complete Quests X", "Complete 5000 Quests", true)]
         CompleteQuests10 = 27,
-        [Achievement("Craft Items I", "Craft 1 Items", true)]
+        [Achievement("Craft Items I", "Craft 1 Item", true)]
         CraftItems1 = 28,
         [Achievement("Craft Items II", "Craft 10 Items", true)]
         CraftItems2 = 29,

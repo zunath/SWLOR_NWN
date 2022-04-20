@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -275,6 +276,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 action.Invoke(player, questSource);
             }
+
+            Gui.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
         }
 
         /// <summary>
@@ -359,6 +362,8 @@ namespace SWLOR.Game.Server.Service.QuestService
                 {
                     action.Invoke(player, questSource, playerQuest.CurrentState);
                 }
+
+                Gui.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
             }
 
         }
@@ -420,6 +425,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             RemoveJournalQuestEntry(QuestId, player, false);
 
             EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+            Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
     }
 }

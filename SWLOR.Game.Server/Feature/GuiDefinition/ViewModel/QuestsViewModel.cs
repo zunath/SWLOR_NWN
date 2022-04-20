@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -10,7 +11,10 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class QuestsViewModel: GuiViewModelBase<QuestsViewModel, GuiPayloadBase>
+    public class QuestsViewModel: GuiViewModelBase<QuestsViewModel, GuiPayloadBase>,
+        IGuiRefreshable<QuestAcquiredRefreshEvent>,
+        IGuiRefreshable<QuestProgressedRefreshEvent>,
+        IGuiRefreshable<QuestCompletedRefreshEvent>
     {
         public string SearchText
         {
@@ -185,5 +189,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedQuestIndex = -1;
             });
         };
+
+        public void Refresh(QuestAcquiredRefreshEvent payload)
+        {
+            Search();
+        }
+
+        public void Refresh(QuestProgressedRefreshEvent payload)
+        {
+            Search();
+        }
+
+        public void Refresh(QuestCompletedRefreshEvent payload)
+        {
+            Search();
+        }
     }
 }

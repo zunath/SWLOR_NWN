@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -10,7 +11,11 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, GuiPayloadBase>
+    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, GuiPayloadBase>,
+        IGuiRefreshable<ChangePortraitRefreshEvent>,
+        IGuiRefreshable<SkillXPRefreshEvent>,
+        IGuiRefreshable<EquipItemRefreshEvent>,
+        IGuiRefreshable<UnequipItemRefreshEvent>
     {
         private const int MaxUpgrades = 10;
 
@@ -310,12 +315,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
-        private void LoadData()
+        private void RefreshStats(Player dbPlayer)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            PortraitResref = GetPortraitResRef(Player) + "l";
-
             HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
 
             if (dbPlayer.CharacterType == Enumeration.CharacterType.Standard)
@@ -326,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);
             }
-            
+
             STM = Stat.GetCurrentStamina(Player, dbPlayer) + " / " + Stat.GetMaxStamina(Player, dbPlayer);
             Name = GetName(Player);
             Might = GetAbilityScore(Player, AbilityType.Might);
@@ -335,6 +336,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
             Social = GetAbilityScore(Player, AbilityType.Social);
 
+            IsMightUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades;
+            IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades;
+            IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades;
+            IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades;
+            IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades;
+        }
+
+        private void RefreshEquipmentStats(Player dbPlayer)
+        {
             DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical);
             DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force);
             DefenseFire = Stat.GetDefense(Player, CombatDamageType.Fire);
@@ -342,24 +352,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DefenseElectrical = Stat.GetDefense(Player, CombatDamageType.Electrical);
             DefenseIce = Stat.GetDefense(Player, CombatDamageType.Ice);
             Evasion = CreaturePlugin.GetBaseAC(Player);
-
-            CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
-            Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
-            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
             Control = dbPlayer.Control;
             Craftsmanship = dbPlayer.Craftsmanship;
+        }
 
-            IsMightUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades;
-            IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades;
-            IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades;
-            IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades;
-            IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades;
+        private void RefreshAttributes(Player dbPlayer)
+        {
+            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
+        }
+
+        private void RefreshPortrait()
+        {
+            PortraitResref = GetPortraitResRef(Player) + "l";
+        }
+
+        private void LoadData()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
+            Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
+
+            RefreshPortrait();
+            RefreshStats(dbPlayer);
+            RefreshEquipmentStats(dbPlayer);
+            RefreshAttributes(dbPlayer);
         }
         
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             LoadData();
+        }
+
+        public void Refresh(ChangePortraitRefreshEvent payload)
+        {
+            RefreshPortrait();
+        }
+
+        public void Refresh(SkillXPRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
+        }
+
+        public void Refresh(EquipItemRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            RefreshEquipmentStats(dbPlayer);
+        }
+
+        public void Refresh(UnequipItemRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            RefreshStats(dbPlayer);
+            RefreshEquipmentStats(dbPlayer);
         }
     }
 }

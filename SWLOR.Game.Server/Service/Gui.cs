@@ -5,6 +5,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -570,6 +571,20 @@ namespace SWLOR.Game.Server.Service
         public static int CenterStringInWindow(string text, int windowX, int windowWidth)
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
+        }
+
+        [NWNEventHandler("mod_equip")]
+        public static void RefreshOnEquip()
+        {
+            var player = GetPCItemLastEquippedBy();
+            DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
+        }
+
+        [NWNEventHandler("mod_unequip")]
+        public static void RefreshOnUnequip()
+        {
+            var player = GetPCItemLastUnequippedBy();
+            DelayCommand(0.1f, () => PublishRefreshEvent(player, new UnequipItemRefreshEvent()));
         }
 
     }

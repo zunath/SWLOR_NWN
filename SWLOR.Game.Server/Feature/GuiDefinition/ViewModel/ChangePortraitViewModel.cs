@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -22,12 +23,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (int.TryParse(value, out var parsed))
                 {
-                    _activePortraitInternalId = parsed;
-
                     if (parsed > Cache.PortraitCount)
                         parsed = Cache.PortraitCount;
                     else if (parsed < 1)
                         parsed = 1;
+
+                    _activePortraitInternalId = parsed;
 
                     Set(parsed.ToString());
                     ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
@@ -104,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var portraitId = Cache.GetPortraitByInternalId(_activePortraitInternalId);
             SetPortraitId(Player, portraitId);
+            Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
         };
 
     }

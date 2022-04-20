@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 250
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 401
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 250
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Often scoffed at by those more knowlegable in the arts, the goblin witchdoctor has skills unknown in more learned circles.\n\nOwner of the Witchdoctor may sacrifice the highest defense value creature he currently controls to the Witchdoctor to heal his avatar of a number of hit points equal to the maximum hit points of the sacrificed creature.  This ability may not take the avatar above their maximum hit point total.  This ability is controlled by selecting the Witchdoctor from the sacrifice placeable.  Doing so does not destroy the Witchdoctor, but deals an amount of damage to the Witchdoctor equal to a half of the amount of healing provided."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Goblin Witchdoctor (2/2), cost 5"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 61
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 1
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "di_card_61"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "di_card_61"
+  }
+}

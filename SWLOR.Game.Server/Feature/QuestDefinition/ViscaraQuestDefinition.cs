@@ -1,0 +1,498 @@
+﻿using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.QuestService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Feature.QuestDefinition
+{
+    public class ViscaraQuestDefinition : IQuestListDefinition
+    {
+        private readonly QuestBuilder _builder = new QuestBuilder();
+        public Dictionary<string, QuestDetail> BuildQuests()
+        {
+            BlastTheMandalorianRangers();
+            CoxxionInitiation();
+            DaggersForKrystalle();
+            FindCaptainNguth();
+            FirstRites();
+            HelpTheTalyronFamily();
+            KathHoundHunting();
+            LocateTheMandalorianFacility();
+            MandalorianDogTags();
+            RepairingCoxxionEquipment();
+            SlicingTheMandalorianFacility();
+            SmuggleRoyMossPackage();
+            StuffKeepsBreaking();
+            TheMandalorianLeader();
+            VanquishTheVellenRaiders();
+            WarWithTheMandalorianWarriors();
+            KathHoundPartCollection();
+
+            return _builder.Build();
+        }
+
+        private void BlastTheMandalorianRangers()
+        {
+            _builder.Create("blast_mand_rangers", "Blast the Mandalorian Rangers")
+                .PrerequisiteQuest("war_mand_warriors")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Viscara_MandalorianRangers, 9)
+                .SetStateJournalText("Beat up nine Mandalorian Rangers and return to Orlando Doon for your reward.")
+
+                .AddState()
+                .SetStateJournalText("You beat up nine Mandalorian Rangers. Return to Orlando Doon in Veles Colony for your reward.")
+
+                .AddGoldReward(200)
+                .AddXPReward(400);
+        }
+
+        private void CoxxionInitiation()
+        {
+            _builder.Create("caxx_init", "Coxxion Initiation")
+
+                .AddState()
+                .SetStateJournalText("Denam Reyholm has instructed you to locate someone in Veles Colony. He doesn't know the person's real name or what he looks like. All he could tell you is that he goes by \"L\" and he's somewhere in the colony. Speak to him and speak the code phrases.")
+
+                .AddState()
+                .SetStateJournalText("You located \"L\", gave the appropriate pass phrases and he gave you an old tome. Return the tome to Denam Reyholm and let him know what happened.")
+
+                .AddGoldReward(150)
+                .AddXPReward(400)
+                
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
+                })
+
+                .OnAbandonAction(player =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Hidden);
+                })
+
+                .OnAdvanceAction((player, sourceObject, state) =>
+                {
+                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                })
+                
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
+                });
+        }
+
+        private void DaggersForKrystalle()
+        {
+            _builder.Create("daggers_crystal", "Daggers for Krystalle")
+
+                .AddState()
+                .SetStateJournalText("Krystalle in Veles Colony needs two basic spears and three basic pistols. Collect them and return them to her.")
+                .AddCollectItemObjective("b_pistol", 3)
+                .AddCollectItemObjective("b_spear", 2)
+
+                .AddState()
+                .SetStateJournalText("You delivered the spears and pistols to Krystalle. Talk to her for your reward.")
+
+                .AddXPReward(400)
+                .AddItemReward("p_crystal_red_qs", 1);
+        }
+
+        private void FindCaptainNguth()
+        {
+            _builder.Create("find_cap_nguth", "Find Captain N'Guth")
+                .PrerequisiteQuest("locate_m_fac") 
+
+                .AddState()
+                .SetStateJournalText("Tal'gar needs you to find Captain N'guth, who he sent out to the Wildwoods in search of the Mandalorian facility. Find him and bring him back to Veles Colony.")
+
+                .AddState()
+                .SetStateJournalText("You found the remains of Captain N'guth. Return to Tal'gar in Veles Colony to report.")
+
+                .AddGoldReward(300)
+                .AddXPReward(400)
+
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
+                })
+                .OnAbandonAction(player =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                })
+
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                });
+        }
+
+        //todo: review the first rites quest. 
+
+        /// <summary>
+        /// When a force crystal is touched, run the progression logic for the First Rites quest.
+        /// </summary>
+        [NWNEventHandler("qst_force_crys")]
+        public static void FirstRitesForceCrystal()
+        {
+            const string InactiveQuestText = "The crystal glows quietly...";
+            var player = GetLastUsedBy();
+            
+            // Not a player.
+            if (!GetIsPC(player) || GetIsDM(player))
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            // Player doesn't have this quest yet.
+            if (!dbPlayer.Quests.ContainsKey("first_rites"))
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            // Player is not on the appropriate state of the quest.
+            var playerQuestState = dbPlayer.Quests["first_rites"];
+            if (playerQuestState.CurrentState != 2)
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            var quest = Quest.GetQuestById("first_rites");
+            var crystal = OBJECT_SELF;
+            var type = GetLocalInt(crystal, "CRYSTAL_COLOR_TYPE");
+
+            string cluster;
+
+            switch (type)
+            {
+                case 1: cluster = "c_cluster_blue"; break; // Blue
+                case 2: cluster = "c_cluster_red"; break; // Red
+                case 3: cluster = "c_cluster_green"; break; // Green 
+                case 4: cluster = "c_cluster_yellow"; break; // Yellow
+                default: throw new Exception("Invalid crystal color type.");
+            }
+
+            CreateItemOnObject(cluster, player);
+            quest.Advance(player, crystal);
+
+            ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+
+            var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
+            var location = GetLocation(waypoint);
+            
+            AssignCommand(player, () => ActionJumpToLocation(location));
+            
+            // todo: unlock perk
+            FloatingTextStringOnCreature("You have unlocked the Lightsaber Blueprints perk.", player, false);
+        }
+        
+        private void FirstRites()
+        {
+            _builder.Create("first_rites", "First Rites")
+
+                // Use object
+                .AddState()
+                .SetStateJournalText("Jhoren has requested you search the nearby cavern in Viscara Wildlands for a source of power and return it to him.")
+
+                // Use object
+                .AddState()
+                .SetStateJournalText("Select a crystal and begin on your path towards becoming one with the Force.")
+                
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
+                })
+                
+                .OnAbandonAction(player =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+                })
+
+                .OnAdvanceAction((player, sourceObject, state) =>
+                {
+                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                });
+        }
+
+        private void HelpTheTalyronFamily()
+        {
+            _builder.Create("help_talyron_family", "Help the Talyron Family")
+
+                .AddState()
+                .SetStateJournalText("Reid Coxxion needs you to talk to the head of the Talyron family. Their home can be found in the southwestern part of the mountain valley. Find them, help them, and return to Reid.")
+
+                .AddState()
+                .SetStateJournalText("Tristan Talyron needs you to take down several Cairnmogs stalking around his homestead. Slay ten of them and return to him.")
+                .AddKillObjective(NPCGroupType.Viscara_ValleyCairnmogs, 10)
+
+                .AddState()
+                .SetStateJournalText("You've slain ten of the Cairnmogs stalking the mountain valley. Return to Tristan Talyron to notify him the deed is done.")
+
+                .AddState()
+                .SetStateJournalText("Return to Reid Coxxion to notify him the work is done.")
+
+                .AddGoldReward(800)
+                .AddXPReward(600);
+        }
+
+        private void KathHoundHunting()
+        {
+            _builder.Create("k_hound_hunting", "Kath Hound Hunting")
+
+                .AddState()
+                .SetStateJournalText("You're responsible for culling back the Kath Hound population in the Viscara Wildlands. Slay 7 of them and return to Moira Halaz in the Veles Colony for your reward.")
+                .AddKillObjective(NPCGroupType.Viscara_WildlandKathHounds, 7)
+
+                .AddState()
+                .SetStateJournalText("You killed 7 Kath Hounds in the Viscara Wildlands. Return to Moira Halaz in the Veles Colony for your reward.")
+
+                .AddGoldReward(350)
+                .AddXPReward(300)
+                .AddItemReward("map_052", 1);
+        }
+
+        private void LocateTheMandalorianFacility()
+        {
+            _builder.Create("locate_m_fac", "Locate the Mandalorian Facility")
+
+                // Enter trigger
+                .AddState()
+                .SetStateJournalText("There are reports of a Mandalorian facility located somewhere in the Wildwoods. Search the woods, find the facility, and report back to Tal'gar in Veles Colony.")
+
+                // Talk to NPC
+                .AddState()
+                .SetStateJournalText("You found the Mandalorian facility but it's locked. Return to Tal'gar and report your findings.")
+                
+                .AddGoldReward(300)
+                .AddXPReward(200);
+        }
+
+        private void MandalorianDogTags()
+        {
+            _builder.Create("mand_dog_tags", "Mandalorian Dog Tags")
+                .PrerequisiteQuest("find_cap_nguth") 
+
+                .AddState()
+                .AddCollectItemObjective("man_tags", 5)
+                .SetStateJournalText("Defeat Mandalorian raiders and return five of their dog tags to Irene Colsstaad in Veles Colony.")
+
+                .AddState()
+                .SetStateJournalText("Speak to Irene Colsstaad for your reward.")
+                
+                .AddXPReward(400)
+                .AddGoldReward(350);
+        }
+
+        private void RepairingCoxxionEquipment()
+        {
+            _builder.Create("caxx_repair", "Repairing Coxxion Equipment")
+
+                .AddState()
+                .AddCollectItemObjective("fiberp_ruined", 2)
+                .AddCollectItemObjective("elec_ruined", 2)
+                .AddCollectItemObjective("jade", 1)
+                .SetStateJournalText("Farah Oersted needs you to collect the following items: Ruined Electronics, Ruined Fiberplast, and Jade. Gather them and give them to her for your reward.")
+
+                .AddGoldReward(800)
+                .AddXPReward(600);
+        }
+
+        private void SlicingTheMandalorianFacility()
+        {
+            void AdjustVisibility(uint player, VisibilityType type)
+            {
+                string[] visibilityObjectIDs =
+                {
+                    "C1888BC5BBBC45F28B40293D7C6E76EC",
+                    "C3F31641D4F34D6AAEA51295CBE9014D",
+                    "6FABDF6EDF4F47A4A9684E6224700A78",
+                    "5B56B9EF160D4B078E28C775723BA95F",
+                    "141D32140AA847B18AD5896C82223C8D",
+                    "B0839B0F597140EEAEC567C22FFD1A86"
+                };
+
+                foreach (var objId in visibilityObjectIDs)
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, objId, type);
+                }
+            }
+
+            _builder.Create("mandalorian_slicing", "Slicing the Mandalorian Facility")
+                .PrerequisiteQuest("war_mand_warriors")
+                .PrerequisiteQuest("blast_mand_rangers") 
+
+                // Use object
+                .AddState()
+                .SetStateJournalText("Harry Mason needs you to slice six terminals found in the Mandalorian Facility. Obtain the data from each of the terminals and return them to him.")
+
+                .AddGoldReward(550)
+                .AddXPReward(600)
+                
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    AdjustVisibility(player, VisibilityType.Visible);
+                })
+                .OnAbandonAction(player =>
+                {
+                    AdjustVisibility(player, VisibilityType.Hidden);
+
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                })
+                
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                });
+        }
+
+        private void SmuggleRoyMossPackage()
+        {
+            _builder.Create("smuggle_roy_moss", "Smuggle Roy Moss's Package")
+
+                .AddState()
+                .SetStateJournalText("Roy Moss gave you a less-than-legal package to deliver to Denam Reyholm. He can be found out in the mountain region of Viscara, near an old refinery.")
+
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    KeyItem.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                })
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                })
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                });
+        }
+
+        private void StuffKeepsBreaking()
+        {
+            _builder.Create("caxx_repair_2", "Stuff Keeps Breaking!")
+
+                .AddState()
+                .SetStateJournalText("Farah Oersted needs you to collect the following items: Flawed Leather, Flawed Electronics, and Agate. Gather them and give them to her for your reward.")
+                .AddCollectItemObjective("lth_flawed", 2)
+                .AddCollectItemObjective("elec_flawed", 2)
+                .AddCollectItemObjective("agate", 1)
+
+                .AddGoldReward(800)
+                .AddXPReward(800);
+        }
+
+        private void TheMandalorianLeader()
+        {
+            _builder.Create("the_manda_leader", "The Mandalorian Leader")
+                .PrerequisiteQuest("find_cap_nguth")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Viscara_MandalorianLeader, 1)
+                .SetStateJournalText("Tal'gar wants you to avenge Captain N'guth's death. Enter the Mandalorian facility, kill the War Hero, and report back to him when it's done.")
+
+                .AddState()
+                .SetStateJournalText("You found and killed the Mandalorian War Hero. Return to Tal'gar to report.")
+
+                .HasRewardSelection()
+                .AddGoldReward(400, false)
+                .AddXPReward(600, false)
+                .AddItemReward("cap_longsword", 1)
+                .AddItemReward("cap_knife", 1)
+                .AddItemReward("cap_gswd", 1)
+                .AddItemReward("cap_spear", 1)
+                .AddItemReward("cap_katar", 1)
+                .AddItemReward("cap_staff", 1)
+                .AddItemReward("cap_pistol", 1)
+                .AddItemReward("cap_shuriken", 1)
+                .AddItemReward("cap_twinblade", 1)
+                .AddItemReward("cap_rifle", 1)
+
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    KeyItem.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                })
+                
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                });
+        }
+
+        private void VanquishTheVellenRaiders()
+        {
+            _builder.Create("vanquish_vellen", "Vanquish the Vellen Raiders")
+                .PrerequisiteQuest("help_talyron_family")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Viscara_VellenFleshleader, 1)
+                .SetStateJournalText("Infiltrate the Coxxion base and drive the raiders out of it. Return to Reid Coxxion when the work is done.")
+
+                .AddState()
+                .SetStateJournalText("You defeated the Coxxion Fleshleader. Return to Reid Coxxion to finish the job.")
+
+                .AddGoldReward(750)
+                .AddXPReward(1200)
+
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    KeyItem.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                })
+                
+                .OnAbandonAction(player =>
+                {
+                    KeyItem.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                });
+        }
+
+        private void WarWithTheMandalorianWarriors()
+        {
+            _builder.Create("war_mand_warriors", "War With the Mandalorian Warriors")
+                .PrerequisiteQuest("find_cap_nguth") 
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Viscara_MandalorianWarriors, 9)
+                .SetStateJournalText("Beat up nine Mandalorian Warriors and return to Orlando Doon for your reward.")
+
+                .AddState()
+                .SetStateJournalText("You beat up nine Mandalorian Warriors. Return to Orlando Doon in Veles Colony for your reward.")
+
+                .AddGoldReward(200)
+                .AddXPReward(800);
+        }
+
+        private void KathHoundPartCollection()
+        {
+            _builder.Create("k_hound_parts", "Kath Hound Part Collection")
+
+                .AddState()
+                .SetStateJournalText("Szaan in Veles Colony needs five units of Kath Hound Teeth and five units of Kath Hound Fur. Return to him with these items to collect your reward.")
+                .AddCollectItemObjective("k_hound_tooth", 5)
+                .AddCollectItemObjective("k_hound_fur", 5)
+
+                .AddState()
+                .SetStateJournalText("Speak to Szaan in Veles Colony to retrieve your reward.")
+
+                .AddGoldReward(600)
+                .AddXPReward(400);
+        }
+    }
+}

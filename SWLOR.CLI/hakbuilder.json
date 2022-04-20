@@ -1,0 +1,176 @@
+{
+  "TlkPath": "./ffo.tlk",
+  "OutputPath": "./output/",
+  "HakList": [
+    {
+      "Name":  "ffo_2da",
+      "Path": "./ffo_2da/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_gui",
+      "Path": "./ffo_gui/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_music",
+      "Path": "./ffo_music/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_placeable",
+      "Path": "./ffo_placeable/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_skyboxes",
+      "Path": "./ffo_skyboxes/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_t_garden",
+      "Path": "./ffo_t_garden/",
+      "CompileModels": false
+    },
+    {
+      "Name": "ffo_triple_triad",
+      "Path": "./ffo_triple_triad/",
+      "CompileModels": false
+    },
+    {
+      "Name": "phod_bunkers",
+      "Path": "./phod_bunkers/",
+      "CompileModels": false
+    },
+    {
+      "Name": "pk_rocky_v11.5",
+      "Path": "./pk_rocky_v11.5/",
+      "CompileModels": false
+    },
+    {
+      "Name": "pk_textures_v2.0",
+      "Path": "./pk_textures_v2.0/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!armoury",
+      "Path": "./q_!armoury/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!fightingsfx",
+      "Path": "./q_!fightingsfx/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!shields",
+      "Path": "./q_!shields/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!shields_ar",
+      "Path": "./q_!shields_ar/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!tilereskins",
+      "Path": "./q_!tilereskins/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_!tilesets",
+      "Path": "./q_!tilesets/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_creatures",
+      "Path": "./q_creatures/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_items",
+      "Path": "./q_items/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_placeables",
+      "Path": "./q_placeables/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_portraits",
+      "Path": "./q_portraits/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_race",
+      "Path": "./q_race/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_race2",
+      "Path": "./q_race2/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_robe",
+      "Path": "./q_robe/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_robe2",
+      "Path": "./q_robe2/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_robe3",
+      "Path": "./q_robe3/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_robe4",
+      "Path": "./q_robe4/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_sounds",
+      "Path": "./q_sounds/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_tilesets",
+      "Path": "./q_tilesets/",
+      "CompileModels": false
+    },
+    {
+      "Name": "q_vfxgui",
+      "Path": "./q_vfxgui/",
+      "CompileModels": false
+    },
+    {
+      "Name": "RL_gothic_int",
+      "Path": "./RL_gothic_int/",
+      "CompileModels": false
+    },
+    {
+      "Name": "rl_gothicestates",
+      "Path": "./rl_gothicestates/",
+      "CompileModels": false
+    },
+    {
+      "Name": "RL_gothicgarden",
+      "Path": "./RL_gothicgarden/",
+      "CompileModels": false
+    },
+    {
+      "Name": "wrm_scorche",
+      "Path": "./wrm_scorche/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "[DT]Starship_0_4",
+      "Path": "./[DT]Starship_0_4/",
+      "CompileModels": false
+    }
+  ]
+}

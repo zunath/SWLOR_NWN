@@ -1,0 +1,529 @@
+{
+  "__data_type": "ITP ",
+  "MAIN": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 0
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 - Colicoid Experiment Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "colicoidexp_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 - Malfunctioning Droids"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malfdroids_cz220"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 - Mynock"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mynock_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Animals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_animals"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Byysk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_byysk_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Animals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mon_cala_animals"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Eco-Terrorist Leader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "creature_spaw002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Eco-Terrorists"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "creature_spaw001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Sand Beetle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beetle_spwn001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Sand Demon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_sandworm001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Sand Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_sandworm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Tusken Raider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_tuskspwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Womprat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womprat_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Coxxion Base"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_coxx_base"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Coxxion Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_coxx_boss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Crystal Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystalspider"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Deeps Mountains Raivor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_deep_raivor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mandalorian Facility Spawns"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_fac_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mandalorian War Hero"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_leader_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Valley Cairnmog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_val_cainmogs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildlands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_kath_hound"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildwoods Gimpassa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_ww_gimpassa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildwoods Kinrath"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_ww_kinrath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildwoods Outlaw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_wildwd_looter"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6688
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 1
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Junk Pile Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scrapmetal_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Supplies Cache"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cz220_fiberplast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Veldite Veins"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_vein_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Coxxion Base Scavenge"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_cox_scavenge"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6689
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 2
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6690
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 3
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Ghost Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Ghost Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_m_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sithsnake Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsnake_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Squellbug Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "squellbug_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tukata Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_spn"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6691
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 4
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Property Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pc_home_entrance"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Dock Landing Point"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starship_dockpoi"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6692
+              }
+            }
+          ]
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 6687
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ID": {
+          "type": "byte",
+          "value": 5
+        },
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Creature Spawn (Edit Variables)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "creature_spawn"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Placeable Spawn (Edit Variables)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "placeable_spawn"
+              }
+            }
+          ]
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 6798
+        }
+      }
+    ]
+  }
+}

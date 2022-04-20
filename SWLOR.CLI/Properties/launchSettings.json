@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SWLOR.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "-s"
+    }
+  }
+}

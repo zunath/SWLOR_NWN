@@ -1,0 +1,115 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.PropertyService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Service
+{
+    public class Area
+    {
+        private static Dictionary<string, uint> AreasByResref { get; } = new();
+        private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
+
+        [NWNEventHandler("mod_cache")]
+        public static void CacheData()
+        {
+            CacheAreasByResref();
+
+            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
+        }
+
+        /// <summary>
+        /// Caches all areas by their resref.
+        /// </summary>
+        private static void CacheAreasByResref()
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                var resref = GetResRef(area);
+                AreasByResref[resref] = area;
+            }
+        }
+
+        /// <summary>
+        /// Remove instance templates from the area cache on module load.
+        /// This ensures player locations are not updated in places they shouldn't be.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void RemoveInstancesFromCache()
+        {
+            var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
+            foreach (var type in propertyLayouts)
+            {
+                var layout = Property.GetLayoutByType(type);
+                if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
+                    AreasByResref.Remove(layout.AreaInstanceResref);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves an area by its resref. If the area does not exist, OBJECT_INVALID will be returned.
+        /// </summary>
+        /// <param name="resref">The resref to use for the search.</param>
+        /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
+        public static uint GetAreaByResref(string resref)
+        {
+            if (!AreasByResref.ContainsKey(resref))
+                return OBJECT_INVALID;
+
+            return AreasByResref[resref];
+        }
+
+        /// <summary>
+        /// Retrieves all of the players currently in the specified area.
+        /// If no players are in the area, an empty list will returned.
+        /// </summary>
+        /// <param name="area">The area to search by.</param>
+        /// <returns>A list of player objects</returns>
+        public static List<uint> GetPlayersInArea(uint area)
+        {
+            if (!PlayersByArea.ContainsKey(area))
+                return new List<uint>();
+
+            return PlayersByArea[area].ToList();
+        }
+
+        /// <summary>
+        /// When a player or DM enters an area, add them to the cache.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void EnterArea()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player))
+                return;
+
+            var area = OBJECT_SELF;
+            if (!PlayersByArea.ContainsKey(area))
+                PlayersByArea[area] = new List<uint>();
+
+            if(!PlayersByArea[area].Contains(player))
+                PlayersByArea[area].Add(player);
+        }
+
+        /// <summary>
+        /// When a player or DM leaves an area, remove them from the cache.
+        /// </summary>
+        [NWNEventHandler("area_exit")]
+        public static void ExitArea()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player))
+                return;
+
+            var area = OBJECT_SELF;
+            if (!PlayersByArea.ContainsKey(area))
+                PlayersByArea[area] = new List<uint>();
+
+            if (PlayersByArea[area].Contains(player))
+                PlayersByArea[area].Remove(player);
+        }
+
+    }
+}

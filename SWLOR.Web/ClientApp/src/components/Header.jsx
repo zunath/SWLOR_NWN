@@ -55,19 +55,10 @@ export default class Header extends React.Component {
                                     <i className="fa fa-commenting-o fa-lg" /> Discord
                                 </a>
                             </li>
-
-                            <li className="nav-item dropdown">
-                                <Link id="serverInfoDropdown" className="nav-link dropdown-toggle" to="#" data-toggle="dropdown" role="button">
-                                    <i className="fa fa-code" /> Source Code
-                                </Link>
-                                <div className="dropdown-menu">
-                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_NWN" target="_blank" rel="noopener noreferrer">
-                                        <i className="fa fa-code" /> &nbsp;Server Source Code
-                                    </a>
-                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_Website" target="_blank" rel="noopener noreferrer">
-                                        <i className="fa fa-code" /> &nbsp;Website Source Code
-                                    </a>
-                                </div>
+                            <li className="nav-item">
+                                <a className="nav-link" href="https://github.com/zunath/SWLOR_NWN" target="_blank" rel="noopener noreferrer">
+                                    <i className="fa fa-code fa-lg" /> Server Source Code
+                                </a>
                             </li>
                             
                         </ul>

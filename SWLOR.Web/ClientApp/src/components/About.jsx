@@ -47,7 +47,7 @@ export default class About extends React.Component {
                                 <div className="card-text">
                                     Buy on Steam: <a href="http://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/" target="_blank" rel="noopener noreferrer">Click Here</a>
                                     <br />
-                                    Buy from Beamdog: <a href="https://www.beamdog.com/products/neverwinter-nights-enhanced-edition#signup-form" target="_blank" rel="noopener noreferrer">Click Here</a>
+                                    Buy from Beamdog: <a href="https://store.beamdog.com/products/neverwinter-nights-enhanced-edition" target="_blank" rel="noopener noreferrer">Click Here</a>
                                     <br />
                                     Buy from GOG: <a href="https://www.gog.com/game/neverwinter_nights_enhanced_edition_pack" target="_blank" rel="noopener noreferrer">Click Here</a>
                                 </div>

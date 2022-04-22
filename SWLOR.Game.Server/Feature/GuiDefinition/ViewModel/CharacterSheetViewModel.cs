@@ -403,6 +403,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             RefreshEquipmentStats(dbPlayer);
         }
 
@@ -410,6 +413,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             RefreshStats(dbPlayer);
             RefreshEquipmentStats(dbPlayer);
         }

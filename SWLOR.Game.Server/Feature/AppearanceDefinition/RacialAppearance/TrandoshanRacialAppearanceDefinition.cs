@@ -12,10 +12,12 @@
         public override int[] RightHand { get; } = { 201 };
         public override int[] RightThigh { get; } = { 201 };
         public override int[] RightShin { get; } = { 201 };
+        public override int[] RightFoot { get; } = { 201 };
         public override int[] LeftBicep { get; } = { 201 };
         public override int[] LeftForearm { get; } = { 201 };
         public override int[] LeftHand { get; } = { 201 };
         public override int[] LeftThigh { get; } = { 201 };
         public override int[] LeftShin { get; } = { 201 };
+        public override int[] LeftFoot { get; } = { 201 };
     }
 }

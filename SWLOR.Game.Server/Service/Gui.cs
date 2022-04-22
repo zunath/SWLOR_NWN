@@ -577,6 +577,9 @@ namespace SWLOR.Game.Server.Service
         public static void RefreshOnEquip()
         {
             var player = GetPCItemLastEquippedBy();
+            if (!GetIsPC(player))
+                return;
+
             DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
         }
 
@@ -584,6 +587,9 @@ namespace SWLOR.Game.Server.Service
         public static void RefreshOnUnequip()
         {
             var player = GetPCItemLastUnequippedBy();
+            if (!GetIsPC(player))
+                return;
+
             DelayCommand(0.1f, () => PublishRefreshEvent(player, new UnequipItemRefreshEvent()));
         }
 

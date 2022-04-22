@@ -11,10 +11,12 @@
         public virtual int[] RightHand { get; } = { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151 };
         public virtual int[] RightThigh { get; } = { 1, 2, 154 };
         public virtual int[] RightShin { get; } = { 1, 2 };
+        public virtual int[] RightFoot { get; } = { 1 };
         public virtual int[] LeftBicep { get; } = { 1, 2 };
         public virtual int[] LeftForearm { get; } = { 1, 2, 152 };
         public virtual int[] LeftHand { get; } = { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151 };
         public virtual int[] LeftThigh { get; } = { 1, 2, 154 };
         public virtual int[] LeftShin { get; } = { 1, 2 };
+        public virtual int[] LeftFoot { get; } = { 1 };
     }
 }

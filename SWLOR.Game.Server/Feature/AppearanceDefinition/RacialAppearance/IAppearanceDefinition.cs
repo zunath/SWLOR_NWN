@@ -12,10 +12,12 @@
         int[] RightHand { get; }
         int[] RightThigh { get; }
         int[] RightShin { get; }
+        int[] RightFoot { get; }
         int[] LeftBicep { get; }
         int[] LeftForearm { get; }
         int[] LeftHand { get; } 
         int[] LeftThigh { get; }
-        int[] LeftShin { get; } 
+        int[] LeftShin { get; }
+        int[] LeftFoot { get; }
     }
 }

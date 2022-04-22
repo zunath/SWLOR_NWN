@@ -273,11 +273,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 partCategoryOptions.Add("Right Hand");
                 partCategoryOptions.Add("Right Thigh");
                 partCategoryOptions.Add("Right Shin");
+                partCategoryOptions.Add("Right Foot");
                 partCategoryOptions.Add("Left Bicep");
                 partCategoryOptions.Add("Left Forearm");
                 partCategoryOptions.Add("Left Hand");
                 partCategoryOptions.Add("Left Thigh");
                 partCategoryOptions.Add("Left Shin");
+                partCategoryOptions.Add("Left Foot");
             }
             else if(IsEquipmentSelected)
             {
@@ -410,25 +412,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     partIds = appearance.RightShin;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, Player);
                     break;
-                case 8: // Left Bicep
+                case 8: // Right Foot
+                    partIds = appearance.RightFoot;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightFoot, Player);
+                    break;
+                case 9: // Left Bicep
                     partIds = appearance.LeftBicep;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, Player);
                     break;
-                case 9: // Left Forearm
+                case 10: // Left Forearm
                     partIds = appearance.LeftForearm;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, Player);
                     break;
-                case 10: // Left Hand
+                case 11: // Left Hand
                     partIds = appearance.LeftHand;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, Player);
                     break;
-                case 11: // Left Thigh
+                case 12: // Left Thigh
                     partIds = appearance.LeftThigh;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, Player);
                     break;
-                case 12: // Left Shin
+                case 13: // Left Shin
                     partIds = appearance.LeftShin;
                     selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, Player);
+                    break;
+                case 14: // Left Foot
+                    partIds = appearance.LeftFoot;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftFoot, Player);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -811,20 +821,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case 7: // Right Shin
                     SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
                     break;
-                case 8: // Left Bicep
+                case 8: // Right Foot
+                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
+                    break;
+                case 9: // Left Bicep
                     SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
                     break;
-                case 9: // Left Forearm
+                case 10: // Left Forearm
                     SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
                     break;
-                case 10: // Left Hand
+                case 11: // Left Hand
                     SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
                     break;
-                case 11: // Left Thigh
+                case 12: // Left Thigh
                     SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
                     break;
-                case 12: // Left Shin
+                case 13: // Left Shin
                     SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
+                    break;
+                case 14: // Left Foot
+                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));

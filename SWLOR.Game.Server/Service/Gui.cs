@@ -350,8 +350,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(player);
                 var playerWindow = _playerWindows[playerId][windowType];
+                var windowId = BuildWindowId(windowType);
 
-                ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
+                if(NuiFindWindow(player, windowId) != 0)
+                    ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
             }
         }
 

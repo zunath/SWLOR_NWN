@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.FPBonus] = ApplyFPBonus;
             _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
             _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
+            _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
             _statChangeActions[ItemPropertyType.Control] = ApplyControl;
             _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
@@ -180,6 +181,31 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
+            }
+
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes attack bonuses. This affects the end result of the damage calculation (not to be confused with NWN's Attack Bonus property which is unused).
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the attack, if false we're removing it.</param>
+        private static void ApplyAttack(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustAttack(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustAttack(dbPlayer, -amount);
             }
 
             DB.Set(dbPlayer);

@@ -109,6 +109,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         FoodEnhancement = 108,
         StarshipEnhancement = 109,
         ModuleEnhancement = 110,
+        Attack = 111,
 
         Evasion = 117,
         AbilityRecastReduction = 118,

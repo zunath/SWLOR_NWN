@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
+﻿using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -685,7 +682,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                skillLevel = GetNPCLevel(creature);
+                var npcStats = GetNPCStats(creature);
+                skillLevel = npcStats.Level;
             }
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
@@ -738,7 +736,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                skillLevel = GetNPCLevelNative(creature);
+                var npcStats = GetNPCStatsNative(creature);
+                skillLevel = npcStats.Level;
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
@@ -748,6 +747,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
+        /// Physical and Force types include effect bonuses, stats, etc.
+        /// Fire/Poison/Electrical/Ice only include bonuses granted by gear.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
@@ -764,17 +765,33 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
+                if (type == CombatDamageType.Fire ||
+                    type == CombatDamageType.Poison ||
+                    type == CombatDamageType.Electrical ||
+                    type == CombatDamageType.Ice)
+                    return dbPlayer.Defenses[type];
+
                 skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
                 defenseBonus += dbPlayer.Defenses[type];
             }
             else
             {
+                var npcStats = GetNPCStats(creature);
+
+                if (type == CombatDamageType.Fire ||
+                    type == CombatDamageType.Poison ||
+                    type == CombatDamageType.Electrical ||
+                    type == CombatDamageType.Ice)
+                    return npcStats.Defenses.ContainsKey(type)
+                        ? npcStats.Defenses[type]
+                        : 0;
+
                 if (_npcDefenses.ContainsKey(creature))
                 {
                     defenseBonus += _npcDefenses[creature][type];
                 }
 
-                skillLevel = GetNPCLevel(creature);
+                skillLevel = npcStats.Level;
             }
 
             if (type == CombatDamageType.Physical)
@@ -828,18 +845,33 @@ namespace SWLOR.Game.Server.Service
 
                 if (dbPlayer != null)
                 {
+                    if (type == CombatDamageType.Fire ||
+                        type == CombatDamageType.Poison ||
+                        type == CombatDamageType.Electrical ||
+                        type == CombatDamageType.Ice)
+                        return dbPlayer.Defenses[type];
+
                     skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
                     defenseBonus += dbPlayer.Defenses[type];
                 }
             }
             else
             {
+                var npcStats = GetNPCStatsNative(creature);
+                if (type == CombatDamageType.Fire ||
+                    type == CombatDamageType.Poison ||
+                    type == CombatDamageType.Electrical ||
+                    type == CombatDamageType.Ice)
+                    return npcStats.Defenses.ContainsKey(type)
+                        ? npcStats.Defenses[type]
+                        : 0;
+
                 if (_npcDefenses.ContainsKey(creature.m_idSelf))
                 {
                     defenseBonus += _npcDefenses[creature.m_idSelf][type];
                 }
 
-                skillLevel = GetNPCLevelNative(creature);
+                skillLevel = npcStats.Level;
             }
 
             if (type == CombatDamageType.Physical)
@@ -851,29 +883,39 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the level of an NPC. This is determined by an item property located on the NPC's skin.
-        /// If no skin is equipped or the item property does not exist, the NPC's level will be returned as zero.
+        /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
+        /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
         /// </summary>
-        /// <returns>The level of the NPC, or zero if not found.</returns>
-        public static int GetNPCLevel(uint npc)
+        /// <returns>An NPCStats object.</returns>
+        public static NPCStats GetNPCStats(uint npc)
         {
+            var npcStats = new NPCStats();
+
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
             if (!GetIsObjectValid(skin))
-                return 0;
+                return npcStats;
 
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
-                if (GetItemPropertyType(ip) == ItemPropertyType.NPCLevel)
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.NPCLevel)
                 {
-                    return GetItemPropertyCostTableValue(ip);
+                    npcStats.Level = GetItemPropertyCostTableValue(ip);
                 }
+                else if (type == ItemPropertyType.Defense)
+                {
+                    var damageType = (CombatDamageType)GetItemPropertySubType(ip);
+                    npcStats.Defenses[damageType] = GetItemPropertyCostTableValue(ip);
+                }
+
             }
 
-            return 0;
+            return npcStats;
         }
 
-        private static int GetNPCLevelNative(CNWSCreature npc)
+        private static NPCStats GetNPCStatsNative(CNWSCreature npc)
         {
+            var npcStats = new NPCStats();
             var skin = npc.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureArmour);
             if (skin != null)
             {
@@ -881,12 +923,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCLevel)
                     {
-                        return prop.m_nCostTableValue;
+                        npcStats.Level = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Defense)
+                    {
+                        var damageType = (CombatDamageType)prop.m_nSubType;
+
+                        if (!npcStats.Defenses.ContainsKey(damageType))
+                            npcStats.Defenses[damageType] = 0;
+
+                        npcStats.Defenses[damageType] += prop.m_nCostTableValue;
                     }
                 }
             }
 
-            return 0;
+            return npcStats;
         }
 
     }

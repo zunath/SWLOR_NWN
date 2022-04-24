@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int GetCombatLogMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
+        public static bool GetCombatLogMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
             if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMessageHidden");
@@ -36,15 +36,14 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxPushInt(1);
             NWNCore.NativeFunctions.nwnxPushObject((uint)player);
             NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
         }
 
-        public static void SetCombatLogMessageHidden(FeedbackMessageTypes messageType, int hide,
-            uint? player = null)
+        public static void SetCombatLogMessageHidden(CombatLogMessageType messageType, bool hide, uint? player = null)
         {
             if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMessageHidden");
-            NWNCore.NativeFunctions.nwnxPushInt(hide);
+            NWNCore.NativeFunctions.nwnxPushInt(hide ? 1 : 0);
             NWNCore.NativeFunctions.nwnxPushInt((int)messageType);
             NWNCore.NativeFunctions.nwnxPushInt(1);
             NWNCore.NativeFunctions.nwnxPushObject((uint)player);

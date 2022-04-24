@@ -13,6 +13,7 @@ using ImmunityType = NWN.Native.API.ImmunityType;
 using InventorySlot = NWN.Native.API.InventorySlot;
 using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 using ObjectType = NWN.Native.API.ObjectType;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
-            var roll = Service.Random.Next(1, 100);
+            var roll = Random.Next(1, 100);
             var bonus = 10 * attackAttribute - 10 * defendAttribute + modifiers;
             // Update the hit roll and modifier to give player feedback.  
             // Hit roll is 1-100
@@ -454,9 +455,40 @@ namespace SWLOR.Game.Server.Native
 
             // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
             // accurate.
-            attacker.ResolveDefensiveEffects(defender, result >= 0 ? 1 : 0) ;            
+            attacker.ResolveDefensiveEffects(defender, result >= 0 ? 1 : 0);
+
+            var message = BuildCombatLogMessage(
+                (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim(),
+                (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
+                pAttackData.m_nAttackResult,
+                roll,
+                bonus);
+            attacker.SendFeedbackString(new CExoString(message));
+            defender.SendFeedbackString(new CExoString(message));
         }
 
+        private static string BuildCombatLogMessage(string attackerName, string defenderName, byte attackResultType, int attackRoll, int attackMod)
+        {
+            var total = attackRoll + attackMod;
+            var type = string.Empty;
+
+            switch (attackResultType)
+            {
+                case 1:
+                case 7:
+                    type = ": *hit*";
+                    break;
+                case 3:
+                    type = ": *critical*";
+                    break;
+                case 4:
+                    type = ": *miss*";
+                    break;
+            }
+
+            var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
+            return ColorToken.Combat( $"{coloredAttackerName} attacks {defenderName}{type} : ({attackRoll} + {attackMod} = {total})");
+        }
 
         private static int HasWeaponFocus(CNWSCreature attacker, CNWSItem weapon)
         {

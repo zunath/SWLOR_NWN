@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -7,16 +10,19 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
+using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Stat
     {
-        private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new Dictionary<uint, Dictionary<CombatDamageType, int>>();
+        private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new();
         
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
@@ -559,6 +565,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's attack by a certain amount. Attack affects damage output.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustAttack(Player entity, int adjustBy)
+        {
+            entity.Attack += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's control by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -645,37 +662,127 @@ namespace SWLOR.Game.Server.Service
             return defense;
         }
 
+        private static int CalculateEffectAttack(uint creature, int attack)
+        {
+            return attack;
+        }
+        
+        public static int GetAttack(uint creature, AbilityType abilityType, SkillType skillType)
+        {
+            var attackBonus = 0;
+            var skillLevel = 0;
+            var stat = GetAbilityScore(creature, abilityType);
+            
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (skillType != SkillType.Invalid)
+                    skillLevel = dbPlayer.Skills[skillType].Rank;
+
+                attackBonus += dbPlayer.Attack;
+            }
+            else
+            {
+                skillLevel = GetNPCLevel(creature);
+            }
+
+            attackBonus = CalculateEffectAttack(creature, attackBonus);
+
+            return 8 + (2 * skillLevel) + stat + attackBonus;
+        }
+
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType)
+        {
+            var attackBonus = 0;
+            var skillLevel = 0;
+            var attribute = Item.GetAbilityTypeUsedByWeapon(itemType);
+            int stat;
+
+            switch (attribute)
+            {
+                case AbilityType.Might:
+                    stat = creature.m_pStats.m_nStrengthBase;
+                    break;
+                case AbilityType.Perception:
+                    stat = creature.m_pStats.m_nDexterityBase;
+                    break;
+                case AbilityType.Vitality:
+                    stat = creature.m_pStats.m_nConstitutionBase;
+                    break;
+                case AbilityType.Willpower:
+                    stat = creature.m_pStats.m_nWisdomBase;
+                    break;
+                case AbilityType.Social:
+                    stat = creature.m_pStats.m_nCharismaBase;
+                    break;
+                default:
+                    stat = 0;
+                    break;
+            }
+
+            if (creature.m_bPlayerCharacter == 1)
+            {
+                var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
+                var dbPlayer = DB.Get<Player>(playerId);
+                var skill = Skill.GetSkillTypeByBaseItem(itemType);
+
+                if (dbPlayer != null)
+                {
+                    if(skill != SkillType.Invalid)
+                        skillLevel = dbPlayer.Skills[skill].Rank;
+
+                    attackBonus += dbPlayer.Attack;
+                }
+            }
+            else
+            {
+                skillLevel = GetNPCLevelNative(creature);
+            }
+
+            attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
+
+            return 8 + (2 * skillLevel) + stat + attackBonus;
+        }
+
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
+        /// <param name="abilityType"></param>
         /// <returns>The defense value toward a given damage type.</returns>
-        public static int GetDefense(uint creature, CombatDamageType type)
+        public static int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType)
         {
-            int defense;
+            var defenseBonus = 0;
+            var defenderStat = GetAbilityScore(creature, abilityType);
+            int skillLevel;
 
-            if (GetIsPC(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                defense = dbPlayer.Defenses[type];
+                skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                defenseBonus += dbPlayer.Defenses[type];
             }
             else
             {
-                if (!_npcDefenses.ContainsKey(creature))
-                    return 0;
+                if (_npcDefenses.ContainsKey(creature))
+                {
+                    defenseBonus += _npcDefenses[creature][type];
+                }
 
-                defense = _npcDefenses[creature][type];
+                skillLevel = GetNPCLevel(creature);
             }
 
             if (type == CombatDamageType.Physical)
             {
-                defense = CalculateEffectDefense(creature, defense);
+                defenseBonus = CalculateEffectDefense(creature, defenseBonus);
             }
 
-            return defense;
+            return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 
         /// <summary>
@@ -684,32 +791,103 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
+        /// <param name="abilityType"></param>
         /// <returns>The defense value toward a given damage type.</returns>
-        public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type)
+        public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
-            int defense;
+            var defenseBonus = 0;
+            int defenderStat;
+            var skillLevel = 0;
+
+            switch (abilityType)
+            {
+                case AbilityType.Might:
+                    defenderStat = creature.m_pStats.m_nStrengthBase;
+                    break;
+                case AbilityType.Perception:
+                    defenderStat = creature.m_pStats.m_nDexterityBase;
+                    break;
+                case AbilityType.Vitality:
+                    defenderStat = creature.m_pStats.m_nConstitutionBase;
+                    break;
+                case AbilityType.Willpower:
+                    defenderStat = creature.m_pStats.m_nWisdomBase;
+                    break;
+                case AbilityType.Social:
+                    defenderStat = creature.m_pStats.m_nCharismaBase;
+                    break;
+                default:
+                    defenderStat = 0;
+                    break;
+            }
 
             if (creature.m_bPlayerCharacter == 1)
             {
-                var playerId = creature.m_pUUID.m_uuid.ToString();
+                var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                defense = dbPlayer.Defenses[type];
+                if (dbPlayer != null)
+                {
+                    skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                    defenseBonus += dbPlayer.Defenses[type];
+                }
             }
             else
             {
-                if (!_npcDefenses.ContainsKey(creature.m_idSelf))
-                    return 0;
+                if (_npcDefenses.ContainsKey(creature.m_idSelf))
+                {
+                    defenseBonus += _npcDefenses[creature.m_idSelf][type];
+                }
 
-                defense = _npcDefenses[creature.m_idSelf][type];
+                skillLevel = GetNPCLevelNative(creature);
             }
 
             if (type == CombatDamageType.Physical)
             {
-                defense = CalculateEffectDefense(creature.m_idSelf, defense);
+                defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus);
             }
 
-            return defense;
+            return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
+
+        /// <summary>
+        /// Retrieves the level of an NPC. This is determined by an item property located on the NPC's skin.
+        /// If no skin is equipped or the item property does not exist, the NPC's level will be returned as zero.
+        /// </summary>
+        /// <returns>The level of the NPC, or zero if not found.</returns>
+        public static int GetNPCLevel(uint npc)
+        {
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
+            if (!GetIsObjectValid(skin))
+                return 0;
+
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCLevel)
+                {
+                    return GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return 0;
+        }
+
+        private static int GetNPCLevelNative(CNWSCreature npc)
+        {
+            var skin = npc.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureArmour);
+            if (skin != null)
+            {
+                foreach (var prop in skin.m_lstPassiveProperties)
+                {
+                    if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCLevel)
+                    {
+                        return prop.m_nCostTableValue;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
     }
 }

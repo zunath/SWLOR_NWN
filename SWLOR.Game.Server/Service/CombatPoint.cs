@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcLevel = Combat.GetNPCLevel(npc);
+                var npcLevel = Stat.GetNPCLevel(npc);
 
                 foreach (var (player, cpList) in combatPoints)
                 {
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var level = Combat.GetNPCLevel(creature);
+            var level = Stat.GetNPCLevel(creature);
             UpdateLastCreatureLevel(player, level);
         }
 

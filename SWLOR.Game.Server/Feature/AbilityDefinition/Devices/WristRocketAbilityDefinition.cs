@@ -24,15 +24,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, float dmg, int knockdownChance)
+        private void Impact(uint activator, uint target, int dmg, int knockdownChance)
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
-                          Stat.GetDefense(target, CombatDamageType.Fire);
-            var perception = GetAbilityModifier(AbilityType.Perception, activator);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
 
             AssignCommand(activator, () =>
             {
@@ -67,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 3.5f, 0);
+                    Impact(activator, target, 4, 0);
                 });
         }
 
@@ -84,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 6.0f, 30);
+                    Impact(activator, target, 6, 30);
                 });
         }
 
@@ -101,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 9.5f, 50);
+                    Impact(activator, target, 10, 50);
                 });
         }
     }

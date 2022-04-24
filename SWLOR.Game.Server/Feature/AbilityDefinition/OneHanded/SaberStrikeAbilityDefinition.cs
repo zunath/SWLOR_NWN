@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
             var inflict = false;
             var breachTime = 0f;
             // If activator is in stealth mode, force them out of stealth mode.
@@ -48,17 +48,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 6.5f;
+                    dmg = 7;
                     if (d2() == 1) inflict = true;
                     breachTime = 30f;
                     break;
                 case 2:
-                    dmg = 8.0f;
+                    dmg = 8;
                     if (d4() > 1) inflict = true;
                     breachTime = 60f;
                     break;
                 case 3:
-                    dmg = 11.5f;
+                    dmg = 12;
                     inflict = true;
                     breachTime = 60f;
                     break;
@@ -71,10 +71,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
-            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
         }

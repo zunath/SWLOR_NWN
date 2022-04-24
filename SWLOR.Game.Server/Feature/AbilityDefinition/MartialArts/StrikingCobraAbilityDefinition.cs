@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
             var duration = 0f;
             var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
@@ -50,17 +50,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             switch (level)
             {
                 case 1:
-                    dmg = 4.5f;
+                    dmg = 5;
                     if (d2() == 1) inflict = true;
                     duration = 30f;
                     break;
                 case 2:
-                    dmg = 6.5f;
+                    dmg = 7;
                     if (d4() > 1) inflict = true;
                     duration = 60f;
                     break;
                 case 3:
-                    dmg = 10.0f;
+                    dmg = 10;
                     inflict = true;
                     duration = 60f;
                     break;
@@ -72,10 +72,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var perception = GetAbilityModifier(AbilityType.Perception, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Poison, duration);
         }

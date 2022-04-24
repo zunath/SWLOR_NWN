@@ -345,12 +345,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshEquipmentStats(Player dbPlayer)
         {
-            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical);
-            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force);
-            DefenseFire = Stat.GetDefense(Player, CombatDamageType.Fire);
-            DefensePoison = Stat.GetDefense(Player, CombatDamageType.Poison);
-            DefenseElectrical = Stat.GetDefense(Player, CombatDamageType.Electrical);
-            DefenseIce = Stat.GetDefense(Player, CombatDamageType.Ice);
+            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);
+            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force, AbilityType.Vitality);
+            DefenseFire = Stat.GetDefense(Player, CombatDamageType.Fire, AbilityType.Vitality);
+            DefensePoison = Stat.GetDefense(Player, CombatDamageType.Poison, AbilityType.Vitality);
+            DefenseElectrical = Stat.GetDefense(Player, CombatDamageType.Electrical, AbilityType.Vitality);
+            DefenseIce = Stat.GetDefense(Player, CombatDamageType.Ice, AbilityType.Vitality);
             Evasion = CreaturePlugin.GetBaseAC(Player);
             Control = dbPlayer.Control;
             Craftsmanship = dbPlayer.Craftsmanship;

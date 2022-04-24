@@ -29,30 +29,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
 
             switch (level)
             {
                 case 1:
-                    dmg = 6.0f;
+                    dmg = 6;
                     break;
                 case 2:
-                    dmg = 8.5f;
+                    dmg = 9;
                     break;
                 case 3:
-                    dmg = 12.0f;
+                    dmg = 12;
                     break;
                 case 4:
-                    dmg = 13.5f;
+                    dmg = 14;
                     break;
             }
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
-            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force);
-            var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
 
             AssignCommand(activator, () =>

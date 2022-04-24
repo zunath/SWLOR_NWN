@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -47,13 +47,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             switch (level)
             {
                 case 1:
-                    dmg = 2.5f;
+                    dmg = 3;
                     break;
                 case 2:
-                    dmg = 6.0f;
+                    dmg = 6;
                     break;
                 case 3:
-                    dmg = 9.5f;
+                    dmg = 10;
                     break;
                 default:
                     break;
@@ -61,6 +61,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
+            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
@@ -69,10 +71,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 {
                     CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
 
-                    var might = GetAbilityModifier(AbilityType.Might, activator);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-                    var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-                    var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
+                    var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg, 
+                        attackerStat, 
+                        defense, 
+                        defenderStat, 
+                        0);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), creature);
 
                     count++;

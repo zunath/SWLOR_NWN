@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
-        private static readonly Dictionary<BaseItem, SkillType> _itemToSkillMapping = new Dictionary<BaseItem, SkillType>();
+        private static readonly Dictionary<BaseItem, SkillType> _itemToSkillMapping = new();
 
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.

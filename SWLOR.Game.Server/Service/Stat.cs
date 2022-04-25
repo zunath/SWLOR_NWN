@@ -738,14 +738,17 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
-                var skill = Skill.GetSkillTypeByBaseItem(itemType);
+                var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
                 if (dbPlayer != null)
                 {
-                    if(skill != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skill].Rank;
+                    if(skillType != SkillType.Invalid)
+                        skillLevel = dbPlayer.Skills[skillType].Rank;
 
-                    attackBonus += dbPlayer.Attack;
+                    if (skillType == SkillType.Force)
+                        attackBonus += dbPlayer.ForceAttack;
+                    else
+                        attackBonus += dbPlayer.Attack;
                 }
             }
             else

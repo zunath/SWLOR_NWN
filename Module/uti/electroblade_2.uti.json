@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 58
+    "value": 148
   },
   "BaseItem": {
     "type": "int",
-    "value": 13
+    "value": 525
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 60
+    "value": 150
   },
   "Cursed": {
     "type": "byte",
@@ -39,27 +39,26 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 167,
     "type": "cexolocstring",
     "value": {
-      "0": "Basic Great Sword"
+      "0": "Electroblade II"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 81
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 11
+    "value": 221
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 181
   },
   "PaletteID": {
     "type": "byte",
-    "value": 35
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -80,7 +79,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -111,7 +110,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -127,7 +126,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 28
+          "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 83
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       }
     ]
@@ -142,10 +172,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "b_greatsword"
+    "value": "electroblade_2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "b_greatsword"
+    "value": "electroblade_2"
   }
 }

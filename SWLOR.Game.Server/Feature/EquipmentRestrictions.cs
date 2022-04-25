@@ -87,7 +87,8 @@ namespace SWLOR.Game.Server.Feature
                 BaseItem.Rapier,
                 BaseItem.Scimitar,
                 BaseItem.Sickle,
-                BaseItem.Lightsaber
+                BaseItem.Lightsaber,
+                BaseItem.Electroblade
             };
             if (!dualWieldWeapons.Contains(baseItem)) return true;
 

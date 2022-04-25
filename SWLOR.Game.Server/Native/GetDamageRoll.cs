@@ -200,13 +200,11 @@ namespace SWLOR.Game.Server.Native
             // 2-handed weapons and Doublehand perk
             if (attackType == (uint)AttackType.Melee && weapon != null)
             {
-                var bTwoHander = Item.HeavyVibrobladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                                 Item.PolearmBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
-                var bDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)InventorySlot.LeftHand) == null &&
+                var isDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)InventorySlot.LeftHand) == null &&
                                   attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand) == 1;
-                if (bTwoHander || bDoubleHand)
+                if (isDoubleHand)
                 {
-                    Log.Write(LogGroup.Attack, "DAMAGE: Applying two-handed damage bonus.");
+                    Log.Write(LogGroup.Attack, "DAMAGE: Applying doublehand damage bonus.");
                     attackerStat = (int)(attackerStat * 1.5f);
                 }
             }

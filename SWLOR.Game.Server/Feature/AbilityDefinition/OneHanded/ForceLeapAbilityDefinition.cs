@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
                 AssignCommand(activator, () =>
                 {
-                    if (rightHandBaseItemType == BaseItem.Lightsaber)
+                    if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
                     {
                         PlaySound("cb_ht_saberchan1");
                     }

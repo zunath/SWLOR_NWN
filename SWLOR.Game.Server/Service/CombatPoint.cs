@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Service
             AddCombatPoint(player, target, skill);
 
             // Lightsabers and Saberstaffs automatically grant combat points toward Force.
-            if (baseItemType == BaseItem.Lightsaber ||
-                baseItemType == BaseItem.Saberstaff)
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
+                Item.SaberstaffBaseItemTypes.Contains(baseItemType))
             {
                 AddCombatPoint(player, target, SkillType.Force);
             }

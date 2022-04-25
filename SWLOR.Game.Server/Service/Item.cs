@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Service
             _itemToAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
             _itemToAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
             _itemToAbilityMapping[BaseItem.Lightsaber] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Electroblade] = AbilityType.Might;
 
             // Two-Handed Skills
             _itemToAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
@@ -425,6 +426,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Whip,
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
+            BaseItem.Electroblade,
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
             BaseItem.DwarvenWarAxe,
@@ -496,7 +498,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> LightsaberBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Lightsaber
+            BaseItem.Lightsaber,
+            BaseItem.Electroblade
         };
 
         /// <summary>
@@ -603,6 +606,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Whip,
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
+            BaseItem.Electroblade,
             BaseItem.ShortSpear,
             BaseItem.Katar,
         };

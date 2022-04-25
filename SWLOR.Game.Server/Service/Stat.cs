@@ -689,7 +689,10 @@ namespace SWLOR.Game.Server.Service
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
 
-                attackBonus += dbPlayer.Attack;
+                if (skillType == SkillType.Force)
+                    attackBonus += dbPlayer.ForceAttack;
+                else
+                    attackBonus += dbPlayer.Attack;
             }
             else
             {

@@ -116,17 +116,23 @@ namespace SWLOR.Game.Server.Native
 
             // We now have our attack type defined.  Pull the relevant attributes, defaulting to melee.
             int attackAttribute = attackerStats.m_nStrengthModifier;
+            var attackerStatName = "MGT";
             int defendAttribute = defenderStats.m_nStrengthModifier;
+            var defenderStatName = "MGT";
             
             switch (attackType)
             {
                 case (uint)AttackType.Ranged:
                     attackAttribute = attackerStats.m_nDexterityModifier;
                     defendAttribute = defenderStats.m_nDexterityModifier;
+                    attackerStatName = "PER";
+                    defenderStatName = "PER";
                     break;
                 case (uint)AttackType.Spirit:
                     attackAttribute = attackerStats.m_nWisdomModifier;
                     defendAttribute = defenderStats.m_nWisdomModifier;
+                    attackerStatName = "WIL";
+                    defenderStatName = "WIL";
                     break;
             }
 
@@ -148,6 +154,8 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, "Finesse attack");
                 attackAttribute = attackerStats.m_nDexterityModifier;
                 defendAttribute = defenderStats.m_nDexterityModifier;
+                attackerStatName = "PER";
+                defenderStatName = "PER";
             }
 
             // Check for an override on the weapon itself.
@@ -165,22 +173,32 @@ namespace SWLOR.Game.Server.Native
                             case (ushort) AbilityType.Might:
                                 attackAttribute = attackerStats.m_nStrengthModifier;
                                 defendAttribute = defenderStats.m_nStrengthModifier;
+                                attackerStatName = "MGT";
+                                defenderStatName = "MGT";
                                 break;
                             case (ushort)AbilityType.Perception:
                                 attackAttribute = attackerStats.m_nDexterityModifier;
                                 defendAttribute = defenderStats.m_nDexterityModifier;
+                                attackerStatName = "PER";
+                                defenderStatName = "PER";
                                 break;
                             case (ushort)AbilityType.Willpower:
                                 attackAttribute = attackerStats.m_nWisdomModifier;
                                 defendAttribute = defenderStats.m_nWisdomModifier;
+                                attackerStatName = "WIL";
+                                defenderStatName = "WIL";
                                 break;
                             case (ushort)AbilityType.Vitality:
                                 attackAttribute = attackerStats.m_nConstitutionModifier;
                                 defendAttribute = defenderStats.m_nConstitutionModifier;
+                                attackerStatName = "VIT";
+                                defenderStatName = "VIT";
                                 break;
                             case (ushort)AbilityType.Social: // Well it could happen, I suppose.
                                 attackAttribute = attackerStats.m_nCharismaModifier;
                                 defendAttribute = defenderStats.m_nCharismaModifier;
+                                attackerStatName = "SOC";
+                                defenderStatName = "SOC";
                                 break;
                         }
                     }
@@ -191,7 +209,7 @@ namespace SWLOR.Game.Server.Native
             if (attackAttribute > 128) attackAttribute -= 256;
             if (defendAttribute > 128) defendAttribute -= 256;
 
-            Log.Write(LogGroup.Attack, "Attacker attribute modifier: " + attackAttribute +", defender attribute modifier: " + defendAttribute);
+            Log.Write(LogGroup.Attack, $"Attacker attribute modifier [{attackerStatName}]: " + attackAttribute +$", defender attribute modifier [{defenderStatName}]: " + defendAttribute);
 
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
@@ -462,12 +480,21 @@ namespace SWLOR.Game.Server.Native
                 (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
                 pAttackData.m_nAttackResult,
                 roll,
-                bonus);
+                bonus,
+                attackerStatName,
+                defenderStatName);
             attacker.SendFeedbackString(new CExoString(message));
             defender.SendFeedbackString(new CExoString(message));
         }
 
-        private static string BuildCombatLogMessage(string attackerName, string defenderName, byte attackResultType, int attackRoll, int attackMod)
+        private static string BuildCombatLogMessage(
+            string attackerName, 
+            string defenderName, 
+            byte attackResultType, 
+            int attackRoll, 
+            int attackMod,
+            string attackerStatName,
+            string defenderStatName)
         {
             var total = attackRoll + attackMod;
             var type = string.Empty;
@@ -486,8 +513,10 @@ namespace SWLOR.Game.Server.Native
                     break;
             }
 
+            var operation = attackMod < 0 ? "-" : "+";
+
             var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
-            return ColorToken.Combat( $"{coloredAttackerName} attacks {defenderName}{type} : ({attackRoll} + {attackMod} = {total})");
+            return ColorToken.Combat( $"{coloredAttackerName} attacks {defenderName}{type} [{attackerStatName} vs {defenderStatName}] : ({attackRoll} {operation} {Math.Abs(attackMod)} = {total})");
         }
 
         private static int HasWeaponFocus(CNWSCreature attacker, CNWSItem weapon)

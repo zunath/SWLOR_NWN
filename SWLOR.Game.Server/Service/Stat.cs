@@ -573,6 +573,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's force attack by a certain amount. Force Attack affects damage output.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustForceAttack(Player entity, int adjustBy)
+        {
+            entity.ForceAttack += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's control by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>

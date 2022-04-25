@@ -148,6 +148,7 @@ namespace SWLOR.Game.Server.Entity
         public string CitizenPropertyId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
+        public int ForceAttack { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             var critical = bCritical == 1 ? critMultiplier : 0;
-            var attackerAttack = Stat.GetAttackNative(attacker, (BaseItem)weapon?.m_nBaseItem);
+            var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem);
 
             foreach (var damageType in dmgValues.Keys)
             {

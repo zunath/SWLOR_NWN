@@ -172,6 +172,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDeleteNote() => () =>
         {
+            if (SelectedNoteIndex < 0)
+                return;
+
             var noteId = _noteIds[SelectedNoteIndex];
             var noteName = NoteNames[SelectedNoteIndex];
 

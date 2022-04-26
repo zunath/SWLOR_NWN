@@ -180,7 +180,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "b_rifle"
+          "value": "npc_outlaw_rifle"
         }
       },
       {

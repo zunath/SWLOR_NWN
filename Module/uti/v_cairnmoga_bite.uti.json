@@ -36,12 +36,12 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Valley Nashtah Bite"
+      "0": "Valley Cairnmog Alpha Bite"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -84,37 +84,6 @@
         "PropertyName": {
           "type": "word",
           "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 103
         },
         "Subtype": {
           "type": "word",
@@ -133,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_nashtah_bite"
+    "value": "v_cairnmoga_bite"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "v_nashtah_bite"
+    "value": "v_cairnmoga_bite"
   }
 }

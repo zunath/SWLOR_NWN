@@ -180,7 +180,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "del_rifle"
+          "value": "npc_eco_rifle"
         }
       },
       {

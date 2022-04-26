@@ -78,10 +78,10 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 65536,
+        "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_cairnmog_bite"
+          "value": "v_cairnmoga_bite"
         }
       },
       {

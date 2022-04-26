@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Raptor Bite"
+      "0": "Vellen Raptor Bite"
     }
   },
   "ModelPart1": {
@@ -69,7 +69,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 55
         },
         "Param1": {
           "type": "byte",

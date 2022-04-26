@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             WatchOnClient(model => model.Geometry);
 
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
             var convertedPayload = payload == null ? default : (TPayload)payload;
             Initialize(convertedPayload);
         }
@@ -256,9 +256,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             _callerConfirmAction = confirmAction;
             _callerCancelAction = cancelAction;
 
-            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
+            ChangePartialView("_window_", "%%WINDOW_MODAL%%");
         }
 
         /// <inheritdoc />
@@ -314,9 +312,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
 
-            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
 
         public Action OnModalCancelClick() => () =>
@@ -324,9 +320,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (_callerCancelAction != null)
                 _callerCancelAction();
 
-            // We double up on the partial view changes to work around an NWN defect where partial views won't display until the window resizes.
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
     }
 }

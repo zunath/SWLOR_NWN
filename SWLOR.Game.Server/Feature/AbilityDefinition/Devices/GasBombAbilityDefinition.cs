@@ -15,12 +15,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
-        private static void ApplyEffect(uint creature, float dmg)
+        private static void ApplyEffect(uint creature, int dmg)
         {
-            var defense = Stat.GetDefense(creature, CombatDamageType.Physical) +
-                          Stat.GetDefense(creature, CombatDamageType.Poison);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, creature);
-            var damage = Combat.CalculateDamage(dmg, 0, defense, vitality, 0);
+            var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(0, dmg, 0, defense, defenderStat, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 2.0f);
+            ApplyEffect(creature,  2);
         }
 
         [NWNEventHandler("grenade_gas1_hb")]
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 2.0f);
+                ApplyEffect(creature,  2);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -47,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 5.5f);
+            ApplyEffect(creature, 6);
         }
 
         [NWNEventHandler("grenade_gas2_hb")]
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 5.5f);
+                ApplyEffect(creature, 6);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 8f);
+            ApplyEffect(creature, 8);
         }
 
         [NWNEventHandler("grenade_gas3_hb")]
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 8f);
+                ApplyEffect(creature, 8);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }

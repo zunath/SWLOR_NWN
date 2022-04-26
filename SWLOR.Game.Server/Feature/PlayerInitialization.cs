@@ -198,11 +198,6 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Unused] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
-
-            foreach (var (type, _) in dbPlayer.Defenses)
-            {
-                dbPlayer.Defenses[type] = 5;
-            }
         }
 
         /// <summary>

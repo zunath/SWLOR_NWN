@@ -191,25 +191,25 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             switch (upgradeNumber)
             {
                 case 1:
-                    return 7; // 7 = 4.0
+                    return 10; 
                 case 2:
-                    return 12; // 12 = 6.5
+                    return 15; 
                 case 3:
-                    return 15; // 15 = 8.0
+                    return 19; 
                 case 4:
-                    return 22; // 22 = 11.5
+                    return 24; 
                 case 5:
-                    return 25; // 25 = 13.0
+                    return 32; 
                 case 6:
-                    return 32; // 32 = 16.5
+                    return 37; 
                 case 7:
-                    return 36; // 36 = 18.5
+                    return 40; 
                 case 8:
-                    return 42; // 42 = 21.5
+                    return 48; 
                 case 9:
-                    return 45; // 45 = 23.0
+                    return 54; 
                 default:
-                    return 2; // 2 = 1.5
+                    return 6; 
             }
         }
 

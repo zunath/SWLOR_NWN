@@ -1,4 +1,5 @@
 ﻿using System;
+using Discord;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -78,6 +80,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int Attack
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int ForceAttack
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public int DefensePhysical
         {
             get => Get<int>();
@@ -91,30 +105,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
 
-        public int DefenseFire
+        public string DefenseElemental
         {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-
-        public int DefensePoison
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-
-        public int DefenseElectrical
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-
-        public int DefenseIce
-        {
-            get => Get<int>();
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -345,12 +338,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshEquipmentStats(Player dbPlayer)
         {
-            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical);
-            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force);
-            DefenseFire = Stat.GetDefense(Player, CombatDamageType.Fire);
-            DefensePoison = Stat.GetDefense(Player, CombatDamageType.Poison);
-            DefenseElectrical = Stat.GetDefense(Player, CombatDamageType.Electrical);
-            DefenseIce = Stat.GetDefense(Player, CombatDamageType.Ice);
+            Attack = dbPlayer.Attack;
+            ForceAttack = dbPlayer.ForceAttack;
+            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);
+            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force, AbilityType.Willpower);
+
+            var fireDefense = dbPlayer.Defenses[CombatDamageType.Fire].ToString();
+            var poisonDefense = dbPlayer.Defenses[CombatDamageType.Poison].ToString();
+            var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
+            var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
+            DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
             Evasion = CreaturePlugin.GetBaseAC(Player);
             Control = dbPlayer.Control;
             Craftsmanship = dbPlayer.Craftsmanship;

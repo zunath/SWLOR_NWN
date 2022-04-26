@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
@@ -32,18 +33,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var perception = GetAbilityModifier(AbilityType.Perception, activator);
-                    var dmg = 3.0f;
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+                    var dmg = 3;
                     
                     var coneTarget = GetFirstObjectInShape(Shape.SpellCone, 14.0f, location);
                     while (GetIsObjectValid(coneTarget))
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
-                                          Stat.GetDefense(target, CombatDamageType.Fire);
-                            var vitality = GetAbilityModifier(AbilityType.Vitality, coneTarget);
-                            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
+                            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                            var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
+                            var damage = Combat.CalculateDamage(
+                                attack, 
+                                dmg, 
+                                attackerStat, 
+                                defense, 
+                                defenderStat, 
+                                0);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);

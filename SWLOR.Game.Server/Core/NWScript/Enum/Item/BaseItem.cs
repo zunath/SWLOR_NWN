@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         MiscWide = 68,
         CreatureSlashWeapon = 69,
         CreaturePierceWeapon = 70,
-        CreatureBludgeWeapon = 71,
+        CreatureBludgeonWeapon = 71,
         CreatureSlashPierceWeapon = 72,
         CreatureItem = 73,
         Book = 74,
@@ -103,5 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 
         Saberstaff = 511,
         Lightsaber = 512,
+
+        Electroblade = 525,
     }
 }

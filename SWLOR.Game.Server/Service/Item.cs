@@ -19,14 +19,20 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {
-        private static readonly Dictionary<string, ItemDetail> _items = new Dictionary<string, ItemDetail>();
-        private static readonly Dictionary<int, int[]> _2dacache = new Dictionary<int, int[]>();
+        private static readonly Dictionary<string, ItemDetail> _items = new();
+        private static readonly Dictionary<int, int[]> _2daCache = new();
+        private static readonly Dictionary<BaseItem, AbilityType> _itemToAbilityMapping = new();
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
+        {
+            Load2DACache();
+            LoadItemToStatMapping();
+        }
+        private static void Load2DACache()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -49,20 +55,101 @@ namespace SWLOR.Game.Server.Service
             // end up pointing to the same array object (and get overwritten).
             foreach (var baseItem in Enum.GetValues(typeof(BaseItem)).Cast<int>())
             {
-                int[] values = new int[3];
-                string threat = Get2DAString("baseitems", "CritThreat", baseItem);
-                string mult = Get2DAString("baseitems", "CritHitMult", baseItem);
-                string size = Get2DAString("baseitems", "WeaponSize", baseItem);
+                var values = new int[3];
+                var threat = Get2DAString("baseitems", "CritThreat", baseItem);
+                var mult = Get2DAString("baseitems", "CritHitMult", baseItem);
+                var size = Get2DAString("baseitems", "WeaponSize", baseItem);
 
                 values[0] = string.IsNullOrEmpty(threat) ? 0 : Int32.Parse(threat);
                 values[1] = string.IsNullOrEmpty(mult) ? 0 : Int32.Parse(mult);
                 values[2] = string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
-                _2dacache[baseItem] = values;
+                _2daCache[baseItem] = values;
             }
 
-            Console.WriteLine($"Loaded {_2dacache.Count} base items.");
+            Console.WriteLine($"Loaded {_2daCache.Count} base items.");
         }
-        
+
+        private static void LoadItemToStatMapping()
+        {
+            // One-Handed Skills
+            _itemToAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.BattleAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Dagger] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.HandAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Kama] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Katana] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Kukri] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.LightFlail] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.LightHammer] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.LightMace] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Longsword] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.MorningStar] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Rapier] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Scimitar] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Lightsaber] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Electroblade] = AbilityType.Might;
+
+            // Two-Handed Skills
+            _itemToAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.GreatAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.GreatSword] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Halberd] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Scythe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Trident] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.WarHammer] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Saberstaff] = AbilityType.Might;
+
+            // Martial Arts Skills
+            _itemToAbilityMapping[BaseItem.Club] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Bracer] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Gloves] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Katar] = AbilityType.Perception;
+
+            // Ranged Skills
+            _itemToAbilityMapping[BaseItem.Cannon] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Rifle] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Longbow] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Pistol] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Arrow] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Bolt] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Bullet] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Sling] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Grenade] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.Shuriken] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.Dart] = AbilityType.Might;
+
+            // NPCs
+            _itemToAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
+            _itemToAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Might;
+            _itemToAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Might;
+
+            Console.WriteLine($"Loaded {_itemToAbilityMapping.Count} item to ability mappings.");
+        }
+
+        /// <summary>
+        /// Retrieves the ability type tied to a particular base item type.
+        /// If the base item does not have an associated ability type, AbilityType.Invalid will be returned.
+        /// </summary>
+        /// <param name="itemType">The item type</param>
+        /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
+        public static AbilityType GetAbilityTypeUsedByWeapon(BaseItem itemType)
+        {
+            return !_itemToAbilityMapping.ContainsKey(itemType) 
+                ? AbilityType.Invalid 
+                : _itemToAbilityMapping[itemType];
+        }
+
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
@@ -283,7 +370,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetHasInventory(obj)) return -1;
 
-            int count = 0;
+            var count = 0;
             var item = GetFirstItemInInventory(obj);
             while (GetIsObjectValid(item))
             {
@@ -339,6 +426,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Whip,
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
+            BaseItem.Electroblade,
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
             BaseItem.DwarvenWarAxe,
@@ -410,7 +498,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> LightsaberBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Lightsaber
+            BaseItem.Lightsaber,
+            BaseItem.Electroblade
         };
 
         /// <summary>
@@ -517,6 +606,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Whip,
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
+            BaseItem.Electroblade,
             BaseItem.ShortSpear,
             BaseItem.Katar,
         };
@@ -545,7 +635,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> CreatureBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.CreatureBludgeWeapon,
+            BaseItem.CreatureBludgeonWeapon,
             BaseItem.CreatureSlashWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureSlashPierceWeapon
@@ -727,7 +817,7 @@ namespace SWLOR.Game.Server.Service
         // The values below are taken from the 2das, and cached on startup in CacheData() above.
         public static int GetCriticalThreatRange(BaseItem item)
         {
-            int range = _2dacache[(int)item][0];
+            var range = _2daCache[(int)item][0];
             Log.Write(LogGroup.Attack, "Threat range for item type " + item + "(" + (int)item + ") is " + range);
             
             return range;
@@ -735,7 +825,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetCriticalModifier(BaseItem item)
         {
-            int mod = _2dacache[(int)item][1];
+            var mod = _2daCache[(int)item][1];
             Log.Write(LogGroup.Attack, "Crit multiplier for item type " + item + " is " + mod);
 
             return mod;
@@ -743,7 +833,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWeaponSize(BaseItem item)
         {
-            int size = _2dacache[(int)item][2];
+            var size = _2daCache[(int)item][2];
             Log.Write(LogGroup.Attack, "Size of item type " + item + " is " + size);
 
             return size;

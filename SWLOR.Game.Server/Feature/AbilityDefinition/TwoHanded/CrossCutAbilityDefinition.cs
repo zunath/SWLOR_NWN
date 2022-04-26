@@ -48,15 +48,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    dmg = 2;
+                    dmg = 8;
                     acLoss = 2;
                     break;
                 case 2:
-                    dmg = 4;
+                    dmg = 17;
                     acLoss = 4;
                     break;
                 case 3:
-                    dmg = 7;
+                    dmg = 25;
                     acLoss = 6;
                     break;
                 default:

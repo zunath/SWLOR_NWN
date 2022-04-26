@@ -49,17 +49,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             switch (level)
             {
                 case 1:
-                    dmg = 3;
+                    dmg = 12;
                     duration = 30f;
                     if (d2() == 1) inflict = true;
                     break;
                 case 2:
-                    dmg = 6;
+                    dmg = 21;
                     duration = 60f;
                     if (d4() > 1) inflict = true;
                     break;
                 case 3:
-                    dmg = 10;
+                    dmg = 34;
                     duration = 60f;
                     inflict = true;
                     break;

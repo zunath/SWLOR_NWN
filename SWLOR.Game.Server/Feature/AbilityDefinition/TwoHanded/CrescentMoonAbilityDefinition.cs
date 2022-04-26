@@ -40,7 +40,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
-            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -48,16 +47,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    dmg = 7;
-                    inflict = true;
+                    dmg = 12;
                     break;
                 case 2:
-                    dmg = 9;
-                    inflict = true;
+                    dmg = 21;
                     break;
                 case 3:
-                    dmg = 12;
-                    inflict = true;
+                    dmg = 34;
                     break;
                 default:
                     break;
@@ -79,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 3f);
+            ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 3f);
         }
 
         private static void CrescentMoon1(AbilityBuilder builder)

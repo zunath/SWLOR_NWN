@@ -65,13 +65,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 2;
+                    dmg = 8;
                     break;
                 case 2:
-                    dmg = 6;
+                    dmg = 17;
                     break;
                 case 3:
-                    dmg = 9;
+                    dmg = 24;
                     break;
             }
 

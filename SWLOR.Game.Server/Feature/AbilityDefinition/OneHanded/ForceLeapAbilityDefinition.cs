@@ -51,13 +51,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 2;
+                    dmg = 8;
                     break;
                 case 2:
-                    dmg = 4;
+                    dmg = 15;
                     break;
                 case 3:
-                    dmg = 7;
+                    dmg = 23;
                     break;
                 default:
                     break;

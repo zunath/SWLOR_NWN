@@ -48,17 +48,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 7;
+                    dmg = 6;
                     if (d2() == 1) inflict = true;
                     breachTime = 30f;
                     break;
                 case 2:
-                    dmg = 8;
+                    dmg = 15;
                     if (d4() > 1) inflict = true;
                     breachTime = 60f;
                     break;
                 case 3:
-                    dmg = 12;
+                    dmg = 22;
                     inflict = true;
                     breachTime = 60f;
                     break;

@@ -50,17 +50,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             switch (level)
             {
                 case 1:
-                    dmg = 4;
+                    dmg = 8;
                     if (d2() == 1) inflict = true;
                     duration = 30f;
                     break;
                 case 2:
-                    dmg = 6;
+                    dmg = 17;
                     if (d4() > 1) inflict = true;
                     duration = 60f;
                     break;
                 case 3:
-                    dmg = 10;
+                    dmg = 24;
                     inflict = true;
                     duration = 60f;
                     break;

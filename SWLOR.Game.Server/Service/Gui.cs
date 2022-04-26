@@ -328,6 +328,7 @@ namespace SWLOR.Game.Server.Service
             // Otherwise the window must already be open. Close it.
             else
             {
+                SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
                 NuiDestroy(player, playerWindow.WindowToken);
             }
         }

@@ -301,6 +301,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(20f);
                     });
 
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Attack")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Attack - Improves damage dealt by physical attacks.");
+
+                        row.AddLabel()
+                            .BindText(model => model.Attack)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("F. Attack")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Force Attack - Improves damage dealt by Force attacks.");
+
+                        row.AddLabel()
+                            .BindText(model => model.ForceAttack)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -333,55 +360,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Fire DEF")
+                            .SetText("Elem. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Fire Defense - Reduces the amount of damage taken by fire attacks.");
+                            .SetTooltip("Elemental Defenses - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
 
                         row.AddLabel()
-                            .BindText(model => model.DefenseFire)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Pois. DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Poison Defense - Reduces the amount of damage taken by poison attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefensePoison)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Elec. DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Electrical Defense - Reduces the amount of damage taken by electrical attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefenseElectrical)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Ice DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Ice Defense - Reduces the amount of damage taken by ice attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefenseIce)
+                            .BindText(model => model.DefenseElemental)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });

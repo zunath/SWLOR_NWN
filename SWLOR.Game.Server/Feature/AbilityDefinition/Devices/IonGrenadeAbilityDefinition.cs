@@ -35,18 +35,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, float dmg, int stunChance)
+        private void Impact(uint activator, uint target, int dmg, int stunChance)
         {
             if (GetFactionEqual(activator, target))
                 return;
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
 
-            var perception = GetAbilityModifier(AbilityType.Perception, activator);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
-                          Stat.GetDefense(target, CombatDamageType.Electrical);
-            var damage = Combat.CalculateDamage(dmg, perception, vitality, defense, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
 
             if (GetRacialType(target) == RacialType.Robot && Random.D100(1) <= stunChance)
             {
@@ -78,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 2f, 0);
+                        Impact(activator, target, 2, 0);
                     });
                 });
         }
@@ -99,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 4f, 50);
+                        Impact(activator, target, 4, 50);
                     });
                 });
         }
@@ -120,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 7f, 70);
+                        Impact(activator, target, 7, 70);
                     });
                 });
         }

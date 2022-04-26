@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Core.NWNX.Enum
         CastUseMouth = 211,
         CastDefcastConcentrationFailure = 233,
         CastDefcastConcentrationSuccess = 240,
-        UseitemCantUse = 23,
+        UseItemCantUse = 23,
         ConversationToofar = 58,
         ConversationBusy = 59,
         ConversationInCombat = 152,

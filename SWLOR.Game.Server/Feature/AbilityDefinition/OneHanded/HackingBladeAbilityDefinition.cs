@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
             var inflictBleed = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
@@ -48,15 +48,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 6.5f;
+                    dmg = 6;
                     if (d2() == 1) inflictBleed = true;
                     break;
                 case 2:
-                    dmg = 8.0f;
+                    dmg = 15;
                     if (d4() > 1) inflictBleed = true;
                     break;
                 case 3:
-                    dmg = 11.5f;
+                    dmg = 22;
                     inflictBleed = true;
                     break;
                 default:
@@ -67,10 +67,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var might = GetAbilityModifier(AbilityType.Might, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
+            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflictBleed) StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
         }

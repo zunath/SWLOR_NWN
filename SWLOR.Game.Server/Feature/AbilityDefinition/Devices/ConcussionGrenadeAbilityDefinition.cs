@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -35,18 +36,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, float dmg, int knockdownChance, float knockdownLength)
+        private void Impact(uint activator, uint target, int dmg, int knockdownChance, float knockdownLength)
         {
             if (GetFactionEqual(activator, target))
                 return;
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
 
-            var perception = GetAbilityModifier(AbilityType.Perception, activator);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
-                Stat.GetDefense(target, CombatDamageType.Electrical);
-            var damage = Combat.CalculateDamage(dmg, perception, vitality, defense, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg,
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
 
             if (Random.D100(1) <= knockdownChance)
             {
@@ -80,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 3f, 0, 0f);
+                        Impact(activator, target, 3, 0, 0f);
                     });
                 });
         }
@@ -103,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 4.5f, 30, 6f);
+                        Impact(activator, target, 5, 30, 6f);
                     });
                 });
         }
@@ -126,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 7.5f, 50, 8f);
+                        Impact(activator, target, 8, 50, 8f);
                     });
                 });
         }

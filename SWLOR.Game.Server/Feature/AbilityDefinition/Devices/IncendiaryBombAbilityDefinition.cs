@@ -14,12 +14,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
-        private static void ApplyEffect(uint creature, float dmg)
+        private static void ApplyEffect(uint creature, int dmg)
         {
-            var defense = Stat.GetDefense(creature, CombatDamageType.Physical) +
-                          Stat.GetDefense(creature, CombatDamageType.Fire);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, creature);
-            var damage = Combat.CalculateDamage(dmg, 0, defense, vitality, 0);
+            var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                0,
+                dmg, 
+                0, 
+                defense, 
+                defenderStat, 
+                0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), creature);
         }
@@ -28,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 1.5f);
+            ApplyEffect(creature, 2);
         }
 
         [NWNEventHandler("grenade_inc1_hb")]
@@ -37,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 1.5f);
+                ApplyEffect(creature, 2);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -46,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 5.0f);
+            ApplyEffect(creature, 5);
         }
 
         [NWNEventHandler("grenade_inc2_hb")]
@@ -55,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 5.0f);
+                ApplyEffect(creature, 5);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -64,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 7.5f);
+            ApplyEffect(creature, 8);
         }
 
         [NWNEventHandler("grenade_inc3_hb")]
@@ -73,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 7.5f);
+                ApplyEffect(creature, 8);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, float dmg, int burningChance)
+        private void Impact(uint activator, Location targetLocation, int dmg, int burningChance)
         {
             const float ConeSize = 10f;
 
@@ -38,15 +38,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Flamethrower), activator, 2f);
             });
 
-            var perception = GetAbilityModifier(AbilityType.Perception, activator);
+            var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
-                                  Stat.GetDefense(target, CombatDamageType.Fire);
-                    var damage = Combat.CalculateDamage(dmg, perception, defense, defense, 0);
+                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg, 
+                        attackerStat, 
+                        defense, 
+                        defenderStat, 
+                        0);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), target);
@@ -76,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 3.0f, 0);
+                    Impact(activator, targetLocation, 3, 0);
                 });
         }
 
@@ -91,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 5.0f, 30);
+                    Impact(activator, targetLocation, 5, 30);
                 });
         }
 
@@ -106,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8.0f, 50);
+                    Impact(activator, targetLocation, 8, 50);
                 });
         }
     }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
@@ -31,11 +32,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var might = GetAbilityModifier(AbilityType.Might, activator);
-                    var dmg = 1.0f;
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-                    var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-                    var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
+                    const int DMG = 1;
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Might);
+                    var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        DMG, 
+                        attackerStat, 
+                        defense, 
+                        defenderStat, 
+                        0);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);

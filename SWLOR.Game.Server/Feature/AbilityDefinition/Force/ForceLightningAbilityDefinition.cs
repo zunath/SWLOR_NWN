@@ -29,21 +29,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
 
             switch (level)
             {
                 case 1:
-                    dmg = 6.0f;
+                    dmg = 12;
                     break;
                 case 2:
-                    dmg = 8.5f;
+                    dmg = 19;
                     break;
                 case 3:
-                    dmg = 12.0f;
+                    dmg = 28;
                     break;
                 case 4:
-                    dmg = 13.5f;
+                    dmg = 40;
                     break;
             }
 
@@ -55,10 +55,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
             }
 
-            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-            var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Willpower);
+            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
 
             var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
             

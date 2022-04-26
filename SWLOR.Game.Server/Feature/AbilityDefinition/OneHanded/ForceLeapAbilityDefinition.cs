@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0.0f;
+            var dmg = 0;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -51,13 +51,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 1.5f;
+                    dmg = 8;
                     break;
                 case 2:
-                    dmg = 4.0f;
+                    dmg = 15;
                     break;
                 case 3:
-                    dmg = 6.5f;
+                    dmg = 23;
                     break;
                 default:
                     break;
@@ -76,10 +76,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
-            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
+            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg, 
+                attackerStat, 
+                defense, 
+                defenderStat, 
+                0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
 
@@ -89,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
                 AssignCommand(activator, () =>
                 {
-                    if (rightHandBaseItemType == BaseItem.Lightsaber)
+                    if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
                     {
                         PlaySound("cb_ht_saberchan1");
                     }

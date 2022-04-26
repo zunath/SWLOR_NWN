@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Service
             AddCombatPoint(player, target, skill);
 
             // Lightsabers and Saberstaffs automatically grant combat points toward Force.
-            if (baseItemType == BaseItem.Lightsaber ||
-                baseItemType == BaseItem.Saberstaff)
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
+                Item.SaberstaffBaseItemTypes.Contains(baseItemType))
             {
                 AddCombatPoint(player, target, SkillType.Force);
             }
@@ -84,7 +84,8 @@ namespace SWLOR.Game.Server.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcLevel = Combat.GetNPCLevel(npc);
+                var npcStats = Stat.GetNPCStats(npc);
+                var npcLevel = npcStats.Level;
 
                 foreach (var (player, cpList) in combatPoints)
                 {
@@ -208,7 +209,8 @@ namespace SWLOR.Game.Server.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var level = Combat.GetNPCLevel(creature);
+            var npcStats = Stat.GetNPCStats(creature);
+            var level = npcStats.Level;
             UpdateLastCreatureLevel(player, level);
         }
 

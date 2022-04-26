@@ -61,8 +61,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Cloaks")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 45)
-                .GrantsFeat(FeatType.CloakProficiency5)
-                .AddPerkLevel();
+                .GrantsFeat(FeatType.CloakProficiency5);
         }
 
         private void BeltProficiency(PerkBuilder builder)

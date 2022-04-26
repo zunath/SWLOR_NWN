@@ -13,16 +13,18 @@ namespace SWLOR.Game.Server.Core.NWNX.Enum
         UseSkill = 9,
         SpellResistance = 10,
 
-        Feedback =
-            11, // NOTE: This hides ALL feedback messages, to hide individual messages use NWNX_Feedback_SetFeedbackMessageHidden()
+        Feedback = 11, // NOTE: This hides ALL feedback messages, to hide individual messages use NWNX_Feedback_SetFeedbackMessageHidden()
         Counterspell = 12,
-        Touchattack = 13,
+        TouchAttack = 13,
         Initiative = 14,
         DispelMagic = 15,
         Polymorph = 17,
-        Feedbackstring = 18,
+        FeedbackString = 18,
         Vibrate = 19,
-        Unlockachievement = 20
+        UnlockAchievement = 20,
+        PostAurString = 22, // PostString messages
+        EnterTargetingMode = 23
+
 
         // 1  -> Simple_Adjective: <charname> : <adjective described by strref>
         // 2  -> Simple_Damage: <charname> damaged : <amount>
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWNX.Enum
         // 9  -> Use_Skill: <charname> : <skill name> : *success* / *failure* : (<skill roll> + <skill modifier> = <modified total> vs <DC> )
         // 10 -> Spell_Resistance: <charname> : Spell Resistance <SR value> : *success* / *failure*
         // 11 -> Feedback: Reason skill/feat/ability failed.
-        // 12 -> Counterspel: <charname> casts <spell name> : *spell countered by* : <charname> casting <spell name>
+        // 12 -> Counterspell: <charname> casts <spell name> : *spell countered by* : <charname> casting <spell name>
         // 13 -> TouchAttack: <charname> attempts <melee/ranged touch attack> on <charname> : *hit/miss/critical* : (<attack roll> + <attack mod> = <modified roll>)
         // 14 -> Initiative: <charname> : Initiative Roll : <total> : (<roll> + <modifier> = <total>)
         // 15 -> Dispel_Magic: Dispel Magic : <charname> : <spell name>, <spell name>, <spell name>...

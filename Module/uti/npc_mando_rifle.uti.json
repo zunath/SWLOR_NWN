@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 69
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -14,15 +14,15 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -36,25 +36,34 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
+    "id": 173,
     "type": "cexolocstring",
     "value": {
-      "0": "Valley Nashtah Bite"
+      "0": "NPC Mandalorian Rifle"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 11
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 31
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 11
   },
   "PaletteID": {
     "type": "byte",
-    "value": 13
+    "value": 200
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -71,7 +80,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 33
         },
         "Param1": {
           "type": "byte",
@@ -87,7 +96,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 4
+          "value": 1
         }
       },
       {
@@ -98,11 +107,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 0
+          "value": 14
         },
         "CostValue": {
           "type": "word",
-          "value": 0
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -114,7 +123,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 103
+          "value": 61
         },
         "Subtype": {
           "type": "word",
@@ -133,10 +142,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_nashtah_bite"
+    "value": "npc_mando_rifle"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "v_nashtah_bite"
+    "value": "npc_mando_rifle"
   }
 }

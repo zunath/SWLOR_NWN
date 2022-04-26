@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -34,7 +34,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -100,7 +100,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 55
         },
         "Param1": {
           "type": "byte",

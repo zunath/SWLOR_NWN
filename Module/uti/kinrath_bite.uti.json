@@ -36,7 +36,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 16
         },
         "Param1": {
           "type": "byte",

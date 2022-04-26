@@ -3710,18 +3710,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Qion Tiger Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hu_qutig_bite"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Qionslugattack"
+                      "value": "Qion Slug Claw"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -3732,11 +3721,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Raptor Bite"
+                      "value": "Qion Tiger Bite"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "raptorbite"
+                      "value": "hu_qutig_bite"
                     }
                   },
                   {
@@ -3814,6 +3803,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zomb_bite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Raptor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raptorbite"
                     }
                   },
                   {
@@ -3995,6 +3995,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "test_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Valley Cairnmog Alpha Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_cairnmoga_bite"
                     }
                   },
                   {
@@ -20654,6 +20665,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Mandalorian Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_blade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ophidian Longsword"
                           },
                           "RESREF": {
@@ -21298,17 +21320,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Gaderffii"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tusken_gaffi"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Mandalorian Staff"
                     },
                     "RESREF": {
@@ -21325,6 +21336,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Gaderffii"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_gaffi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Mandolorian Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_mando_twnbld"
                     }
                   },
                   {
@@ -22219,6 +22252,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Outlaw Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_outlaw_pisto"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ophidian Pistol"
                           },
                           "RESREF": {
@@ -22444,6 +22488,39 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Eco Terrorist Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_eco_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Mandalorian Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Outlaw Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_outlaw_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ophidian Rifle"
                           },
                           "RESREF": {
@@ -22637,6 +22714,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Eco Terrorist Leader Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_eco_shuriken"
                     }
                   },
                   {

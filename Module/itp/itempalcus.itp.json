@@ -20764,6 +20764,61 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Training Saber I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "saber_train_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Saber II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "saber_train_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Saber III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "saber_train_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Saber IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "saber_train_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Saber V"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "saber_train_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Vellen Fleshleader Lightsaber"
                           },
                           "RESREF": {
@@ -21512,6 +21567,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tit_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Saberstaff I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trn_saberstaff_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Saberstaff II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trn_saberstaff_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Saberstaff III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trn_saberstaff_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Saberstaff IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trn_saberstaff_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Saberstaff V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trn_saberstaff_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Electroblade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "twin_elec_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Electroblade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "twin_elec_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Electroblade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "twin_elec_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Electroblade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "twin_elec_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Electroblade V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "twin_elec_5"
                     }
                   },
                   {

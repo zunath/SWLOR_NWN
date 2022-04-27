@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
                     var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
 
-                    var level = GetLightsaberLevel(lightsaber1) + 1;
+                    var level = GetLightsaberLevel(lightsaber1);
                     var saberstaff = CreateItemOnObject("saberstaff", user);
 
                     // Serialize the individual lightsabers onto the saberstaff
@@ -84,9 +84,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var finalSaberstaff = CopyItemAndModify(saberstaff, ItemAppearanceType.WeaponModel, 0, lightsaber1Color, true);
 
                     // Adjust item properties
-                    var enhancementItemProperty = ItemPropertyEnhancementBonus(level);
+                    var dmgItemPropertyId = DetermineDMGValue(level);
+                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, dmgItemPropertyId);
                     var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.SaberstaffProficiency, level);
-                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, enhancementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                     BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, perkRequirementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
 
                     // Destroy the original saberstaff, keeping the one we just copied and modified.
@@ -191,25 +192,25 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             switch (upgradeNumber)
             {
                 case 1:
-                    return 10; 
+                    return 12; 
                 case 2:
-                    return 15; 
+                    return 17; 
                 case 3:
-                    return 19; 
+                    return 21; 
                 case 4:
-                    return 24; 
+                    return 26; 
                 case 5:
-                    return 32; 
+                    return 34; 
                 case 6:
-                    return 37; 
+                    return 39; 
                 case 7:
-                    return 40; 
+                    return 42; 
                 case 8:
-                    return 48; 
+                    return 50; 
                 case 9:
-                    return 54; 
+                    return 56; 
                 default:
-                    return 6; 
+                    return 8; 
             }
         }
 

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 100
+    "value": 520
   },
   "Cursed": {
     "type": "byte",
@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Medical Supplies are required to use many of the First Aid perks."
+      "0": "Explosives are required to use many of the Devices perks."
     }
   },
   "Description": {
@@ -95,7 +95,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 50
+    "value": 10
   },
   "Stolen": {
     "type": "byte",

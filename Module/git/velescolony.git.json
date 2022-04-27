@@ -6304,7 +6304,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 150
               },
               "Cursed": {
                 "type": "byte",
@@ -7379,7 +7379,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 150
               },
               "Cursed": {
                 "type": "byte",
@@ -21585,7 +21585,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 4
               },
               "Cursed": {
                 "type": "byte",
@@ -21717,7 +21717,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 4
               },
               "Cursed": {
                 "type": "byte",
@@ -33724,7 +33724,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 150
               },
               "Cursed": {
                 "type": "byte",
@@ -34799,7 +34799,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 150
               },
               "Cursed": {
                 "type": "byte",
@@ -37507,7 +37507,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Cursed": {
                 "type": "byte",
@@ -350164,7 +350164,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 486
+                      "value": 500
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351034,7 +351034,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 52
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351170,7 +351170,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 2502
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351306,7 +351306,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 52
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351444,7 +351444,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 2502
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351748,7 +351748,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 52
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351757,7 +351757,7 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                        "0": "Explosives are required to use many of the Devices perks."
                       }
                     },
                     "Description": {
@@ -351884,7 +351884,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 520
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351893,7 +351893,7 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                        "0": "Explosives are required to use many of the Devices perks."
                       }
                     },
                     "Description": {
@@ -351969,7 +351969,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 10
                     },
                     "Stolen": {
                       "type": "byte",

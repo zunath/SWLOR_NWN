@@ -359,6 +359,9 @@ namespace SWLOR.Game.Server.Service
         public static void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 

@@ -100,7 +100,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddCell(cell =>
                             {
                                 cell.AddProgressBar()
-                                    .BindValue(model => model.Progresses);
+                                    .BindValue(model => model.Progresses)
+                                    .BindTooltip(model => model.RawXPAmounts);
                             });
                             template.AddCell(cell =>
                             {

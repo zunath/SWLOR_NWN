@@ -47,6 +47,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> RawXPAmounts
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> Descriptions
         {
             get => Get<GuiBindingList<string>>();
@@ -119,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var levels = new GuiBindingList<int>();
             var titles = new GuiBindingList<string>();
             var progresses = new GuiBindingList<float>();
+            var rawXPAmounts = new GuiBindingList<string>();
             var descriptions = new GuiBindingList<string>();
             var decayLockTexts = new GuiBindingList<string>();
             var decayLockColors = new GuiBindingList<GuiColor>();
@@ -135,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 levels.Add(playerSkill.Rank);
                 titles.Add(GetTitle(playerSkill.Rank));
                 progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
+                rawXPAmounts.Add(CalculateRawXPAmounts(playerSkill.Rank, playerSkill.XP));
                 descriptions.Add(skill.Description);
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
@@ -148,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Levels = levels;
             Titles = titles;
             Progresses = progresses;
+            RawXPAmounts = rawXPAmounts;
             Descriptions = descriptions;
             DecayLockTexts = decayLockTexts;
             DecayLockColors = decayLockColors;
@@ -183,10 +192,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return "Untrained";
         }
 
-        private float CalculateProgress(int rank, float xp)
+        private float CalculateProgress(int rank, int xp)
         {
             var nextLevelXP = Skill.GetRequiredXP(rank + 1);
-            return xp / nextLevelXP;
+            return (float)xp / nextLevelXP;
+        }
+
+        private string CalculateRawXPAmounts(int rank, int xp)
+        {
+            var nextLevelXP = Skill.GetRequiredXP(rank + 1);
+            return $"{xp} / {nextLevelXP}";
         }
 
         private string GetDecayLockText(bool isLocked, bool contributesToSkillCap)
@@ -252,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Levels[index] = pcSkill.Rank;
             Titles[index] = GetTitle(pcSkill.Rank);
             Progresses[index] = CalculateProgress(pcSkill.Rank, pcSkill.XP);
+            RawXPAmounts[index] = CalculateRawXPAmounts(pcSkill.Rank, pcSkill.XP);
         }
 
         public void Refresh(RPXPRefreshEvent payload)
@@ -259,6 +275,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+
+            var distributeTooltips = new GuiBindingList<string>();
+            var distributeToggles = new GuiBindingList<bool>();
+
+            var distributeText = $"Distribute RP XP ({dbPlayer.UnallocatedXP})";
+            foreach(var unused in _viewableSkills)
+            {
+                distributeTooltips.Add(distributeText);
+                distributeToggles.Add(dbPlayer.UnallocatedXP > 0);
+            }
+
+            DistributeRPXPButtonTooltips = distributeTooltips;
+            DistributeRPXPButtonEnabled = distributeToggles;
         }
     }
 }

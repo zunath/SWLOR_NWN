@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <returns>true if within range, false otherwise</returns>
         protected bool IsWithinRange(uint activator, uint target)
         {
-            const float BaseDistance = 2f;
+            const float BaseDistance = 6f;
             var distance = BaseDistance + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
 
             return !(GetDistanceBetween(activator, target) > distance);

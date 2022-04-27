@@ -169,6 +169,9 @@ namespace SWLOR.Game.Server.Service
         private static void SaveWindowGeometry(string playerId, GuiWindowType windowType, GuiRectangle geometry)
         {
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             dbPlayer.WindowGeometries[windowType] = geometry;
 
             DB.Set(dbPlayer);
@@ -309,7 +312,7 @@ namespace SWLOR.Game.Server.Service
             GuiPayloadBase payload = null,
             uint tetherObject = OBJECT_INVALID)
         {
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player))
                 return;
 
             var playerId = GetObjectUUID(player);
@@ -344,7 +347,7 @@ namespace SWLOR.Game.Server.Service
         public static void PublishRefreshEvent<T>(uint player, T payload)
             where T : IGuiRefreshEvent
         {
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player))
                 return;
 
             foreach (var windowType in _windowTypesByRefreshEvent[typeof(T)])
@@ -409,7 +412,7 @@ namespace SWLOR.Game.Server.Service
         public static void CloseAllWindows()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player))
                 return;
 
             foreach (var (type, _) in _windowTemplates)

@@ -111,6 +111,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ModuleEnhancement = 110,
         Attack = 111,
         ForceAttack = 112,
+        ModuleBonus = 113,
+        StarshipBonus = 114,
 
         Evasion = 117,
         AbilityRecastReduction = 118,

@@ -19,14 +19,15 @@ namespace SWLOR.Game.Server.Service
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
         public const int SkillCap = 300;
-        
+
         /// <summary>
         /// Gives XP towards a specific skill to a player.
         /// </summary>
         /// <param name="player">The player to give XP to.</param>
         /// <param name="skill">The type of skill to give XP towards.</param>
         /// <param name="xp">The amount of XP to give.</param>
-        public static void GiveSkillXP(uint player, SkillType skill, int xp)
+        /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
+        public static void GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses = false)
         {
             if (skill == SkillType.Invalid || xp <= 0 || !GetIsPC(player) || GetIsDM(player)) return;
 
@@ -44,10 +45,13 @@ namespace SWLOR.Game.Server.Service
                 xp += (int) (xp * social * 0.05f);
 
             // Food bonus
-            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-            if (foodEffect != null)
+            if (!ignoreBonuses)
             {
-                xp += (int)(xp * (foodEffect.XPBonusPercent * 0.01f));
+                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+                if (foodEffect != null)
+                {
+                    xp += (int)(xp * (foodEffect.XPBonusPercent * 0.01f));
+                }
             }
 
             var debtRemoved = 0;

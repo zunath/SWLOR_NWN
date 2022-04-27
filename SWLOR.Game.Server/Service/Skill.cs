@@ -39,14 +39,14 @@ namespace SWLOR.Game.Server.Service
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
 
-            // Bonus for positive Social modifier.
-            var social = GetAbilityModifier(AbilityType.Social, player);
-            if (social > 0) 
-                xp += (int) (xp * social * 0.05f);
-
-            // Food bonus
             if (!ignoreBonuses)
             {
+                // Bonus for positive Social modifier.
+                var social = GetAbilityModifier(AbilityType.Social, player);
+                if (social > 0)
+                    xp += (int)(xp * social * 0.05f);
+
+                // Food bonus
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
                 if (foodEffect != null)
                 {

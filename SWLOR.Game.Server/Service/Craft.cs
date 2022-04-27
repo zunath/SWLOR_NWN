@@ -444,10 +444,10 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyAbilityBonus(AbilityType.Social, amount);
                 case 13: // Willpower
                     return ItemPropertyAbilityBonus(AbilityType.Willpower, amount);
-                case 14: // Control
-                    return ItemPropertyCustom(ItemPropertyType.Control, -1, amount);
-                case 15: // Craftsmanship
-                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, -1, amount);
+                case 14: // Control - Smithery
+                    return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
+                case 15: // Craftsmanship - Smithery
+                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
                 
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
                 
@@ -493,6 +493,18 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FP, amount);
                 case 38: // Food Bonus - STM
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STM, amount);
+                case 39: // Control - Engineering
+                    return ItemPropertyCustom(ItemPropertyType.Control, 2, amount);
+                case 40: // Craftsmanship - Engineering
+                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 2, amount);
+                case 41: // Control - Fabrication
+                    return ItemPropertyCustom(ItemPropertyType.Control, 3, amount);
+                case 42: // Craftsmanship - Fabrication
+                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 3, amount);
+                case 43: // Control - Agriculture
+                    return ItemPropertyCustom(ItemPropertyType.Control, 4, amount);
+                case 44: // Craftsmanship - Agriculture
+                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 4, amount);
 
             }
 

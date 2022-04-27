@@ -10,7 +10,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class DistributeRPXPViewModel: GuiViewModelBase<DistributeRPXPViewModel, RPXPPayload>
+    public class DistributeRPXPViewModel: GuiViewModelBase<DistributeRPXPViewModel, RPXPPayload>,
+        IGuiRefreshable<RPXPRefreshEvent>
     {
         private SkillType _skillType;
         private int _availableRPXP;
@@ -99,5 +100,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
         };
+
+        public void Refresh(RPXPRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            _availableRPXP = dbPlayer.UnallocatedXP;
+            AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
+        }
     }
 }

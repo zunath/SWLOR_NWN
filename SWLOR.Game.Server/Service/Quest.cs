@@ -276,10 +276,17 @@ namespace SWLOR.Game.Server.Service
             if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
-            // Every player who needs this NPCGroupType for a quest will have their objective advanced.
+            // Every player who needs this NPCGroupType for a quest will have their objective advanced if they are within range and in the same area.
             for (var member = GetFirstFactionMember(killer); GetIsObjectValid(member); member = GetNextFactionMember(killer))
             {
-                if (!GetIsPC(member) || GetIsDM(member)) continue;
+                if (!GetIsPC(member) || GetIsDM(member)) 
+                    continue;
+
+                if (GetArea(member) != GetArea(killer))
+                    continue;
+
+                if (GetDistanceBetween(member, creature) > 50f)
+                    continue;
 
                 var playerId = GetObjectUUID(member);
                 var dbPlayer = DB.Get<Player>(playerId);

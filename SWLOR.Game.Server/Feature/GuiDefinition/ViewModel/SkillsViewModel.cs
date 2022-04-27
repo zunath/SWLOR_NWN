@@ -194,13 +194,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private float CalculateProgress(int rank, int xp)
         {
-            var nextLevelXP = Skill.GetRequiredXP(rank + 1);
+            var nextLevelXP = Skill.GetRequiredXP(rank);
             return (float)xp / nextLevelXP;
         }
 
         private string CalculateRawXPAmounts(int rank, int xp)
         {
-            var nextLevelXP = Skill.GetRequiredXP(rank + 1);
+            var nextLevelXP = Skill.GetRequiredXP(rank);
             return $"{xp} / {nextLevelXP}";
         }
 

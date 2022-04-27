@@ -141,15 +141,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int Control
+        public string Control
         {
-            get => Get<int>();
+            get => Get<string>();
             set => Set(value);
         }
 
-        public int Craftsmanship
+        public string Craftsmanship
         {
-            get => Get<int>();
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -349,8 +349,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
             DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
             Evasion = CreaturePlugin.GetBaseAC(Player);
-            Control = dbPlayer.Control;
-            Craftsmanship = dbPlayer.Craftsmanship;
+
+            var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)
+                ? dbPlayer.Control[SkillType.Smithery]
+                : 0;
+            var engineering = dbPlayer.Control.ContainsKey(SkillType.Engineering)
+                ? dbPlayer.Control[SkillType.Engineering]
+                : 0;
+            var fabrication = dbPlayer.Control.ContainsKey(SkillType.Fabrication)
+                ? dbPlayer.Control[SkillType.Fabrication]
+                : 0;
+            var agriculture = dbPlayer.Control.ContainsKey(SkillType.Agriculture)
+                ? dbPlayer.Control[SkillType.Agriculture]
+                : 0;
+
+            Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+
+            smithery = dbPlayer.Craftsmanship.ContainsKey(SkillType.Smithery)
+                ? dbPlayer.Craftsmanship[SkillType.Smithery]
+                : 0;
+            engineering = dbPlayer.Craftsmanship.ContainsKey(SkillType.Engineering)
+                ? dbPlayer.Craftsmanship[SkillType.Engineering]
+                : 0;
+            fabrication = dbPlayer.Craftsmanship.ContainsKey(SkillType.Fabrication)
+                ? dbPlayer.Craftsmanship[SkillType.Fabrication]
+                : 0;
+            agriculture = dbPlayer.Craftsmanship.ContainsKey(SkillType.Agriculture)
+                ? dbPlayer.Craftsmanship[SkillType.Agriculture]
+                : 0;
+            Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
         }
 
         private void RefreshAttributes(Player dbPlayer)

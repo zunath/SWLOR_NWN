@@ -188,7 +188,6 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
             var windowId = NuiGetWindowId(player, windowToken);
-            var parentWindowType = GuiWindowType.Invalid;
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);

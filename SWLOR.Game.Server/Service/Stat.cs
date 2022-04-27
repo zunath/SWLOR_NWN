@@ -591,10 +591,14 @@ namespace SWLOR.Game.Server.Service
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
+        /// <param name="skillType">The skill type to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustControl(Player entity, int adjustBy)
+        public static void AdjustControl(Player entity, SkillType skillType, int adjustBy)
         {
-            entity.Control += adjustBy;
+            if (!entity.Control.ContainsKey(skillType))
+                entity.Control[skillType] = 0;
+
+            entity.Control[skillType] += adjustBy;
         }
 
         /// <summary>
@@ -602,10 +606,14 @@ namespace SWLOR.Game.Server.Service
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
+        /// <param name="skillType">The skill type to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustCraftsmanship(Player entity, int adjustBy)
+        public static void AdjustCraftsmanship(Player entity, SkillType skillType, int adjustBy)
         {
-            entity.Craftsmanship += adjustBy;
+            if (!entity.Craftsmanship.ContainsKey(skillType))
+                entity.Craftsmanship[skillType] = 0;
+
+            entity.Craftsmanship[skillType] += adjustBy;
         }
 
         /// <summary>

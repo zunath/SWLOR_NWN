@@ -86,6 +86,8 @@ namespace SWLOR.Game.Server.Entity
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
             SubdualMode = false;
             AppearanceScale = 1.0f;
+            Control = new Dictionary<SkillType, int>();
+            Craftsmanship = new Dictionary<SkillType, int>();
         }
 
 
@@ -105,8 +107,6 @@ namespace SWLOR.Game.Server.Entity
         public int Reflex { get; set; }
         public int Will { get; set; }
         public int CP { get; set; }
-        public int Control { get; set; }
-        public int Craftsmanship { get; set; }
 
         [Indexed]
         public string LocationAreaResref { get; set; }
@@ -151,6 +151,8 @@ namespace SWLOR.Game.Server.Entity
         public int ForceAttack { get; set; }
 
         public PlayerSettings Settings { get; set; }
+        public Dictionary<SkillType, int> Control { get; set; }
+        public Dictionary<SkillType, int> Craftsmanship { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }

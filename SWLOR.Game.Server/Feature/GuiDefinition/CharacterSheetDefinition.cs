@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Control")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Control - Improves quality of crafted items. Also improves chance to auto-craft items.");
+                            .SetTooltip("Control - Improves quality of crafted items. Also improves chance to auto-craft items. (Order: Smithery/Engineering/Fabrication/Agriculture)");
 
                         row.AddLabel()
                             .BindText(model => model.Control)
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Craftsmanship")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Craftsmanship - Improves progress of crafted items. Also improves chance to auto-craft items.");
+                            .SetTooltip("Craftsmanship - Improves progress of crafted items. Also improves chance to auto-craft items. (Order: Smithery/Engineering/Fabrication/Agriculture)");
 
                         row.AddLabel()
                             .BindText(model => model.Craftsmanship)

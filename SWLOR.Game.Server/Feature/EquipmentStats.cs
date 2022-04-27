@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -275,14 +276,38 @@ namespace SWLOR.Game.Server.Feature
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var subType = GetItemPropertySubType(ip);
+            var skillType = SkillType.Invalid;
+
+            // Types are defined in iprp_crafttype.2da
+            switch (subType)
+            {
+                case 1:
+                    skillType = SkillType.Smithery;
+                    break;
+                case 2:
+                    skillType = SkillType.Engineering;
+                    break;
+                case 3:
+                    skillType = SkillType.Fabrication;
+                    break;
+                case 4:
+                    skillType = SkillType.Agriculture;
+                    break;
+            }
+
+            if (skillType == SkillType.Invalid)
+            {
+                throw new Exception($"Unable to determine skill type for {nameof(ApplyControl)}");
+            }
 
             if (isAdding)
             {
-                Stat.AdjustControl(dbPlayer, amount);
+                Stat.AdjustControl(dbPlayer, skillType, amount);
             }
             else
             {
-                Stat.AdjustControl(dbPlayer, -amount);
+                Stat.AdjustControl(dbPlayer, skillType, -amount);
             }
 
             DB.Set(dbPlayer);
@@ -300,14 +325,32 @@ namespace SWLOR.Game.Server.Feature
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var subType = GetItemPropertySubType(ip);
+            var skillType = SkillType.Invalid;
 
+            // Types are defined in iprp_crafttype.2da
+            switch (subType)
+            {
+                case 1:
+                    skillType = SkillType.Smithery;
+                    break;
+                case 2:
+                    skillType = SkillType.Engineering;
+                    break;
+                case 3:
+                    skillType = SkillType.Fabrication;
+                    break;
+                case 4:
+                    skillType = SkillType.Agriculture;
+                    break;
+            }
             if (isAdding)
             {
-                Stat.AdjustCraftsmanship(dbPlayer, amount);
+                Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);
             }
             else
             {
-                Stat.AdjustCraftsmanship(dbPlayer, -amount);
+                Stat.AdjustCraftsmanship(dbPlayer, skillType, -amount);
             }
 
             DB.Set(dbPlayer);

@@ -505,6 +505,16 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Control, 4, amount);
                 case 44: // Craftsmanship - Agriculture
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 4, amount);
+                case 45: // Module Bonus
+                    return ItemPropertyCustom(ItemPropertyType.ModuleEnhancement, 4, amount);
+                case 46: // Starship Armor
+                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 46, amount);
+                case 47: // Starship Capacitor
+                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 47, amount);
+                case 48: // Starship Shield
+                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 48, amount);
+                case 49: // Starship Shield Recharge Rate
+                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 49, amount);
 
             }
 

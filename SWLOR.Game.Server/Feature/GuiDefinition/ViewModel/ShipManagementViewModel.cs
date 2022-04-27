@@ -988,6 +988,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     OwnerPlayerId = playerId,
                     PropertyId = property.Id,
+                    SerializedItem = ObjectPlugin.Serialize(item),
                     Status = new ShipStatus
                     {
                         ItemTag = itemTag,
@@ -1033,7 +1034,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var dbPlayer = DB.Get<Player>(playerId);
                     var dbShip = DB.Get<PlayerShip>(shipId);
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                    var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0)
@@ -1051,7 +1051,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DB.Set(dbPlayer);
                     DB.Set(dbProperty);
 
-                    CreateItemOnObject(shipDetail.ItemResref, Player);
+                    var item = ObjectPlugin.Deserialize(dbShip.SerializedItem);
+                    ObjectPlugin.AcquireItem(Player, item);
 
                     _shipIds.RemoveAt(SelectedShipIndex);
                     ShipNames.RemoveAt(SelectedShipIndex);

@@ -250,6 +250,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Removes the details related to a recent enemy's details.
+        /// This should be called after using the value returned by GetRecentEnemyLevel.
+        /// </summary>
+        /// <param name="player">The player to clear.</param>
+        public static void ClearRecentEnemyLevel(uint player)
+        {
+            DeleteLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
+            DeleteLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL");
+        }
+
+        /// <summary>
         /// Adds a combat point for a player to all NPCs s/he is currently tagged on.
         /// </summary>
         /// <param name="player">The player to receiving the point.</param>

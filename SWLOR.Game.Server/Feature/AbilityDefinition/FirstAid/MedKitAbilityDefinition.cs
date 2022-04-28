@@ -54,16 +54,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             // Scale XP to the thing we just fought.
             // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
             // delta function to get base XP based on relative level. 
-            int enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
+            var enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
             var playerId = GetObjectUUID(activator);
             var dbPlayer = DB.Get<Player>(playerId);
             var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
-            int nXP = enemyLevel != -1 ? Service.Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
+            var nXP = enemyLevel != -1 ? Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
 
-            Service.Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
+            Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);
+            CombatPoint.ClearRecentEnemyLevel(activator);
         }
 
         private void MedKit1()

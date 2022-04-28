@@ -1617,5 +1617,65 @@ namespace SWLOR.Game.Server.Service
             return moduleBonus;
         }
 
+        /// <summary>
+        /// Reads all starship bonus properties off an item and returns their cumulative values.
+        /// </summary>
+        /// <param name="item">The item to read.</param>
+        /// <returns>An object containing cumulative starship bonus information</returns>
+        public static ShipBonuses GetShipBonuses(uint item)
+        {
+            var bonuses = new ShipBonuses();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.StarshipBonus)
+                {
+                    var type = GetItemPropertySubType(ip);
+                    var amount = GetItemPropertyCostTableValue(ip);
+
+                    switch (type)
+                    {
+                        case 46: // Starship Armor
+                            bonuses.Hull += amount;
+                            break;
+                        case 47: // Starship Capacitor
+                            bonuses.Capacitor += amount;
+                            break;
+                        case 48: // Starship Shield
+                            bonuses.Shield += amount;
+                            break;
+                        case 49: // Starship Shield Recharge Rate
+                            bonuses.ShieldRechargeRate += amount;
+                            break;
+                        case 50: // Starship EM Damage
+                            bonuses.EMDamage += amount;
+                            break;
+                        case 51: // Starship Thermal Damage
+                            bonuses.ThermalDamage += amount;
+                            break;
+                        case 52: // Starship Explosive Damage
+                            bonuses.ExplosiveDamage += amount;
+                            break;
+                        case 53: // Starship Accuracy
+                            bonuses.Accuracy += amount;
+                            break;
+                        case 54: // Starship Evasion
+                            bonuses.Evasion += amount;
+                            break;
+                        case 55: // Starship Thermal Defense
+                            bonuses.ThermalDefense += amount;
+                            break;
+                        case 56: // Starship Explosive Defense
+                            bonuses.ExplosiveDefense += amount;
+                            break;
+                        case 57: // Starship EM Defense
+                            bonuses.EMDefense += amount;
+                            break;
+                    }
+                }
+            }
+
+            return bonuses;
+        }
+
     }
 }

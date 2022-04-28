@@ -975,6 +975,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Validation passed. Add the ship and register it under this player.
                 var itemTag = GetTag(item);
                 var shipDetail = Space.GetShipDetailByItemTag(itemTag);
+                var bonuses = Space.GetShipBonuses(item);
 
                 // Spawn the property associated with this ship.
                 var property = Property.CreateStarship(
@@ -992,18 +993,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Status = new ShipStatus
                     {
                         ItemTag = itemTag,
-                        Shield = shipDetail.MaxShield,
-                        MaxShield = shipDetail.MaxShield,
-                        Hull = shipDetail.MaxHull,
-                        MaxHull = shipDetail.MaxHull,
-                        Capacitor = shipDetail.MaxCapacitor,
-                        MaxCapacitor = shipDetail.MaxCapacitor,
-                        EMDefense = shipDetail.EMDefense,
-                        ExplosiveDefense = shipDetail.ExplosiveDefense,
-                        ThermalDefense = shipDetail.ThermalDefense,
-                        Accuracy = shipDetail.Accuracy,
-                        Evasion = shipDetail.Evasion,
-                        ShieldRechargeRate = shipDetail.ShieldRechargeRate
+                        Shield = shipDetail.MaxShield + bonuses.Shield,
+                        MaxShield = shipDetail.MaxShield + bonuses.Shield,
+                        Hull = shipDetail.MaxHull + bonuses.Hull,
+                        MaxHull = shipDetail.MaxHull + bonuses.Hull,
+                        Capacitor = shipDetail.MaxCapacitor + bonuses.Capacitor,
+                        MaxCapacitor = shipDetail.MaxCapacitor + bonuses.Capacitor,
+                        EMDamage = bonuses.EMDamage,
+                        ExplosiveDamage = bonuses.ExplosiveDamage,
+                        ThermalDamage = bonuses.ThermalDamage,
+                        EMDefense = shipDetail.EMDefense + bonuses.EMDefense,
+                        ExplosiveDefense = shipDetail.ExplosiveDefense + bonuses.ExplosiveDefense,
+                        ThermalDefense = shipDetail.ThermalDefense + bonuses.ThermalDefense,
+                        Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
+                        Evasion = shipDetail.Evasion + bonuses.Evasion,
+                        ShieldRechargeRate = shipDetail.ShieldRechargeRate + bonuses.ShieldRechargeRate
                     }
                 };
                 DB.Set(ship);

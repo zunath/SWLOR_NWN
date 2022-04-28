@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(recast)
                 .Capacitor(capacitor)
-                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     if (!GetIsObjectValid(target))
                     {
@@ -58,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
-                    targetShipStatus.Shield += baseRecovery;
+                    var recovery = baseRecovery + moduleBonus * 2;
+                    targetShipStatus.Shield += recovery;
                     if (targetShipStatus.Shield > targetShipStatus.MaxShield)
                         targetShipStatus.Shield = targetShipStatus.MaxShield;
 

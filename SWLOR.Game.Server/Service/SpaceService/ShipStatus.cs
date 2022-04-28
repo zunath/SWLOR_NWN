@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public string ItemTag { get; set; }
             public string SerializedItem { get; set; }
             public DateTime RecastTime { get; set; }
+            public int ModuleBonus { get; set; }
         }
         
         public string ItemTag { get; set; }

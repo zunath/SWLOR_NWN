@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(recast)
                 .Capacitor(capacitor)
-                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             }
 
                             targetDefense = shipTarget.ExplosiveDefense;
-                            attackerDamage = baseDamage + activatorShipStatus.ExplosiveDamage;
+                            attackerDamage = baseDamage + activatorShipStatus.ExplosiveDamage + moduleBonus;
 
                             damage = attackerDamage - targetDefense;
                             if (damage < 0) damage = 0;

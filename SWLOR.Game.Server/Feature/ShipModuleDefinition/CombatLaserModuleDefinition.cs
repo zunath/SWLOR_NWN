@@ -42,10 +42,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(recast)
                 .Capacitor(capacitor)
-                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var targetDefense = targetShipStatus.ThermalDefense;
-                    var attackerDamage = baseDamage + activatorShipStatus.ThermalDamage;
+                    var attackerDamage = baseDamage + activatorShipStatus.ThermalDamage + moduleBonus;
 
                     var damage = attackerDamage - targetDefense;
                     if (damage < 0) damage = 0;

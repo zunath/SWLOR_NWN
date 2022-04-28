@@ -51,7 +51,8 @@ services:
         volumes:
             - ./influxdb:/var/lib/influxdb
         ports:
-            - "8086:8086"
+            - "8086"
+            - "8089"
             
     grafana:
         hostname: grafana

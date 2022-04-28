@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature
             OverrideAttributeNames();
             OverrideMenuNames();
             OverrideFeatDescriptions();
+            OverrideAttackBonus();
         }
 
         private static void OverrideAttributeNames()
@@ -140,6 +141,30 @@ namespace SWLOR.Game.Server.Feature
                     }
                 }
             }
+        }
+
+        private static void OverrideAttackBonus()
+        {
+            SetTlkOverride(660, "Accuracy and Damage Penalty");
+            SetTlkOverride(734, "Accuracy vs. Alignment Group");
+            SetTlkOverride(735, "Accuracy");
+            SetTlkOverride(736, "Decreased Accuracy");
+            SetTlkOverride(737, "Accuracy vs. Racial Group");
+            SetTlkOverride(738, "Accuracy vs. Specific Alignment");
+            SetTlkOverride(757, "Select a race for this creature. This is used for preferred enemy and/or accuracy bonus vs race calculations.");
+            SetTlkOverride(1085, "Accuracy: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit.");
+            SetTlkOverride(1086, "Accuracy vs. Monster Type: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only against a specific monster type, such as giants, undead, or shapeshifters.");
+            SetTlkOverride(1087, "Accuracy vs. Specific Alignment: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only when used against creatures of a specific alignment, such as chaotic neutral, lawful evil, or neutral good.");
+            SetTlkOverride(1088, "Accuracy vs. Alignment Group: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only when used against creatures from a specific alignment group, such as evil or lawful creatures.");
+            SetTlkOverride(1458, "Accuracy Penalty: This property inflicts a penalty on the wielder's attack rolls made with the weapon.");
+            SetTlkOverride(1460, "Accuracy Penalty: This property inflicts a penalty on the wielder's attack and damage rolls made with the weapon.");
+            SetTlkOverride(2227, "Accuracy Bonus");
+            SetTlkOverride(5519, "Accuracy Bonus:");
+            SetTlkOverride(5520, "Accuracy Bonus vs.:");
+            SetTlkOverride(5521, "Accuracy Penalty:");
+            SetTlkOverride(8038, "Enemy Accuracy Bonus");
+            SetTlkOverride(40557, "Total Base Accuracy Bonus is %d, but must have at least %d");
+            SetTlkOverride(58292, "Accuracy bonus: ");
         }
 
     }

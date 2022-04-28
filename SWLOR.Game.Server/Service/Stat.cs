@@ -427,8 +427,7 @@ namespace SWLOR.Game.Server.Service
             var maxHP = GetMaxHitPoints(player);
             if (currentHP > maxHP)
             {
-                var damage = EffectDamage(currentHP - maxHP);
-                ApplyEffectToObject(DurationType.Instant, damage, player);
+                SetCurrentHitPoints(player, maxHP);
             }
         }
 

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.MiningModules, requiredLevel)
                 .Capacitor(capacitor)
                 .Recast(recast)
-                .ValidationAction((activator, status, target, shipStatus) =>
+                .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
                     var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     return string.Empty;
                 })
-                .ActivatedAction((activator, status, target, shipStatus) =>
+                .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
                     // Remaining units aren't set - pick a random number to assign.
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -84,8 +84,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
-                        // Perk bonuses
-                        var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining);
+                        // Perk & module bonuses
+                        var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
                         if (amountToMine > remainingUnits)
                             amountToMine = remainingUnits;
 

@@ -1158,15 +1158,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    var moduleBonus = Space.GetModuleBonus(item);
                     dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
                         SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue
+                        RecastTime = DateTime.MinValue,
+                        ModuleBonus = moduleBonus
                     };
 
-                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
+                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
 
@@ -1183,7 +1185,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     ObjectPlugin.AcquireItem(Player, item);
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
+                    var moduleBonus = Space.GetModuleBonus(item);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
                     DB.Set(dbShip);
                     LoadShip();
@@ -1207,6 +1210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var itemTag = GetTag(item);
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+                    var moduleBonus = Space.GetModuleBonus(item);
 
                     if (!ValidateModuleEquip(dbShip, item))
                         return;
@@ -1221,10 +1225,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ItemInstanceId = GetObjectUUID(item),
                         SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue
+                        RecastTime = DateTime.MinValue,
+                        ModuleBonus = moduleBonus
                     };
 
-                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
+                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
 
@@ -1239,9 +1244,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    var moduleBonus = Space.GetModuleBonus(item);
                     ObjectPlugin.AcquireItem(Player, item);
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
                     dbShip.Status.LowPowerModules.Remove(slot);
                     DB.Set(dbShip);
                     LoadShip();

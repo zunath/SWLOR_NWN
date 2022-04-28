@@ -975,7 +975,7 @@ namespace SWLOR.Game.Server.Service
             var shipModuleDetails = _shipModules[shipModule.ItemTag];
 
             // Check capacitor requirements
-            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus) ?? 0;
+            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
 
             // Perk bonuses
             var capacitorReduction = 1.0f - Perk.GetEffectivePerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
@@ -1014,7 +1014,7 @@ namespace SWLOR.Game.Server.Service
             // Run any custom validation specific to the ship module.
             if (shipModuleDetails.ModuleValidationAction != null)
             {
-                var result = shipModuleDetails.ModuleValidationAction(activator, activatorShipStatus, target, targetShipStatus);
+                var result = shipModuleDetails.ModuleValidationAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
                     SendMessageToPC(activator, result);
@@ -1023,12 +1023,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Validation succeeded, run the module-specific code now.
-            shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus);
+            shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
             
             // Update the recast timer.
             if (shipModuleDetails.CalculateRecastAction != null)
             {
-                var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus);
+                var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
                 var recastTimer = now.AddSeconds(recastSeconds);
                 shipModule.RecastTime = recastTimer;
             }
@@ -1161,7 +1161,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
+                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
 
                 featCount++;
             }
@@ -1181,7 +1181,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
+                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
 
                 featCount++;
             }
@@ -1454,7 +1454,7 @@ namespace SWLOR.Game.Server.Service
                 var highModules = shipStatus.HighPowerModules.Where(x =>
                 {
                     var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
 
                     return x.Value.RecastTime <= now &&
                            shipStatus.Capacitor >= requiredCapacitor;
@@ -1464,7 +1464,7 @@ namespace SWLOR.Game.Server.Service
                 var lowModules = shipStatus.LowPowerModules.Where(x =>
                 {
                     var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
 
                     return x.Value.RecastTime <= now &&
                            shipStatus.Capacitor >= requiredCapacitor;
@@ -1597,6 +1597,25 @@ namespace SWLOR.Game.Server.Service
             DestroyObject(shipClone);
         }
 
+        /// <summary>
+        /// Retrieves the module bonus item property off a given item.
+        /// If the item property doesn't exist, 0 will be returned.
+        /// </summary>
+        /// <param name="item">The item to calculate.</param>
+        /// <returns>The module bonus of an item or 0 if none are found.</returns>
+        public static int GetModuleBonus(uint item)
+        {
+            var moduleBonus = 0;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.ModuleBonus)
+                {
+                    moduleBonus += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return moduleBonus;
+        }
 
     }
 }

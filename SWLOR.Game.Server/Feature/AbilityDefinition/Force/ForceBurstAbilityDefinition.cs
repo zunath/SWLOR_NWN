@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()

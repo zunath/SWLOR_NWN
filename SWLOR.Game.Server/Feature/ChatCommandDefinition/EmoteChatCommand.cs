@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AnimationAction(Animation.FireForgetPauseBored)
                 .IsEmote();
             builder.Create("bow")
-                .Description("Plays a bored animation.")
+                .Description("Plays a bow animation.")
                 .Permissions(AuthorizationLevel.All)
                 .AnimationAction(Animation.FireForgetBow)
                 .IsEmote(); 

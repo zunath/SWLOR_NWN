@@ -802,6 +802,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             YourSkill = $"Your Skill: {Skill.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
         }
 
+        private void ApplyImmobility()
+        {
+            ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), Player);
+        }
+
+        private void RemoveImmobility()
+        {
+            for (var effect = GetFirstEffect(Player); GetIsEffectValid(effect); effect = GetNextEffect(Player))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                {
+                    RemoveEffect(Player, effect);
+                }
+            }
+        }
+
         private void SwitchToSetUpMode()
         {
             var playerId = GetObjectUUID(Player);
@@ -840,6 +856,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Enhancement2Resref = BlankTexture;
             Enhancement1Tooltip = "Select Enhancement #1";
             Enhancement2Tooltip = "Select Enhancement #2";
+
+            RemoveImmobility();
         }
 
         private void SwitchToCraftMode()
@@ -865,6 +883,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsVenerationEnabled = Perk.GetEffectivePerkLevel(Player, _venerationPerk) > 0;
             IsWasteNotEnabled = Perk.GetEffectivePerkLevel(Player, _wasteNotPerk) > 0;
+
+            ApplyImmobility();
         }
 
         private void SwitchToAutoCraftMode()
@@ -876,6 +896,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsAutoCraftEnabled = false;
             IsClosable = false;
+
+            ApplyImmobility();
         }
 
         private float CalculateAutoCraftChance()

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature
             var player = GetEnteringObject();
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
+            RemoveImmobility(player);
         }
 
         private static void ApplyCutsceneGhostToPlayer(uint player)
@@ -31,6 +32,17 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId);
 
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+        }
+
+        private static void RemoveImmobility(uint player)
+        {
+            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                {
+                    RemoveEffect(player, effect);
+                }
+            }
         }
     }
 }

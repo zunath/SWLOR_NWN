@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (!ApplyDecay(dbPlayer, player, skill, xp))
+            if (!ApplyDecay(dbPlayer, skill, xp))
             {
                 return;
             }
@@ -178,15 +178,13 @@ namespace SWLOR.Game.Server.Service
         /// If decay was unnecessary or succeeded, true will be returned.
         /// </summary>
         /// <param name="dbPlayer">The player entity to apply skill decay to</param>
-        /// <param name="player">The player object.</param>
         /// <param name="skill">The skill which is receiving XP. This skill will be excluded from decay.</param>
         /// <param name="xp">The amount of XP being applied.</param>
         /// <returns>true if successful or unnecessary, false otherwise</returns>
-        private static bool ApplyDecay(Player dbPlayer, uint player, SkillType skill, int xp)
+        private static bool ApplyDecay(Player dbPlayer, SkillType skill, int xp)
         {
             if (dbPlayer.TotalSPAcquired < SkillCap) return true;
 
-            var playerId = GetObjectUUID(player);
             var skillsPossibleToDecay = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -215,9 +213,9 @@ namespace SWLOR.Game.Server.Service
 
             while (xp > 0)
             {
-                var index = Random.Next(skillsPossibleToDecay.Count());
+                var index = Random.Next(skillsPossibleToDecay.Count);
                 var decaySkill = skillsPossibleToDecay[index];
-                int totalDecayXP = GetTotalXP(decaySkill.Value.Rank) + decaySkill.Value.XP;
+                var totalDecayXP = GetTotalXP(decaySkill.Value.Rank);
 
                 if (totalDecayXP >= xp)
                 {
@@ -245,14 +243,14 @@ namespace SWLOR.Game.Server.Service
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
                     int newDecaySkillRank = 0;
-                    foreach (var req in reqs)
+                    foreach (var (level, requiredXP) in reqs)
                     {
-                        if (totalDecayXP >= req.Value)
+                        if (totalDecayXP >= requiredXP)
                         {
-                            totalDecayXP -= req.Value;
+                            totalDecayXP -= requiredXP;
                             newDecaySkillRank++;
                         }
-                        else if (totalDecayXP < req.Value)
+                        else if (totalDecayXP < requiredXP)
                         {
                             break;
                         }

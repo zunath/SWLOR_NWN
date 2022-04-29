@@ -757,17 +757,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Player's component stack size is greater than the amount required.
                 if (quantity > remainingComponents[resref])
                 {
-                    // Split the stack. The copy will remain in the player's inventory.
-                    var copy = CopyItem(component, Player, true);
-                    SetItemStackSize(copy, quantity - remainingComponents[resref]);
-                    ForceRefreshObjectUUID(copy);
-
-                    // The original will be used for crafting.
+                    var originalStackSize = GetItemStackSize(component);
                     SetItemStackSize(component, remainingComponents[resref]);
-
-                    remainingComponents[resref] = 0;
                     _components.Add(ObjectPlugin.Serialize(component));
+                    var reducedStackSize = originalStackSize - remainingComponents[resref];
+                    SetItemStackSize(component, reducedStackSize);
                     result.Add(component);
+                    remainingComponents[resref] = 0;
                 }
                 // Player's component stack size is less than or equal to the amount required.
                 else if (quantity <= remainingComponents[resref])
@@ -775,6 +771,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     remainingComponents[resref] -= quantity;
                     _components.Add(ObjectPlugin.Serialize(component));
                     result.Add(component);
+                    DestroyObject(component);
                 }
 
                 if (remainingComponents[resref] <= 0)
@@ -786,6 +783,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're missing some components, clear the serialized component list and the result list.
             if (!hasAllComponents)
             {
+                foreach (var component in _components)
+                {
+                    var item = ObjectPlugin.Deserialize(component);
+                    ObjectPlugin.AcquireItem(Player, item);
+                }
+
                 _components.Clear();
                 result.Clear();
             }
@@ -957,15 +960,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 return false;
             }
-
-            // The components get serialized during the HasAllComponents call.
-            // Since we have everything, go ahead and delete the items from the player's inventory.
-            // We're ready to craft!
-            foreach (var component in aggregateList)
-            {
-                DestroyObject(component);
-            }
-
+            
             return true;
         }
 

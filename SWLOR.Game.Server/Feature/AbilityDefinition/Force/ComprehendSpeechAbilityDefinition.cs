@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ComprehendSpeech3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
-                .Name("Comprehend Speech II")
+            builder.Create(FeatType.ComprehendSpeech3, PerkType.ComprehendSpeech)
+                .Name("Comprehend Speech III")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .RequirementFP(8)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ComprehendSpeech4(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
-                .Name("Comprehend Speech II")
+            builder.Create(FeatType.ComprehendSpeech4, PerkType.ComprehendSpeech)
+                .Name("Comprehend Speech IV")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .RequirementFP(10)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)

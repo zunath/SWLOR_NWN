@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void Harvester(string tag, int requiredLevel)
         {
             _builder.Create(tag)
-                .Delay(8f)
+                .Delay(5f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .UserFacesTarget()
                 .MaxDistance(3.0f)

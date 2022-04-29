@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Abilities();
             FurnitureBlueprints();
             StructureBlueprints();
+            FabricationEquipment();
 
             return _builder.Build();
         }
@@ -161,6 +162,42 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Fabrication, 40)
                 .GrantsFeat(FeatType.StructureBlueprints2);
+        }
+
+        private void FabricationEquipment()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.FabricationEquipment)
+                .Name("Fabrication Equipment")
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 1 Fabrication equipment.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 5)
+                .GrantsFeat(FeatType.FabricationEquipment1)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 2 Fabrication equipment.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 15)
+                .GrantsFeat(FeatType.FabricationEquipment2)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 3 Fabrication equipment.")
+                .Price(4)
+                .RequirementSkill(SkillType.Fabrication, 25)
+                .GrantsFeat(FeatType.FabricationEquipment3)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 4 Fabrication equipment.")
+                .Price(4)
+                .RequirementSkill(SkillType.Fabrication, 35)
+                .GrantsFeat(FeatType.FabricationEquipment4)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 5 Fabrication equipment.")
+                .Price(5)
+                .RequirementSkill(SkillType.Fabrication, 45)
+                .GrantsFeat(FeatType.FabricationEquipment5);
         }
     }
 }

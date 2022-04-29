@@ -224,6 +224,10 @@
         DeflectorShield = 217,
         DemolitionExpert = 218,
         GuildRelations = 219,
+        SmitheryEquipment = 220,
+        EngineeringEquipment = 221,
+        FabricationEquipment = 222,
+        AgricultureEquipment = 223,
 
     }
 }

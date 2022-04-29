@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ArmorBlueprints();
             AccessoryBlueprints();
 
+            SmitheryEquipment();
+
             return _builder.Build();
         }
 
@@ -325,6 +327,41 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AccessoryBlueprints5);
         }
 
+        private void SmitheryEquipment()
+        {
+            _builder.Create(PerkCategoryType.Smithery, PerkType.SmitheryEquipment)
+                .Name("Smithery Equipment")
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 1 Smithery equipment.")
+                .Price(2)
+                .RequirementSkill(SkillType.Smithery, 5)
+                .GrantsFeat(FeatType.SmitheryEquipment1)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 2 Smithery equipment.")
+                .Price(3)
+                .RequirementSkill(SkillType.Smithery, 15)
+                .GrantsFeat(FeatType.SmitheryEquipment2)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 3 Smithery equipment.")
+                .Price(4)
+                .RequirementSkill(SkillType.Smithery, 25)
+                .GrantsFeat(FeatType.SmitheryEquipment3)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 4 Smithery equipment.")
+                .Price(4)
+                .RequirementSkill(SkillType.Smithery, 35)
+                .GrantsFeat(FeatType.SmitheryEquipment4)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 5 Smithery equipment.")
+                .Price(5)
+                .RequirementSkill(SkillType.Smithery, 45)
+                .GrantsFeat(FeatType.SmitheryEquipment5);
+        }
 
     }
 }

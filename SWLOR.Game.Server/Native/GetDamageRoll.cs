@@ -133,18 +133,21 @@ namespace SWLOR.Game.Server.Native
                 // same. Add all DMG properties of the same type together.
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
-
                     var ip = weapon.GetPassiveProperty(index);
                     if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         // Catch old-style DMG properties here, and correct the damage type by hand.
-                        var damageType = ip.m_nSubType;
-                        if (damageType > 6 || damageType < 1) damageType = 1;
+                        var damageTypeId = ip.m_nSubType;
+                        if (damageTypeId > 6 || damageTypeId < 1) damageTypeId = 1;
 
                         // Add the value of this property to the array.
-                        var dmg = dmgValues[(CombatDamageType)damageType];
+                        var damageType = (CombatDamageType)damageTypeId;
+                        if (!dmgValues.ContainsKey(damageType))
+                            dmgValues[damageType] = 0;
+
+                        var dmg = dmgValues[damageType];
                         dmg += Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
-                        dmgValues[(CombatDamageType)damageType] = dmg;
+                        dmgValues[damageType] = dmg;
                         foundDMG = true;
                     }
                 }

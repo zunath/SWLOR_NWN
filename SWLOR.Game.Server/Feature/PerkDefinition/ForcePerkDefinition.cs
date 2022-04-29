@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
         private void ForceMind()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMind)
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceMind)
                 .Name("Force Mind")
 
                 .AddPerkLevel()
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceBody()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBody)
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceBody)
                 .Name("Force Body")
 
                 .AddPerkLevel()

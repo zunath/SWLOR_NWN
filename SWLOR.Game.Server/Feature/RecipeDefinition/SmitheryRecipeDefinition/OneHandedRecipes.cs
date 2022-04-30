@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             Knifes();
             Longswords();
+            Lightsabers();
 
             return _builder.Build();
         }
@@ -132,6 +133,131 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
+        }
+
+        private void Lightsabers()
+        {
+            // Electroblade I
+            _builder.Create(RecipeType.Electroblade1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("electroblade_1")
+                .Level(6)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // Electroblade II
+            _builder.Create(RecipeType.Electroblade2, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("electroblade_2")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // Electroblade III
+            _builder.Create(RecipeType.Electroblade3, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("electroblade_3")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // Electroblade IV
+            _builder.Create(RecipeType.Electroblade4, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("electroblade_4")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // Electroblade V
+            _builder.Create(RecipeType.Electroblade5, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("electroblade_5")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_jasioclase", 2);
+
+
+
+            // Training Saber I
+            _builder.Create(RecipeType.TrainingSaber1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_train_1")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("jade", 4)
+                .Component("ref_veldite", 2)
+                .Component("elec_ruined", 3);
+
+            // Training Saber II
+            _builder.Create(RecipeType.TrainingSaber2, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_train_2")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("agate", 4)
+                .Component("ref_scordspar", 2)
+                .Component("elec_flawed", 3);
+
+            // Training Saber III
+            _builder.Create(RecipeType.TrainingSaber3, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_train_3")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("citrine", 4)
+                .Component("ref_plagionite", 2)
+                .Component("elec_good", 3);
+
+            // Training Saber IV
+            _builder.Create(RecipeType.TrainingSaber4, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_train_4")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ruby", 4)
+                .Component("ref_keromber", 2)
+                .Component("elec_imperfect", 3);
+
+            // Training Saber V
+            _builder.Create(RecipeType.TrainingSaber5, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_train_5")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("emerald", 4)
+                .Component("ref_jasioclase", 2)
+                .Component("elec_high", 3);
         }
 
     }

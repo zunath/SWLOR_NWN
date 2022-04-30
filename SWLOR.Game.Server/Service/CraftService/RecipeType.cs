@@ -186,6 +186,17 @@
         SupremeGloves = 174,
         SupremeBoots = 175,
 
+        Electroblade1 = 176,
+        Electroblade2 = 177,
+        Electroblade3 = 178,
+        Electroblade4 = 179,
+        Electroblade5 = 180,
+        TrainingSaber1 = 181,
+        TrainingSaber2 = 182,
+        TrainingSaber3 = 183,
+        TrainingSaber4 = 184,
+        TrainingSaber5 = 185,
+
         // Fabrication:  1001-2000
         BedRoll = 1001,
         Easel = 1002,

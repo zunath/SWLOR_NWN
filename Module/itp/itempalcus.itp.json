@@ -15898,6 +15898,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Training Sabers"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_trnsabers"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "CZ-220 - Maintenance Level Map"
                     },
                     "RESREF": {

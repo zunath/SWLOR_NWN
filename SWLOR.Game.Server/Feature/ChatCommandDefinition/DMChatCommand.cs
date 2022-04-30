@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void GiveRPXP()
         {
-            const int MaxAmount = 10000;
+            const int MaxAmount = 500000;
             
             _builder.Create("giverpxp")
                 .Description("Gives Roleplay XP to a target player.")

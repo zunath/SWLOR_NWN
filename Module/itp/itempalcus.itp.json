@@ -219,6 +219,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "cook_armor_1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "cook_armor_2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "cook_armor_3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "cook_armor_4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "cook_armor_5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal's Council Attire"
                     },
                     "RESREF": {
@@ -312,6 +367,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "revan_robes_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "engi_armor_1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "engi_armor_2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "engi_armor_3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "engi_armor_4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "engi_armor_5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "fabr_armor_1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "fabr_armor_2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "fabr_armor_3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "fabr_armor_4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "fabr_armor_5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_005"
                     }
                   },
                   {
@@ -697,6 +862,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shipcaptaingrm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "smth_armor_1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "smth_armor_2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "smth_armor_3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "smth_armor_4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "smth_armor_5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_005"
                     }
                   },
                   {

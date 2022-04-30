@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
-            foreach (var (creature, statusEffects) in _creaturesWithStatusEffects)
+            foreach (var (creature, statusEffects) in _creaturesWithStatusEffects.ToDictionary(x => x.Key, y => y.Value))
             {
                 // Creature is dead or invalid. Remove its status effects.
                 var removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);

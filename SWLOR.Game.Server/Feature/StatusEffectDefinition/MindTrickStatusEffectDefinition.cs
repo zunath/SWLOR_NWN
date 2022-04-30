@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Confused)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target))
+                    if (!Ability.GetAbilityResisted(source, target, "Mind Trick"))
                     {
                         var effect = EffectConfused();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
-                    if (!Ability.GetAbilityResisted(source, target))
+                    if (!Ability.GetAbilityResisted(source, target, "Mind Trick"))
                     {
                         var effect = EffectConfused();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));

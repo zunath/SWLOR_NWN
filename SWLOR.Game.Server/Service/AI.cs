@@ -409,6 +409,17 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessRandomWalkFlag()
         {
             var self = OBJECT_SELF;
+
+            // Certain effects should interrupt the random walk process.
+            var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify};
+            for (var effect = GetFirstEffect(self); GetIsEffectValid(effect); effect = GetNextEffect(self))
+            {
+                if (effects.Contains(GetEffectType(effect)))
+                {
+                    return;
+                }
+            }
+
             var aiFlags = GetAIFlag(self);
             if (!aiFlags.HasFlag(AIFlag.RandomWalk) ||
                 IsInConversation(self) ||

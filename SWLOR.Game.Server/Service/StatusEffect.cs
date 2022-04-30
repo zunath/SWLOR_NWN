@@ -92,9 +92,9 @@ namespace SWLOR.Game.Server.Service
             statusEffectDetail.AppliedAction?.Invoke(source, target, length, effectData);
 
             // Add the status effect icon if there is one.
-            if (statusEffectDetail.EffectIconId > 0)
+            if (statusEffectDetail.EffectIconId != EffectIconType.Invalid)
             {
-                ObjectPlugin.AddIconEffect(target, statusEffectDetail.EffectIconId);
+                ObjectPlugin.AddIconEffect(target, (int)statusEffectDetail.EffectIconId);
             }
 
             Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
-                ObjectPlugin.RemoveIconEffect(creature, statusEffectDetail.EffectIconId);
+                ObjectPlugin.RemoveIconEffect(creature, (int)statusEffectDetail.EffectIconId);
             }
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");

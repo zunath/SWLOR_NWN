@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// </summary>
         /// <param name="effectIconId">The Id of the NWN effect icon</param>
         /// <returns>A status effect builder with the configured options.</returns>
-        public StatusEffectBuilder EffectIcon(int effectIconId)
+        public StatusEffectBuilder EffectIcon(EffectIconType effectIconId)
         {
             _activeStatusEffect.EffectIconId = effectIconId;
 

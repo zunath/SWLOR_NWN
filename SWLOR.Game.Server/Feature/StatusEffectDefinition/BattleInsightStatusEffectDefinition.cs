@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BattleInsight1)
                 .Name("Battle Insight I")
-                .EffectIcon(17) // 17 = Dazed
+                .EffectIcon(EffectIconType.Dazed)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectAttackDecrease(5);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BattleInsight2)
                 .Name("Battle Insight II")
-                .EffectIcon(17) // 17 = Dazed
+                .EffectIcon(EffectIconType.Dazed)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectAttackDecrease(8);

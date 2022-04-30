@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Bleed)
                 .Name("Bleed")
-                .EffectIcon(129) // 129 = Wounding
+                .EffectIcon(EffectIconType.Wounding)
                 .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d2());
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Poison)
                 .Name("Poison")
-                .EffectIcon(20) // 20 = Poison
+                .EffectIcon(EffectIconType.Poison)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(3, 7);
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
-                .EffectIcon(115) // 115 =  DAMAGE_IMMUNITY_ELECTRICAL 
+                .EffectIcon(EffectIconType.DamageImmunityElectrical)
                 .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d4(), DamageType.Electrical);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Tranquilize)
                 .Name("Tranquilize")
-                .EffectIcon(18) // 18 = Stunned
+                .EffectIcon(EffectIconType.Stunned)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectDazed();
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Burn)
                 .Name("Burn")
-                .EffectIcon(20) // 20 = Poison todo: need a better icon
+                .EffectIcon(EffectIconType.Poison) // todo: need a better icon
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(2, 4);

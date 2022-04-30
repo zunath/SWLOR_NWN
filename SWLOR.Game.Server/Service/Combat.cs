@@ -12,51 +12,17 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
-        private static readonly Dictionary<int, int> _dmgValues = new Dictionary<int, int>();
-        
         /// <summary>
-        /// When the module loads, cache the DMG values found in iprp_dmg.2da into memory.
+        /// Calculates the minimum and maximum damage possible with the provided stats.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
-        public static void CacheData()
-        {
-            var rowCount = UtilPlugin.Get2DARowCount("iprp_dmg");
-
-            for (var row = 0; row < rowCount; row++)
-            {
-                var label = Get2DAString("iprp_dmg", "Label", row);
-
-                if (int.TryParse(label, out var dmgValue))
-                {
-                    _dmgValues[row] = dmgValue;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the DMG value by a defense item property's cost table value.
-        /// </summary>
-        /// <param name="costTableValue">The cost table value of the defense item property.</param>
-        /// <returns>The DMG value</returns>
-        public static int GetDMGValueFromItemPropertyCostTableValue(int costTableValue)
-        {
-            if (!_dmgValues.ContainsKey(costTableValue))
-                return 1;
-
-            return _dmgValues[costTableValue];
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="attackerAttack"></param>
-        /// <param name="attackerDMG"></param>
-        /// <param name="attackerStat"></param>
-        /// <param name="defenderDefense"></param>
-        /// <param name="defenderStat"></param>
+        /// <param name="attackerAttack">The attacker's attack rating.</param>
+        /// <param name="attackerDMG">The attacker's DMG rating</param>
+        /// <param name="attackerStat">The attacker's attack stat value</param>
+        /// <param name="defenderDefense">The defender's defense rating.</param>
+        /// <param name="defenderStat">The defender's defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
-        /// <returns>A damage value to apply to the target.</returns>
-        public static int CalculateDamage(
+        /// <returns>A minimum and maximum damage range</returns>
+        public static (int, int) CalculateDamageRange(
             int attackerAttack,
             int attackerDMG,
             int attackerStat,
@@ -64,6 +30,7 @@ namespace SWLOR.Game.Server.Service
             int defenderStat,
             int critical)
         {
+
             var statDelta = attackerStat - defenderStat;
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
@@ -90,6 +57,35 @@ namespace SWLOR.Game.Server.Service
                         break;
                 }
             }
+
+            return ((int)minDamage, (int)maxDamage);
+        }
+
+        /// <summary>
+        /// Calculates a random damage amount based on the provided stats of the attacker and defender.
+        /// </summary>
+        /// <param name="attackerAttack">The attacker's attack rating.</param>
+        /// <param name="attackerDMG">The attacker's DMG rating</param>
+        /// <param name="attackerStat">The attacker's attack stat value</param>
+        /// <param name="defenderDefense">The defender's defense rating.</param>
+        /// <param name="defenderStat">The defender's defend stat value</param>
+        /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <returns>A damage value to apply to the target.</returns>
+        public static int CalculateDamage(
+            int attackerAttack,
+            int attackerDMG,
+            int attackerStat,
+            int defenderDefense,
+            int defenderStat,
+            int critical)
+        {
+            var (minDamage, maxDamage) = CalculateDamageRange(
+                attackerAttack,
+                attackerDMG,
+                attackerStat,
+                defenderDefense,
+                defenderStat,
+                critical);
 
             return (int)Random.NextFloat(minDamage, maxDamage);
         }

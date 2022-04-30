@@ -826,6 +826,11 @@ namespace SWLOR.Game.Server.Service
                 defenseBonus = CalculateEffectDefense(creature, defenseBonus);
             }
 
+            return CalculateDefense(defenderStat, skillLevel, defenseBonus);
+        }
+
+        public static int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
+        {
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 

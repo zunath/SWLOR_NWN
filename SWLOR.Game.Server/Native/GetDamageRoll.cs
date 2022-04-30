@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Native
                             dmgValues[damageType] = 0;
 
                         var dmg = dmgValues[damageType];
-                        dmg += Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
+                        dmg += ip.m_nCostTableValue;
                         dmgValues[damageType] = dmg;
                         foundDMG = true;
                     }

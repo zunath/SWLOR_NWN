@@ -814,6 +814,30 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        /// <summary>
+        /// Returns the cumulative DMG value on a given item.
+        /// A minimum of 1 is always returned.
+        /// No checks for item type are made in this method.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>The DMG rating, or 1 if not found.</returns>
+        public static int GetDMG(uint item)
+        {
+            var dmg = 0;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.DMG)
+                {
+                    dmg += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            if (dmg < 1)
+                dmg = 1;
+
+            return dmg;
+        }
+
         // The values below are taken from the 2das, and cached on startup in CacheData() above.
         public static int GetCriticalThreatRange(BaseItem item)
         {

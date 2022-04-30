@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -91,11 +92,10 @@ namespace SWLOR.Game.Server.Service
             }
             
             pcSkill.XP += xp;
-            // Skill is at cap and player would level up.
-            // Reduce XP to required amount minus 1 XP.
-            if (pcSkill.Rank >= details.MaxRank && pcSkill.XP > requiredXP)
+            // Skill is at cap. No additional XP can be acquired.
+            if (pcSkill.Rank >= details.MaxRank)
             {
-                pcSkill.XP = requiredXP - 1;
+                pcSkill.XP = 0;
             }
 
             while (pcSkill.XP >= requiredXP)
@@ -113,9 +113,9 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature($"Your {details.Name} skill level increased to rank {pcSkill.Rank}!", player, false);
 
                 requiredXP = GetRequiredXP(pcSkill.Rank);
-                if (pcSkill.Rank >= details.MaxRank && pcSkill.XP >= requiredXP)
+                if (pcSkill.Rank >= details.MaxRank)
                 {
-                    pcSkill.XP = requiredXP - 1;
+                    pcSkill.XP = 0;
                 }
 
                 dbPlayer.Skills[skill] = pcSkill;
@@ -200,10 +200,10 @@ namespace SWLOR.Game.Server.Service
             if (!skillsPossibleToDecay.Any()) return false;
 
             // Get the total XP acquired, then add up any remaining XP for a partial level
-            int totalAvailableXPToDecay = skillsPossibleToDecay.Sum(x =>
+            var totalAvailableXPToDecay = skillsPossibleToDecay.Sum(x =>
             {
-                var totalXP = GetTotalXP(x.Value.Rank);
-                xp += x.Value.XP;
+                var totalXP = GetTotalRequiredXP(x.Value.Rank);
+                totalXP += x.Value.XP;
 
                 return totalXP;
             });
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var index = Random.Next(skillsPossibleToDecay.Count);
                 var decaySkill = skillsPossibleToDecay[index];
-                var totalDecayXP = GetTotalXP(decaySkill.Value.Rank);
+                var totalDecayXP = GetTotalRequiredXP(decaySkill.Value.Rank) - GetRequiredXP(decaySkill.Value.Rank) + decaySkill.Value.XP;
 
                 if (totalDecayXP >= xp)
                 {
@@ -238,26 +238,10 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise calculate what rank and XP value the skill should now be.
                 else
                 {
-                    // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
-                    var reqs = _skillTotalXP.Where(x => x.Key <= decaySkill.Value.Rank).OrderBy(o => o.Key); 
-
-                    // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
-                    int newDecaySkillRank = 0;
-                    foreach (var (level, requiredXP) in reqs)
-                    {
-                        if (totalDecayXP >= requiredXP)
-                        {
-                            totalDecayXP -= requiredXP;
-                            newDecaySkillRank++;
-                        }
-                        else if (totalDecayXP < requiredXP)
-                        {
-                            break;
-                        }
-                    }
+                    var (newDecaySkillRank, remainderXP) = GetLevelByTotalXP(totalDecayXP);
 
                     decaySkill.Value.Rank = newDecaySkillRank;
-                    decaySkill.Value.XP = totalDecayXP;
+                    decaySkill.Value.XP = remainderXP;
                 }
 
                 dbPlayer.Skills[decaySkill.Key].Rank = decaySkill.Value.Rank;

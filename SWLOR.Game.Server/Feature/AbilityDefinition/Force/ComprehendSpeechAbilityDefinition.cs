@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ComprehendSpeech1, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech I")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
-                .RequirementFP(4)
+                .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
-                .RequirementFP(6)
+                .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ComprehendSpeech3, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech III")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
-                .RequirementFP(8)
+                .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ComprehendSpeech4, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech IV")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
-                .RequirementFP(10)
+                .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Rest)
                 .Name("Rest")
-                .EffectIcon(8) // 8 = Fatigue
+                .EffectIcon(EffectIconType.Fatigue)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     AssignCommand(target, () =>

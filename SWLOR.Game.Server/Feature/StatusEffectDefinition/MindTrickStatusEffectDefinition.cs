@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.MindTrick1)
                 .Name("Mind Trick I")
-                .EffectIcon(13) // 13 = Confused
+                .EffectIcon(EffectIconType.Confused)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     if (!Ability.GetAbilityResisted(source, target))
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.MindTrick2)
                 .Name("Mind Trick II")
-                .EffectIcon(13) // 13 = Confused
+                .EffectIcon(EffectIconType.Confused)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     const float radiusSize = RadiusSize.Medium;

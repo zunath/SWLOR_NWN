@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 builder.Create(StatusEffectType.ForcePack1)
                     .Name(name)
-                    .EffectIcon(2) // 2 = Regenerate
+                    .EffectIcon(EffectIconType.Regenerate)
                     .TickAction((source, target, effectData) =>
                     {
                         Stat.RestoreFP(target, amount);

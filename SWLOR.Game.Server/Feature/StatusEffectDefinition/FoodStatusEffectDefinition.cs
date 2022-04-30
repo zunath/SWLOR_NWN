@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Food)
                 .Name("Food")
-                .EffectIcon(130) // 130 = Food
+                .EffectIcon(EffectIconType.Food)
                 .GrantAction((source, target, length, data) =>
                 {
                     if (data == null)

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
 {
@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     public class StatusEffectDetail
     {
         public string Name { get; set; }
-        public int EffectIconId { get; set; }
+        public EffectIconType EffectIconId { get; set; }
         public StatusEffectAppliedDelegate AppliedAction { get; set; }
         public StatusEffectRemovedDelegate RemoveAction { get; set; }
         public StatusEffectTickDelegate TickAction { get; set; }
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public StatusEffectDetail()
         {
             Name = string.Empty;
-            EffectIconId = 0;
+            EffectIconId = EffectIconType.Invalid;
         }
     }
 }

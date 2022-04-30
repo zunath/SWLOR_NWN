@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceDrain1)
                 .Name("Force Drain I")
-                .EffectIcon(50) // 50 = Level Drain
+                .EffectIcon(EffectIconType.LevelDrain)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceDrain2)
                 .Name("Force Drain II")
-                .EffectIcon(50) // 50 = Level Drain
+                .EffectIcon(EffectIconType.LevelDrain)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceDrain3)
                 .Name("Force Drain III")
-                .EffectIcon(50) // 50 = Level Drain
+                .EffectIcon(EffectIconType.LevelDrain)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceDrain4)
                 .Name("Force Drain IV")
-                .EffectIcon(50) // 50 = Level Drain
+                .EffectIcon(EffectIconType.LevelDrain)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceDrain5)
                 .Name("Force Drain V")
-                .EffectIcon(50) // 50 = Level Drain
+                .EffectIcon(EffectIconType.LevelDrain)
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);

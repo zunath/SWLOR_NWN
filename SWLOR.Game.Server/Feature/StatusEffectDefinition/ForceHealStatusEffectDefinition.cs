@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal1)
                 .Name("Force Heal I")
-                .EffectIcon(2) // 2 = Regenerate
+                .EffectIcon(EffectIconType.Regenerate)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = 10; // GetAbilityModifier(AbilityType.Wisdom, activator);
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal2)
                 .Name("Force Heal I")
-                .EffectIcon(2) // 2 = Regenerate
+                .EffectIcon(EffectIconType.Regenerate)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = 15; // GetAbilityModifier(AbilityType.Wisdom, activator);
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal3)
                 .Name("Force Heal I")
-                .EffectIcon(2) // 2 = Regenerate
+                .EffectIcon(EffectIconType.Regenerate)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = 20; // GetAbilityModifier(AbilityType.Wisdom, activator);
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal4)
                 .Name("Force Heal I")
-                .EffectIcon(2) // 2 = Regenerate
+                .EffectIcon(EffectIconType.Regenerate)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = 25; // GetAbilityModifier(AbilityType.Wisdom, activator);
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal5)
                 .Name("Force Heal I")
-                .EffectIcon(2) // 2 = Regenerate
+                .EffectIcon(EffectIconType.Regenerate)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = 30; // GetAbilityModifier(AbilityType.Wisdom, activator);

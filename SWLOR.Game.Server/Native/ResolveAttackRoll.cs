@@ -137,10 +137,10 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Weapon Finesse - set which weapons are allowed here.
-            var bFinessable = weapon == null;
-            if (!bFinessable)
+            var isFinessable = weapon == null;
+            if (!isFinessable)
             {
-                bFinessable =   Item.FinesseVibrobladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                isFinessable =   Item.FinesseVibrobladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
                                 Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) || 
                                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
                                 Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Native
             if (attacker.m_pStats.HasFeat((ushort)FeatType.WeaponFinesse) == 1 &&
                 ((int)attackerStats.m_nDexterityBase - (int)defenderStats.m_nDexterityBase) > ((int)attackerStats.m_nStrengthBase - (int)defenderStats.m_nStrengthBase) &&
                 attackType == (uint) AttackType.Melee && 
-                bFinessable)
+                isFinessable)
             {
                 Log.Write(LogGroup.Attack, "Finesse attack");
                 attackAttribute = attackerStats.m_nDexterityModifier;

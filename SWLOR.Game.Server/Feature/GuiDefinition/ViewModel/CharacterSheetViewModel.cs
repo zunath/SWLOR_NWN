@@ -80,6 +80,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string MainHandDMG
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string OffHandDMG
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MainHandTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string OffHandTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public int Attack
         {
             get => Get<int>();
@@ -338,6 +362,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshEquipmentStats(Player dbPlayer)
         {
+            // Builds a damage estimate using the player's stats as a baseline.
+            (string, string) GetDMGInfo( uint item)
+            {
+                var itemType = GetBaseItemType(item);
+                var skill = Skill.GetSkillTypeByBaseItem(itemType);
+                var ability = Item.GetAbilityTypeUsedByWeapon(itemType);
+                var stat = GetAbilityScore(Player, ability);
+                var skillRank = dbPlayer.Skills[skill].Rank;
+                var dmg = Item.GetDMG(item);
+                var dmgText = $"{dmg} DMG";
+                var attack = Stat.GetAttack(Player, ability, skill);
+                var defense = Stat.CalculateDefense(stat, skillRank, 0);
+                var damageRange = Combat.CalculateDamageRange(attack, dmg, stat, defense, stat, 0);
+                var tooltip = $"Est. Damage: {damageRange.Item1} - {damageRange.Item2}";
+
+                return (dmgText, tooltip);
+            }
+
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, Player);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, Player);
+
+            if (GetIsObjectValid(mainHand))
+            {
+                var dmgInfo = GetDMGInfo(mainHand);
+                MainHandDMG = dmgInfo.Item1;
+                MainHandTooltip = dmgInfo.Item2;
+            }
+            else
+            {
+                MainHandDMG = "-";
+                MainHandTooltip = "Est. Damage: N/A";
+            }
+
+            if (GetIsObjectValid(offHand))
+            {
+                var dmgInfo = GetDMGInfo(offHand);
+                OffHandDMG = dmgInfo.Item1;
+                OffHandTooltip = dmgInfo.Item2;
+            }
+            else
+            {
+                OffHandDMG = "-";
+                OffHandTooltip = "Est. Damage: N/A";
+            }
+
+
             Attack = dbPlayer.Attack;
             ForceAttack = dbPlayer.ForceAttack;
             DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);

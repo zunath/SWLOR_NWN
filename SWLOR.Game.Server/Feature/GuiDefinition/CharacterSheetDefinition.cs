@@ -304,6 +304,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
+                            .SetText("Main Hand")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Main Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
+
+                        row.AddLabel()
+                            .BindText(model => model.MainHandDMG)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .BindTooltip(model => model.MainHandTooltip);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Off Hand")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Off Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
+
+                        row.AddLabel()
+                            .BindText(model => model.OffHandDMG)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .BindTooltip(model => model.OffHandTooltip);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
                             .SetText("Attack")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)

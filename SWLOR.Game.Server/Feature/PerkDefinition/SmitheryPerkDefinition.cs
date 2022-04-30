@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void OneHandedBlueprints()
         {
             _builder.Create(PerkCategoryType.Smithery, PerkType.OneHandedBlueprints)
-                .Name("Vibroblade Blueprints")
+                .Name("One-Handed Blueprints")
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 One-Handed blueprints.")

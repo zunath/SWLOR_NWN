@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (skill == SkillType.Invalid || xp <= 0 || !GetIsPC(player) || GetIsDM(player)) return;
 
+            var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -70,27 +72,38 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (!ApplyDecay(dbPlayer, skill, xp))
-            {
-                return;
-            }
-
-
             if (debtRemoved > 0)
             {
-                dbPlayer.XPDebt = dbPlayer.XPDebt - debtRemoved;
+                dbPlayer.XPDebt -= debtRemoved;
                 SendMessageToPC(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
             }
 
-            if (xp > 0)
-            {
-                SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
-            }
-            else if (debtRemoved == 0)
-            {
+            if (xp <= 0)
                 return;
-            }
-            
+
+            var totalRanks = dbPlayer.Skills
+                .Where(x =>
+                {
+                    var detail = GetSkillDetails(x.Key);
+                    return detail.ContributesToSkillCap;
+                })
+                .Sum(x => x.Value.Rank);
+            var skillsPossibleToDecay = dbPlayer.Skills
+                .Where(x =>
+                {
+                    var detail = GetSkillDetails(x.Key);
+
+                    return !x.Value.IsLocked &&
+                           detail.ContributesToSkillCap &&
+                           x.Key != skill &&
+                           x.Value.Rank > 0;
+                }).ToList();
+
+            // If player is at the skill cap and no skills are available for decay, exit early.
+            if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+                return;
+
+            SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
             pcSkill.XP += xp;
             // Skill is at cap. No additional XP can be acquired.
             if (pcSkill.Rank >= details.MaxRank)
@@ -100,6 +113,9 @@ namespace SWLOR.Game.Server.Service
 
             while (pcSkill.XP >= requiredXP)
             {
+                if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+                    break;
+
                 receivedRankUp = true;
                 pcSkill.XP -= requiredXP;
 
@@ -121,11 +137,29 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Skills[skill] = pcSkill;
 
                 ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+
+                // If player is at the cap, pick a random skill out of the available decayable skills
+                // reduce its level by 1 and set XP to zero.
+                if (totalRanks >= SkillCap)
+                {
+                    var index = Random.Next(skillsPossibleToDecay.Count);
+                    var decaySkill = skillsPossibleToDecay[index];
+                    dbPlayer.Skills[decaySkill.Key].XP = 0;
+                    dbPlayer.Skills[decaySkill.Key].Rank--;
+
+                    if(!modifiedSkills.Contains(decaySkill.Key))
+                        modifiedSkills.Add(decaySkill.Key);
+
+                    if (dbPlayer.Skills[decaySkill.Key].Rank <= 0)
+                        skillsPossibleToDecay.Remove(decaySkill);
+                }
+
             }
 
             DB.Set(dbPlayer);
 
-            Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(skill));
+            modifiedSkills.Add(skill);
+            Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)
@@ -180,10 +214,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The player entity to apply skill decay to</param>
         /// <param name="skill">The skill which is receiving XP. This skill will be excluded from decay.</param>
         /// <param name="xp">The amount of XP being applied.</param>
+        /// <param name="modifiedSkillTypes">A list of skill types which were modified as part of the decay process.</param>
         /// <returns>true if successful or unnecessary, false otherwise</returns>
-        private static bool ApplyDecay(Player dbPlayer, SkillType skill, int xp)
+        private static bool ApplyDecay(Player dbPlayer, SkillType skill, int xp, out List<SkillType> modifiedSkillTypes)
         {
-            if (dbPlayer.TotalSPAcquired < SkillCap) return true;
+            modifiedSkillTypes = new List<SkillType>();
+            
+            if (dbPlayer.TotalSPAcquired < SkillCap) 
+                return true;
 
             var skillsPossibleToDecay = dbPlayer.Skills
                 .Where(x =>
@@ -196,8 +234,13 @@ namespace SWLOR.Game.Server.Service
                            (x.Value.XP > 0 || x.Value.Rank > 0);
                 }).ToList();
 
+            // If player is somehow not at the level cap (probably due to a prior decay), return true.
+            if (skillsPossibleToDecay.Sum(x => x.Value.Rank) < SkillCap)
+                return true;
+
             // If no skills can be decayed, return false.
-            if (!skillsPossibleToDecay.Any()) return false;
+            if (!skillsPossibleToDecay.Any()) 
+                return false;
 
             // Get the total XP acquired, then add up any remaining XP for a partial level
             var totalAvailableXPToDecay = skillsPossibleToDecay.Sum(x =>
@@ -209,7 +252,8 @@ namespace SWLOR.Game.Server.Service
             });
 
             // There's not enough XP to decay for this gain. Exit early.
-            if (totalAvailableXPToDecay < xp) return false;
+            if (totalAvailableXPToDecay < xp) 
+                return false;
 
             while (xp > 0)
             {
@@ -244,6 +288,7 @@ namespace SWLOR.Game.Server.Service
                     decaySkill.Value.XP = remainderXP;
                 }
 
+                modifiedSkillTypes.Add(decaySkill.Key);
                 dbPlayer.Skills[decaySkill.Key].Rank = decaySkill.Value.Rank;
                 dbPlayer.Skills[decaySkill.Key].XP = decaySkill.Value.XP;
             }

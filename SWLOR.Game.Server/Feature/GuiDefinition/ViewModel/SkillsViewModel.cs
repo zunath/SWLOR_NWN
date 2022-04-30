@@ -141,8 +141,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 skillNames.Add(skill.Name);
                 levels.Add(playerSkill.Rank);
                 titles.Add(GetTitle(playerSkill.Rank));
-                progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
-                rawXPAmounts.Add(CalculateRawXPAmounts(playerSkill.Rank, playerSkill.XP));
+                progresses.Add(CalculateProgress(type, playerSkill.Rank, playerSkill.XP));
+                rawXPAmounts.Add(CalculateRawXPAmounts(type, playerSkill.Rank, playerSkill.XP));
                 descriptions.Add(skill.Description);
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
@@ -192,14 +192,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return "Untrained";
         }
 
-        private float CalculateProgress(int rank, int xp)
+        private float CalculateProgress(SkillType type, int rank, int xp)
         {
+            var skill = Skill.GetSkillDetails(type);
+            if (rank >= skill.MaxRank)
+                return 1f;
+
             var nextLevelXP = Skill.GetRequiredXP(rank);
             return (float)xp / nextLevelXP;
         }
 
-        private string CalculateRawXPAmounts(int rank, int xp)
+        private string CalculateRawXPAmounts(SkillType type, int rank, int xp)
         {
+            var skill = Skill.GetSkillDetails(type);
+            if (rank >= skill.MaxRank)
+                return "0 / 0";
+
             var nextLevelXP = Skill.GetRequiredXP(rank);
             return $"{xp} / {nextLevelXP}";
         }
@@ -258,16 +266,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(SkillXPRefreshEvent payload)
         {
-            var skill = payload.Type;
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var index = _viewableSkills.IndexOf(skill);
-            var pcSkill = dbPlayer.Skills[skill];
+            foreach (var skill in payload.ModifiedSkills)
+            {
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+                var index = _viewableSkills.IndexOf(skill);
+                var pcSkill = dbPlayer.Skills[skill];
 
-            Levels[index] = pcSkill.Rank;
-            Titles[index] = GetTitle(pcSkill.Rank);
-            Progresses[index] = CalculateProgress(pcSkill.Rank, pcSkill.XP);
-            RawXPAmounts[index] = CalculateRawXPAmounts(pcSkill.Rank, pcSkill.XP);
+                Levels[index] = pcSkill.Rank;
+                Titles[index] = GetTitle(pcSkill.Rank);
+                Progresses[index] = CalculateProgress(skill, pcSkill.Rank, pcSkill.XP);
+                RawXPAmounts[index] = CalculateRawXPAmounts(skill, pcSkill.Rank, pcSkill.XP);
+            }
         }
 
         public void Refresh(RPXPRefreshEvent payload)

@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SkillService
 {
@@ -52,9 +53,10 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Force",
             50,
             true,
-            "Ability to use Force abilities. Only available to 'Force Sensitive' character types.",
+            "Ability to use Force abilities.",
             true,
-            false)]
+            false,
+            CharacterType.ForceSensitive)]
         Force = 5,
 
         [Skill(SkillCategoryType.Combat,
@@ -297,7 +299,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to use grenades, bombs, and other electronics.",
             true,
-            false)]
+            false,
+            CharacterType.Standard)]
         Devices = 33,
     }
 
@@ -310,6 +313,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public string Description { get; set; }
         public bool ContributesToSkillCap { get; set; }
         public bool IsShownInCraftMenu { get; set; }
+        public CharacterType CharacterTypeRestriction { get; set; }
 
         public SkillAttribute(
             SkillCategoryType category,
@@ -318,7 +322,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             bool isActive,
             string description,
             bool contributesToSkillCap,
-            bool isShownInCraftMenu)
+            bool isShownInCraftMenu,
+            CharacterType characterTypeRestriction = CharacterType.Invalid)
         {
             Category = category;
             Name = name;
@@ -327,6 +332,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             Description = description;
             ContributesToSkillCap = contributesToSkillCap;
             IsShownInCraftMenu = isShownInCraftMenu;
+            CharacterTypeRestriction = characterTypeRestriction;
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -127,6 +129,56 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalFloat(player, "ATTACK_ORIENTATION_X");
                 DeleteLocalFloat(player, "ATTACK_ORIENTATION_Y");
             }
+        }
+
+        /// <summary>
+        /// Sends a combat log message to both the attacker and defender.
+        /// </summary>
+        /// <param name="attacker">The creature attacking</param>
+        /// <param name="defender">The creature defending</param>
+        /// <param name="attackStat">The stat used for the attacker</param>
+        /// <param name="defendStat">The stat used for the defender</param>
+        /// <param name="attackRoll">The base attack roll</param>
+        /// <param name="attackMod">The attack roll modifier</param>
+        /// <param name="isHit">true if the attack hits, false otherwise</param>
+        public static void SendCombatLog(
+            uint attacker, 
+            uint defender,
+            AbilityType attackStat,
+            AbilityType defendStat,
+            int attackRoll,
+            int attackMod,
+            bool isHit)
+        {
+            string GetStatName(AbilityType type)
+            {
+                switch (type)
+                {
+                    case AbilityType.Might:
+                        return "MGT";
+                    case AbilityType.Perception:
+                        return "PER";
+                    case AbilityType.Vitality:
+                        return "VIT";
+                    case AbilityType.Willpower:
+                        return "WIL";
+                    case AbilityType.Social:
+                        return "SOC";
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
+            }
+
+            var total = attackRoll + attackMod;
+            var operation = attackMod < 0 ? "-" : "+";
+            var attackStatName = GetStatName(attackStat);
+            var defendStatName = GetStatName(defendStat);
+            var attackText = isHit ? "*hit*" : "*miss*";
+            var coloredAttackerName = ColorToken.Custom(GetName(attacker), 153, 255, 255);
+            var message = ColorToken.Combat($"{coloredAttackerName} attacks {GetName(defender)} {attackText} [{attackStatName} vs {defendStatName}] : ({attackRoll} {operation} {Math.Abs(attackMod)} = {total})");
+
+            SendMessageToPC(attacker, message);
+            SendMessageToPC(defender, message);
         }
     }
 }

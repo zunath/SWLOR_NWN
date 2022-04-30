@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -135,6 +136,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, skill) in skills)
             {
+                // Exclude any skills which are restricted by character type.
+                if (skill.CharacterTypeRestriction != CharacterType.Invalid &&
+                    skill.CharacterTypeRestriction != dbPlayer.CharacterType)
+                {
+                    continue;
+                }
+
                 var playerSkill = dbPlayer.Skills[type];
 
                 _viewableSkills.Add(type);

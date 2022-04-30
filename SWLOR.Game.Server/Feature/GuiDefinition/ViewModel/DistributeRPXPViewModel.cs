@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -76,6 +77,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
+
+                    // Some skills are restricted by character type.
+                    // Players shouldn't be able to see this pop-up but in case they get to it,
+                    // prevent them from depositing XP into a skill they shouldn't have access to.
+                    var skill = Skill.GetSkillDetails(_skillType);
+                    if (skill.CharacterTypeRestriction != CharacterType.Invalid &&
+                        skill.CharacterTypeRestriction != dbPlayer.CharacterType)
+                    {
+                        return;
+                    }
+
                     if (!int.TryParse(Distribution, out var amount))
                     {
                         amount = 0;

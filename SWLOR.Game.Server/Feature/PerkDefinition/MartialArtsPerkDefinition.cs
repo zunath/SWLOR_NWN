@@ -233,14 +233,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KatarMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KatarMastery2);
@@ -414,14 +414,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StaffMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StaffMastery2);

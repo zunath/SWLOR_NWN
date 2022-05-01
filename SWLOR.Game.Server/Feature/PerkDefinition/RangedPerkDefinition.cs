@@ -235,14 +235,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Pistol.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Pistol.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery2);
@@ -416,14 +416,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery2);
@@ -597,14 +597,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Rifle.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Rifle.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery2);

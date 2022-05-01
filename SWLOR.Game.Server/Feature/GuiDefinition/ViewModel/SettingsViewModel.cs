@@ -1,6 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -33,20 +34,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShareLightsaberForceXP
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsForceSensitive
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
+
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             DisplayHelmet = dbPlayer.Settings.ShowHelmet;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
+            ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHelmet);
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
+            WatchOnClient(model => model.ShareLightsaberForceXP);
         }
 
         public Action OnSave() => () =>
@@ -58,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.ShowHelmet = DisplayHelmet;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
+            dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
 
             DB.Set(dbPlayer);
 
@@ -66,6 +84,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Post-save actions
             UpdateHelmetDisplay();
             UpdateHolonetSetting();
+
+            SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };
 
         public Action OnCancel() => () =>

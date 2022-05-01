@@ -227,14 +227,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Vibroblade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.VibrobladeMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Vibroblade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.VibrobladeMastery2);
@@ -408,14 +408,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack with a Finesse Vibroblade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FinesseVibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack with a Finesse Vibroblade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FinesseVibrobladeMastery2);
@@ -596,14 +596,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Lightsaber.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.LightsaberMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Lightsaber.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.LightsaberMastery2);

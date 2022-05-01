@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
@@ -402,14 +402,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Polearm.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Polearm.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery2);
@@ -584,14 +584,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Twin Blade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Twin Blade.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery2);
@@ -771,14 +771,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Saberstaff.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberstaffMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Saberstaff.")
-                .Price(12)
+                .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberstaffMastery2);

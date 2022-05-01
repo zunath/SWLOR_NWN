@@ -350,45 +350,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("F. Attack")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Force Attack - Improves damage dealt by Force attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.ForceAttack)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
                             .SetText("Accuracy")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Accuracy - Improves your chance to hit with melee attacks.");
+                            .SetTooltip("Accuracy - Improves your chance to hit.");
 
                         row.AddLabel()
                             .BindText(model => model.Accuracy)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .BindTooltip(model => model.AccuracyTooltip);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("R. Accuracy")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Ranged Accuracy - Improves your chance to hit with ranged attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.RangedAccuracy)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .BindTooltip(model => model.RangedAccuracyTooltip);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                     col.AddRow(row =>

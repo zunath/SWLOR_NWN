@@ -116,12 +116,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int ForceAttack
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
         public int DefensePhysical
         {
             get => Get<int>();
@@ -140,25 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string AccuracyTooltip
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string RangedAccuracyTooltip
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public int Accuracy
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-        public int RangedAccuracy
         {
             get => Get<int>();
             set => Set(value);
@@ -394,41 +370,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Perception = GetAbilityScore(Player, AbilityType.Perception);
             Vitality = GetAbilityScore(Player, AbilityType.Vitality);
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
+            Agility = GetAbilityScore(Player, AbilityType.Agility);
             Social = GetAbilityScore(Player, AbilityType.Social);
 
             IsMightUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades;
             IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades;
             IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades;
             IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades;
+            IsAgilityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades;
             IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades;
         }
 
         private void RefreshEquipmentStats(Player dbPlayer)
         {
             // Builds a damage estimate using the player's stats as a baseline.
-            (string, string) GetDMGInfo( uint item)
+            (string, string) GetCombatInfo( uint item)
             {
                 var itemType = GetBaseItemType(item);
                 var skill = Skill.GetSkillTypeByBaseItem(itemType);
-                var ability = Item.GetAbilityTypeUsedByWeapon(itemType);
-                var stat = GetAbilityScore(Player, ability);
+                var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
+                var damageStat = GetAbilityScore(Player, damageAbility);
                 var skillRank = dbPlayer.Skills[skill].Rank;
                 var dmg = Item.GetDMG(item);
                 var dmgText = $"{dmg} DMG";
-                var attack = Stat.GetAttack(Player, ability, skill);
-                var defense = Stat.CalculateDefense(stat, skillRank, 0);
-                var damageRange = Combat.CalculateDamageRange(attack, dmg, stat, defense, stat, 0);
-                var tooltip = $"Est. Damage: {damageRange.Item1} - {damageRange.Item2}";
+                var attack = Stat.GetAttack(Player, damageAbility, skill);
+                var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
+                var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+                var tooltip = $"Est. Damage: {min} - {max}";
 
                 return (dmgText, tooltip);
             }
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, Player);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, Player);
+            var mainHandType = GetBaseItemType(mainHand);
 
             if (GetIsObjectValid(mainHand))
             {
-                var dmgInfo = GetDMGInfo(mainHand);
+                var dmgInfo = GetCombatInfo(mainHand);
                 MainHandDMG = dmgInfo.Item1;
                 MainHandTooltip = dmgInfo.Item2;
             }
@@ -440,7 +419,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetIsObjectValid(offHand))
             {
-                var dmgInfo = GetDMGInfo(offHand);
+                var dmgInfo = GetCombatInfo(offHand);
                 OffHandDMG = dmgInfo.Item1;
                 OffHandTooltip = dmgInfo.Item2;
             }
@@ -450,9 +429,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 OffHandTooltip = "Est. Damage: N/A";
             }
 
-
-            Attack = dbPlayer.Attack;
-            ForceAttack = dbPlayer.ForceAttack;
+            var damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
+            var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
+            Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);
             DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);
             DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force, AbilityType.Willpower);
 
@@ -461,7 +440,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
             var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
             DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            Evasion = CreaturePlugin.GetBaseAC(Player);
+            Accuracy = Stat.GetAccuracy(Player, mainHand);
+            Evasion = Stat.GetEvasion(Player);
 
             var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)
                 ? dbPlayer.Control[SkillType.Smithery]

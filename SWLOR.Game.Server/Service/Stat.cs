@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -734,30 +735,8 @@ namespace SWLOR.Game.Server.Service
         {
             var attackBonus = 0;
             var skillLevel = 0;
-            var attribute = Item.GetAbilityTypeUsedByWeapon(itemType);
-            int stat;
-
-            switch (attribute)
-            {
-                case AbilityType.Might:
-                    stat = creature.m_pStats.m_nStrengthBase;
-                    break;
-                case AbilityType.Perception:
-                    stat = creature.m_pStats.m_nDexterityBase;
-                    break;
-                case AbilityType.Vitality:
-                    stat = creature.m_pStats.m_nConstitutionBase;
-                    break;
-                case AbilityType.Willpower:
-                    stat = creature.m_pStats.m_nWisdomBase;
-                    break;
-                case AbilityType.Social:
-                    stat = creature.m_pStats.m_nCharismaBase;
-                    break;
-                default:
-                    stat = 0;
-                    break;
-            }
+            var statType = Item.GetWeaponDamageAbilityType(itemType);
+            var stat = GetStatValueNative(creature, statType);
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -849,6 +828,40 @@ namespace SWLOR.Game.Server.Service
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 
+        private static int GetStatValueNative(CNWSCreature creature, AbilityType statType)
+        {
+            var stat = 0;
+            switch (statType)
+            {
+                case AbilityType.Might:
+                    stat = creature.m_pStats.m_nStrengthBase;
+                    break;
+                case AbilityType.Perception:
+                    stat = creature.m_pStats.m_nDexterityBase;
+                    break;
+                case AbilityType.Vitality:
+                    stat = creature.m_pStats.m_nConstitutionBase;
+                    break;
+                case AbilityType.Willpower:
+                    stat = creature.m_pStats.m_nWisdomBase;
+                    break;
+                case AbilityType.Agility:
+                    stat = creature.m_pStats.m_nIntelligenceBase;
+                    break;
+                case AbilityType.Social:
+                    stat = creature.m_pStats.m_nCharismaBase;
+                    break;
+                default:
+                    stat = 0;
+                    break;
+            }
+
+            // Check for negative modifiers.  A modifier of -2 is represented as 254.
+            if (stat > 128) stat -= 256;
+
+            return stat;
+        }
+
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// This is specifically for use with Native code and should not be referenced outside of there.
@@ -860,30 +873,8 @@ namespace SWLOR.Game.Server.Service
         public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
             var defenseBonus = 0;
-            int defenderStat;
+            int defenderStat = GetStatValueNative(creature, abilityType);
             var skillLevel = 0;
-
-            switch (abilityType)
-            {
-                case AbilityType.Might:
-                    defenderStat = creature.m_pStats.m_nStrengthBase;
-                    break;
-                case AbilityType.Perception:
-                    defenderStat = creature.m_pStats.m_nDexterityBase;
-                    break;
-                case AbilityType.Vitality:
-                    defenderStat = creature.m_pStats.m_nConstitutionBase;
-                    break;
-                case AbilityType.Willpower:
-                    defenderStat = creature.m_pStats.m_nWisdomBase;
-                    break;
-                case AbilityType.Social:
-                    defenderStat = creature.m_pStats.m_nCharismaBase;
-                    break;
-                default:
-                    defenderStat = 0;
-                    break;
-            }
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -927,6 +918,239 @@ namespace SWLOR.Game.Server.Service
             }
 
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
+        }
+
+        /// <summary>
+        /// Retrieves the accuracy rating of a creature.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <param name="weapon">The weapon being used.</param>
+        /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
+        public static int GetAccuracy(uint creature, uint weapon)
+        {
+            var baseItemType = GetBaseItemType(weapon);
+            var statType = Item.GetWeaponAccuracyAbilityType(baseItemType);
+            var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
+            var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skillLevel = 0;
+            var accuracyBonus = 0;
+
+            // Attack Bonus / Enhancement Bonus found on the weapon.
+            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.AttackBonus ||
+                    type == ItemPropertyType.EnhancementBonus)
+                {
+                    accuracyBonus += GetItemPropertyCostTableValue(ip) * 2;
+                }
+            }
+
+            // Creature skill level / NPC level
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (skillType != SkillType.Invalid)
+                    skillLevel = dbPlayer.Skills[skillType].Rank;
+            }
+            else
+            {
+                var npcStats = GetNPCStats(creature);
+                skillLevel = npcStats.Level;
+            }
+
+            // Accuracy increases granted by effects
+            accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
+
+            return stat * 3 + skillLevel + accuracyBonus;
+        }
+
+        /// <summary>
+        /// Retrieves the accuracy rating of a creature from a native context.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <param name="weapon">The weapon being used.</param>
+        /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
+        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon)
+        {
+            var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
+            var statType = Item.GetWeaponAccuracyAbilityType(baseItemType);
+            var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
+            var stat = GetStatValueNative(creature, statType);
+            var skillLevel = 0;
+            var accuracyBonus = 0;
+
+            // Attack Bonus / Enhancement Bonus found on the weapon.
+            if (weapon != null)
+            {
+                foreach (var ip in weapon.m_lstPassiveProperties)
+                {
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
+                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    {
+                        accuracyBonus += ip.m_nCostTableValue * 2;
+                    }
+                }
+            }
+
+            // Creature skill level / NPC level
+            if (creature.m_bPlayerCharacter == 1)
+            {
+                var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (dbPlayer != null && skillType != SkillType.Invalid)
+                {
+                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                }
+            }
+            else
+            {
+                var npcStats = GetNPCStatsNative(creature);
+                skillLevel = npcStats.Level;
+            }
+
+            accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
+
+            return stat * 3 + skillLevel + accuracyBonus;
+        }
+
+        private static int CalculateEffectAccuracy(uint creature, int accuracy)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                var type = GetEffectType(effect);
+                if (type == EffectTypeScript.AttackIncrease)
+                {
+                    accuracy += 2 * GetEffectInteger(effect, 1);
+                }
+                else if (type == EffectTypeScript.AttackDecrease)
+                {
+                    accuracy -= 2 * GetEffectInteger(effect, 1);
+                }
+            }
+            return accuracy;
+        }
+
+        private static int CalculateEffectAccuracyNative(CNWSCreature creature, int accuracy)
+        {
+            foreach (var effect in creature.m_appliedEffects)
+            {
+                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
+                {
+                    accuracy += 2 * effect.GetInteger(1);
+                }
+                else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
+                {
+                    accuracy -= 2 * effect.GetInteger(1);
+                }
+            }
+
+            return accuracy;
+        }
+
+        /// <summary>
+        /// Retrieves a creature's evasion.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The evasion rating of a creature.</returns>
+        public static int GetEvasion(uint creature)
+        {
+            var stat = GetAbilityScore(creature, AbilityType.Agility);
+            int skillLevel;
+            var evasionBonus = 0;
+            var ac = GetAC(creature) - 10; // Offset by natural 10 AC granted to all characters.
+
+            Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
+
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+            }
+            else
+            {
+                var npcStats = GetNPCStats(creature);
+                skillLevel = npcStats.Level;
+            }
+
+            evasionBonus = CalculateEffectEvasion(creature, evasionBonus);
+
+            return stat * 3 + skillLevel + evasionBonus + ac;
+        }
+
+        /// <summary>
+        /// Retrieves a creature's evasion rating from a native context.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The evasion rating of a creature.</returns>
+        public static int GetEvasionNative(CNWSCreature creature)
+        {
+            var stat = GetStatValueNative(creature, AbilityType.Agility);
+            var skillLevel = 0;
+            var evasionBonus = 0;
+            var ac = creature.m_pStats.m_nACArmorBase + creature.m_pStats.m_nACNaturalBase;
+
+            Log.Write(LogGroup.Attack, $"Evasion native AC = {ac}");
+
+            if (creature.m_bPlayerCharacter == 1)
+            {
+                var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (dbPlayer != null)
+                {
+                    skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                }
+            }
+            else
+            {
+                var npcStats = GetNPCStatsNative(creature);
+                skillLevel = npcStats.Level;
+            }
+
+            evasionBonus = CalculateEffectEvasionNative(creature, evasionBonus);
+
+            return stat * 3 + skillLevel + evasionBonus + ac;
+        }
+
+        private static int CalculateEffectEvasion(uint creature, int evasion)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                var type = GetEffectType(effect);
+                if (type == EffectTypeScript.ACIncrease)
+                {
+                    evasion += 2 * GetEffectInteger(effect, 1);
+                }
+                else if (type == EffectTypeScript.ACDecrease)
+                {
+                    evasion -= 2 * GetEffectInteger(effect, 1);
+                }
+            }
+
+            return evasion;
+        }
+
+        private static int CalculateEffectEvasionNative(CNWSCreature creature, int evasion)
+        {
+            foreach (var effect in creature.m_appliedEffects)
+            {
+                if (effect.m_nType == (ushort)EffectTrueType.ACIncrease)
+                {
+                    evasion += 2 * effect.GetInteger(1);
+                }
+                else if (effect.m_nType == (ushort)EffectTrueType.ACDecrease)
+                {
+                    evasion -= 2 * effect.GetInteger(1);
+                }
+            }
+
+            return evasion;
         }
 
         /// <summary>

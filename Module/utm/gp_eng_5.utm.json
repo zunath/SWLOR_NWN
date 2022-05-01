@@ -58,7 +58,126 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 0
+        "__struct_id": 0,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_belt_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_bracer_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_cloak_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_helmet_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 4,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_leggings_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 5,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_armor_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 1
+              }
+            }
+          ]
+        }
       },
       {
         "__struct_id": 4
@@ -67,7 +186,50 @@
         "__struct_id": 2
       },
       {
-        "__struct_id": 3
+        "__struct_id": 3,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_necklace_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "engi_ring_5"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            }
+          ]
+        }
       },
       {
         "__struct_id": 1,

@@ -120,6 +120,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Amateur Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_belt_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_bracer_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_cloak_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_helmet_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_leggings_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_necklace_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Amateur Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_ring_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Amateur Tunic"
                     },
                     "RESREF": {
@@ -285,6 +362,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cloth Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_belt_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_bracer_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_cloak_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_helmet_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_leggings_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_necklace_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_ring_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cloth Tunic"
                     },
                     "RESREF": {
@@ -439,11 +593,165 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Designer Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_belt_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_bracer_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_cloak_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_helmet_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_leggings_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_necklace_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Designer Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_ring_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Designer Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "fabr_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_belt_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_bracer_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_cloak_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_helmet_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_leggings_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_necklace_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Devotion Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_ring_4"
                     }
                   },
                   {
@@ -593,6 +901,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Linen Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_belt_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_bracer_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_cloak_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_helmet_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_leggings_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_necklace_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Linen Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_ring_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Linen Tunic"
                     },
                     "RESREF": {
@@ -620,6 +1005,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "malak_cloak002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_belt_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_bracer_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_cloak_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_helmet_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_leggings_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_necklace_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_ring_3"
                     }
                   },
                   {
@@ -774,6 +1236,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_nulaarobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_belt_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_bracer_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_cloak_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_helmet_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_leggings_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_necklace_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_ring_4"
                     }
                   },
                   {
@@ -945,6 +1484,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rose Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_belt_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_bracer_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_cloak_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_helmet_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_leggings_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_necklace_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rose Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_ring_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rose Tunic"
                     },
                     "RESREF": {
@@ -1104,6 +1720,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cook_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_belt_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_bracer_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_cloak_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_helmet_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_leggings_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_necklace_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skysteel Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_ring_5"
                     }
                   },
                   {
@@ -1363,6 +2056,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Worker Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_belt_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_bracer_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_cloak_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_helmet_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_leggings_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_necklace_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Worker Outfit"
                     },
                     "RESREF": {
@@ -1379,6 +2138,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "worker_outfit_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_ring_2"
                     }
                   },
                   {

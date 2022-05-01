@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClosePriceWindow();
 
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, AddItem);
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", AddItem);
             EnterTargetingMode(Player, ObjectType.Item);
             SetLocalBool(Player, "MARKET_LISTING_TARGETING_MODE", true);
         };

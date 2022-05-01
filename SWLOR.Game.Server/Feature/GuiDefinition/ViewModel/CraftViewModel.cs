@@ -647,7 +647,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement1))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
                 {
                     if (!IsValidEnhancement(item))
                         return;
@@ -684,7 +685,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement2))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
                 {
                     if (!IsValidEnhancement(item))
                         return;

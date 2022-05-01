@@ -76,9 +76,8 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
                 
-                SendMessageToPC(sender, "Please select a target for this chat command.");
-                
-                Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, target =>
+                Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
+                    target =>
                 {
                     var location = GetIsObjectValid(target)
                         ? GetLocation(target)

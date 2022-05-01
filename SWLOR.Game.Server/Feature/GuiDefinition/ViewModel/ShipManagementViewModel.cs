@@ -941,7 +941,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRegisterShip() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship deed within your inventory.",
+                item =>
             {
                 if (GetItemPossessor(item) != Player)
                 {
@@ -1148,7 +1149,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, (item) =>
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
+                    item =>
                 {
                     var itemTag = GetTag(item);
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
@@ -1210,7 +1212,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, (item) =>
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
+                    item =>
                 {
                     var itemTag = GetTag(item);
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);

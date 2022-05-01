@@ -165,7 +165,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDeposit() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
+                item =>
             {
                 var canStore = Item.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canStore))

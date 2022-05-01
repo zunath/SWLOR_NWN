@@ -175,6 +175,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chef Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_belt_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_bracer_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_cloak_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_helmet_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_leggings_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_necklace_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chef Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_ring_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chef Tunic"
                     },
                     "RESREF": {
@@ -560,6 +637,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moonflame Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_belt_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_bracer_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_cloak_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_helmet_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_leggings_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_necklace_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_ring_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moonflame Tunic"
                     },
                     "RESREF": {
@@ -868,6 +1022,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Silk Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_belt_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_bracer_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_cloak_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_helmet_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_leggings_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_necklace_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silk Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_ring_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Silk Tunic"
                     },
                     "RESREF": {
@@ -945,11 +1176,165 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Velveteen Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_belt_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_bracer_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_cloak_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_helmet_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_leggings_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_necklace_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Velveteen Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_ring_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Velveteen Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "cook_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_belt_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_bracer_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_cloak_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_helmet_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_leggings_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_necklace_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chef_ring_4"
                     }
                   },
                   {

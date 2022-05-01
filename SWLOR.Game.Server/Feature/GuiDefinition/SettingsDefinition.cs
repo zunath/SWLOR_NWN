@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class SettingsDefinition: IGuiWindowDefinition
+    public class SettingsDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 
@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 339f, 300f)
+                .SetInitialGeometry(0, 0, 339f, 340f)
                 .SetTitle("Settings")
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -68,6 +68,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     })
                         .SetHeight(30f);
+
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.IsForceSensitive);
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Lightsaber XP Share")
+                            .SetTooltip("If enabled, Force XP will be shared with One-Handed while using a lightsaber in combat.")
+                            .BindIsChecked(model => model.ShareLightsaberForceXP);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
+
 
                     col.AddRow(row =>
                     {

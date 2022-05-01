@@ -40,12 +40,16 @@ namespace SWLOR.Game.Server.Service
 
             var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             AddCombatPoint(player, target, skill);
 
-            // Lightsabers and Saberstaffs automatically grant combat points toward Force.
-            if (Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+            // Lightsabers and Saberstaffs automatically grant combat points toward Force if player has the setting enabled.
+            if ((Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
+                Item.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
+                dbPlayer.CharacterType == CharacterType.ForceSensitive &&
+                dbPlayer.Settings.IsLightsaberForceShareEnabled)
             {
                 AddCombatPoint(player, target, SkillType.Force);
             }

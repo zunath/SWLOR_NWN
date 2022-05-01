@@ -259,12 +259,15 @@ namespace SWLOR.Game.Server.Native
                 // Critical
                 if (criticalRoll <= criticalRate)
                 {
+                    Log.Write(LogGroup.Attack, $"Critical hit");
+
                     // Critical Hit - populate variables for feedback
                     pAttackData.m_bCriticalThreat = 1;
-                    pAttackData.m_nThreatRoll = 0;
+                    pAttackData.m_nThreatRoll = 1;
 
                     if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
                     {
+                        Log.Write(LogGroup.Attack, $"Immune to critical hits");
                         // Immune!
                         var pData = new CNWCCMessageData();
                         pData.SetObjectID(0, attacker.m_idSelf);
@@ -274,27 +277,31 @@ namespace SWLOR.Game.Server.Native
                     }
                     else
                     {
+                        Log.Write(LogGroup.Attack, $"Not immune to critical hits - dealing crit damage");
                         pAttackData.m_nAttackResult = 3;
                     }
                 }
                 // Regular Hit
                 else
                 {
+                    Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
                     pAttackData.m_nAttackResult = 1;
                 }
             }
             // Miss
             else
             {
+                Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
                 pAttackData.m_nAttackResult = 4;
-                pAttackData.m_nMissedBy = 0; // Dunno if this is needed by anything, but filling it out in case.
+                pAttackData.m_nMissedBy = 1; // Dunno if this is needed by anything, but filling it out in case.
             }
 
-
+            Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
             // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
             // accurate.
             attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
+            Log.Write(LogGroup.Attack, $"Building combat log message");
             var message = BuildCombatLogMessage(
                 (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim(),
                 (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
@@ -302,6 +309,12 @@ namespace SWLOR.Game.Server.Native
                 hitRate);
             attacker.SendFeedbackString(new CExoString(message));
             defender.SendFeedbackString(new CExoString(message));
+
+            Log.Write(LogGroup.Attack, $"Setting pAttackData results");
+            pAttackData.m_nToHitMod = 1;
+            pAttackData.m_nToHitRoll = 1;
+
+            Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
         }
 
         private static string BuildCombatLogMessage(

@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 49
+    "value": 124
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 63
+    "value": 0
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 101
+    "value": 51
   },
   "ArmorPart_LFArm": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 254
+    "value": 242
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -26,7 +26,7 @@
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 103
+    "value": 222
   },
   "ArmorPart_LShoul": {
     "type": "byte",
@@ -42,11 +42,11 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 103
+    "value": 50
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 101
+    "value": 50
   },
   "ArmorPart_RFArm": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 254
+    "value": 242
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -62,11 +62,11 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 0
+    "value": 173
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 103
+    "value": 222
   },
   "ArmorPart_RShoul": {
     "type": "byte",
@@ -78,7 +78,7 @@
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 104
+    "value": 58
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 97
+    "value": 37
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 132
+    "value": 116
   },
   "Comment": {
     "type": "cexostring",
@@ -102,7 +102,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 125
   },
   "Cursed": {
     "type": "byte",
@@ -122,25 +122,25 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 84
+    "value": 102
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 20
+    "value": 89
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Amateur Tunic"
+      "0": "Velveteen Tunic"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 56
+    "value": 17
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 148
+    "value": 17
   },
   "PaletteID": {
     "type": "byte",
@@ -165,7 +165,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -181,7 +181,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 4
         }
       },
       {
@@ -196,7 +196,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 6
         },
         "Param1": {
           "type": "byte",
@@ -212,7 +212,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 4
         }
       },
       {
@@ -227,7 +227,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -243,7 +243,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 4
         }
       },
       {
@@ -258,7 +258,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -274,7 +274,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 221
+          "value": 223
         }
       }
     ]
@@ -289,10 +289,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "engi_armor_1"
+    "value": "cook_armor_2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "engi_armor_1"
+    "value": "cook_armor_2"
   }
 }

@@ -21,6 +21,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Advent Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Adventurer Outfit Female"
                     },
                     "RESREF": {
@@ -109,6 +120,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Amateur Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ashla's robes"
                     },
                     "RESREF": {
@@ -153,6 +175,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chef Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Clan Lsu Armor"
                     },
                     "RESREF": {
@@ -169,6 +202,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "clanlsuarmor002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_1"
                     }
                   },
                   {
@@ -213,61 +257,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cologarb4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "cook_armor_1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cook_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "cook_armor_2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cook_armor_002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "cook_armor_3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cook_armor_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "cook_armor_4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cook_armor_004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "cook_armor_5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cook_armor_005"
                     }
                   },
                   {
@@ -373,110 +362,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "engi_armor_1"
+                      "value": "Designer Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "engi_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "engi_armor_2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "engi_armor_002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "engi_armor_3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "engi_armor_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "engi_armor_4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "engi_armor_004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "engi_armor_5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "engi_armor_005"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "fabr_armor_1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fabr_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "fabr_armor_2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fabr_armor_002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "fabr_armor_3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fabr_armor_003"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "fabr_armor_4"
+                      "value": "Devotion Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "fabr_armor_004"
+                      "value": "engi_armor_4"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "fabr_armor_5"
+                      "value": "Dream Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "fabr_armor_005"
+                      "value": "smth_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eternal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_5"
                     }
                   },
                   {
@@ -499,6 +422,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "farmer_outfit002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frontier Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_2"
                     }
                   },
                   {
@@ -582,11 +516,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Linen Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Majestic Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smth_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Malak's Cloak"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "malak_cloak002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mechanic Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moonflame Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_5"
                     }
                   },
                   {
@@ -642,6 +620,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_nulaarobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oasis Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_4"
                     }
                   },
                   {
@@ -802,6 +791,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rose Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fabr_armor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ship Captain Outfit Black Female"
                     },
                     "RESREF": {
@@ -868,55 +868,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "smth_armor_1"
+                      "value": "Silk Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "smth_armor_1"
+                      "value": "cook_armor_3"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "smth_armor_2"
+                      "value": "Skysteel Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "smth_armor_002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "smth_armor_3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "smth_armor_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "smth_armor_4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "smth_armor_004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "smth_armor_5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "smth_armor_005"
+                      "value": "engi_armor_5"
                     }
                   },
                   {
@@ -978,6 +945,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Velveteen Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vintage Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cook_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Weaponsmith Outfit"
                     },
                     "RESREF": {
@@ -1005,6 +994,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "worker_outfit_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worker Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "engi_armor_2"
                     }
                   }
                 ]
@@ -1428,6 +1428,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Advent Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "advent_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Agent Cap"
                     },
                     "RESREF": {
@@ -1571,6 +1582,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dream Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dream_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Eclipse Helmet"
                     },
                     "RESREF": {
@@ -1604,6 +1626,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Eternal Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eternal_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Flesheater Cap"
                     },
                     "RESREF": {
@@ -1620,6 +1653,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "for_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frontier Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frontier_helmet"
                     }
                   },
                   {
@@ -1697,6 +1741,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keyanzionehood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Majestic Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "majestic_helmet"
                     }
                   },
                   {
@@ -7569,6 +7624,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Advent Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Agent Belt"
                           },
                           "RESREF": {
@@ -7624,11 +7690,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dream_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Belt"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eternal Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eternal_belt"
                           }
                         },
                         {
@@ -7651,6 +7739,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "for_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_belt"
                           }
                         },
                         {
@@ -7684,6 +7783,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_belt"
                           }
                         },
                         {
@@ -7838,6 +7948,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Advent Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Agent Boots"
                           },
                           "RESREF": {
@@ -7893,11 +8014,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dream_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Leggings"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eternal Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eternal_leggings"
                           }
                         },
                         {
@@ -7920,6 +8063,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "for_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_legging"
                           }
                         },
                         {
@@ -7964,6 +8118,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_legging"
                           }
                         },
                         {
@@ -8107,6 +8272,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Advent Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Bracer"
                           },
                           "RESREF": {
@@ -8140,6 +8316,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dream_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Bracer"
                           },
                           "RESREF": {
@@ -8151,11 +8338,44 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Eternal Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eternal_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Guardian Bracer"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_bracer"
                           }
                         },
                         {
@@ -8196,6 +8416,17 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Advent Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_cloak"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -8266,11 +8497,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dream_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Cloak"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eternal Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eternal_cloak"
                           }
                         },
                         {
@@ -8293,6 +8546,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "for_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_cloak"
                           }
                         },
                         {
@@ -8348,6 +8612,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_cloak"
                           }
                         },
                         {
@@ -14029,6 +14304,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Advent Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Agent Necklace"
                           },
                           "RESREF": {
@@ -14084,11 +14370,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dream_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Necklace"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eternal Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eternal_necklace"
                           }
                         },
                         {
@@ -14111,6 +14419,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "for_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_necklac"
                           }
                         },
                         {
@@ -14144,6 +14463,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_necklac"
                           }
                         },
                         {
@@ -14309,6 +14639,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Advent Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "advent_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Agent Ring"
                           },
                           "RESREF": {
@@ -14386,11 +14727,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dream Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_ring001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Ring"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eternal Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eterenal_ring"
                           }
                         },
                         {
@@ -14413,6 +14776,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "for_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Frontier Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "frontier_ring"
                           }
                         },
                         {
@@ -14446,6 +14820,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Majestic Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "majestic_ring"
                           }
                         },
                         {

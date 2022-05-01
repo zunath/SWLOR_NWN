@@ -616,6 +616,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's CP bonus by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="skillType">The skill type to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy)
+        {
+            if (!entity.CPBonus.ContainsKey(skillType))
+                entity.CPBonus[skillType] = 0;
+
+            entity.CPBonus[skillType] += adjustBy;
+        }
+
+        /// <summary>
         /// When a creature spawns, load its relevant defense information based on their equipment.
         /// </summary>
         [NWNEventHandler("crea_spawn_bef")]

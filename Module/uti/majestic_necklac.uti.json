@@ -2,99 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 49
-  },
-  "ArmorPart_Belt": {
-    "type": "byte",
-    "value": 63
-  },
-  "ArmorPart_LBicep": {
-    "type": "byte",
-    "value": 101
-  },
-  "ArmorPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_LFoot": {
-    "type": "byte",
-    "value": 254
-  },
-  "ArmorPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_LShin": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_LThigh": {
-    "type": "byte",
-    "value": 105
-  },
-  "ArmorPart_Neck": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_Pelvis": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_RBicep": {
-    "type": "byte",
-    "value": 101
-  },
-  "ArmorPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 254
-  },
-  "ArmorPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_Robe": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_RShin": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_RThigh": {
-    "type": "byte",
-    "value": 105
-  },
-  "ArmorPart_Torso": {
-    "type": "byte",
-    "value": 104
+    "value": 124
   },
   "BaseItem": {
     "type": "int",
-    "value": 16
+    "value": 19
   },
   "Charges": {
     "type": "byte",
     "value": 0
-  },
-  "Cloth1Color": {
-    "type": "byte",
-    "value": 97
-  },
-  "Cloth2Color": {
-    "type": "byte",
-    "value": 132
   },
   "Comment": {
     "type": "cexostring",
@@ -102,49 +18,43 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 125
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 56640,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
-  "Leather1Color": {
-    "type": "byte",
-    "value": 84
-  },
-  "Leather2Color": {
-    "type": "byte",
-    "value": 20
-  },
   "LocalizedName": {
+    "id": 56643,
     "type": "cexolocstring",
     "value": {
-      "0": "Amateur Tunic"
+      "0": "Majestic Necklace"
     }
   },
-  "Metal1Color": {
+  "ModelPart1": {
     "type": "byte",
-    "value": 56
-  },
-  "Metal2Color": {
-    "type": "byte",
-    "value": 148
+    "value": 57
   },
   "PaletteID": {
     "type": "byte",
-    "value": 5
+    "value": 21
   },
   "Plot": {
     "type": "byte",
@@ -165,7 +75,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -181,7 +91,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -212,38 +122,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 47
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 89
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -258,7 +137,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -274,7 +153,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 221
+          "value": 220
         }
       }
     ]
@@ -289,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "engi_armor_1"
+    "value": "majestic_necklac"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "engi_armor_1"
+    "value": "majestic_necklac"
   }
 }

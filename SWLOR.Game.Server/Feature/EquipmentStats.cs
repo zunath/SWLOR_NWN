@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
             _statChangeActions[ItemPropertyType.Control] = ApplyControl;
             _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
+            _statChangeActions[ItemPropertyType.CPBonus] = ApplyCPBonus;
         }
 
         /// <summary>
@@ -270,7 +271,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the control, if false we're removing it.</param>
+        /// <param name="isAdding">If true, we're adding control, if false we're removing it.</param>
         private static void ApplyControl(uint player, uint item, ItemProperty ip, bool isAdding)
         {
             var amount = GetItemPropertyCostTableValue(ip);
@@ -319,7 +320,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the craftsmanship, if false we're removing it.</param>
+        /// <param name="isAdding">If true, we're adding craftsmanship, if false we're removing it.</param>
         private static void ApplyCraftsmanship(uint player, uint item, ItemProperty ip, bool isAdding)
         {
             var amount = GetItemPropertyCostTableValue(ip);
@@ -351,6 +352,48 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustCraftsmanship(dbPlayer, skillType, -amount);
+            }
+
+            DB.Set(dbPlayer);
+        }
+        /// <summary>
+        /// Applies or removes CP bonuses on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the CP bonus, if false we're removing it.</param>
+        private static void ApplyCPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var subType = GetItemPropertySubType(ip);
+            var skillType = SkillType.Invalid;
+
+            // Types are defined in iprp_crafttype.2da
+            switch (subType)
+            {
+                case 1:
+                    skillType = SkillType.Smithery;
+                    break;
+                case 2:
+                    skillType = SkillType.Engineering;
+                    break;
+                case 3:
+                    skillType = SkillType.Fabrication;
+                    break;
+                case 4:
+                    skillType = SkillType.Agriculture;
+                    break;
+            }
+            if (isAdding)
+            {
+                Stat.AdjustCPBonus(dbPlayer, skillType, amount);
+            }
+            else
+            {
+                Stat.AdjustCPBonus(dbPlayer, skillType, -amount);
             }
 
             DB.Set(dbPlayer);

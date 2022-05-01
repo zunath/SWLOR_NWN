@@ -2,115 +2,34 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 49
-  },
-  "ArmorPart_Belt": {
-    "type": "byte",
-    "value": 63
-  },
-  "ArmorPart_LBicep": {
-    "type": "byte",
-    "value": 101
-  },
-  "ArmorPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_LFoot": {
-    "type": "byte",
-    "value": 254
-  },
-  "ArmorPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_LShin": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_LThigh": {
-    "type": "byte",
-    "value": 105
-  },
-  "ArmorPart_Neck": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_Pelvis": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_RBicep": {
-    "type": "byte",
-    "value": 101
-  },
-  "ArmorPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 254
-  },
-  "ArmorPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "ArmorPart_Robe": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_RShin": {
-    "type": "byte",
-    "value": 103
-  },
-  "ArmorPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "ArmorPart_RThigh": {
-    "type": "byte",
-    "value": 105
-  },
-  "ArmorPart_Torso": {
-    "type": "byte",
-    "value": 104
+    "value": 976
   },
   "BaseItem": {
     "type": "int",
-    "value": 16
+    "value": 26
   },
   "Charges": {
     "type": "byte",
     "value": 0
   },
-  "Cloth1Color": {
-    "type": "byte",
-    "value": 97
-  },
-  "Cloth2Color": {
-    "type": "byte",
-    "value": 132
-  },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 977
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 13336,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -120,31 +39,28 @@
     "type": "byte",
     "value": 1
   },
-  "Leather1Color": {
-    "type": "byte",
-    "value": 84
-  },
-  "Leather2Color": {
-    "type": "byte",
-    "value": 20
-  },
   "LocalizedName": {
+    "id": 13337,
     "type": "cexolocstring",
     "value": {
-      "0": "Amateur Tunic"
+      "0": "Eternal Leggings"
     }
   },
-  "Metal1Color": {
+  "ModelPart1": {
     "type": "byte",
-    "value": 56
+    "value": 42
   },
-  "Metal2Color": {
+  "ModelPart2": {
     "type": "byte",
-    "value": 148
+    "value": 32
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 32
   },
   "PaletteID": {
     "type": "byte",
-    "value": 5
+    "value": 15
   },
   "Plot": {
     "type": "byte",
@@ -181,7 +97,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -196,7 +112,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 9
         },
         "Param1": {
           "type": "byte",
@@ -212,7 +128,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -243,7 +159,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -258,7 +174,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -274,7 +190,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 221
+          "value": 220
         }
       }
     ]
@@ -289,10 +205,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "engi_armor_1"
+    "value": "eternal_leggings"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "engi_armor_1"
+    "value": "eternal_leggings"
   }
 }

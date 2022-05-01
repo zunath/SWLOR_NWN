@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Entity
             AppearanceScale = 1.0f;
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
+            CPBonus = new Dictionary<SkillType, int>();
         }
 
 
@@ -153,6 +154,7 @@ namespace SWLOR.Game.Server.Entity
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }
+        public Dictionary<SkillType, int> CPBonus { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }

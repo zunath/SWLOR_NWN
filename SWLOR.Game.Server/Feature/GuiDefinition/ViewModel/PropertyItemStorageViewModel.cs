@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClearInstructions();
 
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", item =>
             {
                 var canBeStored = Item.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canBeStored))

@@ -173,7 +173,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AdjustFactionStanding();
             GetFactionStanding();
             RestartServer();
-            
+            SetXPBonus();
+            GetXPBonus();
+
             return _builder.Build();
         }
 
@@ -661,7 +663,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
                 .Validate((user, args) =>
                 {
-                    if (args.Length < 0)
+                    if (args.Length <= 0)
                     {
                         return "Requires CD Key to be entered. Example: /restartserver XXXXYYYY";
                     }
@@ -687,6 +689,68 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         player = GetNextPC();
                     }
                     Core.NWNX.AdministrationPlugin.ShutdownServer();
+                });
+        }
+
+        private void SetXPBonus()
+        {
+            _builder.Create("setxpbonus")
+                .Description("Sets a player's XP bonus to the specified value. Example: /setxpbonus 10")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget(ObjectType.Creature)
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Requires a number to be entered. Example: /setxpbonus 10";
+                    }
+
+                    var amount = Convert.ToInt32(args[0]);
+                    if (amount < 0 || amount > 25)
+                    {
+                        return "Value must be between 0 and 25.";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var amount = Convert.ToInt32(args[0]);
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.DMXPBonus = amount;
+
+                    DB.Set(dbPlayer);
+
+                    SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus set to {amount}%.");
+                    SendMessageToPC(target, $"Your DM XP bonus has been changed to {amount}%.");
+                });
+        }
+
+        private void GetXPBonus()
+        {
+            _builder.Create("getxpbonus")
+                .Description("Gets a player's DM XP bonus.")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+                    
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    
+                    SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
                 });
         }
     }

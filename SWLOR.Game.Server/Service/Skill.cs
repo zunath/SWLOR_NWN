@@ -41,20 +41,27 @@ namespace SWLOR.Game.Server.Service
             var pcSkill = dbPlayer.Skills[skill];
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
+            var bonusPercentage = 0f;
 
             if (!ignoreBonuses)
             {
                 // Bonus for positive Social modifier.
                 var social = GetAbilityModifier(AbilityType.Social, player);
                 if (social > 0)
-                    xp += (int)(xp * social * 0.05f);
+                    bonusPercentage += social * 0.05f;
 
                 // Food bonus
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
                 if (foodEffect != null)
                 {
-                    xp += (int)(xp * (foodEffect.XPBonusPercent * 0.01f));
+                    bonusPercentage += foodEffect.XPBonusPercent * 0.01f;
                 }
+
+                // DM bonus
+                bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
+
+                // Apply bonuses
+                xp += (int)(xp * bonusPercentage);
             }
 
             var debtRemoved = 0;

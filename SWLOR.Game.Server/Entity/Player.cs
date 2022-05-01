@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Entity
         public int FPRegen { get; set; }
         public int STMRegen { get; set; }
         public int XPDebt { get; set; }
+        public int DMXPBonus { get; set; }
         public int NumberPerkResetsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }

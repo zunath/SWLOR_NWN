@@ -97,16 +97,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("rez")
                 .Description("Revives you, heals you to full, and restores all FP/STM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (GetIsDead(user))
+                    if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), user);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), user);
-                    Stat.RestoreFP(user, Stat.GetMaxFP(user));
-                    Stat.RestoreStamina(user, Stat.GetMaxStamina(user));
+                    Stat.RestoreFP(target, Stat.GetMaxFP(user));
+                    Stat.RestoreStamina(target, Stat.GetMaxStamina(user));
                 });
 
             _builder.Create("spawngold")

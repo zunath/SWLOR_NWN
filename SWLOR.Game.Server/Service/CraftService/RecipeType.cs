@@ -399,6 +399,12 @@
         WashbasinLeverFaucet = 1198,
         WeaponRack = 1190,
         DeskWallTerminal = 1191,
+        Cookpot = 1192,
+        EngineeringTerminal = 1193,
+        FabricationTerminal = 1194,
+        Refinery = 1195,
+        SmitheryBench = 1196,
+
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

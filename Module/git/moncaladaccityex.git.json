@@ -894,7 +894,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Viscara_Orbit"
+                "value": "MonCala_Orbit"
               }
             },
             {
@@ -909,7 +909,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CZ220_LANDING"
+                "value": "MON_CALA_LANDING"
               }
             }
           ]

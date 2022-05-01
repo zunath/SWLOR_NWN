@@ -54,7 +54,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         Rifle = 23,
         [RecipeCategory("Twin Blade", true)]
         TwinBlade = 24,
-
         [RecipeCategory("Bed", true)]
         Beds = 25,
         [RecipeCategory("Misc. Furniture", true)]
@@ -75,21 +74,20 @@ namespace SWLOR.Game.Server.Service.CraftService
         Fixtures = 32,
         [RecipeCategory("Electronic", true)]
         Electronics = 33,
-
         [RecipeCategory("Structure", true)]
         Structure = 34,
         [RecipeCategory("Starship", true)]
         Starship = 35,
         [RecipeCategory("Ship Module", true)]
         ShipModule = 36,
-
         [RecipeCategory("Food", true)]
         Food = 37,
         [RecipeCategory("Ingredient", true)]
         Ingredients = 38,
-
         [RecipeCategory("Lightsaber", true)]
         Lightsaber = 39,
+        [RecipeCategory("Crafting", true)]
+        Crafting = 40
     }
 
     public class RecipeCategoryAttribute : Attribute

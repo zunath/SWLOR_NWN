@@ -1242,6 +1242,36 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             2)]
         FridgeStainless = 218,
+        [Structure("Cookpot",
+            "cookpot",
+            "",
+            true,
+            0)]
+        Cookpot = 219,
+        [Structure("Engineering Terminal",
+            "engineering_term",
+            "",
+            true,
+            0)]
+        EngineeringTerminal = 220,
+        [Structure("Fabrication Terminal",
+            "fabrication_term",
+            "",
+            true,
+            0)]
+        FabricationTerminal = 221,
+        [Structure("Refinery",
+            "cft_forge",
+            "",
+            true,
+            0)]
+        Refinery = 222,
+        [Structure("Smithery Bench",
+            "smithery_bench",
+            "",
+            true,
+            0)]
+        SmitheryBench = 223,
 
         // Buildings start here
 

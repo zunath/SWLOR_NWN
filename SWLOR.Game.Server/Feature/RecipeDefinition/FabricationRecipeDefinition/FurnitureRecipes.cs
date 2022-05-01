@@ -1066,6 +1066,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ancient_wood", 3)
 				.Component("lth_good", 2);
 
+            // Cookpot
+            _builder.Create(RecipeType.Cookpot, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0219")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3);
+
 			// Statue, Wyvern
 			_builder.Create(RecipeType.StatueWyvern, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Statues)
@@ -1109,6 +1119,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 4)
 				.Component("lth_good", 2);
+
+            // Engineering Terminal
+            _builder.Create(RecipeType.EngineeringTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0220")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
 
 			// Fountain
 			_builder.Create(RecipeType.Fountain, SkillType.Fabrication)
@@ -1154,6 +1174,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ref_plagionite", 4)
 				.Component("ancient_wood", 2);
 
+            // Fabrication Terminal
+            _builder.Create(RecipeType.FabricationTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0221")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
+
 			// Altar, Stone
 			_builder.Create(RecipeType.AltarStone, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Statues)
@@ -1198,6 +1228,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ancient_wood", 5)
 				.Component("lth_good", 3);
 
+            // Refinery
+            _builder.Create(RecipeType.Refinery, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0222")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
+
 			// Bear Skin Rug
 			_builder.Create(RecipeType.BearSkinRug, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Flooring)
@@ -1241,6 +1281,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ancient_wood", 5)
 				.Component("lth_good", 3);
+
+            // Smithery Bench
+            _builder.Create(RecipeType.SmitheryBench, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0223")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
 
 			// Altar, Evil
 			_builder.Create(RecipeType.AltarEvil, SkillType.Fabrication)

@@ -6911,6 +6911,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Cookpot"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0219"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cot"
               },
               "RESREF": {
@@ -7147,6 +7158,28 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0045"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Engineering Terminal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0220"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fabrication Terminal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0221"
               }
             },
             {
@@ -8000,6 +8033,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Refinery"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0222"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Rope Coil"
               },
               "RESREF": {
@@ -8104,6 +8148,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5008"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Smithery Bench"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0223"
               }
             },
             {

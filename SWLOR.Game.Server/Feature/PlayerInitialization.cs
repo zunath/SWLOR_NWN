@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
             var str = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             var con = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
             var dex = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
-            var @int = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
+            var @int = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
             var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
@@ -73,7 +72,7 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Unused, @int);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, @int);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
         }
@@ -196,7 +195,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
             dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
             dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
-            dbPlayer.BaseStats[AbilityType.Unused] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
+            dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
         }
 

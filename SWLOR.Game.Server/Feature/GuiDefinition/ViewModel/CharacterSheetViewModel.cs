@@ -68,6 +68,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int Agility
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public int Social
         {
             get => Get<int>();
@@ -128,10 +134,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
         public string DefenseElemental
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public string AccuracyTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string RangedAccuracyTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public int Accuracy
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int RangedAccuracy
+        {
+            get => Get<int>();
             set => Set(value);
         }
 
@@ -196,6 +225,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public bool IsWillpowerUpgradeAvailable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsAgilityUpgradeAvailable
         {
             get => Get<bool>();
             set => Set(value);
@@ -321,6 +356,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Upgrading your Willpower attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
             {
                 UpgradeAttribute(AbilityType.Willpower, "Willpower");
+            });
+        };
+
+        public Action OnClickUpgradeAgility() => () =>
+        {
+            ShowModal($"Upgrading your Agility attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
+            {
+                UpgradeAttribute(AbilityType.Agility, "Agility");
             });
         };
 

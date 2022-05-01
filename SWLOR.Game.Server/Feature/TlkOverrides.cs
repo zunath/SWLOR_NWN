@@ -23,13 +23,13 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(131, "Social"); // Charisma
             SetTlkOverride(132, "Vitality"); // Constitution
             SetTlkOverride(133, "Perception"); // Dexterity
-            SetTlkOverride(134, "Unused"); // Intelligence
+            SetTlkOverride(134, "Agility"); // Intelligence
             SetTlkOverride(135, "Might"); // Strength
             SetTlkOverride(136, "Willpower"); // Wisdom
 
             SetTlkOverride(328, "Increased Might By"); // Strength
             SetTlkOverride(329, "Increased Perception By"); // Dexterity
-            SetTlkOverride(330, "Unused"); // Intelligence
+            SetTlkOverride(330, "Agility"); // Intelligence
             SetTlkOverride(331, "Increased Vitality By"); // Constitution
             SetTlkOverride(332, "Increased Willpower By"); // Wisdom
             SetTlkOverride(333, "Increased Social By"); // Charisma
@@ -38,16 +38,17 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(474, "Perception Information"); // Dexterity
             SetTlkOverride(475, "Vitality Information"); // Constitution
             SetTlkOverride(476, "Willpower Information"); // Wisdom
-            SetTlkOverride(477, "Unused"); // Intelligence
+            SetTlkOverride(477, "Agility"); // Intelligence
             SetTlkOverride(479, "Social Information"); // Charisma
 
             SetTlkOverride(457, BuildRecommendedButtonText());
 
-            SetTlkOverride(459, "Might measures the physical power of your character. It improves your melee power and carrying capacity.");
-            SetTlkOverride(460, "Perception measures the intuition of your character. It improves your ranged power and evasion.");
-            SetTlkOverride(461, "Vitality represents the health and stamina of your character. It improves your max HP, FP, and stamina.");
-            SetTlkOverride(462, "Willpower represents the attunement to the Force of your character. It improves your force attack and force defense.");
-            SetTlkOverride(478, "Social measures the ability to negotiate and influence others. It improves your ability to negotiate mission rewards and improves Roleplay XP.");
+            SetTlkOverride(459, "Might improves your melee damage and carrying capacity.");
+            SetTlkOverride(460, "Perception improves your ranged damage and physical accuracy.");
+            SetTlkOverride(461, "Vitality improves your max hit points and reduces damage received.");
+            SetTlkOverride(462, "Willpower improves your force attack, force defense, and max force points.");
+            SetTlkOverride(463, "Agility improves ranged accuracy, evasion, and max stamina.");
+            SetTlkOverride(478, "Social improves your XP gain and leadership capabilities.");
             
             SetTlkOverride(1027, "Poison"); // Acid
 
@@ -61,12 +62,13 @@ namespace SWLOR.Game.Server.Feature
 
         private static string BuildRecommendedButtonText()
         {
-            return "Your character is guided by five core attributes: Might, Vitality, Perception, Willpower, and Social.\n\n" +
-                   "Might: Improves your melee power and carrying capacity.\n" +
-                   "Vitality: Improves your max hit points, ether points, and stamina.\n" +
-                   "Perception: Improves your ranged power and evasion.\n" +
-                   "Willpower: Improves your force attack and force defense.\n" +
-                   "Social: Improves your ability to negotiate mission rewards and improves Roleplay XP.\n\n";
+            return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
+                   "Might: Improves your melee damage and carrying capacity.\n" +
+                   "Vitality: Improves your max hit points and reduces damage received.\n" +
+                   "Perception: Improves your ranged damage and physical accuracy.\n" +
+                   "Willpower: Improves your force attack, force defense, and max force points.\n" +
+                   "Agility: Improves ranged accuracy, evasion, and max stamina.\n" +
+                   "Social: Improves your XP gain and leadership capabilities.\n\n";
         }
 
         private static void OverrideMenuNames()
@@ -74,8 +76,8 @@ namespace SWLOR.Game.Server.Feature
             // Journal - List as Quests
             SetTlkOverride(7037, "Quests");
 
-            // Spell Book - List as Unused
-            SetTlkOverride(7038, "Unused");
+            // Spell Book - List as Player Guide
+            SetTlkOverride(7038, "Player Guide");
         }
 
         private static void OverrideFeatDescriptions()

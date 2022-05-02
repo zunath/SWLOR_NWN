@@ -54,8 +54,9 @@ namespace SWLOR.Game.Server.Service
             // Until then, it can live here.
             _toggleActions[AbilityToggleType.Dash] = (player, isEnabled) =>
             {
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
                 var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
-                var movementRate = CreaturePlugin.GetMovementRateFactor(player);
 
                 float rate;
                 string message;
@@ -74,21 +75,22 @@ namespace SWLOR.Game.Server.Service
 
                 if (isEnabled)
                 {
-                    movementRate += rate;
+                    Stat.AdjustPlayerMovementRate(dbPlayer, player, rate);
                     message = ColorToken.Green("Dash enabled");
                 }
                 else
                 {
-                    movementRate -= rate;
+                    Stat.AdjustPlayerMovementRate(dbPlayer, player, -rate);
                     message = ColorToken.Red("Dash disabled");
                 }
 
-                CreaturePlugin.SetMovementRateFactor(player, movementRate);
-
+                DB.Set(dbPlayer);
                 SendMessageToPC(player, message);
+
+                SendMessageToPC(player, $"Rate: {CreaturePlugin.GetMovementRateFactor(player)}"); // todo debug
             };
         }
-
+        
         /// <summary>
         /// Returns true if a feat is registered to an ability.
         /// Returns false otherwise.

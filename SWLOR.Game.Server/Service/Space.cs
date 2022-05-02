@@ -688,6 +688,8 @@ namespace SWLOR.Game.Server.Service
             {
                 _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
             }
+
+            ExecuteScript("space_enter", player);
         }
 
         /// <summary>
@@ -837,6 +839,8 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             DB.Set(dbShip);
+
+            ExecuteScript("space_exit", player);
         }
 
         private static void DestroyPilotClone(uint player)

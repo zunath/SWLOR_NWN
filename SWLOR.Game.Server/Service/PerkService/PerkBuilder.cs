@@ -220,6 +220,18 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Adds a requirement check for purchasing this perk. Check must pass otherwise the
+        /// purchase action will fail.
+        /// </summary>
+        /// <param name="requirementAction">The action to run when a player attempts to purchase this perk.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder PurchaseRequirement(PerkPurchaseRequirementAction requirementAction)
+        {
+            _activePerk.PurchaseRequirement = requirementAction;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a requirement check for refunding this perk. Check must pass otherwise the
         /// refund action will fail.
         /// </summary>

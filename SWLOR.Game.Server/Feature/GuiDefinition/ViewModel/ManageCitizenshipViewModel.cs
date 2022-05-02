@@ -219,13 +219,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
 
                         dbPlayer = DB.Get<Player>(playerId);
-                        if (dbPlayer.DateCreated.AddDays(-1) > DateTime.UtcNow)
+                        if (dbPlayer.DateCreated.AddDays(30) > DateTime.UtcNow)
                         {
                             FloatingTextStringOnCreature("Your character must be 30 days or older to become a citizen of a city.", Player, false);
                             return;
                         }
 
-                        if (dbPlayer.TotalSPAcquired < -1)
+                        if (dbPlayer.TotalSPAcquired < 100)
                         {
                             FloatingTextStringOnCreature("You must have acquired a minimum of 100 skill ranks to become a citizen of a city.", Player, false);
                             return;

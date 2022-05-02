@@ -33,21 +33,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Mobility);
         }
 
-        /// <summary>
-        /// When a player enters the module, if they have the Dash perk,
-        /// apply the movement speed changes.
-        /// </summary>
-        [NWNEventHandler("mod_enter")]
-        public static void ApplyDash()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var dashLevel = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
-            CreaturePlugin.SetMovementRateFactor(player, 1.0f + dashLevel * 0.1f);
-        }
-
         private void Dash()
         {
             void ToggleDash(uint player)

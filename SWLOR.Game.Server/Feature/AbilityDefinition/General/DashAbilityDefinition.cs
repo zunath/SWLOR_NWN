@@ -23,11 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         public static void EnterSpace()
         {
             var player = OBJECT_SELF;
-
-            if (!GetHasFeat(FeatType.Dash, player))
-                return;
-
-            AssignCommand(player, () => ActionUseFeat(FeatType.Dash, player));
+            Ability.ToggleAbility(player, AbilityToggleType.Dash, false);
         }
 
         private void Dash()

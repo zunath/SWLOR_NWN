@@ -1475,6 +1475,7 @@ namespace SWLOR.Game.Server.Service
                 // Keep distance from target.
                 AssignCommand(creature, () =>
                 {
+                    ClearAllActions();
                     ActionMoveAwayFromObject(target, true, 10f);
                 });
 

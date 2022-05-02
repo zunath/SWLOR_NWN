@@ -1776,5 +1776,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         AgricultureEquipment3 = 1809,
         AgricultureEquipment4 = 1810,
         AgricultureEquipment5 = 1811,
+        Dash = 1812
     }
 }

@@ -89,6 +89,7 @@ namespace SWLOR.Game.Server.Entity
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
             CPBonus = new Dictionary<SkillType, int>();
+            AbilityToggles = new Dictionary<AbilityToggleType, bool>();
         }
 
 
@@ -176,6 +177,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
+        public Dictionary<AbilityToggleType, bool> AbilityToggles { get; set; }
         public bool SubdualMode { get; set; }
         public float AppearanceScale { get; set; }
     }

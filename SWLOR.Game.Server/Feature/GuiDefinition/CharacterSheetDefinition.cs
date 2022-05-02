@@ -128,26 +128,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Evasion")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Evasion - Improves your ability to dodge attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Evasion)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
                             .SetText("SP")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
@@ -191,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Might")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Might - Used to attack and defend in melee combat. Also affects carrying capacity.");
+                            .SetTooltip("Might - Improves your melee damage and carrying capacity.");
 
                         row.AddLabel()
                             .BindText(model => model.Might)
@@ -212,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Perception")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Perception - Used to attack and defend in ranged combat.");
+                            .SetTooltip("Perception - Improves your ranged damage and physical accuracy.");
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
@@ -233,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Vitality")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Vitality - Used to resist damage and increases total HP, FP, and STM.");
+                            .SetTooltip("Vitality - Improves your max hit points and reduces damage received.");
 
                         row.AddLabel()
                             .BindText(model => model.Vitality)
@@ -254,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Willpower")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Willpower - Used to attack and defend in mental combat.");
+                            .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.");
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
@@ -269,13 +249,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickUpgradeWillpower());
                     });
 
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Agility")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.");
+
+                        row.AddLabel()
+                            .BindText(model => model.Agility)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsAgilityUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradeAgility());
+                    });
+
                     col.AddRow(row =>
                     {
                         row.AddLabel()
                             .SetText("Social")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Social - Used for diplomacy. Increases mission rewards and used in property management.");
+                            .SetTooltip("Social - Improves your XP gain and leadership capabilities.");
 
                         row.AddLabel()
                             .BindText(model => model.Social)
@@ -348,13 +350,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("F. Attack")
+                            .SetText("Accuracy")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Force Attack - Improves damage dealt by Force attacks.");
+                            .SetTooltip("Accuracy - Improves your chance to hit.");
 
                         row.AddLabel()
-                            .BindText(model => model.ForceAttack)
+                            .BindText(model => model.Accuracy)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Evasion")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Evasion - Improves your ability to dodge attacks.");
+
+                        row.AddLabel()
+                            .BindText(model => model.Evasion)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Might, 0},
                 {AbilityType.Social, 0},
                 {AbilityType.Perception, 0},
-                {AbilityType.Unused, 0},
+                {AbilityType.Agility, 0},
                 {AbilityType.Willpower, 0}
             };
             UpgradedStats = new Dictionary<AbilityType, int>
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Might, 0},
                 {AbilityType.Social, 0},
                 {AbilityType.Perception, 0},
-                {AbilityType.Unused, 0},
+                {AbilityType.Agility, 0},
                 {AbilityType.Willpower, 0}
             };
 

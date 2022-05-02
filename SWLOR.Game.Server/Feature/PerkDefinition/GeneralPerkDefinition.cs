@@ -15,22 +15,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            WeaponFinesse();
             Mobility();
             Dash();
 
             return _builder.Build();
-        }
-
-        private void WeaponFinesse()
-        {
-            _builder.Create(PerkCategoryType.General, PerkType.WeaponFinesse)
-                .Name("Weapon Finesse")
-
-                .AddPerkLevel()
-                .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
-                .Price(3)
-                .GrantsFeat(FeatType.WeaponFinesse);
         }
 
         private void Mobility()

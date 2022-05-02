@@ -22557,17 +22557,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Shock Stick"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shockstick"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Striker Longsword"
                           },
                           "RESREF": {

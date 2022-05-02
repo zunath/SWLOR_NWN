@@ -9934,11 +9934,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Malfunctioning K-X12 Probe Droid"
+                      "value": "Malfunctioning Patrol Droid"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "malspiderdroid"
+                      "value": "malsecdroid"
                     }
                   },
                   {
@@ -9953,11 +9953,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Malfunctioning Municipal Patrol Droid Mk. 1"
+                      "value": "Malfunctioning Probe Droid"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "malsecdroid"
+                      "value": "malspiderdroid"
                     }
                   },
                   {

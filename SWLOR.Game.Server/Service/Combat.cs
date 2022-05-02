@@ -62,6 +62,56 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Calculates the hit rate against a given target.
+        /// Range is clamped to values between 20 and 95, inclusive.
+        /// </summary>
+        /// <param name="attackerAccuracy">The total accuracy of the attacker.</param>
+        /// <param name="defenderEvasion">The total evasion of the defender.</param>
+        /// <returns>The hit rate, clamped between 20 and 95, inclusive.</returns>
+        public static int CalculateHitRate(
+            int attackerAccuracy,
+            int defenderEvasion)
+        {
+            const int BaseHitRate = 75;
+            
+            var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f);
+
+            if (hitRate < 20)
+                hitRate = 20;
+            else if (hitRate > 95)
+                hitRate = 95;
+
+            return hitRate;
+        }
+
+        /// <summary>
+        /// Calculates the critical hit rate against a given target.
+        /// </summary>
+        /// <param name="attackerStat">The attacker's attack stat (Perception for melee, Agility for ranged)</param>
+        /// <param name="defenderAGI">The defender's agility stat.</param>
+        /// <param name="criticalModifier">A modifier to the critical rating based on external factors.</param>
+        /// <returns>The critical rate, in a percentage</returns>
+        public static int CalculateCriticalRate(int attackerStat, int defenderAGI, int criticalModifier)
+        {
+            const int BaseCriticalRate = 5;
+            var delta = attackerStat - defenderAGI;
+
+            if (delta < 0)
+                delta = 0;
+            else if (delta > 15)
+                delta = 15;
+
+            var criticalRate = BaseCriticalRate + delta + criticalModifier;
+            if (criticalRate < BaseCriticalRate)
+                criticalRate = BaseCriticalRate;
+            else if (criticalRate > 90)
+                criticalRate = 90;
+
+
+            return criticalRate;
+        }
+
+        /// <summary>
         /// Calculates a random damage amount based on the provided stats of the attacker and defender.
         /// </summary>
         /// <param name="attackerAttack">The attacker's attack rating.</param>

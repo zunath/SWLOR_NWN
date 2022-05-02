@@ -86,8 +86,6 @@ namespace SWLOR.Game.Server.Service
 
                 DB.Set(dbPlayer);
                 SendMessageToPC(player, message);
-
-                SendMessageToPC(player, $"Rate: {CreaturePlugin.GetMovementRateFactor(player)}"); // todo debug
             };
         }
         

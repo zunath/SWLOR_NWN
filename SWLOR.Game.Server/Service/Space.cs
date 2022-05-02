@@ -635,10 +635,36 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
                 !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
             {
+                const int MaxSlots = 35;
+
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
-                for (var slot = 0; slot <= 35; slot++)
+                for (var slot = 0; slot <= MaxSlots; slot++)
                 {
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                }
+
+                var currentSlot = 0;
+                foreach (var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
+                {
+                    var feat = HighSlotToFeat(slot);
+                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                    if (shipModuleDetail.Type != ShipModuleType.Passive)
+                    {
+                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
+
+                        currentSlot++;
+                    }
+                }
+                foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
+                {
+                    var feat = LowSlotToFeat(slot);
+                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                    if (shipModuleDetail.Type != ShipModuleType.Passive)
+                    {
+                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
+
+                        currentSlot++;
+                    }
                 }
 
                 dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
@@ -1475,6 +1501,7 @@ namespace SWLOR.Game.Server.Service
                 // Keep distance from target.
                 AssignCommand(creature, () =>
                 {
+                    ClearAllActions();
                     ActionMoveAwayFromObject(target, true, 10f);
                 });
 

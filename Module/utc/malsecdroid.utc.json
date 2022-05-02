@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 10
   },
   "Conversation": {
     "type": "resref",
@@ -117,7 +117,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Malfunctioning Municipal Patrol Droid Mk. 1"
+      "0": "Malfunctioning Patrol Droid"
     }
   },
   "fortbonus": {
@@ -168,7 +168,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 24
+    "value": 20
   },
   "NaturalAC": {
     "type": "byte",

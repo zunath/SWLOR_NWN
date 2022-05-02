@@ -88,25 +88,6 @@ namespace SWLOR.Game.Server.Native
                 attackType = (uint) AttackType.Ranged;
             }
 
-            // Override based on variables.
-            var attackOverride = attacker.m_ScriptVars.GetInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
-
-            if (attackOverride != 0 & attackOverride < 4)
-            {
-                attackType = (uint)attackOverride;
-                attacker.m_ScriptVars.DestroyInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
-            }
-            else if (weapon != null)
-            {
-                attackOverride = weapon.m_ScriptVars.GetInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
-
-                if (attackOverride != 0 & attackOverride < 4)
-                {
-                    attackType = (uint)attackOverride;
-                    attacker.m_ScriptVars.DestroyInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
-                }
-            }
-
             // We have now resolved what sort of attack we are doing.
             Log.Write(LogGroup.Attack, "DAMAGE: Attacker: " + attacker.GetFirstName().GetSimple() + ", PC?: " + attacker.m_bPlayerCharacter +
                 ", Defender " + targetObject.GetFirstName().GetSimple() + ", object type " + targetObject.m_nObjectType + ", Attack type: " + attackType + ", weapon " + 
@@ -156,7 +137,7 @@ namespace SWLOR.Game.Server.Native
 
             if (!foundDMG)
             {
-                // If no properties default to 0.5 physical.
+                // If no properties default to 1 physical.
                 dmgValues[CombatDamageType.Physical] = 1;
             }
 
@@ -174,10 +155,6 @@ namespace SWLOR.Game.Server.Native
                     attackerStat = attackerStats.m_nDexterityBase;
                 }
             }
-            else if (attackType == (uint) AttackType.Spirit)
-            {
-                attackerStat = attackerStats.m_nWisdomBase;
-            }
 
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
             if (attackerStat > 128) attackerStat -= 256;
@@ -185,7 +162,7 @@ namespace SWLOR.Game.Server.Native
             var log = "DAMAGE: attacker attribute modifier: " + attackerStat.ToString() + ", weapon damage ratings ";
             foreach(var damageType in dmgValues.Keys)
             {
-                log += damageType.ToString() + ": " + dmgValues[damageType] + ";";
+                log += damageType + ": " + dmgValues[damageType] + ";";
             }
             Log.Write(LogGroup.Attack, log);
 
@@ -193,7 +170,7 @@ namespace SWLOR.Game.Server.Native
             // attack attribute, so it can't happen earlier.
             dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
 
-            // Combat Mode - Power Attack (+1.0 DMG)
+            // Combat Mode - Power Attack (+1 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
             {
                 dmgValues[CombatDamageType.Physical] += 1;

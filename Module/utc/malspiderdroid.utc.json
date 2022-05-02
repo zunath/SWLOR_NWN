@@ -117,7 +117,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Malfunctioning K-X12 Probe Droid"
+      "0": "Malfunctioning Probe Droid"
     }
   },
   "fortbonus": {

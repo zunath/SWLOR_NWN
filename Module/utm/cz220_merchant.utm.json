@@ -819,7 +819,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "shockstick"
+                "value": "electroblade_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -838,7 +838,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_1"
+                "value": "electroblade_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -857,7 +857,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_2"
+                "value": "twin_elec_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -876,30 +876,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "twin_elec_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 5
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 10
-              }
-            },
-            {
-              "__struct_id": 24,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "twin_elec_2"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 7
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",

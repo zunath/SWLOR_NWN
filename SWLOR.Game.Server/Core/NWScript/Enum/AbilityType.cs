@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
     {
         Invalid = -1,
         // should be the same as in nwseffectlist.cpp
-        Might,
-        Perception,
-        Vitality,
-        Unused,
-        Willpower,
-        Social
+        Might = 0,
+        Perception = 1,
+        Vitality = 2,
+        Agility = 3,
+        Willpower = 4,
+        Social = 5
     }
 }

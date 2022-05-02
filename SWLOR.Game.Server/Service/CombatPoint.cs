@@ -130,11 +130,13 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Armor XP is calculated the same way but is separate from other skills used during combat.
-                    var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
-
-                    delta = npcLevel - armorRank;
-                    baseXP = Skill.GetDeltaXP(delta);
-                    Skill.GiveSkillXP(player, SkillType.Armor, (int) baseXP);
+                    if (!Space.IsPlayerInSpaceMode(player))
+                    {
+                        var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
+                        delta = npcLevel - armorRank;
+                        baseXP = Skill.GetDeltaXP(delta);
+                        Skill.GiveSkillXP(player, SkillType.Armor, baseXP);
+                    }
                 }
 
             }

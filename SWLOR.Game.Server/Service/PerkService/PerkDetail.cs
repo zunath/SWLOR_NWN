@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
+    public delegate string PerkPurchaseRequirementAction(uint player, PerkType perkType, int effectivePerkLevel);
     public delegate string PerkRefundRequirementAction(uint player, PerkType perkType, int effectivePerkLevel);
 
     public delegate void PerkTriggerEquippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public bool IsActive { get; set; }
         public string IconResref { get; set; }
 
+        public PerkPurchaseRequirementAction PurchaseRequirement { get; set; }
         public PerkRefundRequirementAction RefundRequirement { get; set; }
         public Dictionary<int, PerkLevel> PerkLevels { get; set; }
         public List<PerkTriggerEquippedAction> EquippedTriggers { get; set; }

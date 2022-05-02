@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -12,8 +15,8 @@ namespace SWLOR.Game.Server.Service
     public static class Ability
     {
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
-
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
+        private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
@@ -22,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             CacheAbilities();
+            CacheToggleActions();
         }
 
         private static void CacheAbilities()
@@ -42,6 +46,47 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+        }
+
+        private static void CacheToggleActions()
+        {
+            // If more toggle actions are added, it will make sense to promote this to a full fledged builder.
+            // Until then, it can live here.
+            _toggleActions[AbilityToggleType.Dash] = (player, isEnabled) =>
+            {
+                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
+                var movementRate = CreaturePlugin.GetMovementRateFactor(player);
+
+                float rate;
+                string message;
+                switch (level)
+                {
+                    case 1:
+                        rate = 0.10f; // 10%
+                        break;
+                    case 2:
+                        rate = 0.25f; // 25%
+                        break;
+                    default:
+                        rate = 0f; // 0%
+                        break;
+                }
+
+                if (isEnabled)
+                {
+                    movementRate += rate;
+                    message = ColorToken.Green("Dash enabled");
+                }
+                else
+                {
+                    movementRate -= rate;
+                    message = ColorToken.Red("Dash disabled");
+                }
+
+                CreaturePlugin.SetMovementRateFactor(player, movementRate);
+
+                SendMessageToPC(player, message);
+            };
         }
 
         /// <summary>
@@ -325,6 +370,62 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(defender, message);
 
             return isResisted;
+        }
+
+        /// <summary>
+        /// Toggles an ability on or off for a given player.
+        /// If additional logic is defined in an AbilityToggleDefinition, that will be run after this is performed.
+        /// </summary>
+        /// <param name="player">The player to toggle on or off.</param>
+        /// <param name="toggleType">The type of toggle to turn on or off.</param>
+        /// <param name="isToggled">true if the ability should be enabled, false otherwise</param>
+        public static void ToggleAbility(uint player, AbilityToggleType toggleType, bool isToggled)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer.AbilityToggles == null)
+                dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
+
+            if (!dbPlayer.AbilityToggles.ContainsKey(toggleType))
+                dbPlayer.AbilityToggles[toggleType] = false;
+
+            var runLogic = dbPlayer.AbilityToggles[toggleType] != isToggled;
+            dbPlayer.AbilityToggles[toggleType] = isToggled;
+
+            DB.Set(dbPlayer);
+
+            if (runLogic &&
+                _toggleActions.ContainsKey(toggleType))
+            {
+                _toggleActions[toggleType](player, isToggled);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves whether a player has a specific toggle type enabled.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="toggleType">The type of toggle to check</param>
+        /// <returns>true if the ability is toggled on, false otherwise</returns>
+        public static bool IsAbilityToggled(uint player, AbilityToggleType toggleType)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer.AbilityToggles == null)
+                dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
+
+            if (!dbPlayer.AbilityToggles.ContainsKey(toggleType))
+                dbPlayer.AbilityToggles[toggleType] = false;
+
+            return dbPlayer.AbilityToggles[toggleType];
         }
     }
 }

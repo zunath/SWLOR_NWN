@@ -511,6 +511,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbPlayer.UnallocatedSP < nextUpgrade.Price)
                         return;
 
+                    // Custom purchase validation logic for the perk.
+                    var canPurchase = detail.PurchaseRequirement == null
+                        ? string.Empty
+                        : detail.PurchaseRequirement(Player, selectedPerk, playerRank);
+
+                    if (!string.IsNullOrWhiteSpace(canPurchase))
+                    {
+                        SendMessageToPC(Player, ColorToken.Red(canPurchase));
+                        return;
+                    }
+
                     // All validation passes. Perform the upgrade.
                     dbPlayer.Perks[selectedPerk] = playerRank + 1;
                     dbPlayer.UnallocatedSP -= nextUpgrade.Price;

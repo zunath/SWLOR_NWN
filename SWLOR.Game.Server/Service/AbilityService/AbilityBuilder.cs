@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             return this;
         }
-        
+
         /// <summary>
         /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
         /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.

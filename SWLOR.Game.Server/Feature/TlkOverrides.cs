@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(457, BuildRecommendedButtonText());
 
-            SetTlkOverride(459, "Might improves your melee damage and carrying capacity.");
-            SetTlkOverride(460, "Perception improves your ranged damage and physical accuracy.");
+            SetTlkOverride(459, "Might improves damage dealt by melee weapons and increases carrying capacity.");
+            SetTlkOverride(460, "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.");
             SetTlkOverride(461, "Vitality improves your max hit points and reduces damage received.");
             SetTlkOverride(462, "Willpower improves your force attack, force defense, and max force points.");
             SetTlkOverride(463, "Agility improves ranged accuracy, evasion, and max stamina.");
@@ -63,9 +63,9 @@ namespace SWLOR.Game.Server.Feature
         private static string BuildRecommendedButtonText()
         {
             return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
-                   "Might: Improves your melee damage and carrying capacity.\n" +
+                   "Might: Improves damage dealt by melee weapons and increases carrying capacity.\n" +
                    "Vitality: Improves your max hit points and reduces damage received.\n" +
-                   "Perception: Improves your ranged damage and physical accuracy.\n" +
+                   "Perception: Improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n" +
                    "Willpower: Improves your force attack, force defense, and max force points.\n" +
                    "Agility: Improves ranged accuracy, evasion, and max stamina.\n" +
                    "Social: Improves your XP gain and leadership capabilities.\n\n";

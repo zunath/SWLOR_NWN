@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Might")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Might - Improves your melee damage and carrying capacity.");
+                            .SetTooltip("Might - Improves damage dealt by melee weapons and increases carrying capacity.");
 
                         row.AddLabel()
                             .BindText(model => model.Might)
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Perception")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Perception - Improves your ranged damage and physical accuracy.");
+                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons and increases physical accuracy.");
 
                         row.AddLabel()
                             .BindText(model => model.Perception)

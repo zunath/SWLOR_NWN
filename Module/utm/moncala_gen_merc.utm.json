@@ -1921,7 +1921,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "shockstick"
+                "value": "electroblade_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1940,7 +1940,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_1"
+                "value": "electroblade_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1959,7 +1959,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_2"
+                "value": "electroblade_3"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1978,7 +1978,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_3"
+                "value": "twin_elec_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1997,11 +1997,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "twin_elec_1"
+                "value": "twin_elec_2"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 5
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",
@@ -2016,34 +2016,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "twin_elec_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 7
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 20
-              }
-            },
-            {
-              "__struct_id": 46,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "twin_elec_3"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 0
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 24
+                "value": 20
               }
             }
           ]

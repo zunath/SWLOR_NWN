@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Improves your ability to avoid attacks of opportunity.")
-                .Price(5)
+                .Price(3)
                 .GrantsFeat(FeatType.Mobility);
         }
 
@@ -49,37 +50,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Dash()
         {
+            void ToggleDash(uint player)
+            {
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (dbPlayer.AbilityToggles.ContainsKey(AbilityToggleType.Dash) &&
+                    dbPlayer.AbilityToggles[AbilityToggleType.Dash])
+                {
+                    AssignCommand(player, () => ActionUseFeat(FeatType.Dash, player));
+                }
+            }
+
             _builder.Create(PerkCategoryType.General, PerkType.Dash)
                 .Name("Dash")
 
                 .AddPerkLevel()
-                .Description("Increases movement rate by 10%")
+                .Description("Grants the Dash ability. Increases movement rate by 10% while active.")
                 .Price(2)
+                .GrantsFeat(FeatType.Dash)
 
                 .AddPerkLevel()
-                .Description("Increases movement rate by 20%")
+                .Description("Increases movement rate of Dash to 25%.")
                 .Price(3)
-
-                .AddPerkLevel()
-                .Description("Increases movement rate by 30%")
-                .Price(3)
-
-                .AddPerkLevel()
-                .Description("Increases movement rate by 40%")
-                .Price(4)
-
-                .AddPerkLevel()
-                .Description("Increases movement rate by 50%")
-                .Price(4)
-
                 .TriggerPurchase((player, type, level) =>
                 {
-                    CreaturePlugin.SetMovementRateFactor(player, 1.0f + level * 0.1f);
+                    ToggleDash(player);
                 })
-                
                 .TriggerRefund((player, type, level) =>
                 {
-                    CreaturePlugin.SetMovementRateFactor(player, 1.0f);
+                    ToggleDash(player);
                 });
         }
     }

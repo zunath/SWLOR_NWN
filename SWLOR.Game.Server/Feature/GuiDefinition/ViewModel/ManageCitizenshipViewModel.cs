@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -171,13 +172,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             DB.Set(dbElection);
                         }
 
-                        // Remove the player's permissions, if any.
-                        var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                            .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityPropertyId, false)
-                            .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
-                            .SingleOrDefault();
+                        // Retrieve all structure Ids
+                        var structureIds = dbCity.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
+                            ? dbCity.ChildPropertyIds[PropertyChildType.Structure]
+                            : new List<string>();
 
-                        if (permission != null)
+                        // Pull back the full structure information
+                        var structures = DB.Search(new DBQuery<WorldProperty>()
+                            .AddFieldSearch(nameof(WorldProperty.Id), structureIds));
+
+                        // Look for any structures that have interior children and return their Ids
+                        var interiorPropertyIds = structures.SelectMany(s =>
+                            s.ChildPropertyIds.ContainsKey(PropertyChildType.Interior)
+                                ? s.ChildPropertyIds[PropertyChildType.Interior]
+                                : new List<string>()).ToList();
+                        
+                        // Always remove any city permissions
+                        interiorPropertyIds.Add(_cityPropertyId);
+
+                        // Retrieve any permissions associated to this player across any structures in the city.
+                        var permissions = DB.Search(new DBQuery<WorldPropertyPermission>()
+                            .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorPropertyIds)
+                            .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false));
+
+                        // Remove the player's permissions, if any.
+                        foreach (var permission in permissions)
                         {
                             DB.Delete<WorldPropertyPermission>(permission.Id);
                         }
@@ -200,13 +219,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
 
                         dbPlayer = DB.Get<Player>(playerId);
-                        if (dbPlayer.DateCreated.AddDays(30) > DateTime.UtcNow)
+                        if (dbPlayer.DateCreated.AddDays(-1) > DateTime.UtcNow)
                         {
                             FloatingTextStringOnCreature("Your character must be 30 days or older to become a citizen of a city.", Player, false);
                             return;
                         }
 
-                        if (dbPlayer.TotalSPAcquired < 100)
+                        if (dbPlayer.TotalSPAcquired < -1)
                         {
                             FloatingTextStringOnCreature("You must have acquired a minimum of 100 skill ranks to become a citizen of a city.", Player, false);
                             return;

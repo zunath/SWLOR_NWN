@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 var location = GetLocation(waypoint);
                 var landingWaypoint = GetLandingWaypoint(area);
                 var npc = CreateObject(ObjectType.Creature, "spc_dockhand", location);
+                CreateObject(ObjectType.Store, "dockhand_store", location);
 
                 SetLocalString(npc, "STARPORT_TELEPORT_WAYPOINT", planet.SpaceOrbitWaypointTag);
 

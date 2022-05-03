@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Web", "SWLOR.Web\SWLO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.CLI", "SWLOR.CLI\SWLOR.CLI.csproj", "{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Admin", "SWLOR.Admin\SWLOR.Admin.csproj", "{DAAABBA7-DEAC-402E-B01E-392E923D3634}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Admin", "SWLOR.Admin\SWLOR.Admin.csproj", "{34607A71-B934-46A9-B08B-C9E0F7458E91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAAABBA7-DEAC-402E-B01E-392E923D3634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAAABBA7-DEAC-402E-B01E-392E923D3634}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAAABBA7-DEAC-402E-B01E-392E923D3634}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAAABBA7-DEAC-402E-B01E-392E923D3634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34607A71-B934-46A9-B08B-C9E0F7458E91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34607A71-B934-46A9-B08B-C9E0F7458E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34607A71-B934-46A9-B08B-C9E0F7458E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34607A71-B934-46A9-B08B-C9E0F7458E91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

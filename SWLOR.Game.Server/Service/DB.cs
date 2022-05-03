@@ -13,7 +13,7 @@ using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
 {
-    internal static class DB
+    public static class DB
     {
         internal class JsonSerializer: ISerializerProxy
         {

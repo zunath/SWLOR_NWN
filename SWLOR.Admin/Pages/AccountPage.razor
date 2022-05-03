@@ -1,0 +1,43 @@
+﻿@page "/account"
+
+<h3>Account</h3>
+
+<table>
+	<thead>
+	<tr>
+		<th>CD Key</th>
+		<th>Completed Tutorial</th>
+		<th>Date Created</th>
+	</tr>
+	</thead>
+	<tbody>
+		
+	@foreach (var account in _accounts)
+	{
+		<tr>
+			<td>@account.Id</td>
+			@if (account.HasCompletedTutorial)
+			{
+				<td>Yes</td>
+			}
+			else
+			{
+				<td>No</td>
+			}
+			<td>@account.DateCreated</td>
+		</tr>
+	}
+
+	</tbody>
+
+</table>
+
+@code {
+
+	private List<Account> _accounts;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_accounts = DB.Search(new DBQuery<Account>()).ToList();
+	}
+}

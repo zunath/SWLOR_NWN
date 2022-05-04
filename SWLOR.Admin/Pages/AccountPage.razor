@@ -1,13 +1,16 @@
 ﻿@page "/account"
+@using SWLOR.Game.Server.Service.AchievementService
 
 <h3>Account</h3>
 
-<table>
+<table class="table">
 	<thead>
 	<tr>
 		<th>CD Key</th>
 		<th>Completed Tutorial</th>
 		<th>Date Created</th>
+		<th>Achievements</th>
+		<th>Edit</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -25,19 +28,32 @@
 				<td>No</td>
 			}
 			<td>@account.DateCreated</td>
+			<td>
+				<button
+					type="button"
+					class="btn btn-primary">
+					Achievements
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-primary">Edit</button>
+			</td>
 		</tr>
 	}
 
 	</tbody>
-
+	
 </table>
 
 @code {
 
 	private List<Account> _accounts;
+	private List<AchievementType> _achievements;
 
 	protected override async Task OnInitializedAsync()
 	{
 		_accounts = DB.Search(new DBQuery<Account>()).ToList();
+		_achievements = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>().ToList();
+
 	}
 }

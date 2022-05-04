@@ -1,19 +1,20 @@
-
 namespace SWLOR.Admin
 {
     public class Program
     {
         public static async Task Main(string[] args)
         {
-            LoadSettings();
 
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
+            builder.Services.AddSingleton<WebSettings>();
 
             var app = builder.Build();
+
+            app.Services.GetService<WebSettings>().Load();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -32,16 +33,14 @@ namespace SWLOR.Admin
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
 
-            app.Run();
+            LoadSettings();
+            await app.RunAsync();
 
         }
 
         private static void LoadSettings()
         {
-            Environment.SetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY", "app_logs");
-            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "65.21.151.15");
 
-            DB.Load();
         }
     }
 }

@@ -1,7 +1,50 @@
 ﻿@page "/dm"
+@using SWLOR.Game.Server.Enumeration
 
 <h3>DM Authorization</h3>
 
-@code {
+<table class="table">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Type</th>
+			<th>Date Created</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody>
 
+		@foreach (var account in _dms)
+		{
+			<tr>
+				<td>@account.Name</td>
+				<td>@account.Authorization.ToString()</td>
+				<td>@account.DateCreated</td>
+				<td>
+					<button type="button"
+						class="btn btn-primary">
+						Edit
+					</button>
+				</td>
+				<td>
+					<button type="button"
+					        class="btn btn-danger">
+						Delete
+					</button>
+				</td>
+			</tr>
+		}
+
+	</tbody>
+
+</table>
+
+@code {
+	private List<AuthorizedDM> _dms;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_dms = DB.Search(new DBQuery<AuthorizedDM>()).ToList();
+	}
 }

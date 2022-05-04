@@ -2,6 +2,81 @@
 
 <h3>Players</h3>
 
-@code {
+<div class="row">
+	
+	<div class="col">
+		<input 
+			type="text" 
+			@bind="@_searchText" 
+			class="form-control"
+			@onblur="RefreshList"/>
+	</div>
+	<div class="col-1">
+		<button 
+			@onclick="RefreshList"
+			class="btn btn-primary">Search
+			</button>
+	</div>
 
+</div>
+
+<table class="table">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Date Created</th>
+		<th>Actions</th>
+	</tr>
+	</thead>
+	<tbody>
+
+	@foreach (var player in _players)
+	{
+		<tr>
+			<td>@player.Name</td>
+			<td>@player.CharacterType.ToString()</td>
+			<td>@player.DateCreated</td>
+			<td>
+				<div class="btn-group" role="group">
+					<button type="button"
+					        class="btn btn-primary">
+						Skills
+					</button>
+					
+					<button type="button"
+					        class="btn btn-warning">
+						Perks
+					</button>
+				</div>
+			</td>
+			<td>
+			</td>
+		</tr>
+	}
+
+	</tbody>
+
+</table>
+
+@code {
+	private List<Player> _players;
+	protected string _searchText;
+
+	protected void RefreshList()
+	{
+		var query = new DBQuery<Player>();
+
+		if (!string.IsNullOrWhiteSpace(_searchText))
+		{
+			query.AddFieldSearch(nameof(Player.Name), _searchText, true);
+		}
+
+		_players = DB.Search(query).ToList();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		RefreshList();
+	}
 }

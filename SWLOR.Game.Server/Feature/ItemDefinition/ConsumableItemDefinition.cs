@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location) =>
                 {
                     var foodEffect = new FoodEffectData();
-                    var duration = 3600f; // 1 hour by default for all food
+                    var duration = 1800f; // 30 minutes by default for all food
 
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {

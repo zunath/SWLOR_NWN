@@ -78,6 +78,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(acLoss), target, 60f);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.CrossCut));
+            DelayCommand(0.2f, () =>
+            {
+                AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            });
         }
 
         private static void CrossCut1(AbilityBuilder builder)

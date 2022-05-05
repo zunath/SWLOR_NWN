@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleThrust));
         }
 
         private static void DoubleThrust1(AbilityBuilder builder)

@@ -82,6 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             }            
 
             Enmity.ModifyEnmityOnAll(activator, 1);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
         private static void CircleSlash1(AbilityBuilder builder)

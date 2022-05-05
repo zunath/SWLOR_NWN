@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
         }
 
         private static void RiotBlade1(AbilityBuilder builder)

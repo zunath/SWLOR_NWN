@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.QuickDraw));
         }
 
         private static void QuickDraw1(AbilityBuilder builder)

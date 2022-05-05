@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {

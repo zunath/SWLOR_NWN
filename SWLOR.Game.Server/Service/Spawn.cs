@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Entity
+﻿namespace SWLOR.Game.Server.Entity
 {
     public class InventoryItem : EntityBase
     {

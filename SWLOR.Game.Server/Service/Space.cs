@@ -15,7 +15,6 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

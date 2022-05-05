@@ -1,0 +1,1 @@
+﻿global using static SWLOR.Game.Server.Core.NWScript.NWScript;

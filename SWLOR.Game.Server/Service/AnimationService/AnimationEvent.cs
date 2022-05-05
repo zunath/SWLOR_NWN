@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SWLOR.Game.Server.Service.AnimationService
+﻿namespace SWLOR.Game.Server.Service.AnimationService
 {
     /// <summary>
     /// Subset of supported NWN events for animating

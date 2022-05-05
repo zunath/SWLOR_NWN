@@ -2,7 +2,6 @@
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 using Player = SWLOR.Game.Server.Entity.Player;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {

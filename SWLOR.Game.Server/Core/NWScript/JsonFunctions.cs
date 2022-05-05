@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWScript
 {

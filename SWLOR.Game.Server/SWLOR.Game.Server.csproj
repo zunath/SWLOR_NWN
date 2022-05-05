@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>9</LangVersion>
+    <LangVersion>10</LangVersion>
     <OutputType>Library</OutputType>
   </PropertyGroup>
 

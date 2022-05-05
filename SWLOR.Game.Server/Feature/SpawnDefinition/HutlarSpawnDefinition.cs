@@ -22,10 +22,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "byysk_warrior")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "byysk_warrior2")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void QionAnimals()
@@ -34,10 +36,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "qion_slug")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "qion_tiger")
                 .WithFrequency(8)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void Valley()
@@ -46,10 +50,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "qion_slug")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "qion_tiger")
                 .WithFrequency(8)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

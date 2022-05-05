@@ -23,14 +23,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pirate_sybil")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_terror")
                 .WithFrequency(5)
                 .RandomlyWalks()
-                
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "pirate_night")
                 .WithFrequency(1)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void MonCalaOrbit()
@@ -39,14 +42,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pirate_night")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_ferron")
                 .WithFrequency(5)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
                 .WithFrequency(1)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void HutlarOrbit()
@@ -55,14 +61,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_ranger")
                 .WithFrequency(5)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_hammer")
                 .WithFrequency(1)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void TatooineOrbit()
@@ -71,18 +80,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pirate_hammer")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_drake")
                 .WithFrequency(5)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_borealis")
                 .WithFrequency(1)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_eleyna")
                 .WithFrequency(1)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

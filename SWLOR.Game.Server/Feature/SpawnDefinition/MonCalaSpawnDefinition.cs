@@ -22,14 +22,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "viper")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "mc_aradile")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "mc_amphihydrus")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void EcoTerrorists(SpawnTableBuilder builder)
@@ -38,10 +41,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "ecoterr_1")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "ecoterr_2")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void EcoTerroristLeader(SpawnTableBuilder builder)
@@ -49,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             builder.Create("MONCALA_ECOTERRORIST_LEADER", "Eco-Terrorist Leader")
                 .AddSpawn(ObjectType.Creature, "ecoterr_ldr")
                 .WithFrequency(100)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

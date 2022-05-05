@@ -132,6 +132,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
             return this;
         }
 
+        /// <summary>
+        /// Indicates that this spawn object will return home if they stray too far from their spawn point.
+        /// </summary>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder ReturnsHome()
+        {
+            ActiveSpawn.AIFlags |= AIFlag.ReturnHome;
+
+            return this;
+        }
+
         public SpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
         {
             var animation = new Animator()

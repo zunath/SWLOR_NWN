@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
         [NWNEventHandler("mod_exit")]
+        [NWNEventHandler("area_exit")]
         public static void PlayerExit()
         {
             var player = GetExitingObject();

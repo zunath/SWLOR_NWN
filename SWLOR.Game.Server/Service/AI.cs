@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         {
             ExecuteScript("crea_hb_bef", OBJECT_SELF);
             RestoreCreatureStats();
-            ProcessRandomWalkFlag();
+            ProcessFlags();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
             ExecuteScript("crea_hb_aft", OBJECT_SELF);
         }
@@ -130,6 +130,7 @@ namespace SWLOR.Game.Server.Service
             LoadCreatureStats();
             LoadAggroEffect();
             DoVFX();
+            SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
             ExecuteScript("cdef_c2_default9", OBJECT_SELF);
             ExecuteScript("crea_spawn_aft", OBJECT_SELF);
         }
@@ -244,7 +245,11 @@ namespace SWLOR.Game.Server.Service
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
             var target = GetTarget();
-            if (!GetIsObjectValid(target)) return;
+            if (!GetIsObjectValid(target))
+            {
+                AssignCommand(self, () => ClearAllActions());
+                return;
+            }
 
             // If currently randomly walking, clear all actions.
             if (GetCurrentAction(self) == ActionType.RandomWalk)
@@ -403,10 +408,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature's heartbeat fires, if they have the RandomWalk AI flag,
-        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk.
+        /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
+        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
         /// </summary>
-        private static void ProcessRandomWalkFlag()
+        private static void ProcessFlags()
         {
             var self = OBJECT_SELF;
 
@@ -421,13 +426,24 @@ namespace SWLOR.Game.Server.Service
             }
 
             var aiFlags = GetAIFlag(self);
-            if (!aiFlags.HasFlag(AIFlag.RandomWalk) ||
-                IsInConversation(self) ||
+            if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk)
+                GetCurrentAction(self) == ActionType.RandomWalk ||
+                GetCurrentAction(self) == ActionType.MoveToPoint ||
+                GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)))
                 return;
 
-            if (Random.D100(1) <= 40)
+            // Return Home flag
+            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
+            if (aiFlags.HasFlag(AIFlag.ReturnHome) &&
+                (GetAreaFromLocation(homeLocation) != GetArea(self) ||
+                 GetDistanceBetweenLocations(GetLocation(self), homeLocation) > 15f))
+            {
+                AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
+            }
+            // Randomly walk flag
+            else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
+                Random.D100(1) <= 40)
             {
                 AssignCommand(self, ActionRandomWalk);
             }

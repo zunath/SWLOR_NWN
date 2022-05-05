@@ -2972,7 +2972,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592264175415
+          "value": -3.141592264175415
         },
         "BodyBag": {
           "type": "byte",
@@ -3045,7 +3045,7 @@
           "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Building Exit"
+            "0": "Property Exit"
           }
         },
         "OnClick": {
@@ -3175,6 +3175,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.GenericConversation"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -3183,7 +3198,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "BuildingExit"
+                "value": "PropertyExitDialog"
               }
             }
           ]
@@ -3194,15 +3209,15 @@
         },
         "X": {
           "type": "float",
-          "value": 25.23256301879883
+          "value": 25.07747650146484
         },
         "Y": {
           "type": "float",
-          "value": 2.342506170272827
+          "value": 1.831154108047485
         },
         "Z": {
           "type": "float",
-          "value": 0.01000785827636719
+          "value": -5.7220458984375e-006
         }
       }
     ]
@@ -3304,7 +3319,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 25.19549560546875
+          "value": 25.08657455444336
         },
         "YOrientation": {
           "type": "float",
@@ -3312,11 +3327,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 2.281467199325562
+          "value": 2.809566497802734
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.01000785827636719
+          "value": -5.7220458984375e-006
         }
       }
     ]

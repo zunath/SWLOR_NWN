@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature

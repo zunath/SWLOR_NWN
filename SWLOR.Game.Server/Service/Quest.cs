@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service.ActivityService;
 

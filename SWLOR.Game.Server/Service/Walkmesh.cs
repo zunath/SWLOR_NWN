@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Entity;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

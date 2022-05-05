@@ -6,7 +6,6 @@ using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

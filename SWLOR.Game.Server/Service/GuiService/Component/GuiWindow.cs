@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

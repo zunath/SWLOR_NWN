@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

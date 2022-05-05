@@ -16,7 +16,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
 

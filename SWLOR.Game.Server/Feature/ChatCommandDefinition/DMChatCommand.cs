@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Faction = SWLOR.Game.Server.Service.Faction;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

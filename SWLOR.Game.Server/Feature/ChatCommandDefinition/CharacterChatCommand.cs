@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 

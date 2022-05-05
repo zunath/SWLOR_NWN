@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
                 case SkillType.Engineering:
                     _primaryAbility = AbilityType.Vitality;
-                    _secondaryAbility = AbilityType.Perception;
+                    _secondaryAbility = AbilityType.Agility;
 
                     _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;

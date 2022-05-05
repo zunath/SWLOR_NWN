@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -463,6 +464,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void AdjustScripts(uint creature)
+        {
+            SetEventScript(creature, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
+            SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
+            SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
+            SetEventScript(creature, EventScript.Creature_OnDamaged, "x2_def_ondamage");
+            SetEventScript(creature, EventScript.Creature_OnDeath, "x2_def_ondeath");
+            SetEventScript(creature, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
+            SetEventScript(creature, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
+            SetEventScript(creature, EventScript.Creature_OnNotice, "x2_def_percept");
+            SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
+            SetEventScript(creature, EventScript.Creature_OnRested, "x2_def_rested");
+            SetEventScript(creature, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
+            SetEventScript(creature, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
+            SetEventScript(creature, EventScript.Creature_OnUserDefined, "x2_def_userdef");
+        }
+
         /// <summary>
         /// Creates a new spawn object into its spawn area.
         /// Hand-placed objects are deserialized and added to the area.
@@ -485,7 +503,8 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                // Note: AI flag is not set here as the builder is expected to specify this as a local variable if they are hand-placing spawns.
+                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                AdjustScripts(deserialized);
 
                 return deserialized;
             }
@@ -514,6 +533,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
                 AI.SetAIFlag(spawn, aiFlag);
+                AdjustScripts(spawn);
 
                 foreach (var animator in animators)
                 {

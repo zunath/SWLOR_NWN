@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.AIService
     {
         None = 0,
         RandomWalk = 1,
+        ReturnHome = 2,
 
     }
 }

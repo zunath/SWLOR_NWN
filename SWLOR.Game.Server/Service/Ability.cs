@@ -287,11 +287,20 @@ namespace SWLOR.Game.Server.Service
                     EndConcentrationAbility(creature);
                     continue;
                 }
-                
-                foreach (var req in ability.Requirements)
+
+                // We don't run after activation actions until the second concentration cycle.
+                // This is because if a player activates a concentration ability 1 second before the cycle,
+                // they get charged for both the activation as well as the concentration cost.
+                // The trade off is some abilities will last longer depending on when the player uses them in the cycle.
+                // I think this is preferable to punishing the player twice though.
+                if (!GetLocalBool(creature, "CONCENTRATION_FIRST_USE"))
                 {
-                    req.AfterActivationAction(creature);
+                    foreach (var req in ability.Requirements)
+                    {
+                        req.AfterActivationAction(creature);
+                    }
                 }
+                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
             }
         }
 
@@ -309,6 +318,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
+            SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
         }
 
         /// <summary>
@@ -341,6 +351,7 @@ namespace SWLOR.Game.Server.Service
                 _activeConcentrationAbilities.Remove(creature);
 
                 SendMessageToPC(creature, "You stop concentrating.");
+                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
             }
         }
 

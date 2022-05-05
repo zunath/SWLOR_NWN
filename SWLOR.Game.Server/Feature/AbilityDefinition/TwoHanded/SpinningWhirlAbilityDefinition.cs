@@ -81,6 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
                 count++;
             }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
         private static void SpinningWhirl1(AbilityBuilder builder)

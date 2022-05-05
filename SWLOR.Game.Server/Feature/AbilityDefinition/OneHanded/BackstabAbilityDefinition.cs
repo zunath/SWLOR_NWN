@@ -80,6 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
         }
 
         private static void Backstab1(AbilityBuilder builder)

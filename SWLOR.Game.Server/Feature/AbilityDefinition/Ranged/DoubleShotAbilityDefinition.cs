@@ -77,6 +77,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             // Second attack
             damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
         }
 
         private static void DoubleShot1(AbilityBuilder builder)

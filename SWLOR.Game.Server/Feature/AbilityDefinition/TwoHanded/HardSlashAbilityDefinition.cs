@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
         }
 
         private static void HardSlash1(AbilityBuilder builder)

@@ -74,6 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
         }
 
         private static void DoubleStrike1(AbilityBuilder builder)

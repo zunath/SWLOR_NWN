@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Service
 
             var pcSkill = dbPlayer.Skills[skill];
 
-            return (int)(0.30f * pcSkill.Rank);
+            return (int)(0.15f * pcSkill.Rank);
         }
 
         /// <summary>

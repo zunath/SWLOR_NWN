@@ -296,11 +296,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .AnimationLoopingAction(Animation.Shrug)
                 .IsEmote();
-            builder.Create("usecomputer")
-                .Description("Play a Use Computer animation.")
-                .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.UseComputer)
-                .IsEmote();
             builder.Create("kneeup")
                .Description("Play a knee up animation.")
                .Permissions(AuthorizationLevel.All)
@@ -345,11 +340,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                .Description("Dance with your hands held high.")
                .Permissions(AuthorizationLevel.All)
                .AnimationLoopingAction(Animation.DanceHandsUp)
-               .IsEmote();
-            builder.Create("shakirashakira")
-               .Description("Hips don't lie.")
-               .Permissions(AuthorizationLevel.All)
-               .AnimationLoopingAction(Animation.ShakiraShakira)
                .IsEmote();
             builder.Create("smoke")
                .Description("Smoke it up.")
@@ -420,11 +410,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
               .Description("One handed melee stance.")
               .Permissions(AuthorizationLevel.All)
               .AnimationLoopingAction(Animation.OneHandedStance)
-              .IsEmote();
-            builder.Create("seethe")
-              .Description("Seethe like Maul.")
-              .Permissions(AuthorizationLevel.All)
-              .AnimationLoopingAction(Animation.Seethe)
               .IsEmote();
             builder.Create("dualwieldingstance")
               .Description("Take a combat stance with two weapons.")

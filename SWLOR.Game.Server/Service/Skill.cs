@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                            detail.ContributesToSkillCap &&
                            x.Key != skill &&
                            x.Value.Rank > 0;
-                }).ToList();
+                }).Select(s => s.Key).ToList();
 
             // If player is at the skill cap and no skills are available for decay, exit early.
             if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
@@ -141,23 +141,46 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Skills[skill] = pcSkill;
 
                 ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+                
+                totalRanks = dbPlayer.Skills
+                    .Where(x =>
+                    {
+                        var detail = GetSkillDetails(x.Key);
+                        return detail.ContributesToSkillCap;
+                    })
+                    .Sum(x => x.Value.Rank);
 
                 // If player is at the cap, pick a random skill out of the available decayable skills
                 // reduce its level by 1 and set XP to zero.
                 if (totalRanks >= SkillCap)
                 {
+                    // Edge case: Part of the number of levels granted cannot be given because
+                    // there are no decayable skills to reduce. All excess XP is lost and we
+                    // no longer need to proceed with increasing the skill rank
+                    if (skillsPossibleToDecay.Count <= 0)
+                    {
+                        dbPlayer.Skills[skill].XP = 0;
+                        break;
+                    }
+
                     var index = Random.Next(skillsPossibleToDecay.Count);
                     var decaySkill = skillsPossibleToDecay[index];
-                    dbPlayer.Skills[decaySkill.Key].XP = 0;
-                    dbPlayer.Skills[decaySkill.Key].Rank--;
+                    dbPlayer.Skills[decaySkill].XP = 0;
+                    dbPlayer.Skills[decaySkill].Rank--;
 
-                    if(!modifiedSkills.Contains(decaySkill.Key))
-                        modifiedSkills.Add(decaySkill.Key);
+                    if(!modifiedSkills.Contains(decaySkill))
+                        modifiedSkills.Add(decaySkill);
 
-                    if (dbPlayer.Skills[decaySkill.Key].Rank <= 0)
+                    if (dbPlayer.Skills[decaySkill].Rank <= 0)
                         skillsPossibleToDecay.Remove(decaySkill);
                 }
+            }
 
+            // Safety check - Any excess XP over the required amount is lost.
+            requiredXP = GetRequiredXP(dbPlayer.Skills[skill].Rank);
+            if (dbPlayer.Skills[skill].XP > requiredXP)
+            {
+                dbPlayer.Skills[skill].XP = 0;
             }
 
             DB.Set(dbPlayer);

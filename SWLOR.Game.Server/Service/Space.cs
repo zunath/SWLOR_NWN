@@ -1033,6 +1033,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Check for a selected target that doesn't have a ship status.
+            if (targetShipStatus == null)
+            {
+                SendMessageToPC(activator, "Invalid target.");
+                return;
+            }
+
             // Check for a valid target if the ship module requires it.
             if (shipModuleDetails.RequiresTarget && (!GetIsObjectValid(target) || targetShipStatus == null))
             {

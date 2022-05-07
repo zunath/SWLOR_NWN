@@ -173,13 +173,6 @@
           "type": "resref",
           "value": "spy"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "rifle_2"
-        }
       }
     ]
   },
@@ -375,7 +368,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "nw_c2_default4"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",

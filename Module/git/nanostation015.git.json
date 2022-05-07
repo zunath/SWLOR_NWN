@@ -578,15 +578,15 @@
         },
         "ScriptAttacked": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default5"
         },
         "ScriptDamaged": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default6"
         },
         "ScriptDeath": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default7"
         },
         "ScriptDialogue": {
           "type": "resref",
@@ -594,39 +594,39 @@
         },
         "ScriptDisturbed": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default8"
         },
         "ScriptEndRound": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default3"
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default1"
         },
         "ScriptOnBlocked": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_defaulte"
         },
         "ScriptOnNotice": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default2"
         },
         "ScriptRested": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_defaulta"
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_default9"
         },
         "ScriptSpellAt": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_defaultb"
         },
         "ScriptUserDefine": {
           "type": "resref",
-          "value": ""
+          "value": "cdef_c2_defaultd"
         },
         "SkillList": {
           "type": "list",

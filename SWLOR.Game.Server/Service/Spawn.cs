@@ -465,9 +465,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void AdjustScripts(uint creature)
         {
+            if (GetIsPC(creature) || GetIsDM(creature) || GetObjectType(creature) != ObjectType.Creature)
+                return;
+
             SetEventScript(creature, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
             SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
-            SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
+            //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
             SetEventScript(creature, EventScript.Creature_OnDamaged, "x2_def_ondamage");
             SetEventScript(creature, EventScript.Creature_OnDeath, "x2_def_ondeath");
             SetEventScript(creature, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");

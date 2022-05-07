@@ -83,7 +83,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (xp <= 0)
+            {
+                DB.Set(dbPlayer);
                 return;
+            }
 
             var totalRanks = dbPlayer.Skills
                 .Where(x =>

@@ -228,6 +228,6 @@
         EngineeringEquipment = 221,
         FabricationEquipment = 222,
         AgricultureEquipment = 223,
-
+        EnhancementBlueprints = 224,
     }
 }

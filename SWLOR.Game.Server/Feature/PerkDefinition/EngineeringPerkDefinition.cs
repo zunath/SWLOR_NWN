@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Abilities();
             StarshipBlueprints();
             EngineeringEquipment();
+            EnhancementBlueprints();
 
             return _builder.Build();
         }
@@ -117,30 +118,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Ship and Module blueprints.")
-                .Price(3)
+                .Price(1)
                 .GrantsFeat(FeatType.StarshipBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Ship and Module blueprints.")
-                .Price(4)
+                .Price(1)
                 .RequirementSkill(SkillType.Engineering, 10)
                 .GrantsFeat(FeatType.StarshipBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Ship and Module blueprints.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Engineering, 20)
                 .GrantsFeat(FeatType.StarshipBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Ship and Module blueprints.")
-                .Price(5)
+                .Price(3)
                 .RequirementSkill(SkillType.Engineering, 30)
                 .GrantsFeat(FeatType.StarshipBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Ship and Module blueprints.")
-                .Price(6)
+                .Price(3)
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.StarshipBlueprints5);
         }
@@ -180,6 +181,42 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Engineering, 45)
                 .GrantsFeat(FeatType.EngineeringEquipment5);
+        }
+
+
+        private void EnhancementBlueprints()
+        {
+            _builder.Create(PerkCategoryType.Engineering, PerkType.EnhancementBlueprints)
+                .Name("Enhancement Blueprints")
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 1 Enhancement blueprints.")
+                .Price(1)
+                .GrantsFeat(FeatType.EnhancementBlueprints1)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 2 Enhancement blueprints.")
+                .Price(1)
+                .RequirementSkill(SkillType.Engineering, 10)
+                .GrantsFeat(FeatType.EnhancementBlueprints2)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 3 Enhancement blueprints.")
+                .Price(2)
+                .RequirementSkill(SkillType.Engineering, 20)
+                .GrantsFeat(FeatType.EnhancementBlueprints3)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 4 Enhancement blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 30)
+                .GrantsFeat(FeatType.EnhancementBlueprints4)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 5 Enhancement blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 40)
+                .GrantsFeat(FeatType.EnhancementBlueprints5);
         }
     }
 }

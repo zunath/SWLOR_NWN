@@ -10252,6 +10252,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Allspice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "allspice_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Allspice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "allspice_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Allspice III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "allspice_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Allspice IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "allspice_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Allspice V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "allspice_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Aluminum"
                     },
                     "RESREF": {
@@ -10301,6 +10356,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ancient_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anise I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "anise_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anise II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "anise_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anise III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "anise_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anise IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "anise_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anise V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "anise_5"
                     }
                   },
                   {
@@ -11440,6 +11550,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Balanced Steel Rods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel_rods_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Barinium Ore"
                     },
                     "RESREF": {
@@ -11726,11 +11847,121 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cayenne I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cayenne_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cayenne II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cayenne_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cayenne III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cayenne_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cayenne IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cayenne_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cayenne V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cayenne_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cereal"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "cereal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinnamon I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinnamon_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinnamon II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinnamon_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinnamon III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinnamon_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinnamon IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinnamon_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cinnamon V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cinnamon_5"
                     }
                   },
                   {
@@ -11753,6 +11984,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "clay_water_jug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloves I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloves_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloves II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloves_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloves III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloves_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloves IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloves_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloves V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloves_5"
                     }
                   },
                   {
@@ -12463,6 +12749,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Coriander I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "coriander_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coriander II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "coriander_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coriander III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "coriander_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coriander IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "coriander_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coriander V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "coriander_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cornucopia"
                     },
                     "RESREF": {
@@ -12578,6 +12919,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cultured_butter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cumin I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cumin_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cumin II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cumin_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cumin III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cumin_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cumin IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cumin_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cumin V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cumin_5"
                     }
                   },
                   {
@@ -12925,6 +13321,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fennel Seed I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fennel_seed_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fennel Seed II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fennel_seed_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fennel Seed III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fennel_seed_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fennel Seed IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fennel_seed_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fennel Seed V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fennel_seed_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fiberplast Padding"
                     },
                     "RESREF": {
@@ -12941,6 +13392,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fine_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flame Retardant I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flame_ret_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flame Retardant II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flame_ret_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flame Retardant III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flame_ret_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flame Retardant IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flame_ret_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flame Retardant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flame_ret_5"
                     }
                   },
                   {
@@ -13464,6 +13970,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "High Quality Steel Rods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel_rods_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hollinium"
                     },
                     "RESREF": {
@@ -13612,6 +14129,2756 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_im"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Agrinium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_agrinium_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Agrinium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_agrinium_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Agrinium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_agrinium_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Agrinium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_agrinium_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Agrinium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_agrinium_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Carvanium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_carvan_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Carvanium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_carvan_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Carvanium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_carvan_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Carvanium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_carvan_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Carvanium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_carvan_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ceramacrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cerama_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ceramacrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cerama_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ceramacrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cerama_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ceramacrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cerama_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ceramacrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cerama_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chaugaine I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chaug_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chaugaine II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chaug_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chaugaine III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chaug_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chaugaine IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chaug_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chaugaine V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chaug_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chromafiber I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chromaf_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chromafiber II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chromaf_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chromafiber III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chromaf_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chromafiber IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chromaf_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Chromafiber V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_chromaf_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Cotton I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cotton_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Cotton II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cotton_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Cotton III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cotton_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Cotton IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cotton_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Cotton V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_cotton_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Desh I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_desh_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Desh II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_desh_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Desh III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_desh_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Desh IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_desh_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Desh V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_desh_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Diatium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_diatium_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Diatium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_diatium_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Diatium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_diatium_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Diatium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_diatium_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Diatium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_diatium_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Durafiber I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duraf_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Durafiber II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duraf_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Durafiber III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duraf_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Durafiber IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duraf_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Durafiber V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duraf_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranex I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranex_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranex II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranex_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranex III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranex_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranex IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranex_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranex V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranex_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranium_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranium_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranium_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranium_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Duranium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_duranium_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Elastex I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_elastex_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Elastex II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_elastex_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Elastex III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_elastex_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Elastex IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_elastex_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Elastex V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_elastex_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Electrum I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_electrum_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Electrum II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_electrum_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Electrum III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_electrum_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Electrum IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_electrum_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Electrum V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_electrum_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroceramic I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferro_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroceramic II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferro_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroceramic III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferro_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroceramic IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferro_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroceramic V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferro_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroconcrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferroc_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroconcrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferroc_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroconcrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferroc_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroconcrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferroc_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ferroconcrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ferroc_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Flexsteel I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_flex_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Flexsteel II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_flex_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Flexsteel III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_flex_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Flexsteel IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_flex_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Flexsteel V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_flex_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Gemweb I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_gemweb_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Gemweb II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_gemweb_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Gemweb III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_gemweb_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Gemweb IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_gemweb_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Gemweb V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_gemweb_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Grounding I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ground_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Grounding II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ground_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Grounding III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ground_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Grounding IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ground_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Grounding V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ground_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Hemp I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_hemp_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Hemp II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_hemp_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Hemp III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_hemp_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Hemp IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_hemp_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Hemp V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_hemp_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Insulation I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_insul_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Insulation II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_insul_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Insulation III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_insul_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Insulation IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_insul_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Insulation V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_insul_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Kelsh I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_kelsh_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Kelsh II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_kelsh_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Kelsh III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_kelsh_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Kelsh IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_kelsh_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Kelsh V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_kelsh_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Laminasteel I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lamina_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Laminasteel II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lamina_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Laminasteel III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lamina_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Laminasteel IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lamina_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Laminasteel V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lamina_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Linen I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_linen_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Linen II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_linen_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Linen III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_linen_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Linen IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_linen_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Linen V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_linen_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Lommite I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lommite_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Lommite II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lommite_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Lommite III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lommite_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Lommite IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lommite_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Lommite V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_lommite_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Meleenium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_melee_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Meleenium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_melee_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Meleenium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_melee_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Meleenium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_melee_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Meleenium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_melee_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Molytex I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_molytex_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Molytex II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_molytex_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Molytex III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_molytex_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Molytex IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_molytex_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Molytex V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_molytex_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Neutronium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_neutro_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Neutronium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_neutro_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Neutronium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_neutro_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Neutronium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_neutro_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Neutronium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_neutro_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Permaplas I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_perma_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Permaplas II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_perma_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Permaplas III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_perma_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Permaplas IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_perma_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Permaplas V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_perma_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Phrik I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_phrik_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Phrik II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_phrik_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Phrik III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_phrik_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Phrik IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_phrik_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Phrik V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_phrik_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasteel I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plasteel_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasteel II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plasteel_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasteel III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plasteel_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasteel IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plasteel_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasteel V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plasteel_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasticrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plastcr_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasticrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plastcr_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasticrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plastcr_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasticrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plastcr_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Plasticrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_plastcr_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Polyfiber I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_poly_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Polyfiber II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_poly_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Polyfiber III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_poly_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Polyfiber IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_poly_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Polyfiber V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_poly_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Pourstone I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_pourstone_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Pourstone II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_pourstone_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Pourstone III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_pourstone_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Pourstone IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_pourstone_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Pourstone V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_pourstone_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Power Supply I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_powsupp_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Power Supply II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_powsupp_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Power Supply III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_powsupp_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Power Supply IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_powsupp_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Power Supply V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_powsupp_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Quadranium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_quadran_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Quadranium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_quadran_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Quadranium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_quadran_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Quadranium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_quadran_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Quadranium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_quadran_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Resicrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_resicrete_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Resicrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_resicrete_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Resicrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_resicrete_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Resicrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_resicrete_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Resicrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_resicrete_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Scintathread I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_scint_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Scintathread II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_scint_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Scintathread III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_scint_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Scintathread IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_scint_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Scintathread V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_scint_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sisal I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_sisal_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sisal II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_sisal_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sisal III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_sisal_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sisal IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_sisal_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sisal V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_sisal_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelcrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelcr_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelcrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelcr_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelcrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelcr_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelcrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelcr_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelcrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelcr_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelfab I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelfab_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelfab II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelfab_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelfab III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelfab_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelfab IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelfab_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelfab V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelfab_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelhide I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelhide_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelhide II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelhide_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelhide III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelhide_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelhide IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelhide_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Steelhide V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_steelhide_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Stresscrete I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stress_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Stresscrete II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stress_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Stresscrete III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stress_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Stresscrete IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stress_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Stresscrete V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stress_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sturdiplast I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stplast_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sturdiplast II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stplast_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sturdiplast III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stplast_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sturdiplast IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stplast_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Sturdiplast V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_stplast_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synstone I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synstone_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synstone II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synstone_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synstone III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synstone_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synstone IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synstone_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synstone V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synstone_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthatex I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_syntha_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthatex II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_syntha_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthatex III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_syntha_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthatex IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_syntha_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthatex V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_syntha_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthcloth I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthcl_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthcloth II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthcl_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthcloth III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthcl_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthcloth IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthcl_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthcloth V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthcl_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthmesh I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthmesh_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthmesh II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthmesh_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthmesh III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthmesh_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthmesh IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthmesh_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Synthmesh V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_synthmesh_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ultrachrome I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ultrachr_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ultrachrome II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ultrachr_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ultrachrome III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ultrachr_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ultrachrome IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ultrachr_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Ultrachrome V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_ultrachr_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zersium I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zersium_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zersium II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zersium_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zersium III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zersium_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zersium IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zersium_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zersium V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zersium_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zoosha Fabric I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zoosh_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zoosha Fabric II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zoosh_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zoosha Fabric III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zoosh_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zoosha Fabric IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zoosh_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Improved Zoosha Fabric V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_zoosh_5"
                     }
                   },
                   {
@@ -14520,6 +17787,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Paprika I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "paprika_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Paprika II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "paprika_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Paprika III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "paprika_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Paprika IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "paprika_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Paprika V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "paprika_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Partially Digested Herb"
                     },
                     "RESREF": {
@@ -14844,6 +18166,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_pr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pristine Steel Rods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel_rods_5"
                     }
                   },
                   {
@@ -15427,6 +18760,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "r_pow_supp_unit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reinforced Steel Rods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel_rods_3"
                     }
                   },
                   {
@@ -16698,6 +20042,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Steel Rods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steel_rods_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stone Block"
                     },
                     "RESREF": {
@@ -16956,6 +20311,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turmeric I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turmeric_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turmeric II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turmeric_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turmeric III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turmeric_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turmeric IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turmeric_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Turmeric V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turmeric_5"
                     }
                   },
                   {

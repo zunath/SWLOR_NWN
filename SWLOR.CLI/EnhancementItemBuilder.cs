@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -81,6 +82,15 @@ namespace SWLOR.CLI
             { "Module Bonus", 45 }
         };
 
+        private readonly Dictionary<int, int> _levelToTier = new()
+        {
+            { 5, 1 },
+            { 15, 2 },
+            { 25, 3 },
+            { 35, 4 },
+            { 45, 5 },
+        };
+
         public void Process()
         {
             ClearOutputDirectory();
@@ -101,6 +111,8 @@ namespace SWLOR.CLI
                 var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
                 var itemPropertyId = _categoryNameToId[category];
                 var subTypeId = _subTypeToId[propertyName];
+                var tier = _levelToTier[Convert.ToInt32(level)];
+                var price = CalculatePrice(tier);
 
                 var json = templateText
                     .Replace("%%NAME%%", name)
@@ -111,7 +123,8 @@ namespace SWLOR.CLI
                     .Replace("%%SUBTYPEID%%", subTypeId.ToString())
                     .Replace("%%BONUSAMOUNT%%", bonus)
                     .Replace("%%TAG%%", resref)
-                    .Replace("%%RESREF%%", resref);
+                    .Replace("%%RESREF%%", resref)
+                    .Replace("%%PRICE%%", price.ToString());
 
                 File.WriteAllText($"{OutputFolder}/{resref}.uti.json", json);
             }
@@ -125,6 +138,13 @@ namespace SWLOR.CLI
             }
 
             Directory.CreateDirectory(OutputFolder);
+        }
+
+        private int CalculatePrice(int tier)
+        {
+            const int BasePrice = 250;
+
+            return BasePrice * tier;
         }
     }
 }

@@ -1,0 +1,310 @@
+Armor Enhancement - Control - Smithery I				,aen_con_smth1	,5		,10	,Control - Smithery					,2
+Armor Enhancement - Control - Smithery II				,aen_con_smth2	,15		,20	,Control - Smithery					,4
+Armor Enhancement - Control - Smithery III				,aen_con_smth3	,25		,30	,Control - Smithery					,6
+Armor Enhancement - Control - Smithery IV				,aen_con_smth4	,35		,40	,Control - Smithery					,8
+Armor Enhancement - Control - Smithery V				,aen_con_smth5	,45		,50	,Control - Smithery					,10
+Armor Enhancement - Control - Engineering I				,aen_con_eng1	,5		,10	,Control - Engineering				,2
+Armor Enhancement - Control - Engineering II			,aen_con_eng2	,15		,20	,Control - Engineering				,4
+Armor Enhancement - Control - Engineering III			,aen_con_eng3	,25		,30	,Control - Engineering				,6
+Armor Enhancement - Control - Engineering IV			,aen_con_eng4	,35		,40	,Control - Engineering				,8
+Armor Enhancement - Control - Engineering V				,aen_con_eng5	,45		,50	,Control - Engineering				,10
+Armor Enhancement - Control - Fabrication I				,aen_con_fab1	,5		,10	,Control - Fabrication				,2
+Armor Enhancement - Control - Fabrication II			,aen_con_fab2	,15		,20	,Control - Fabrication				,4
+Armor Enhancement - Control - Fabrication III			,aen_con_fab3	,25		,30	,Control - Fabrication				,6
+Armor Enhancement - Control - Fabrication IV			,aen_con_fab4	,35		,40	,Control - Fabrication				,8
+Armor Enhancement - Control - Fabrication V				,aen_con_fab5	,45		,50	,Control - Fabrication				,10
+Armor Enhancement - Control - Agriculture I				,aen_con_agr1	,5		,10	,Control - Agriculture				,2
+Armor Enhancement - Control - Agriculture II			,aen_con_agr2	,15		,20	,Control - Agriculture				,4
+Armor Enhancement - Control - Agriculture III			,aen_con_agr3	,25		,30	,Control - Agriculture				,6
+Armor Enhancement - Control - Agriculture IV			,aen_con_agr4	,35		,40	,Control - Agriculture				,8
+Armor Enhancement - Control - Agriculture V				,aen_con_agr5	,45		,50	,Control - Agriculture				,10
+Armor Enhancement - Craftsmanship - Smithery I			,aen_cft_smth1	,5		,10	,Craftsmanship - Smithery			,2
+Armor Enhancement - Craftsmanship - Smithery II			,aen_cft_smth2	,15		,20	,Craftsmanship - Smithery			,4
+Armor Enhancement - Craftsmanship - Smithery III		,aen_cft_smth3	,25		,30	,Craftsmanship - Smithery			,6
+Armor Enhancement - Craftsmanship - Smithery IV			,aen_cft_smth4	,35		,40	,Craftsmanship - Smithery			,8
+Armor Enhancement - Craftsmanship - Smithery V			,aen_cft_smth5	,45		,50	,Craftsmanship - Smithery			,10
+Armor Enhancement - Craftsmanship - Engineering I		,aen_cft_eng1	,5		,10	,Craftsmanship - Engineering		,2
+Armor Enhancement - Craftsmanship - Engineering II		,aen_cft_eng2	,15		,20	,Craftsmanship - Engineering		,4
+Armor Enhancement - Craftsmanship - Engineering III		,aen_cft_eng3	,25		,30	,Craftsmanship - Engineering		,6
+Armor Enhancement - Craftsmanship - Engineering IV		,aen_cft_eng4	,35		,40	,Craftsmanship - Engineering		,8
+Armor Enhancement - Craftsmanship - Engineering V		,aen_cft_eng5	,45		,50	,Craftsmanship - Engineering		,10
+Armor Enhancement - Craftsmanship - Fabrication I		,aen_cft_fab1	,5		,10	,Craftsmanship - Fabrication		,2
+Armor Enhancement - Craftsmanship - Fabrication II		,aen_cft_fab2	,15		,20	,Craftsmanship - Fabrication		,4
+Armor Enhancement - Craftsmanship - Fabrication III		,aen_cft_fab3	,25		,30	,Craftsmanship - Fabrication		,6
+Armor Enhancement - Craftsmanship - Fabrication IV		,aen_cft_fab4	,35		,40	,Craftsmanship - Fabrication		,8
+Armor Enhancement - Craftsmanship - Fabrication V		,aen_cft_fab5	,45		,50	,Craftsmanship - Fabrication		,10
+Armor Enhancement - Craftsmanship - Agriculture I		,aen_cft_agr1	,5		,10	,Craftsmanship - Agriculture		,2
+Armor Enhancement - Craftsmanship - Agriculture II		,aen_cft_agr2	,15		,20	,Craftsmanship - Agriculture		,4
+Armor Enhancement - Craftsmanship - Agriculture III		,aen_cft_agr3	,25		,30	,Craftsmanship - Agriculture		,6
+Armor Enhancement - Craftsmanship - Agriculture IV		,aen_cft_agr4	,35		,40	,Craftsmanship - Agriculture		,8
+Armor Enhancement - Craftsmanship - Agriculture V		,aen_cft_agr5	,45		,50	,Craftsmanship - Agriculture		,10
+Armor Enhancement - Defense - Physical I				,aen_def_phy1	,5		,20	,Defense - Physical					,1
+Armor Enhancement - Defense - Physical II				,aen_def_phy2	,15		,30	,Defense - Physical					,2
+Armor Enhancement - Defense - Physical III				,aen_def_phy3	,25		,40	,Defense - Physical					,3
+Armor Enhancement - Defense - Physical IV				,aen_def_phy4	,35		,50	,Defense - Physical					,4
+Armor Enhancement - Defense - Physical V				,aen_def_phy5	,45		,60	,Defense - Physical					,5
+Armor Enhancement - Defense - Force I					,aen_def_for1	,5		,20	,Defense - Force					,1
+Armor Enhancement - Defense - Force II					,aen_def_for2	,15		,30	,Defense - Force					,2
+Armor Enhancement - Defense - Force III					,aen_def_for3	,25		,40	,Defense - Force					,3
+Armor Enhancement - Defense - Force IV					,aen_def_for4	,35		,50	,Defense - Force					,4
+Armor Enhancement - Defense - Force V					,aen_def_for5	,45		,60	,Defense - Force					,5
+Armor Enhancement - Defense - Poison I					,aen_def_psn1	,5		,10	,Defense - Poison					,2
+Armor Enhancement - Defense - Poison II					,aen_def_psn2	,15		,20	,Defense - Poison					,4
+Armor Enhancement - Defense - Poison III				,aen_def_psn3	,25		,30	,Defense - Poison					,6
+Armor Enhancement - Defense - Poison IV					,aen_def_psn4	,35		,40	,Defense - Poison					,8
+Armor Enhancement - Defense - Poison V					,aen_def_psn5	,45		,50	,Defense - Poison					,10
+Armor Enhancement - Defense - Fire I					,aen_def_fir1	,5		,10	,Defense - Fire						,2
+Armor Enhancement - Defense - Fire II					,aen_def_fir2	,15		,20	,Defense - Fire						,4
+Armor Enhancement - Defense - Fire III					,aen_def_fir3	,25		,30	,Defense - Fire						,6
+Armor Enhancement - Defense - Fire IV					,aen_def_fir4	,35		,40	,Defense - Fire						,8
+Armor Enhancement - Defense - Fire V					,aen_def_fir5	,45		,50	,Defense - Fire						,10
+Armor Enhancement - Defense - Ice I						,aen_def_ice1	,5		,10	,Defense - Ice						,2
+Armor Enhancement - Defense - Ice II					,aen_def_ice2	,15		,20	,Defense - Ice						,4
+Armor Enhancement - Defense - Ice III					,aen_def_ice3	,25		,30	,Defense - Ice						,6
+Armor Enhancement - Defense - Ice IV					,aen_def_ice4	,35		,40	,Defense - Ice						,8
+Armor Enhancement - Defense - Ice V						,aen_def_ice5	,45		,50	,Defense - Ice						,10
+Armor Enhancement - Defense - Electrical I				,aen_def_elec1	,5		,10	,Defense - Electrical				,2
+Armor Enhancement - Defense - Electrical II				,aen_def_elec2	,15		,20	,Defense - Electrical				,4
+Armor Enhancement - Defense - Electrical III			,aen_def_elec3	,25		,30	,Defense - Electrical				,6
+Armor Enhancement - Defense - Electrical IV				,aen_def_elec4	,35		,40	,Defense - Electrical				,8
+Armor Enhancement - Defense - Electrical V				,aen_def_elec5	,45		,50	,Defense - Electrical				,10
+Armor Enhancement - Evasion I							,aen_eva1		,5		,20	,Evasion							,1
+Armor Enhancement - Evasion II							,aen_eva2		,15		,30	,Evasion							,2
+Armor Enhancement - Evasion III							,aen_eva3		,25		,40	,Evasion							,3
+Armor Enhancement - Evasion IV							,aen_eva4		,35		,50	,Evasion							,4
+Armor Enhancement - Evasion V							,aen_eva5		,45		,60	,Evasion							,5
+Armor Enhancement - FP I								,aen_fp1		,5		,10	,FP									,2
+Armor Enhancement - FP II								,aen_fp2		,15		,20	,FP									,3
+Armor Enhancement - FP III								,aen_fp3		,25		,30	,FP									,4
+Armor Enhancement - FP IV								,aen_fp4		,35		,40	,FP									,5
+Armor Enhancement - FP V								,aen_fp5		,45		,50	,FP									,6
+Armor Enhancement - HP I								,aen_hp1		,5		,10	,HP									,2
+Armor Enhancement - HP II								,aen_hp2		,15		,20	,HP									,3
+Armor Enhancement - HP III								,aen_hp3		,25		,30	,HP									,4
+Armor Enhancement - HP IV								,aen_hp4		,35		,40	,HP									,5
+Armor Enhancement - HP V								,aen_hp5		,45		,50	,HP									,6
+Armor Enhancement - Recast Reduction I					,aen_recast1	,5		,20	,Recast Reduction					,1
+Armor Enhancement - Recast Reduction II					,aen_recast2	,15		,30	,Recast Reduction					,2
+Armor Enhancement - Recast Reduction III				,aen_recast3	,25		,40	,Recast Reduction					,3
+Armor Enhancement - Recast Reduction IV					,aen_recast4	,35		,50	,Recast Reduction					,4
+Armor Enhancement - Recast Reduction V					,aen_recast5	,45		,60	,Recast Reduction					,5
+Armor Enhancement - STM I								,aen_stm1		,5		,10	,STM								,2
+Armor Enhancement - STM II								,aen_stm2		,15		,20	,STM								,3
+Armor Enhancement - STM III								,aen_stm3		,25		,30	,STM								,4
+Armor Enhancement - STM IV								,aen_stm4		,35		,40	,STM								,5
+Armor Enhancement - STM V								,aen_stm5		,45		,50	,STM								,6
+Weapon Enhancement - Attack Bonus I						,wen_atk1		,5		,20	,Attack Bonus						,1
+Weapon Enhancement - Attack Bonus II					,wen_atk2		,15		,30	,Attack Bonus						,2
+Weapon Enhancement - Attack Bonus III					,wen_atk3		,25		,40	,Attack Bonus						,3
+Weapon Enhancement - Attack Bonus IV					,wen_atk4		,35		,50	,Attack Bonus						,4
+Weapon Enhancement - Attack Bonus V						,wen_atk5		,45		,60	,Attack Bonus						,5
+Weapon Enhancement - Control - Smithery I				,wen_con_smth1	,5		,10	,Control - Smithery					,1
+Weapon Enhancement - Control - Smithery II				,wen_con_smth2	,15		,20	,Control - Smithery					,2
+Weapon Enhancement - Control - Smithery III				,wen_con_smth3	,25		,30	,Control - Smithery					,3
+Weapon Enhancement - Control - Smithery IV				,wen_con_smth4	,35		,40	,Control - Smithery					,4
+Weapon Enhancement - Control - Smithery V				,wen_con_smth5	,45		,50	,Control - Smithery					,5
+Weapon Enhancement - Control - Engineering I			,wen_con_eng1	,5		,10	,Control - Engineering				,1
+Weapon Enhancement - Control - Engineering II			,wen_con_eng2	,15		,20	,Control - Engineering				,2
+Weapon Enhancement - Control - Engineering III			,wen_con_eng3	,25		,30	,Control - Engineering				,3
+Weapon Enhancement - Control - Engineering IV			,wen_con_eng4	,35		,40	,Control - Engineering				,4
+Weapon Enhancement - Control - Engineering V			,wen_con_eng5	,45		,50	,Control - Engineering				,5
+Weapon Enhancement - Control - Fabrication I			,wen_con_fab1	,5		,10	,Control - Fabrication				,1
+Weapon Enhancement - Control - Fabrication II			,wen_con_fab2	,15		,20	,Control - Fabrication				,2
+Weapon Enhancement - Control - Fabrication III			,wen_con_fab3	,25		,30	,Control - Fabrication				,3
+Weapon Enhancement - Control - Fabrication IV			,wen_con_fab4	,35		,40	,Control - Fabrication				,4
+Weapon Enhancement - Control - Fabrication V			,wen_con_fab5	,45		,50	,Control - Fabrication				,5
+Weapon Enhancement - Control - Agriculture I			,wen_con_agr1	,5		,10	,Control - Agriculture				,1
+Weapon Enhancement - Control - Agriculture II			,wen_con_agr2	,15		,20	,Control - Agriculture				,2
+Weapon Enhancement - Control - Agriculture III			,wen_con_agr3	,25		,30	,Control - Agriculture				,3
+Weapon Enhancement - Control - Agriculture IV			,wen_con_agr4	,35		,40	,Control - Agriculture				,4
+Weapon Enhancement - Control - Agriculture V			,wen_con_agr5	,45		,50	,Control - Agriculture				,5
+Weapon Enhancement - Craftsmanship - Smithery I			,wen_cft_smth1	,5		,10	,Craftsmanship - Smithery			,1
+Weapon Enhancement - Craftsmanship - Smithery II		,wen_cft_smth2	,15		,20	,Craftsmanship - Smithery			,2
+Weapon Enhancement - Craftsmanship - Smithery III		,wen_cft_smth3	,25		,30	,Craftsmanship - Smithery			,3
+Weapon Enhancement - Craftsmanship - Smithery IV		,wen_cft_smth4	,35		,40	,Craftsmanship - Smithery			,4
+Weapon Enhancement - Craftsmanship - Smithery V			,wen_cft_smth5	,45		,50	,Craftsmanship - Smithery			,5
+Weapon Enhancement - Craftsmanship - Engineering I		,wen_cft_eng1	,5		,10	,Craftsmanship - Engineering		,1
+Weapon Enhancement - Craftsmanship - Engineering II		,wen_cft_eng2	,15		,20	,Craftsmanship - Engineering		,2
+Weapon Enhancement - Craftsmanship - Engineering III	,wen_cft_eng3	,25		,30	,Craftsmanship - Engineering		,3
+Weapon Enhancement - Craftsmanship - Engineering IV		,wen_cft_eng4	,35		,40	,Craftsmanship - Engineering		,4
+Weapon Enhancement - Craftsmanship - Engineering V		,wen_cft_eng5	,45		,50	,Craftsmanship - Engineering		,5
+Weapon Enhancement - Craftsmanship - Fabrication I		,wen_cft_fab1	,5		,10	,Craftsmanship - Fabrication		,1
+Weapon Enhancement - Craftsmanship - Fabrication II		,wen_cft_fab2	,15		,20	,Craftsmanship - Fabrication		,2
+Weapon Enhancement - Craftsmanship - Fabrication III	,wen_cft_fab3	,25		,30	,Craftsmanship - Fabrication		,3
+Weapon Enhancement - Craftsmanship - Fabrication IV		,wen_cft_fab4	,35		,40	,Craftsmanship - Fabrication		,4
+Weapon Enhancement - Craftsmanship - Fabrication V		,wen_cft_fab5	,45		,50	,Craftsmanship - Fabrication		,5
+Weapon Enhancement - Craftsmanship - Agriculture I		,wen_cft_agr1	,5		,10	,Craftsmanship - Agriculture		,1
+Weapon Enhancement - Craftsmanship - Agriculture II		,wen_cft_agr2	,15		,20	,Craftsmanship - Agriculture		,2
+Weapon Enhancement - Craftsmanship - Agriculture III	,wen_cft_agr3	,25		,30	,Craftsmanship - Agriculture		,3
+Weapon Enhancement - Craftsmanship - Agriculture IV		,wen_cft_agr4	,35		,40	,Craftsmanship - Agriculture		,4
+Weapon Enhancement - Craftsmanship - Agriculture V		,wen_cft_agr5	,45		,50	,Craftsmanship - Agriculture		,5
+Weapon Enhancement - DMG - Physical I					,wen_dmg_phy1	,5		,20	,DMG - Physical						,1
+Weapon Enhancement - DMG - Physical II					,wen_dmg_phy2	,15		,30	,DMG - Physical						,2
+Weapon Enhancement - DMG - Physical III					,wen_dmg_phy3	,25		,40	,DMG - Physical						,3
+Weapon Enhancement - DMG - Physical IV					,wen_dmg_phy4	,35		,50	,DMG - Physical						,4
+Weapon Enhancement - DMG - Physical V					,wen_dmg_phy5	,45		,60	,DMG - Physical						,5
+Weapon Enhancement - DMG - Force I						,wen_dmg_for1	,5		,20	,DMG - Force						,1
+Weapon Enhancement - DMG - Force II						,wen_dmg_for2	,15		,30	,DMG - Force						,2
+Weapon Enhancement - DMG - Force III					,wen_dmg_for3	,25		,40	,DMG - Force						,3
+Weapon Enhancement - DMG - Force IV						,wen_dmg_for4	,35		,50	,DMG - Force						,4
+Weapon Enhancement - DMG - Force V						,wen_dmg_for5	,45		,60	,DMG - Force						,5
+Weapon Enhancement - DMG - Poison I						,wen_dmg_psn1	,5		,10	,DMG - Poison						,2
+Weapon Enhancement - DMG - Poison II					,wen_dmg_psn2	,15		,20	,DMG - Poison						,4
+Weapon Enhancement - DMG - Poison III					,wen_dmg_psn3	,25		,30	,DMG - Poison						,6
+Weapon Enhancement - DMG - Poison IV					,wen_dmg_psn4	,35		,40	,DMG - Poison						,8
+Weapon Enhancement - DMG - Poison V						,wen_dmg_psn5	,45		,50	,DMG - Poison						,10
+Weapon Enhancement - DMG - Fire I						,wen_dmg_fir1	,5		,10	,DMG - Fire							,2
+Weapon Enhancement - DMG - Fire II						,wen_dmg_fir2	,15		,20	,DMG - Fire							,4
+Weapon Enhancement - DMG - Fire III						,wen_dmg_fir3	,25		,30	,DMG - Fire							,6
+Weapon Enhancement - DMG - Fire IV						,wen_dmg_fir4	,35		,40	,DMG - Fire							,8
+Weapon Enhancement - DMG - Fire V						,wen_dmg_fir5	,45		,50	,DMG - Fire							,10
+Weapon Enhancement - DMG - Ice I						,wen_dmg_ice1	,5		,10	,DMG - Ice							,2
+Weapon Enhancement - DMG - Ice II						,wen_dmg_ice2	,15		,20	,DMG - Ice							,4
+Weapon Enhancement - DMG - Ice III						,wen_dmg_ice3	,25		,30	,DMG - Ice							,6
+Weapon Enhancement - DMG - Ice IV						,wen_dmg_ice4	,35		,40	,DMG - Ice							,8
+Weapon Enhancement - DMG - Ice V						,wen_dmg_ice5	,45		,50	,DMG - Ice							,10
+Weapon Enhancement - DMG - Electrical I					,wen_dmg_elec1	,5		,10	,DMG - Electrical					,2
+Weapon Enhancement - DMG - Electrical II				,wen_dmg_elec2	,15		,20	,DMG - Electrical					,4
+Weapon Enhancement - DMG - Electrical III				,wen_dmg_elec3	,25		,30	,DMG - Electrical					,6
+Weapon Enhancement - DMG - Electrical IV				,wen_dmg_elec4	,35		,40	,DMG - Electrical					,8
+Weapon Enhancement - DMG - Electrical V					,wen_dmg_elec5	,45		,50	,DMG - Electrical					,10
+Weapon Enhancement - Evasion I							,wen_eva1		,5		,20	,Evasion							,1
+Weapon Enhancement - Evasion II							,wen_eva2		,15		,30	,Evasion							,2
+Weapon Enhancement - Evasion III						,wen_eva3		,25		,40	,Evasion							,3
+Weapon Enhancement - Evasion IV							,wen_eva4		,35		,50	,Evasion							,4
+Weapon Enhancement - Evasion V							,wen_eva5		,45		,60	,Evasion							,5
+Weapon Enhancement - FP I								,wen_fp1		,5		,10	,FP									,2
+Weapon Enhancement - FP II								,wen_fp2		,15		,20	,FP									,3
+Weapon Enhancement - FP III								,wen_fp3		,25		,30	,FP									,4
+Weapon Enhancement - FP IV								,wen_fp4		,35		,40	,FP									,5
+Weapon Enhancement - FP V								,wen_fp5		,45		,50	,FP									,6
+Weapon Enhancement - HP I								,wen_hp1		,5		,10	,HP									,2
+Weapon Enhancement - HP II								,wen_hp2		,15		,20	,HP									,3
+Weapon Enhancement - HP III								,wen_hp3		,25		,30	,HP									,4
+Weapon Enhancement - HP IV								,wen_hp4		,35		,40	,HP									,5
+Weapon Enhancement - HP V								,wen_hp5		,45		,50	,HP									,6
+Weapon Enhancement - STM I								,wen_stm1		,5		,10	,STM								,2
+Weapon Enhancement - STM II								,wen_stm2		,15		,20	,STM								,3
+Weapon Enhancement - STM III							,wen_stm3		,25		,30	,STM								,4
+Weapon Enhancement - STM IV								,wen_stm4		,35		,40	,STM								,5
+Weapon Enhancement - STM V								,wen_stm5		,45		,50	,STM								,6
+Structure Enhancement - Structure Bonus I				,sten_sb1		,5		,20	,Structure Bonus					,2
+Structure Enhancement - Structure Bonus II				,sten_sb2		,15		,30	,Structure Bonus					,3
+Structure Enhancement - Structure Bonus III				,sten_sb3		,25		,40	,Structure Bonus					,4
+Structure Enhancement - Structure Bonus IV				,sten_sb4		,35		,50	,Structure Bonus					,5
+Structure Enhancement - Structure Bonus V				,sten_sb5		,45		,60	,Structure Bonus					,6
+Cooking Enhancement - Duration I						,cen_dur1		,5		,10	,Duration							,1
+Cooking Enhancement - Duration II						,cen_dur2		,15		,20	,Duration							,2
+Cooking Enhancement - Duration III						,cen_dur3		,25		,30	,Duration							,3
+Cooking Enhancement - Duration IV						,cen_dur4		,35		,40	,Duration							,4
+Cooking Enhancement - Duration V						,cen_dur5		,45		,50	,Duration							,5
+Cooking Enhancement - FP I								,cen_fp1		,5		,20	,FP Food							,3
+Cooking Enhancement - FP II								,cen_fp2		,15		,30	,FP Food							,6
+Cooking Enhancement - FP III							,cen_fp3		,25		,40	,FP Food							,9
+Cooking Enhancement - FP IV								,cen_fp4		,35		,50	,FP Food							,12
+Cooking Enhancement - FP V								,cen_fp5		,45		,60	,FP Food							,15
+Cooking Enhancement - FP Regen I						,cen_fpr1		,5		,20	,FP Regen							,1
+Cooking Enhancement - FP Regen II						,cen_fpr2		,15		,30	,FP Regen							,2
+Cooking Enhancement - FP Regen III						,cen_fpr3		,25		,40	,FP Regen							,3
+Cooking Enhancement - FP Regen IV						,cen_fpr4		,35		,50	,FP Regen							,4
+Cooking Enhancement - FP Regen V						,cen_fpr5		,45		,60	,FP Regen							,5
+Cooking Enhancement - HP I								,cen_hp1		,5		,20	,HP Food							,2
+Cooking Enhancement - HP II								,cen_hp2		,15		,30	,HP Food							,4
+Cooking Enhancement - HP III							,cen_hp3		,25		,40	,HP Food							,6
+Cooking Enhancement - HP IV								,cen_hp4		,35		,50	,HP Food							,8
+Cooking Enhancement - HP V								,cen_hp5		,45		,60	,HP Food							,10
+Cooking Enhancement - HP Regen I						,cen_hpr1		,5		,20	,HP Regen							,1
+Cooking Enhancement - HP Regen II						,cen_hpr2		,15		,30	,HP Regen							,2
+Cooking Enhancement - HP Regen III						,cen_hpr3		,25		,40	,HP Regen							,3
+Cooking Enhancement - HP Regen IV						,cen_hpr4		,35		,50	,HP Regen							,4
+Cooking Enhancement - HP Regen V						,cen_hpr5		,45		,60	,HP Regen							,5
+Cooking Enhancement - Recast Reduction I				,cen_recast1	,5		,20	,Recast Reduction Food				,1
+Cooking Enhancement - Recast Reduction II				,cen_recast2	,15		,30	,Recast Reduction Food				,2
+Cooking Enhancement - Recast Reduction III				,cen_recast3	,25		,40	,Recast Reduction Food				,3
+Cooking Enhancement - Recast Reduction IV				,cen_recast4	,35		,50	,Recast Reduction Food				,4
+Cooking Enhancement - Recast Reduction V				,cen_recast5	,45		,60	,Recast Reduction Food				,5
+Cooking Enhancement - Rest Regen I						,cen_rest1		,5		,10	,Rest Regen							,2
+Cooking Enhancement - Rest Regen II						,cen_rest2		,15		,20	,Rest Regen							,4
+Cooking Enhancement - Rest Regen III					,cen_rest3		,25		,30	,Rest Regen							,6
+Cooking Enhancement - Rest Regen IV						,cen_rest4		,35		,40	,Rest Regen							,8
+Cooking Enhancement - Rest Regen V						,cen_rest5		,45		,50	,Rest Regen							,10
+Cooking Enhancement - STM I								,cen_stm1		,5		,20	,STM Food							,3
+Cooking Enhancement - STM II							,cen_stm2		,15		,30	,STM Food							,6
+Cooking Enhancement - STM III							,cen_stm3		,25		,40	,STM Food							,9
+Cooking Enhancement - STM IV							,cen_stm4		,35		,50	,STM Food							,12
+Cooking Enhancement - STM V								,cen_stm5		,45		,60	,STM Food							,15
+Cooking Enhancement - STM Regen I						,cen_stmr1		,5		,20	,STM Regen							,1
+Cooking Enhancement - STM Regen II						,cen_stmr2		,15		,30	,STM Regen							,2
+Cooking Enhancement - STM Regen III						,cen_stmr3		,25		,40	,STM Regen							,3
+Cooking Enhancement - STM Regen IV						,cen_stmr4		,35		,50	,STM Regen							,4
+Cooking Enhancement - STM Regen V						,cen_stmr5		,45		,60	,STM Regen							,5
+Cooking Enhancement - XP Bonus I						,cen_xp1		,5		,10	,XP Bonus							,5
+Cooking Enhancement - XP Bonus II						,cen_xp2		,15		,20	,XP Bonus							,10
+Cooking Enhancement - XP Bonus III						,cen_xp3		,25		,30	,XP Bonus							,15
+Cooking Enhancement - XP Bonus IV						,cen_xp4		,35		,40	,XP Bonus							,20
+Cooking Enhancement - XP Bonus V						,cen_xp5		,45		,50	,XP Bonus							,25
+Starship Enhancement - Accuracy I						,sen_acc1			,5		,10	,Accuracy						,1
+Starship Enhancement - Accuracy II						,sen_acc2			,15		,20	,Accuracy						,2
+Starship Enhancement - Accuracy III						,sen_acc3			,25		,30	,Accuracy						,3
+Starship Enhancement - Accuracy IV						,sen_acc4			,35		,40	,Accuracy						,4
+Starship Enhancement - Accuracy V						,sen_acc5			,45		,50	,Accuracy						,5
+Starship Enhancement - Armor I							,sen_armor1			,5		,10	,Armor							,1
+Starship Enhancement - Armor II							,sen_armor2			,15		,20	,Armor							,2
+Starship Enhancement - Armor III						,sen_armor3			,25		,30	,Armor							,3
+Starship Enhancement - Armor IV							,sen_armor4			,35		,40	,Armor							,4
+Starship Enhancement - Armor V							,sen_armor5			,45		,50	,Armor							,5
+Starship Enhancement - Capacitor I						,sen_cap1			,5		,10	,Capacitor						,1
+Starship Enhancement - Capacitor II						,sen_cap2			,15		,20	,Capacitor						,2
+Starship Enhancement - Capacitor III					,sen_cap3			,25		,30	,Capacitor						,3
+Starship Enhancement - Capacitor IV						,sen_cap4			,35		,40	,Capacitor						,4
+Starship Enhancement - Capacitor V						,sen_cap5			,45		,50	,Capacitor						,5
+Starship Enhancement - EM Damage I						,sen_emdmg1			,5		,10	,EM Damage						,1
+Starship Enhancement - EM Damage II						,sen_emdmg2			,15		,20	,EM Damage						,2
+Starship Enhancement - EM Damage III					,sen_emdmg3			,25		,30	,EM Damage						,3
+Starship Enhancement - EM Damage IV						,sen_emdmg4			,35		,40	,EM Damage						,4
+Starship Enhancement - EM Damage V						,sen_emdmg5			,45		,50	,EM Damage						,5
+Starship Enhancement - EM Defense I						,sen_emdef1			,5		,10	,EM Defense						,1
+Starship Enhancement - EM Defense II					,sen_emdef2			,15		,20	,EM Defense						,2
+Starship Enhancement - EM Defense III					,sen_emdef3			,25		,30	,EM Defense						,3
+Starship Enhancement - EM Defense IV					,sen_emdef4			,35		,40	,EM Defense						,4
+Starship Enhancement - EM Defense V						,sen_emdef5			,45		,50	,EM Defense						,5
+Starship Enhancement - Evasion I						,sen_eva1			,5		,10	,Evasion Starship				,1
+Starship Enhancement - Evasion II						,sen_eva2			,15		,20	,Evasion Starship				,2
+Starship Enhancement - Evasion III						,sen_eva3			,25		,30	,Evasion Starship				,3
+Starship Enhancement - Evasion IV						,sen_eva4			,35		,40	,Evasion Starship				,4
+Starship Enhancement - Evasion V						,sen_eva5			,45		,50	,Evasion Starship				,5
+Starship Enhancement - Explosive Damage I				,sen_expdmg1		,5		,10	,Explosive Damage				,1
+Starship Enhancement - Explosive Damage II				,sen_expdmg2		,15		,20	,Explosive Damage				,2
+Starship Enhancement - Explosive Damage III				,sen_expdmg3		,25		,30	,Explosive Damage				,3
+Starship Enhancement - Explosive Damage IV				,sen_expdmg4		,35		,40	,Explosive Damage				,4
+Starship Enhancement - Explosive Damage V				,sen_expdmg5		,45		,50	,Explosive Damage				,5
+Starship Enhancement - Explosive Defense I				,sen_expdef1		,5		,10	,Explosive Defense				,1
+Starship Enhancement - Explosive Defense II				,sen_expdef2		,15		,20	,Explosive Defense				,2
+Starship Enhancement - Explosive Defense III			,sen_expdef3		,25		,30	,Explosive Defense				,3
+Starship Enhancement - Explosive Defense IV				,sen_expdef4		,35		,40	,Explosive Defense				,4
+Starship Enhancement - Explosive Defense V				,sen_expdef5		,45		,50	,Explosive Defense				,5
+Starship Enhancement - Shield I							,sen_shield1		,5		,10	,Shield							,1
+Starship Enhancement - Shield II						,sen_shield2		,15		,20	,Shield							,2
+Starship Enhancement - Shield III						,sen_shield3		,25		,30	,Shield							,3
+Starship Enhancement - Shield IV						,sen_shield4		,35		,40	,Shield							,4
+Starship Enhancement - Shield V							,sen_shield5		,45		,50	,Shield							,5
+Starship Enhancement - Shield Recharge Rate I			,sen_shrech1		,5		,20	,Shield Recharge Rate			,1
+Starship Enhancement - Shield Recharge Rate II			,sen_shrech2		,15		,30	,Shield Recharge Rate			,2
+Starship Enhancement - Shield Recharge Rate III			,sen_shrech3		,25		,40	,Shield Recharge Rate			,3
+Starship Enhancement - Shield Recharge Rate IV			,sen_shrech4		,35		,50	,Shield Recharge Rate			,4
+Starship Enhancement - Shield Recharge Rate V			,sen_shrech5		,45		,60	,Shield Recharge Rate			,5
+Starship Enhancement - Thermal Damage I					,sen_thermdmg1		,5		,10	,Thermal Damage					,1
+Starship Enhancement - Thermal Damage II				,sen_thermdmg2		,15		,20	,Thermal Damage					,2
+Starship Enhancement - Thermal Damage III				,sen_thermdmg3		,25		,30	,Thermal Damage					,3
+Starship Enhancement - Thermal Damage IV				,sen_thermdmg4		,35		,40	,Thermal Damage					,4
+Starship Enhancement - Thermal Damage V					,sen_thermdmg5		,45		,50	,Thermal Damage					,5
+Starship Enhancement - Thermal Defense I				,sen_thermdef1		,5		,10	,Thermal Defense				,1
+Starship Enhancement - Thermal Defense II				,sen_thermdef2		,15		,20	,Thermal Defense				,2
+Starship Enhancement - Thermal Defense III				,sen_thermdef3		,25		,30	,Thermal Defense				,3
+Starship Enhancement - Thermal Defense IV				,sen_thermdef4		,35		,40	,Thermal Defense				,4
+Starship Enhancement - Thermal Defense V				,sen_thermdef5		,45		,50	,Thermal Defense				,5
+Module Enhancement - Module Bonus I						,men_mod1			,5		,20	,Module Bonus					,2
+Module Enhancement - Module Bonus II					,men_mod2			,15		,30	,Module Bonus					,3
+Module Enhancement - Module Bonus III					,men_mod3			,25		,40	,Module Bonus					,4
+Module Enhancement - Module Bonus IV					,men_mod4			,35		,50	,Module Bonus					,5
+Module Enhancement - Module Bonus V						,men_mod5			,45		,60	,Module Bonus					,6

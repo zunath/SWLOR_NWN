@@ -10,6 +10,7 @@ namespace SWLOR.CLI
         private static readonly ModulePacker _modulePacker = new();
         private static readonly StructureItemCreator _structureItemCreator = new();
         private static readonly EnhancementItemBuilder _enhancementItemBuilder = new();
+        private static readonly RecipeCodeBuilder _recipeCodeBuilder = new();
 
         static void Main(string[] args)
         {
@@ -52,6 +53,11 @@ namespace SWLOR.CLI
                 CommandOptionType.SingleValue
             );
 
+            var recipeOption = app.Option(
+                "-$|-r |--recipe",
+                "Generates code file for all of the recipes in the recipes.tsv file.",
+                CommandOptionType.NoValue);
+
             var structureOption = app.Option(
                 "-$|-s |--structure",
                 "Generates uti files in json format for all of the StructureType.cs enum values.",
@@ -89,6 +95,11 @@ namespace SWLOR.CLI
                 if (moduleUnpackOption.HasValue())
                 {
                     _modulePacker.UnpackModule(moduleUnpackOption.Value());
+                }
+
+                if (recipeOption.HasValue())
+                {
+                    _recipeCodeBuilder.Process();
                 }
 
                 if (structureOption.HasValue())

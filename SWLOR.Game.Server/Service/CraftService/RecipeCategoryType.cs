@@ -87,7 +87,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         [RecipeCategory("Lightsaber", true)]
         Lightsaber = 39,
         [RecipeCategory("Crafting", true)]
-        Crafting = 40
+        Crafting = 40,
+        [RecipeCategory("Enhancement", true)]
+        Enhancement = 41,
     }
 
     public class RecipeCategoryAttribute : Attribute

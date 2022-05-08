@@ -8,6 +8,8 @@ namespace SWLOR.CLI
     internal class RecipeCodeBuilder
     {
         private const string InputData = "./InputFiles/recipes.tsv";
+
+        // Note: Adjust the template before running.
         private const string Template = "./Templates/RecipeTemplate.txt";
         private const string OutputFolder = "./OutputRecipes/";
 

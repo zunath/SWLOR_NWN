@@ -1778,6 +1778,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         AgricultureEquipment5 = 1811,
         Dash = 1812,
         Provoke = 1813,
-        Provoke2 = 1814
+        Provoke2 = 1814,
+        EnhancementBlueprints1 = 1815,
+        EnhancementBlueprints2 = 1816,
+        EnhancementBlueprints3 = 1817,
+        EnhancementBlueprints4 = 1818,
+        EnhancementBlueprints5 = 1819,
     }
 }

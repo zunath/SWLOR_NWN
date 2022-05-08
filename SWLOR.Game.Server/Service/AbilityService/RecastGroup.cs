@@ -133,6 +133,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WristRocket = 62,
         [RecastGroup("Deflector Shield", "D. Shield")]
         DeflectorShield = 63,
+        [RecastGroup("Provoke", "Provoke")]
+        Provoke = 64,
+        [RecastGroup("Provoke II", "Provoke II")]
+        Provoke2 = 65
     }
 
     public class RecastGroupAttribute: Attribute

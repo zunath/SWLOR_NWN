@@ -7,29 +7,49 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class ArmorPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            CloakProficiency(builder);
-            BeltProficiency(builder);
-            RingProficiency(builder);
-            NecklaceProficiency(builder);
-            BreastplateProficiency(builder);
-            HelmetProficiency(builder);
-            BracerProficiency(builder);
-            LeggingProficiency(builder);
-            HeavyShieldProficiency(builder);
-            TunicProficiency(builder);
-            CapProficiency(builder);
-            GloveProficiency(builder);
-            BootProficiency(builder);
+            Provoke();
+            CloakProficiency();
+            BeltProficiency();
+            RingProficiency();
+            NecklaceProficiency();
+            BreastplateProficiency();
+            HelmetProficiency();
+            BracerProficiency();
+            LeggingProficiency();
+            HeavyShieldProficiency();
+            TunicProficiency();
+            CapProficiency();
+            GloveProficiency();
+            BootProficiency();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void CloakProficiency(PerkBuilder builder)
+        private void Provoke()
         {
-            builder.Create(PerkCategoryType.ArmorGeneral, PerkType.CloakProficiency)
+            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Provoke)
+                .Name("Provoke")
+                
+                .AddPerkLevel()
+                .Description("Goads a single target into attacking you.")
+                .Price(2)
+                .RequirementSkill(SkillType.Armor, 5)
+                .GrantsFeat(FeatType.Provoke)
+                
+                .AddPerkLevel()
+                .Description("Goads all enemies within range into attacking you.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 15)
+                .GrantsFeat(FeatType.Provoke2);
+        }
+
+        private void CloakProficiency()
+        {
+            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.CloakProficiency)
                 .Name("Cloak Proficiency")
 
                 .AddPerkLevel()
@@ -63,9 +83,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CloakProficiency5);
         }
 
-        private void BeltProficiency(PerkBuilder builder)
+        private void BeltProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorGeneral, PerkType.BeltProficiency)
+            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.BeltProficiency)
                 .Name("Belt Proficiency")
 
                 .AddPerkLevel()
@@ -99,9 +119,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BeltProficiency5);
         }
 
-        private void RingProficiency(PerkBuilder builder)
+        private void RingProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorGeneral, PerkType.RingProficiency)
+            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.RingProficiency)
                 .Name("Ring Proficiency")
 
                 .AddPerkLevel()
@@ -135,9 +155,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RingProficiency5);
         }
 
-        private void NecklaceProficiency(PerkBuilder builder)
+        private void NecklaceProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorGeneral, PerkType.NecklaceProficiency)
+            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.NecklaceProficiency)
                 .Name("Necklace Proficiency")
 
                 .AddPerkLevel()
@@ -171,9 +191,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.NecklaceProficiency5);
         }
 
-        private void BreastplateProficiency(PerkBuilder builder)
+        private void BreastplateProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.BreastplateProficiency)
+            _builder.Create(PerkCategoryType.ArmorHeavy, PerkType.BreastplateProficiency)
                 .Name("Breastplate Proficiency")
 
                 .AddPerkLevel()
@@ -206,9 +226,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BreastplateProficiency5);
         }
 
-        private void HelmetProficiency(PerkBuilder builder)
+        private void HelmetProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.HelmetProficiency)
+            _builder.Create(PerkCategoryType.ArmorHeavy, PerkType.HelmetProficiency)
                 .Name("Helmet Proficiency")
 
                 .AddPerkLevel()
@@ -241,9 +261,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.HelmetProficiency5);
         }
 
-        private void BracerProficiency(PerkBuilder builder)
+        private void BracerProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.BracerProficiency)
+            _builder.Create(PerkCategoryType.ArmorHeavy, PerkType.BracerProficiency)
                 .Name("Bracer Proficiency")
 
                 .AddPerkLevel()
@@ -276,9 +296,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BracerProficiency5);
         }
 
-        private void LeggingProficiency(PerkBuilder builder)
+        private void LeggingProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.LeggingProficiency)
+            _builder.Create(PerkCategoryType.ArmorHeavy, PerkType.LeggingProficiency)
                 .Name("Legging Proficiency")
 
                 .AddPerkLevel()
@@ -311,9 +331,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LeggingProficiency5);
         }
 
-        private void HeavyShieldProficiency(PerkBuilder builder)
+        private void HeavyShieldProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.ShieldProficiency)
+            _builder.Create(PerkCategoryType.ArmorHeavy, PerkType.ShieldProficiency)
                 .Name("Shield Proficiency")
 
                 .AddPerkLevel()
@@ -346,9 +366,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ShieldProficiency5);
         }
 
-        private void TunicProficiency(PerkBuilder builder)
+        private void TunicProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorLight, PerkType.TunicProficiency)
+            _builder.Create(PerkCategoryType.ArmorLight, PerkType.TunicProficiency)
                 .Name("Tunic Proficiency")
 
                 .AddPerkLevel()
@@ -381,9 +401,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TunicProficiency5);
         }
 
-        private void CapProficiency(PerkBuilder builder)
+        private void CapProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorLight, PerkType.CapProficiency)
+            _builder.Create(PerkCategoryType.ArmorLight, PerkType.CapProficiency)
                 .Name("Cap Proficiency")
 
                 .AddPerkLevel()
@@ -416,9 +436,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CapProficiency5);
         }
 
-        private void GloveProficiency(PerkBuilder builder)
+        private void GloveProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorLight, PerkType.GloveProficiency)
+            _builder.Create(PerkCategoryType.ArmorLight, PerkType.GloveProficiency)
                 .Name("Glove Proficiency")
 
                 .AddPerkLevel()
@@ -451,9 +471,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GloveProficiency5);
         }
 
-        private void BootProficiency(PerkBuilder builder)
+        private void BootProficiency()
         {
-            builder.Create(PerkCategoryType.ArmorLight, PerkType.BootProficiency)
+            _builder.Create(PerkCategoryType.ArmorLight, PerkType.BootProficiency)
                 .Name("Boot Proficiency")
 
                 .AddPerkLevel()

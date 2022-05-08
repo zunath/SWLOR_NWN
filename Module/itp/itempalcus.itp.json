@@ -10362,6 +10362,1051 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Agriculture I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_agr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Agriculture II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_agr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Agriculture III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_agr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Agriculture IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_agr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Agriculture V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_agr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Engineering I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_eng1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Engineering II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_eng2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Engineering III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_eng3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Engineering IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_eng4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Engineering V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_eng5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Fabrication I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_fab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Fabrication II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_fab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Fabrication III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_fab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Fabrication IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_fab4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Fabrication V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_fab5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Smithery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_smth1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Smithery II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_smth2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Smithery III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_smth3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Smithery IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_smth4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Control - Smithery V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_con_smth5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Agriculture I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_agr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Agriculture II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_agr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Agriculture III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_agr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Agriculture IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_agr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Agriculture V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_agr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Engineering I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_eng1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Engineering II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_eng2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Engineering III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_eng3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Engineering IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_eng4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Engineering V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_eng5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Fabrication I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_fab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Fabrication II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_fab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Fabrication III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_fab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Fabrication IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_fab4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Fabrication V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_fab5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Smithery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_smth1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Smithery II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_smth2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Smithery III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_smth3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Smithery IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_smth4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Craftsmanship - Smithery V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_cft_smth5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Electrical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Electrical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Electrical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Electrical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Electrical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Fire I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Fire II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Fire III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Fire IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Fire V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Force I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_for1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Force II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_for2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Force III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_for3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Force IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_for4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Force V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_for5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Ice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Ice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Ice III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Ice IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Ice V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Physical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_phy1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Physical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_phy2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Physical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_phy3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Physical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_phy4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Physical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_phy5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Poison I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Poison II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Poison III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Poison IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Defense - Poison V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Evasion I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_eva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Evasion II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_eva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Evasion III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_eva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Evasion IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_eva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Evasion V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_eva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - FP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_fp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - FP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_fp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - FP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_fp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - FP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_fp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - FP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_fp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - HP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_hp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - HP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_hp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - HP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_hp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - HP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_hp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - HP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_hp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Recast Reduction I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Recast Reduction II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Recast Reduction III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Recast Reduction IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Recast Reduction V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - STM I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_stm1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - STM II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_stm2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - STM III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_stm3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - STM IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_stm4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - STM V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_stm5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Arvvina"
                     },
                     "RESREF": {
@@ -10840,6 +11885,556 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "control_tower"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Duration I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_dur1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Duration II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_dur2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Duration III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_dur3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Duration IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_dur4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Duration V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_dur5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP Regen I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fpr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP Regen II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fpr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP Regen III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fpr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP Regen IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fpr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP Regen V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fpr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - FP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_fp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP Regen I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hpr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP Regen II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hpr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP Regen III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hpr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP Regen IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hpr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP Regen V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hpr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - HP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_hp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Recast Reduction I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Recast Reduction II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Recast Reduction III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Recast Reduction IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Recast Reduction V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Rest Regen I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_rest1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Rest Regen II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_rest2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Rest Regen III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_rest3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Rest Regen IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_rest4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Rest Regen V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_rest5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stm1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stm2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stm3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stm4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM Regen I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stmr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM Regen II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stmr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM Regen III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stmr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM Regen IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stmr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM Regen V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stmr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - STM V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_stm5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - XP Bonus I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_xp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - XP Bonus II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_xp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - XP Bonus III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_xp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - XP Bonus IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_xp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - XP Bonus V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_xp5"
                     }
                   },
                   {
@@ -12589,6 +14184,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "padding_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod5"
                     }
                   },
                   {
@@ -14355,6 +16005,666 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Starship Enhancement - Accuracy I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_acc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Accuracy II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_acc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Accuracy III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_acc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Accuracy IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_acc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Accuracy V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_acc5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Armor I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Armor II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Armor III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Armor IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Armor V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Capacitor I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cap1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Capacitor II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cap2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Capacitor III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cap3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Capacitor IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cap4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Capacitor V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cap5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Damage I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdmg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Damage II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdmg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Damage III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdmg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Damage IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdmg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Damage V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdmg5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Defense I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdef1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Defense II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdef2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Defense III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdef3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Defense IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdef4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - EM Defense V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_emdef5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Evasion I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_eva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Evasion II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_eva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Evasion III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_eva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Evasion IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_eva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Evasion V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_eva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Damage I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdmg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Damage II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdmg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Damage III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdmg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Damage IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdmg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Damage V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdmg5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Defense I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdef1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Defense II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdef2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Defense III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdef3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Defense IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdef4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Explosive Defense V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_expdef5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shield1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shield2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shield3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shield4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield Recharge Rate I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shrech1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield Recharge Rate II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shrech2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield Recharge Rate III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shrech3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield Recharge Rate IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shrech4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield Recharge Rate V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shrech5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Shield V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_shield5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Damage I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdmg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Damage II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdmg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Damage III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdmg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Damage IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdmg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Damage V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdmg5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Defense I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdef1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Defense II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdef2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Defense III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdef3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Defense IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdef4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Thermal Defense V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_thermdef5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starship Fuel"
                     },
                     "RESREF": {
@@ -14448,6 +16758,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stronidium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Structure Enhancement - Structure Bonus I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sten_sb1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Structure Enhancement - Structure Bonus II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sten_sb2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Structure Enhancement - Structure Bonus III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sten_sb3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Structure Enhancement - Structure Bonus IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sten_sb4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Structure Enhancement - Structure Bonus V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sten_sb5"
                     }
                   },
                   {
@@ -15020,6 +17385,1051 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_feathers"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Attack Bonus I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_atk1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Attack Bonus II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_atk2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Attack Bonus III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_atk3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Attack Bonus IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_atk4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Attack Bonus V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_atk5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Agriculture I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_agr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Agriculture II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_agr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Agriculture III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_agr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Agriculture IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_agr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Agriculture V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_agr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Engineering I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_eng1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Engineering II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_eng2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Engineering III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_eng3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Engineering IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_eng4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Engineering V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_eng5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Fabrication I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_fab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Fabrication II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_fab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Fabrication III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_fab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Fabrication IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_fab4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Fabrication V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_fab5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Smithery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_smth1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Smithery II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_smth2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Smithery III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_smth3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Smithery IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_smth4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Control - Smithery V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_con_smth5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Agriculture I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_agr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Agriculture II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_agr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Agriculture III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_agr3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Agriculture IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_agr4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Agriculture V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_agr5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Engineering I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_eng1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Engineering II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_eng2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Engineering III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_eng3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Engineering IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_eng4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Engineering V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_eng5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Fabrication I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_fab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Fabrication II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_fab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Fabrication III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_fab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Fabrication IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_fab4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Fabrication V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_fab5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Smithery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_smth1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Smithery II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_smth2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Smithery III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_smth3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Smithery IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_smth4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Craftsmanship - Smithery V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_cft_smth5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Electrical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_elec1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Electrical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_elec2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Electrical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_elec3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Electrical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_elec4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Electrical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_elec5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Fire I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_fir1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Fire II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_fir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Fire III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_fir3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Fire IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_fir4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Fire V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_fir5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Force I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_for1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Force II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_for2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Force III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_for3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Force IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_for4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Force V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_for5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Ice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_ice1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Ice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_ice2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Ice III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_ice3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Ice IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_ice4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Ice V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_ice5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Physical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_phy1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Physical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_phy2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Physical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_phy3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Physical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_phy4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Physical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_phy5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Poison I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_psn1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Poison II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_psn2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Poison III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_psn3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Poison IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_psn4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - DMG - Poison V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_dmg_psn5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Evasion I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_eva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Evasion II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_eva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Evasion III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_eva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Evasion IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_eva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Evasion V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_eva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - FP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_fp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - FP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_fp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - FP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_fp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - FP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_fp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - FP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_fp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - HP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_hp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - HP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_hp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - HP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_hp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - HP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_hp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - HP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_hp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - STM I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_stm1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - STM II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_stm2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - STM III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_stm3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - STM IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_stm4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - STM V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_stm5"
                     }
                   },
                   {

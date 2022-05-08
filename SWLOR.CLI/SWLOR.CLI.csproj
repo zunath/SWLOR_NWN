@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="InputFiles\enhancement_list.csv">
+    <None Update="InputFiles\enhancement_list.tsv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="InputFiles\placeables.2da">

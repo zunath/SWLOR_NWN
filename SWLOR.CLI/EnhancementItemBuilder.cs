@@ -7,7 +7,7 @@ namespace SWLOR.CLI
 {
     internal class EnhancementItemBuilder
     {
-        private const string InputData = "./InputFiles/enhancement_list.csv";
+        private const string InputData = "./InputFiles/enhancement_list.tsv";
         private const string Template = "./Templates/enhancement_template.json";
         private const string OutputFolder = "./OutputEnhancements/";
 
@@ -90,15 +90,16 @@ namespace SWLOR.CLI
 
             foreach (var line in input2daText)
             {
-                var parsed = line.Split(',');
-                var name = parsed[0].Trim();
-                var resref = parsed[1].Trim();
-                var level = parsed[2].Trim();
-                var progressPenalty = parsed[3].Trim();
-                var propertyName = parsed[4].Trim();
-                var bonus = parsed[5].Trim();
+                var parsed = line.Split('\t');
+                var category = parsed[0].Trim();
+                var name = parsed[1].Trim();
+                var resref = parsed[2].Trim();
+                var level = parsed[3].Trim();
+                var progressPenalty = parsed[5].Trim();
+                var propertyName = parsed[6].Trim();
+                var bonus = parsed[7].Trim();
                 var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
-                var itemPropertyId = _categoryNameToId[name.Split(' ')[0]];
+                var itemPropertyId = _categoryNameToId[category];
                 var subTypeId = _subTypeToId[propertyName];
 
                 var json = templateText

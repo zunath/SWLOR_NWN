@@ -90,8 +90,8 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
 
             // Two-Handed Skills
             _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
 
             // Martial Arts Skills
             _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
@@ -158,8 +158,8 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.ShortSword] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Sickle] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Whip] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
 
             // Two-Handed Skills
             _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
 
             // Martial Arts Skills
             _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;

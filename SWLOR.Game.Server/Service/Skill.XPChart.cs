@@ -114,17 +114,17 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, int> _skillTotalXP = new();
         private static readonly Dictionary<int, int> _skillDeltaXP = new()
         {
-            { 6, 600 },
-            { 5, 525 },
-            { 4, 488 },
-            { 3, 450 },
-            { 2, 375 },
-            { 1, 338 },
-            { 0, 300 },
-            { -1, 225 },
-            { -2, 150 },
-            { -3, 75 },
-            { -4, 38 }
+            { 6, 1200 },
+            { 5, 1050 },
+            { 4, 976 },
+            { 3, 900 },
+            { 2, 750 },
+            { 1, 676 },
+            { 0, 600 },
+            { -1, 450 },
+            { -2, 300 },
+            { -3, 150 },
+            { -4, 76 }
         };
 
         private static int _highestDelta;

@@ -41,13 +41,54 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(457, BuildRecommendedButtonText());
 
-            SetTlkOverride(459, "Might improves damage dealt by melee weapons and increases carrying capacity.");
-            SetTlkOverride(460, "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.");
-            SetTlkOverride(461, "Vitality improves your max hit points and reduces damage received.");
-            SetTlkOverride(462, "Willpower improves your force attack, force defense, and max force points.");
-            SetTlkOverride(463, "Agility improves ranged accuracy, evasion, and max stamina.");
-            SetTlkOverride(478, "Social improves your XP gain and leadership capabilities.");
-            
+            SetTlkOverride(459, 
+                "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" + 
+                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Smithery, Gathering\n\n" +
+                "Other Notes:\n\n" +
+                "Improves damage dealt by regular melee weapons.\n" +
+                "Improves damage dealt by heavy melee weapons.\n" + 
+                "Improves damage dealt by throwing weapons.");
+            SetTlkOverride(460, 
+                "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
+                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Ranged, Fabrication, Devices\n\n" + 
+                "Other Notes:\n\n" + 
+                "Improves accuracy of regular melee weapons.\n" + 
+                "Improves accuracy of heavy melee weapons.\n" + 
+                "Improves damage of finesse melee weapons.\n" + 
+                "Improves damage of ranged weapons.");
+            SetTlkOverride(461, 
+                "Vitality improves your max hit points and reduces damage received.\n\n" +
+                "Primary Skills: Armor, Smithery, Engineering\n\n" +
+                "Other Notes:\n\n" +
+                "Increases maximum HP.\n" +
+                "Improves physical defense (reducing damage taken).\n" +
+                "Improves natural HP/FP/STM regen.\n" +
+                "Improves rest recovery.");
+            SetTlkOverride(462,
+                "Willpower improves your force attack, force defense, max force points, and first aid capabilities.\n\n" +
+                "Primary Skills: Force, Fabrication, Agriculture, First Aid\n\n" +
+                "Other Notes:\n\n" +
+                "Increases maximum FP.\n" + 
+                "Improves force defense (reducing damage taken).\n" +
+                "Improves effectiveness of First Aid abilities.\n" +
+                "Improves effectiveness of Force abilities.");
+            SetTlkOverride(463,
+                "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
+                "Primary Skills: One-Handed, Martial Arts, Ranged, Engineering\n\n" +
+                "Other Notes:\n\n" + 
+                "Increases maximum stamina.\n" +
+                "Improves evasion.\n" +
+                "Improves accuracy of finesse weapons.\n" +
+                "Improves accuracy of ranged weapons.\n" +
+                "Improves accuracy of throwing weapons.");
+            SetTlkOverride(478,
+                "Social improves your XP gain and leadership capabilities.\n\n" +
+                "Primary Skills: Leadership, Agriculture\n\n" +
+                "Other Notes:\n\n" + 
+                "Improves guild point acquisition.\n" +
+                "Improves quest credit rewards.\n" + 
+                "Improves XP gain.");
+
             SetTlkOverride(1027, "Poison"); // Acid
 
             SetTlkOverride(7099, "Evasion");

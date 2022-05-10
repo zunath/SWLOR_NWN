@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceHeal1)
                 .Name("Force Heal I")
                 .EffectIcon(EffectIconType.Regenerate)
+                .CannotReplace(StatusEffectType.ForceHeal2, StatusEffectType.ForceHeal3, StatusEffectType.ForceHeal4, StatusEffectType.ForceHeal5)
                 .GrantAction((source, target, length, data) =>
                 {
                     ApplyHeal(source, target, Amount);
@@ -54,6 +55,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceHeal2)
                 .Name("Force Heal II")
                 .EffectIcon(EffectIconType.Regenerate)
+                .Replaces(StatusEffectType.ForceHeal1)
+                .CannotReplace(StatusEffectType.ForceHeal3, StatusEffectType.ForceHeal4, StatusEffectType.ForceHeal5)
                 .GrantAction((source, target, length, data) =>
                 {
                     ApplyHeal(source, target, Amount);
@@ -69,6 +72,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceHeal3)
                 .Name("Force Heal III")
                 .EffectIcon(EffectIconType.Regenerate)
+                .Replaces(StatusEffectType.ForceHeal1, StatusEffectType.ForceHeal2)
+                .CannotReplace(StatusEffectType.ForceHeal4, StatusEffectType.ForceHeal5)
                 .GrantAction((source, target, length, data) =>
                 {
                     ApplyHeal(source, target, Amount);
@@ -84,6 +89,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceHeal4)
                 .Name("Force Heal IV")
                 .EffectIcon(EffectIconType.Regenerate)
+                .Replaces(StatusEffectType.ForceHeal1, StatusEffectType.ForceHeal2, StatusEffectType.ForceHeal3)
+                .CannotReplace(StatusEffectType.ForceHeal5)
                 .GrantAction((source, target, length, data) =>
                 {
                     ApplyHeal(source, target, Amount);
@@ -99,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceHeal5)
                 .Name("Force Heal V")
                 .EffectIcon(EffectIconType.Regenerate)
+                .Replaces(StatusEffectType.ForceHeal1, StatusEffectType.ForceHeal2, StatusEffectType.ForceHeal3, StatusEffectType.ForceHeal4)
                 .GrantAction((source, target, length, data) =>
                 {
                     ApplyHeal(source, target, Amount);

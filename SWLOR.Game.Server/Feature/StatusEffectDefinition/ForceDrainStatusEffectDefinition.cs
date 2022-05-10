@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain1)
                 .Name("Force Drain I")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .CannotReplace(StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
@@ -51,6 +52,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain2)
                 .Name("Force Drain II")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1)
+                .CannotReplace(StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
@@ -77,6 +80,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain3)
                 .Name("Force Drain III")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2)
+                .CannotReplace(StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
@@ -103,6 +108,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain4)
                 .Name("Force Drain IV")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3)
+                .CannotReplace(StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
@@ -129,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain5)
                 .Name("Force Drain V")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4)
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);

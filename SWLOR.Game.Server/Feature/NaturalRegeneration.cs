@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature
                     stmRegen += foodEffect.STMRegen + vitalityBonus * 2;
                 }
 
-                if (hpRegen > 0)
+                if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpRegen), player);
                 }

@@ -22,9 +22,7 @@
         Bleed = 17,
         BurstOfSpeed1 = 18,
         BurstOfSpeed2 = 19,
-        BurstOfSpeed3 = 20,
-        BurstOfSpeed4 = 21,
-        BurstOfSpeed5 = 22,
+        // 20-22 are free
         ForceHeal1 = 23,
         ForceHeal2 = 24,
         ForceHeal3 = 25,

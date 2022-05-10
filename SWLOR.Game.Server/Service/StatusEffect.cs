@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -64,6 +65,7 @@ namespace SWLOR.Game.Server.Service
             object effectData = null,
             FeatType concentrationFeatType = FeatType.Invalid)
         {
+            var statusEffectDetail = _statusEffects[statusEffectType];
             if (!_creaturesWithStatusEffects.ContainsKey(target))
                 _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
 
@@ -71,12 +73,43 @@ namespace SWLOR.Game.Server.Service
                 _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
 
             var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
+            var addIcon = true;
 
             // If the existing status effect will expire later than this, exit early.
-            if (_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
+            if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
+                return;
+
+            // Can't stack - remove the effect then reapply it afterwards.
+            if (!statusEffectDetail.CanStack &&
+                HasStatusEffect(target, statusEffectType))
             {
-                if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
+                Remove(target, statusEffectType, false, false);
+                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
+                addIcon = false;
+            }
+
+            // Remove any status effects this effect overrides.
+            if (statusEffectDetail.ReplacesEffects != null)
+            {
+                foreach (var effect in statusEffectDetail.ReplacesEffects)
+                {
+                    Remove(target, effect, false, false);
+                    addIcon = false;
+                }
+            }
+
+            // Prevent applying the status effect if a more powerful one is already in place.
+            if (statusEffectDetail.CannotReplaceEffects != null)
+            {
+                if (HasStatusEffect(target, statusEffectDetail.CannotReplaceEffects))
+                {
+                    const string Message = "A more powerful effect already exists.";
+                    SendMessageToPC(source, Message);
+
+                    if(source != target)
+                        SendMessageToPC(target, Message);
                     return;
+                }
             }
 
             // Set the group details.
@@ -86,16 +119,16 @@ namespace SWLOR.Game.Server.Service
             _creaturesWithStatusEffects[target][statusEffectType].EffectData = effectData;
 
             // Run the Grant Action, if applicable.
-            var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.AppliedAction?.Invoke(source, target, length, effectData);
 
             // Add the status effect icon if there is one.
-            if (statusEffectDetail.EffectIconId != EffectIconType.Invalid)
+            if (addIcon && statusEffectDetail.EffectIconId != EffectIconType.Invalid)
             {
                 ObjectPlugin.AddIconEffect(target, (int)statusEffectDetail.EffectIconId);
             }
 
             Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+            Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
 
         /// <summary>
@@ -216,12 +249,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        /// <summary>
-        /// Removes a status effect from a creature.
-        /// </summary>
-        /// <param name="creature">The creature to remove the status effect from.</param>
-        /// <param name="statusEffectType">The type of status effect to remove.</param>
-        public static void Remove(uint creature, StatusEffectType statusEffectType)
+        private static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage, bool removeIcon)
         {
             if (!HasStatusEffect(creature, statusEffectType, true)) return;
 
@@ -231,12 +259,25 @@ namespace SWLOR.Game.Server.Service
             var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.RemoveAction?.Invoke(creature, effectInstance.EffectData);
 
-            if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
+            if (removeIcon && statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
                 ObjectPlugin.RemoveIconEffect(creature, (int)statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
+            if(showMessage)
+                Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
+
+            Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
+        }
+
+        /// <summary>
+        /// Removes a status effect from a creature.
+        /// </summary>
+        /// <param name="creature">The creature to remove the status effect from.</param>
+        /// <param name="statusEffectType">The type of status effect to remove.</param>
+        public static void Remove(uint creature, StatusEffectType statusEffectType)
+        {
+            Remove(creature, statusEffectType, true, true);
         }
 
         /// <summary>

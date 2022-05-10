@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     {
         public string Name { get; set; }
         public EffectIconType EffectIconId { get; set; }
+        public StatusEffectType[] CannotReplaceEffects { get; set; }
+        public StatusEffectType[] ReplacesEffects { get; set; }
+        public bool CanStack { get; set; }
         public StatusEffectAppliedDelegate AppliedAction { get; set; }
         public StatusEffectRemovedDelegate RemoveAction { get; set; }
         public StatusEffectTickDelegate TickAction { get; set; }

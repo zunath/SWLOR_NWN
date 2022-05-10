@@ -1784,5 +1784,24 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         EnhancementBlueprints3 = 1817,
         EnhancementBlueprints4 = 1818,
         EnhancementBlueprints5 = 1819,
+        Premonition1 = 1820,
+        Premonition2 = 1821,
+        Disturbance1 = 1822,
+        Disturbance2 = 1823,
+        Disturbance3 = 1824,
+        Benevolence1 = 1825,
+        Benevolence2 = 1826,
+        Benevolence3 = 1827,
+        ForceValor1 = 1828,
+        ForceValor2 = 1829,
+        ForceSpark1 = 1830,
+        ForceSpark2 = 1831,
+        ForceSpark3 = 1832,
+        CreepingTerror1 = 1833,
+        CreepingTerror2 = 1834,
+        CreepingTerror3 = 1835,
+        ForceRage1 = 1836,
+        ForceRage2 = 1837
+
     }
 }

@@ -69,9 +69,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         return;
                     }
 
-                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Vitality, target);
-                    var stmAmount = 1 + GetAbilityModifier(AbilityType.Perception, target) / 2;
-                    var fpAmount = 1 + GetAbilityModifier(AbilityType.Willpower, target) / 2;
+                    var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, target);
+                    if (vitalityBonus < 0)
+                        vitalityBonus = 0;
+
+                    var hpAmount = 1 + vitalityBonus * 7;
+                    var stmAmount = 1 + vitalityBonus * 3;
+                    var fpAmount = 1 + vitalityBonus * 3;
 
                     // Guard against negative ability modifiers - always give at least 1 HP/FP/STM recovery per tick.
                     if (hpAmount < 1)

@@ -21,6 +21,10 @@ namespace SWLOR.Game.Server.Feature
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
+                var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, player);
+                if (vitalityBonus < 0)
+                    vitalityBonus = 0;
+
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var hpRegen = dbPlayer.HPRegen;
@@ -30,9 +34,9 @@ namespace SWLOR.Game.Server.Feature
 
                 if (foodEffect != null)
                 {
-                    hpRegen += foodEffect.HPRegen;
-                    fpRegen += foodEffect.FPRegen;
-                    stmRegen += foodEffect.STMRegen;
+                    hpRegen += foodEffect.HPRegen + vitalityBonus * 4;
+                    fpRegen += foodEffect.FPRegen + vitalityBonus * 2;
+                    stmRegen += foodEffect.STMRegen + vitalityBonus * 2;
                 }
 
                 if (hpRegen > 0)

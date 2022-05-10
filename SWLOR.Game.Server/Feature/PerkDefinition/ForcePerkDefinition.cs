@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceHeal();
             ForceBurst();
             ForceBody();
-            DrainLife();
+            ForceDrain();
             ForceLightning();
             ForceMind();
 
@@ -42,21 +42,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush2)
 
                 .AddPerkLevel()
                 .Description("Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush3)
 
                 .AddPerkLevel()
                 .Description("Knockdown any size target. If resisted, target is slowed for 6 seconds.")
-                .Price(5)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush4);
@@ -68,39 +68,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Burst of Speed")
 
                 .AddPerkLevel()
-                .Description("Increases your speed by 20% while concentrating.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 5)
+                .Description("Increases the speed of your target by 15% and increases evasion by 2 for ten minutes.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BurstOfSpeed1)                
 
                 .AddPerkLevel()
-                .Description("Increases your speed by 30% while concentrating.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 15)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed2)
-
-                .AddPerkLevel()
-                .Description("Increases your speed by 40% while concentrating.")
-                .Price(3)
+                .Description("Increases the speed of your target by 25% and increases evasion by 4 for ten minutes.")
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed3)
-
-                .AddPerkLevel()
-                .Description("Increases your speed by 50% while concentrating.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 35)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed4)
-
-                .AddPerkLevel()
-                .Description("Increases your speed by 60% while concentrating.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 45)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed5);
+                .GrantsFeat(FeatType.BurstOfSpeed2);
         }
 
         private void ThrowLightsaber()
@@ -136,21 +115,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Single target is Tranquilized while the caster concentrates or, if resisted, gets -2 to AB and Evasion.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun1)
 
                 .AddPerkLevel()
                 .Description("Target and nearest other enemy within 10m is Tranquilized while the caster concentrates or, if resisted, get -2 to AB and Evasion.")
-                .Price(7)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
                 .Description("Target and all other enemies within 10m are Tranquilized while the caster concentrates or, if resisted, get -2 to AB and Evasion.")
-                .Price(10)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun3);
@@ -163,28 +142,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.")
-                .Price(3)
+                .Price(1)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ComprehendSpeech1)
 
                 .AddPerkLevel()
                 .Description("The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.")
-                .Price(3)
+                .Price(1)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ComprehendSpeech2)
 
                 .AddPerkLevel()
                 .Description("The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.")
-                .Price(3)
+                .Price(1)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ComprehendSpeech3)
 
                 .AddPerkLevel()
                 .Description("The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.")
-                .Price(3)
+                .Price(1)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ComprehendSpeech4);
@@ -217,14 +196,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Applies Confusion effect to a single non-mechanical target with lower WIL than the caster, while the caster concentrates.")
-                .Price(7)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
                 .Description("Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIL than the caster, while the caster concentrates.")
-                .Price(7)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick2);
@@ -299,7 +278,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 12.0 DMG to a single target.")
-                .Price(6)
+                .Price(5)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -307,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 13.5 DMG to a single target.")
-                .Price(7)
+                .Price(6)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -335,10 +314,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceMind2);
         }
 
-        private void DrainLife()
+        private void ForceDrain()
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
-                .Name("Drain Life")
+                .Name("Force Drain")
 
                 .AddPerkLevel()
                 .Description("Steals 10 HP from a target every six seconds.")
@@ -404,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 12.0 DMG to a single target.")
-                .Price(6)
+                .Price(5)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)
@@ -412,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 13.5 DMG to a single target.")
-                .Price(7)
+                .Price(6)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)

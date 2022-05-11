@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .Name("Strong Style (Saberstaff)")
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .HideActivationMessage()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     switch (level)

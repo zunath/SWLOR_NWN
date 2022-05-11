@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IgnoreHeavyArmorPenalty { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
+        public bool DisplaysActivationMessage { get; set; }
 
         public AbilityDetail()
         {
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             ConcentrationStatusEffectType = StatusEffectType.Invalid;
             MaxRange = 5.0f;
             IsHostileAbility = false;
+            DisplaysActivationMessage = true;
         }
     }
 }

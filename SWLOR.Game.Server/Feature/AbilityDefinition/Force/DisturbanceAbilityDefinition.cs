@@ -1,6 +1,12 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -10,8 +16,72 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
+            Disturbance1();
+            Disturbance2();
+            Disturbance3();
 
             return _builder.Build();
+        }
+
+        private void Impact(uint activator, uint target, int dmg, int accDecrease)
+        {
+            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+            ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(accDecrease), target, 60f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
+
+            Enmity.ModifyEnmity(activator, target, damage + 10);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+        }
+
+        private void Disturbance1()
+        {
+            _builder.Create(FeatType.Disturbance1, PerkType.Disturbance)
+                .Name("Disturbance I")
+                .HasRecastDelay(RecastGroup.Disturbance, 20f)
+                .RequirementFP(1)
+                .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    Impact(activator, target, 9, 2);
+                });
+        }
+
+        private void Disturbance2()
+        {
+            _builder.Create(FeatType.Disturbance2, PerkType.Disturbance)
+                .Name("Disturbance II")
+                .HasRecastDelay(RecastGroup.Disturbance, 20f)
+                .RequirementFP(2)
+                .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    Impact(activator, target, 14, 4);
+                });
+        }
+
+        private void Disturbance3()
+        {
+            _builder.Create(FeatType.Disturbance3, PerkType.Disturbance)
+                .Name("Disturbance III")
+                .HasRecastDelay(RecastGroup.Disturbance, 20f)
+                .RequirementFP(3)
+                .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    Impact(activator, target, 32, 6);
+                });
         }
     }
 }

@@ -2,6 +2,8 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Item = SWLOR.Game.Server.Service.Item;
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CircleSlash();
             DoubleStrike();
             ImprovedTwoWeaponFighting();
+            StrongStyleSaberstaff();
 
             return _builder.Build();
         }
@@ -848,6 +851,57 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwoHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingOneHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
+        }
+
+        private void StrongStyleSaberstaff()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.StrongStyleSaberstaff)
+                .Name("Strong Style (Saberstaff)")
+                .TriggerRefund((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff1, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff2, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff3, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff4, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff5, false);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff1, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff2, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff3, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff4, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff5, false);
+                })
+
+                .AddPerkLevel()
+                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active. Also increases DMG of saberstaffs by 2 while in effect.")
+                .Price(1)
+                .GrantsFeat(FeatType.StrongStyleSaberstaff)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 4 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.TwoHanded, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 6 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.TwoHanded, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 8 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.TwoHanded, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 10 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
         }
     }
 }

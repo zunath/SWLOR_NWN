@@ -426,6 +426,17 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
+            return IsAbilityToggled(playerId, toggleType);
+        }
+
+        /// <summary>
+        /// Retrieves whether  a player has a specific toggle type enabled.
+        /// </summary>
+        /// <param name="playerId">The player Id to check</param>
+        /// <param name="toggleType">The type of toggle to check</param>
+        /// <returns>true if the ability is toggled on, false otherwise</returns>
+        public static bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
+        {
             var dbPlayer = DB.Get<Player>(playerId);
 
             if (dbPlayer.AbilityToggles == null)

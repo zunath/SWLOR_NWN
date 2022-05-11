@@ -25,6 +25,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceDrain();
             ForceLightning();
             ForceMind();
+            Premonition();
+            Disturbance();
+            Benevolence();
+            ForceValor();
+            ForceSpark();
+            CreepingTerror();
+            ForceRage();
 
             return _builder.Build();
         }
@@ -418,6 +425,190 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceMind)
                 .GrantsFeat(FeatType.ForceBody2);
+        }
+
+        private void Premonition()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.Premonition)
+                .Name("Premonition")
+
+                .AddPerkLevel()
+                .Description("Grants 5% concealment to other party members while concentrating.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Premonition1)
+
+                .AddPerkLevel()
+                .Description("Grants 10% concealment to other party members while concentrating.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Premonition2);
+        }
+
+        private void Disturbance()
+        {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.Disturbance)
+                .Name("Disturbance")
+
+                .AddPerkLevel()
+                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 2 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceSpark)
+                .GrantsFeat(FeatType.Disturbance1)
+
+                .AddPerkLevel()
+                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 4 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceSpark)
+                .GrantsFeat(FeatType.Disturbance2)
+
+                .AddPerkLevel()
+                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 6 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceSpark)
+                .GrantsFeat(FeatType.Disturbance3);
+        }
+
+        private void Benevolence()
+        {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.Benevolence)
+                .Name("Benevolence")
+
+                .AddPerkLevel()
+                .Description("Restores 40 HP to a single target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .GrantsFeat(FeatType.Benevolence1)
+
+                .AddPerkLevel()
+                .Description("Restores 80 HP to a single target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .GrantsFeat(FeatType.Benevolence2)
+
+                .AddPerkLevel()
+                .Description("Restores 120 HP to a single target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .GrantsFeat(FeatType.Benevolence3);
+        }
+
+        private void ForceValor()
+        {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceValor)
+                .Name("Force Valor")
+
+                .AddPerkLevel()
+                .Description("Increases your target's physical defense by 10 for 15 minutes.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceRage)
+                .GrantsFeat(FeatType.ForceValor1)
+
+                .AddPerkLevel()
+                .Description("Increases your target's physical defense by 20 for 15 minutes.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceRage)
+                .GrantsFeat(FeatType.ForceValor2);
+        }
+
+        private void ForceSpark()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceSpark)
+                .Name("Force Spark")
+
+                .AddPerkLevel()
+                .Description("Deals 9 DMG to a single target and reduces target's evasion by 2 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Disturbance)
+                .GrantsFeat(FeatType.ForceSpark1)
+
+                .AddPerkLevel()
+                .Description("Deals 14 DMG to a single target and reduces target's evasion by 4 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Disturbance)
+                .GrantsFeat(FeatType.ForceSpark2)
+
+                .AddPerkLevel()
+                .Description("Deals 32 DMG to a single target and reduces target's evasion by 6 for one minute.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Disturbance)
+                .GrantsFeat(FeatType.ForceSpark3);
+        }
+
+        private void CreepingTerror()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.CreepingTerror)
+                .Name("Creeping Terror")
+
+                .AddPerkLevel()
+                .Description("Immobilizes a target for 2 seconds and inflicts Terror which deals 4 DMG every six seconds for 24 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.CreepingTerror1)
+
+                .AddPerkLevel()
+                .Description("Immobilizes a target for 3 seconds and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.CreepingTerror2)
+
+                .AddPerkLevel()
+                .Description("Immobilizes a target for 4 seconds and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.CreepingTerror3);
+        }
+
+        private void ForceRage()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceRage)
+                .Name("Force Rage")
+
+                .AddPerkLevel()
+                .Description("Increases your target's Attack by 10 for 15 minutes.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceValor)
+                .GrantsFeat(FeatType.ForceRage1)
+
+                .AddPerkLevel()
+                .Description("Increases your target's Attack by 20 for 15 minutes.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceValor)
+                .GrantsFeat(FeatType.ForceRage2);
         }
     }
 }

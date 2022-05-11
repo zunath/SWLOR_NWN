@@ -1801,7 +1801,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         CreepingTerror2 = 1834,
         CreepingTerror3 = 1835,
         ForceRage1 = 1836,
-        ForceRage2 = 1837
+        ForceRage2 = 1837,
+        StrongStyleLightsaber = 1838,
+        StrongStyleSaberstaff = 1839
 
     }
 }

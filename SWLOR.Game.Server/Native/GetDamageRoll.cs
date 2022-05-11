@@ -7,9 +7,12 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Native.NativeService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
@@ -145,7 +148,6 @@ namespace SWLOR.Game.Server.Native
 
             if (attackType == (uint) AttackType.Ranged)
             {
-                // Throwing weapons should add Strength.  Other ranged types are based on weapon base damage rating. 
                 if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                 {
                     attackerStat = attackerStats.m_nStrengthBase;
@@ -154,6 +156,15 @@ namespace SWLOR.Game.Server.Native
                 {
                     attackerStat = attackerStats.m_nDexterityBase;
                 }
+            }
+
+            // Strong Style Toggle (Saberstaff/Lightsaber)
+            // Uses STR for damage if enabled and increases DMG.
+            var (bonusDMG, damageStat) = GetStrongStyleDMGBonus(weapon, attacker);
+            if (bonusDMG > -1)
+            {
+                dmgValues[CombatDamageType.Physical] += bonusDMG;
+                attackerStat = damageStat;
             }
 
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
@@ -434,6 +445,42 @@ namespace SWLOR.Game.Server.Native
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
 
             return false;
+        }
+
+        private static (int, int) GetStrongStyleDMGBonus(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (weapon == null)
+                return (-1, -1);
+
+            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+            if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber1))
+                    return (2, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber2))
+                    return (4, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber3))
+                    return (6, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber4))
+                    return (8, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber5))
+                    return (10, attacker.m_pStats.m_nStrengthBase);
+            }
+            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff1))
+                    return (2, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff2))
+                    return (4, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff3))
+                    return (6, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff4))
+                    return (8, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff5))
+                    return (10, attacker.m_pStats.m_nStrengthBase);
+            }
+
+            return (-1, -1);
         }
     }
 }

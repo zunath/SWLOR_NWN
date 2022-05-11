@@ -202,7 +202,11 @@ namespace SWLOR.Game.Server.Feature
                 if (ability.ActivationType == AbilityActivationType.Casted &&
                     ability.AnimationType != Animation.Invalid)
                 {
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, delay - 0.2f));
+                    var animationLength = delay - 0.2f;
+                    if (animationLength < 0f)
+                        animationLength = 0f;
+
+                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
                 }
             }
 

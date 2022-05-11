@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -10,8 +12,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
+            Premonition1();
+            Premonition2();
 
             return _builder.Build();
+        }
+
+        private void Premonition1()
+        {
+            _builder.Create(FeatType.Premonition1, PerkType.Premonition)
+                .Name("Premonition I")
+                .HasRecastDelay(RecastGroup.Premonition, 60f)
+                .RequirementFP(4)
+                .IsConcentrationAbility(StatusEffectType.Premonition1)
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating();
+        }
+
+        private void Premonition2()
+        {
+            _builder.Create(FeatType.Premonition1, PerkType.Premonition)
+                .Name("Premonition I")
+                .HasRecastDelay(RecastGroup.Premonition, 60f)
+                .RequirementFP(4)
+                .IsConcentrationAbility(StatusEffectType.Premonition1)
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating();
         }
     }
 }

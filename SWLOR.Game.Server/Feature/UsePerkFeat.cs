@@ -73,7 +73,8 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
+                    if(ability.DisplaysActivationMessage)
+                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
                 }
             }
@@ -101,11 +102,13 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if (GetIsObjectValid(target))
                     {
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                        if (ability.DisplaysActivationMessage)
+                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
                     }
                     else
                     {
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                        if (ability.DisplaysActivationMessage)
+                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
                     
                     ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
@@ -316,7 +319,9 @@ namespace SWLOR.Game.Server.Feature
 
                 // Notify the activator and nearby players
                 SendMessageToPC(activator, $"Your weapon ability {ability.Name} is no longer queued.");
-                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} no longer has weapon ability {ability.Name} readied.");
+
+                if (ability.DisplaysActivationMessage)
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} no longer has weapon ability {ability.Name} readied.");
             });
         }
 

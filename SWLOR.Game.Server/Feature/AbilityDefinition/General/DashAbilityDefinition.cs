@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         {
             _builder.Create(FeatType.Dash, PerkType.Dash)
                 .Name("Dash")
+                .HideActivationMessage()
+                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var toggle = !Ability.IsAbilityToggled(target, AbilityToggleType.Dash);

@@ -99,6 +99,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// The ability will not display an activation message to nearby players if this is set.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder HideActivationMessage()
+        {
+            _activeAbility.DisplaysActivationMessage = false;
+
+            return this;
+        }
+
+        /// <summary>
         /// Assigns a visual effect to the caster of the spell. This will display while casting.
         /// Calling this more than once will replace the previous visual effect.
         /// </summary>

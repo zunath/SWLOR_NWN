@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Strong Style (Lightsaber)")
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .HideActivationMessage()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     switch (level)

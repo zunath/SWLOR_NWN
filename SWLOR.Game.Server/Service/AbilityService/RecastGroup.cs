@@ -136,7 +136,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Provoke", "Provoke")]
         Provoke = 64,
         [RecastGroup("Provoke II", "Provoke II")]
-        Provoke2 = 65
+        Provoke2 = 65,
+        [RecastGroup("Premonition", "Premonition")]
+        Premonition = 66,
+        [RecastGroup("Disturbance", "Disturbance")]
+        Disturbance = 67,
+        [RecastGroup("Benevolence", "Benevolence")]
+        Benevolence = 68,
+        [RecastGroup("Force Valor", "F. Valor")]
+        ForceValor = 69,
+        [RecastGroup("Force Spark", "F. Spark")]
+        ForceSpark = 70,
+        [RecastGroup("Creeping Terror", "C. Terror")]
+        CreepingTerror = 71,
+        [RecastGroup("Force Rage", "F. Rage")]
+        ForceRage = 72,
     }
 
     public class RecastGroupAttribute: Attribute

@@ -22,7 +22,9 @@
         Bleed = 17,
         BurstOfSpeed1 = 18,
         BurstOfSpeed2 = 19,
-        // 20-22 are free
+        Premonition1 = 20,
+        Premonition2 = 21,
+        // 22 is free
         ForceHeal1 = 23,
         ForceHeal2 = 24,
         ForceHeal3 = 25,

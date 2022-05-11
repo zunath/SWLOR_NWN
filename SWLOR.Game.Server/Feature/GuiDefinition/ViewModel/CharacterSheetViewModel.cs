@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -428,8 +429,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 OffHandDMG = "-";
                 OffHandTooltip = "Est. Damage: N/A";
             }
-
+            
             var damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
+            var accuracyStatOverride = AbilityType.Invalid;
+            
+            // Strong Style (Lightsaber)
+            if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
+                (Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber1) ||
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber2) ||
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber3) ||
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber4) ||
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber5)))
+            {
+                damageStat = AbilityType.Might;
+                accuracyStatOverride = AbilityType.Perception;
+            }
+            // Strong Style (Saberstaff)
+            if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
+                (Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff1) ||
+                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff2) ||
+                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff3) ||
+                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff4) ||
+                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff5)))
+            {
+                damageStat = AbilityType.Might;
+                accuracyStatOverride = AbilityType.Perception;
+            }
+            
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);
             DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);
@@ -440,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
             var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
             DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            Accuracy = Stat.GetAccuracy(Player, mainHand);
+            Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride);
             Evasion = Stat.GetEvasion(Player);
 
             var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)

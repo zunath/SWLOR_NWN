@@ -19,8 +19,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private void DoToggle(uint activator, AbilityToggleType type)
         {
-            var isToggled = Ability.IsAbilityToggled(activator, type);
-            Ability.ToggleAbility(activator, type, !isToggled);
+            var isToggled = !Ability.IsAbilityToggled(activator, type);
+            Ability.ToggleAbility(activator, type, isToggled);
+
+            if (isToggled)
+            {
+                SendMessageToPC(activator, ColorToken.Green("Strong Style (Saberstaff) enabled"));
+            }
+            else
+            {
+                SendMessageToPC(activator, ColorToken.Red("Strong Style (Saberstaff) disabled"));
+            }
         }
 
         private void StrongStyleSaberstaff()

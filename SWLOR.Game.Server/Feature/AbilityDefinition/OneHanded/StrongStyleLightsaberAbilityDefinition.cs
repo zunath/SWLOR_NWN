@@ -19,8 +19,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private void DoToggle(uint activator, AbilityToggleType type)
         {
-            var isToggled = Ability.IsAbilityToggled(activator, type);
-            Ability.ToggleAbility(activator, type, !isToggled);
+            var isToggled = !Ability.IsAbilityToggled(activator, type);
+            Ability.ToggleAbility(activator, type, isToggled);
+
+            if (isToggled)
+            {
+                SendMessageToPC(activator, ColorToken.Green("Strong Style (Lightsaber) enabled"));
+            }
+            else
+            {
+                SendMessageToPC(activator, ColorToken.Red("Strong Style (Lightsaber) disabled"));
+            }
         }
 
         private void StrongStyleLightsaber()
@@ -34,19 +43,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     switch (level)
                     {
                         case 1:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff1);
+                            DoToggle(activator, AbilityToggleType.StrongStyleLightsaber1);
                             break;
                         case 2:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff2);
+                            DoToggle(activator, AbilityToggleType.StrongStyleLightsaber2);
                             break;
                         case 3:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff3);
+                            DoToggle(activator, AbilityToggleType.StrongStyleLightsaber3);
                             break;
                         case 4:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff4);
+                            DoToggle(activator, AbilityToggleType.StrongStyleLightsaber4);
                             break;
                         case 5:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff5);
+                            DoToggle(activator, AbilityToggleType.StrongStyleLightsaber5);
                             break;
                     }
                 });

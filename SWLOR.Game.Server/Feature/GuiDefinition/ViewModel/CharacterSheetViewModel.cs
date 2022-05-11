@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
-        IGuiRefreshable<StatusEffectReceivedRefreshEvent>
+        IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
+        IGuiRefreshable<StatusEffectRemovedRefreshEvent>
     {
         private const int MaxUpgrades = 10;
 
@@ -537,6 +538,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public void Refresh(StatusEffectReceivedRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            RefreshStats(dbPlayer);
+            RefreshEquipmentStats(dbPlayer);
+        }
+
+        public void Refresh(StatusEffectRemovedRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);

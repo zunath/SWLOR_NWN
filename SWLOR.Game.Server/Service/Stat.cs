@@ -972,10 +972,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="weapon">The weapon being used.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon)
+        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
         {
             var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
-            var statType = Item.GetWeaponAccuracyAbilityType(baseItemType);
+            var statType = statOverride == AbilityType.Invalid ? 
+                Item.GetWeaponAccuracyAbilityType(baseItemType) :
+                statOverride;
             var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;

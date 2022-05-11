@@ -229,5 +229,14 @@
         FabricationEquipment = 222,
         AgricultureEquipment = 223,
         EnhancementBlueprints = 224,
+        StrongStyleLightsaber = 225,
+        StrongStyleSaberstaff = 226,
+        Premonition = 227,
+        Disturbance = 228,
+        Benevolence = 229,
+        ForceValor = 230,
+        ForceSpark = 231,
+        CreepingTerror = 232,
+        ForceRage = 233
     }
 }

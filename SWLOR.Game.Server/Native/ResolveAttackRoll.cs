@@ -3,8 +3,11 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.LogService;
+using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
@@ -83,8 +86,9 @@ namespace SWLOR.Game.Server.Native
             }
 
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
-            
-            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon);
+
+            var strongStyleAbilityOverride = GetStrongStyleAbilityType(weapon, attacker);
+            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, strongStyleAbilityOverride);
             var defenderEvasion = Stat.GetEvasionNative(defender);
 
             //---------------------------------------------------------------------------------------------
@@ -577,6 +581,34 @@ namespace SWLOR.Game.Server.Native
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return 1;
 
             return 0;
+        }
+
+        private static AbilityType GetStrongStyleAbilityType(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (weapon == null)
+                return AbilityType.Invalid;
+
+            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+            if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber1) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber2) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber3) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber4) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber5))
+                    return AbilityType.Perception;
+            }
+            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff1) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff2) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff3) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff4) ||
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff5))
+                    return AbilityType.Perception;
+            }
+
+            return AbilityType.Invalid;
         }
     }
 }

@@ -2,6 +2,8 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Item = SWLOR.Game.Server.Service.Item;
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceLeap();
             SaberStrike();
             ImprovedTwoWeaponFighting();
+            StrongStyleLightsaber();
 
             return _builder.Build();
         }
@@ -673,6 +676,57 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingTwoHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
+        }
+
+        private void StrongStyleLightsaber()
+        {
+            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.StrongStyleLightsaber)
+                .Name("Strong Style (Lightsaber)")
+                .TriggerRefund((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber1, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber2, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber3, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber4, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber5, false);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber1, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber2, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber3, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber4, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber5, false);
+                })
+                
+                .AddPerkLevel()
+                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active. Also increases DMG of lightsabers by 2 while in effect.")
+                .Price(1)
+                .GrantsFeat(FeatType.StrongStyleLightsaber)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 4 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 6 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 8 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 10 while in effect.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Premonition I")
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(4)
+                .IsCastedAbility()
                 .IsConcentrationAbility(StatusEffectType.Premonition1)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.Premonition1, PerkType.Premonition)
                 .Name("Premonition I")
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
-                .RequirementFP(4)
+                .RequirementFP(6)
+                .IsCastedAbility()
                 .IsConcentrationAbility(StatusEffectType.Premonition1)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();

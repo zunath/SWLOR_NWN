@@ -409,14 +409,14 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Quests[questId].ItemProgresses[resref]--;
             DB.Set(dbPlayer);
 
-            // Attempt to advance the quest.
-            // If player hasn't completed the other objectives, nothing will happen when this is called.
-            AdvanceQuest(player, owner, questId);
-
             // Give the player an update and destroy the item.
             var itemName = Cache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
             DestroyObject(item);
+
+            // Attempt to advance the quest.
+            // If player hasn't completed the other objectives, nothing will happen when this is called.
+            AdvanceQuest(player, owner, questId);
 
             // If no more items are necessary for this quest, force the player to speak with the NPC again.
             var itemsRequired = dbPlayer.Quests[questId].ItemProgresses.Sum(x => x.Value);

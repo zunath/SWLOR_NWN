@@ -23511,6 +23511,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lasagne, Just Like Mama Used to Make (Tester Food)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "testlasagne"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lemon Cookies"
                     },
                     "RESREF": {

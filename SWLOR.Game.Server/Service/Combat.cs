@@ -27,10 +27,21 @@ namespace SWLOR.Game.Server.Service
             int defenderStat,
             int critical)
         {
+            const float RatioMax = 3.625f;
+            const float RatioMin = 0.01f;
+
+            if (defenderDefense < 1)
+                defenderDefense = 1;
 
             var statDelta = attackerStat - defenderStat;
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
+
+            if (ratio > RatioMax)
+                ratio = RatioMax;
+            else if (ratio < RatioMin)
+                ratio = RatioMin;
+
             var maxDamage = baseDamage * ratio;
             var minDamage = maxDamage * 0.70f;
 

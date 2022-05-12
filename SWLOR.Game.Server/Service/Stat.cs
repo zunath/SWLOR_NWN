@@ -692,11 +692,22 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
                 defense += 20;
 
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
+                defense += 10;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
+                defense += 20;
+
             return defense;
         }
 
         private static int CalculateEffectAttack(uint creature, int attack)
         {
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage1))
+                attack += 10;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage2))
+                attack += 20;
+
             return attack;
         }
         

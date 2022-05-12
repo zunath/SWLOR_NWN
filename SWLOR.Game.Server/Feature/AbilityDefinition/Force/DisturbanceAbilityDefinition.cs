@@ -46,6 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(1)
                 .IsCastedAbility()
+                .HasMaxRange(10f)
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -61,6 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .HasMaxRange(10f)
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -76,6 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(3)
                 .IsCastedAbility()
+                .HasMaxRange(10f)
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>

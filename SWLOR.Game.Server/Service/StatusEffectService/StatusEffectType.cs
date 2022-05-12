@@ -24,7 +24,7 @@
         BurstOfSpeed2 = 19,
         Premonition1 = 20,
         Premonition2 = 21,
-        // 22 is free
+        CreepingTerror = 22,
         ForceHeal1 = 23,
         ForceHeal2 = 24,
         ForceHeal3 = 25,

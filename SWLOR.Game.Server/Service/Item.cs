@@ -920,29 +920,68 @@ namespace SWLOR.Game.Server.Service
             return dmg;
         }
 
-        // The values below are taken from the 2das, and cached on startup in CacheData() above.
-        public static int GetCriticalThreatRange(BaseItem item)
+        /// <summary>
+        /// Retrieves the critical modifier for a given item type.
+        /// The value returned is based on the baseitems.2da file.
+        /// </summary>
+        /// <param name="type">The item type to check</param>
+        /// <returns>The critical modifer value.</returns>
+        public static int GetCriticalModifier(BaseItem type)
         {
-            var range = _2daCache[(int)item][0];
-            Log.Write(LogGroup.Attack, "Threat range for item type " + item + "(" + (int)item + ") is " + range);
-            
-            return range;
-        }
-
-        public static int GetCriticalModifier(BaseItem item)
-        {
-            var mod = _2daCache[(int)item][1];
-            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + item + " is " + mod);
+            var mod = _2daCache[(int)type][1];
+            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + type + " is " + mod);
 
             return mod;
         }
 
-        public static int GetWeaponSize(BaseItem item)
+        /// <summary>
+        /// Retrieves the weapon size of a given item type.
+        /// The value returned is based on the baseitems.2da file.
+        /// </summary>
+        /// <param name="type">The item type to check</param>
+        /// <returns>The weapon size value.</returns>
+        public static int GetWeaponSize(BaseItem type)
         {
-            var size = _2daCache[(int)item][2];
-            Log.Write(LogGroup.Attack, "Size of item type " + item + " is " + size);
+            var size = _2daCache[(int)type][2];
+            Log.Write(LogGroup.Attack, "Size of item type " + type + " is " + size);
 
             return size;
         }
+
+        /// <summary>
+        /// Reduces an item stack by a specific amount.
+        /// If there are not enough items in the stack to reduce, false will be returned.
+        /// If the stack size of the item will reach 0, the item is destroyed and true will be returned.
+        /// If the stack size will reach a number greater than 0, the item's stack size will be updated and true will be returned.
+        /// </summary>
+        /// <param name="item">The item to adjust</param>
+        /// <param name="reduceBy">The amount to reduce by. Absolute value is used to determine this value.</param>
+        /// <returns>true if successfully reduced or destroyed, false otherwise</returns>
+        public static bool ReduceItemStack(uint item, int reduceBy)
+        {
+            var amount = Math.Abs(reduceBy);
+            var stackSize = GetItemStackSize(item);
+
+            // Have to reduce by at least one.
+            if (amount <= 0)
+                return false;
+
+            // Stack size cannot be smaller than the amount we're reducing by.
+            if (stackSize < reduceBy)
+                return false;
+
+            var remaining = stackSize - reduceBy;
+            if (remaining <= 0)
+            {
+                DestroyObject(item);
+                return true;
+            }
+            else
+            {
+                SetItemStackSize(item, remaining);
+                return true;
+            }
+        }
+
     }
 }

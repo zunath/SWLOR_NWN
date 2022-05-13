@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Service
                     var quest = _quests[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
-                    Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
                         Name = quest.Name,
                         Text = state.JournalText,
@@ -367,12 +367,15 @@ namespace SWLOR.Game.Server.Service
         public static void CloseItemCollector()
         {
             var player = GetLastClosedBy();
-            for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
+            DelayCommand(0.02f, () =>
             {
-                DestroyObject(item);
-            }
+                for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
+                {
+                    DestroyObject(item);
+                }
 
-            DestroyObject(OBJECT_SELF);
+                DestroyObject(OBJECT_SELF);
+            });
 
             Activity.ClearBusy(player);
         }
@@ -405,15 +408,28 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var requiredAmount = dbPlayer.Quests[questId].ItemProgresses[resref];
+            var stackSize = GetItemStackSize(item);
+
             // Decrement the required items and update the DB.
-            dbPlayer.Quests[questId].ItemProgresses[resref]--;
+            if (stackSize > requiredAmount)
+            {
+                dbPlayer.Quests[questId].ItemProgresses[resref] = 0;
+                Item.ReduceItemStack(item, requiredAmount);
+                Item.ReturnItem(player, item);
+            }
+            else
+            {
+                dbPlayer.Quests[questId].ItemProgresses[resref] -= stackSize;
+                Item.ReduceItemStack(item, stackSize);
+            }
+
             DB.Set(dbPlayer);
 
-            // Give the player an update and destroy the item.
+            // Give the player an update and reduce the item stack.
             var itemName = Cache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
-            DestroyObject(item);
-
+            
             // Attempt to advance the quest.
             // If player hasn't completed the other objectives, nothing will happen when this is called.
             AdvanceQuest(player, owner, questId);

@@ -163,7 +163,13 @@ namespace SWLOR.Game.Server.Feature
                     });
                 }
 
-                DestroyObject(item);
+                Item.ReduceItemStack(item, 1);
+                
+                DelayCommand(0.1f, () =>
+                {
+                    if (GetIsObjectValid(item))
+                        Item.ReturnItem(player, item);
+                });
             }
         }
 

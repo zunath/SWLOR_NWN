@@ -57,12 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
             else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            Enmity.ModifyEnmityOnAll(activator, 12);
 
-            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
-            {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-            }
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private static void ForcePush1(AbilityBuilder builder)

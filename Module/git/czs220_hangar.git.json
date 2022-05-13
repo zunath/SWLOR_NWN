@@ -4487,11 +4487,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "cz220_nano_to_hangar"
+          "value": "CZ220_OFFICES_FROM_HANGAR"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 1
+          "value": 2
         },
         "LoadScreenID": {
           "type": "word",
@@ -19530,6 +19530,66 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CZ220_HANGAR_FROM_OFFICES"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.02454144880175591
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.02532768249512
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 53.46686172485352
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.76837158203125e-007
         }
       }
     ]

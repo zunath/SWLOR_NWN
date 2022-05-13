@@ -445,6 +445,7 @@ namespace SWLOR.Game.Server.Service
                     // Destroy active spawned objects from the module.
                     foreach (var activeSpawn in _activeSpawnsByArea[area])
                     {
+                        ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
                         DestroyObject(activeSpawn.SpawnObject);
                     }
 

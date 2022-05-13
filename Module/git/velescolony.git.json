@@ -6304,7 +6304,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -7379,7 +7379,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -21585,7 +21585,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 4
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -21717,7 +21717,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 4
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -33724,7 +33724,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -34799,7 +34799,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 150
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -37507,7 +37507,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -350164,7 +350164,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 500
+                      "value": 486
                     },
                     "Cursed": {
                       "type": "byte",
@@ -350208,39 +350208,7 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
+                      "value": []
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -350265,41 +350233,6 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "RenameItem"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "CONVERSATION"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "RenameItem"
-                          }
-                        }
-                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -351034,7 +350967,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 52
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351170,7 +351103,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2502
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351306,7 +351239,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 52
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351444,7 +351377,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2502
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351748,7 +351681,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 52
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
@@ -351884,7 +351817,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 520
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",

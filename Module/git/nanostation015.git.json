@@ -11374,11 +11374,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "cz220_hang_to_station"
+          "value": "CZ220_HANGAR_FROM_OFFICES"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 1
+          "value": 2
         },
         "LoadScreenID": {
           "type": "word",
@@ -219738,7 +219738,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.560772206441663e-026
                     },
                     "XPosition": {
                       "type": "float",
@@ -223289,7 +223289,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.560772206441663e-026
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -223640,7 +223640,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -225553,7 +225553,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.498621170550109e-009
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -225899,7 +225899,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.395384424285981e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -226103,7 +226103,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.587324068671532e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -227254,7 +227254,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.498621170550109e-009
                     },
                     "XPosition": {
                       "type": "float",
@@ -227867,7 +227867,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 3.587324068671532e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -228280,7 +228280,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -228481,7 +228481,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.498621170550109e-009
                     },
                     "XPosition": {
                       "type": "float",
@@ -228682,7 +228682,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.498621170550109e-009
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -228852,7 +228852,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -229187,7 +229187,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.060248342129747e-038
+                      "value": 1.282577075818272e-023
                     },
                     "XPosition": {
                       "type": "float",
@@ -229292,7 +229292,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.625506218616788e-043
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -229428,7 +229428,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -229566,7 +229566,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -229702,7 +229702,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -229840,7 +229840,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -229995,7 +229995,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -230161,7 +230161,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -230297,7 +230297,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 1.625506218616788e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -230433,7 +230433,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.282577075818272e-023
+                      "value": 1.060248342129747e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -238701,6 +238701,66 @@
         "ZPosition": {
           "type": "float",
           "value": 2.384185791015625e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CZ220_OFFICES_FROM_HANGAR"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 84.98052215576172
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 11.22071266174316
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -1.192092895507813e-007
         }
       }
     ]

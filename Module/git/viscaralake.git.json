@@ -14347,7 +14347,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 249.5562744140625
+          "value": 249.7796630859375
         },
         "YOrientation": {
           "type": "float",
@@ -14355,11 +14355,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 4.418673038482666
+          "value": 12.68143844604492
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.01064872741699219
+          "value": -0.006250381469726563
         }
       },
       {

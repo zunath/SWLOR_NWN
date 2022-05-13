@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
@@ -25,6 +26,26 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             Harvester("harvest_r_4", 5);
 
             return _builder.Build();
+        }
+
+        /// <summary>
+        /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
+        /// </summary>
+        [NWNEventHandler("spawn_despawn")]
+        public static void CleanupResourcePropPlaceables()
+        {
+            var resource = OBJECT_SELF;
+            DestroyProp(resource);
+        }
+
+        private static void DestroyProp(uint resource)
+        {
+            var prop = GetLocalObject(resource, "RESOURCE_PROP_OBJ");
+            if (GetIsObjectValid(prop))
+            {
+                SetPlotFlag(prop, false);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), prop);
+            }
         }
 
         private void Harvester(string tag, int requiredLevel)
@@ -103,12 +124,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
-                        var prop = GetLocalObject(target, "RESOURCE_PROP_OBJ");
-                        if (GetIsObjectValid(prop))
-                        {
-                            SetPlotFlag(prop, false);
-                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), prop);
-                        }
+                        DestroyProp(target);
                     }
                     else
                     {

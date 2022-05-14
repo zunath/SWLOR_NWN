@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal 1")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .RequirementFP(1)
+                .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal II")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .RequirementFP(2)
+                .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal III")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .RequirementFP(3)
+                .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -61,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal IV")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .RequirementFP(4)
+                .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -72,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal V")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .RequirementFP(5)
+                .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();

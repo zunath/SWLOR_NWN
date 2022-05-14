@@ -158,7 +158,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "flour"
+                "value": "v_flour"
               },
               "Repos_PosX": {
                 "type": "word",

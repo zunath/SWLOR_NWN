@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             BlastTheMandalorianRangers();
             CoxxionInitiation();
-            DaggersForKrystalle();
+            WeaponsForKrystalle();
             FindCaptainNguth();
             FirstRites();
             HelpTheTalyronFamily();
@@ -85,9 +85,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void DaggersForKrystalle()
+        private void WeaponsForKrystalle()
         {
-            _builder.Create("daggers_crystal", "Daggers for Krystalle")
+            _builder.Create("daggers_crystal", "Weapons for Krystalle")
 
                 .AddState()
                 .SetStateJournalText("Krystalle in Veles Colony needs two basic spears and three basic pistols. Collect them and return them to her.")

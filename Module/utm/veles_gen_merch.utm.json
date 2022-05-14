@@ -764,6 +764,25 @@
                 "type": "word",
                 "value": 14
               }
+            },
+            {
+              "__struct_id": 37,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "sm_cap"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 15
+              }
             }
           ]
         }

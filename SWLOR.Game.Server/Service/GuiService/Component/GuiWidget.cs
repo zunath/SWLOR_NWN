@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         where TDerived: GuiWidget<TDataModel, TDerived>
     {
         public string Id { get; protected set; }
+        public string VisibilityOverrideBindName { get; set; }
         public List<IGuiWidget> Elements { get; }
         protected float Width { get; private set; }
         protected float Height { get; private set; }
@@ -302,6 +303,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             else
             {
                 element = Nui.Visible(element, JsonBool(IsVisible));
+            }
+
+            // Visibility override - workaround for the NUI vector issue reported here:
+            // https://github.com/Beamdog/nwn-issues/issues/427
+            if (!string.IsNullOrWhiteSpace(VisibilityOverrideBindName))
+            {
+                var binding = Nui.Bind(VisibilityOverrideBindName);
+                element = Nui.Visible(element, binding);
             }
 
             // Margin

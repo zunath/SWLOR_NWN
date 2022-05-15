@@ -84,7 +84,6 @@ namespace SWLOR.Game.Server.Entity
             AbilityPointsByLevel = new Dictionary<int, int>();
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
-            SubdualMode = false;
             AppearanceScale = 1.0f;
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
@@ -178,7 +177,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public Dictionary<AbilityToggleType, bool> AbilityToggles { get; set; }
-        public bool SubdualMode { get; set; }
         public float AppearanceScale { get; set; }
     }
 

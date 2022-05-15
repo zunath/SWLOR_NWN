@@ -609,7 +609,16 @@ namespace SWLOR.CLI
                     // Reflex
                     // Will
                     // CP
-                    // Locations / Respawn Locations
+                    LocationAreaResref = oldPlayer.LocationAreaResref,
+                    LocationX = (float)oldPlayer.LocationX,
+                    LocationY = (float)oldPlayer.LocationY,
+                    LocationZ = (float)oldPlayer.LocationZ,
+                    LocationOrientation = (float)oldPlayer.LocationOrientation,
+                    RespawnAreaResref = oldPlayer.RespawnAreaResref,
+                    RespawnLocationX = (float)oldPlayer.RespawnLocationX,
+                    RespawnLocationY = (float)oldPlayer.RespawnLocationY,
+                    RespawnLocationZ = (float)oldPlayer.RespawnLocationZ,
+                    RespawnLocationOrientation = (float)oldPlayer.RespawnLocationOrientation,
                     UnallocatedXP = 0,
                     UnallocatedSP = sp + 10,
                     UnallocatedAP = ap,
@@ -634,6 +643,8 @@ namespace SWLOR.CLI
 
 
                 };
+
+                newPlayer.Settings.ShowHelmet = oldPlayer.DisplayHelmet == null;
 
                 var migration = new PlayerMigration
                 {

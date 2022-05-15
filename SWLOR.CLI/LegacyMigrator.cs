@@ -28,7 +28,7 @@ namespace SWLOR.CLI
         {
             var sw = new Stopwatch();
             sw.Start();
-            
+
             Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", ConfigurationManager.AppSettings["RedisHost"]);
 
             DB.Load();
@@ -43,7 +43,7 @@ namespace SWLOR.CLI
             MigrateMapData();
 
             sw.Stop();
-            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds/1000} seconds");
+            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000} seconds");
         }
 
         private void MigrateAuthorizedDMs()
@@ -82,6 +82,8 @@ namespace SWLOR.CLI
                 oldBanks = context.Bank.Include(i => i.Bankitem).ToList();
             }
 
+            Console.WriteLine($"Migrating {oldBanks.Count} banks");
+
             foreach (var oldBank in oldBanks)
             {
                 string storageId;
@@ -101,6 +103,7 @@ namespace SWLOR.CLI
                         throw new ArgumentOutOfRangeException();
                 }
 
+                Console.WriteLine($"Migrating {oldBank.Bankitem.Count} bank items for {storageId}");
                 foreach (var bankItem in oldBank.Bankitem)
                 {
                     var playerId = bankItem.PlayerId;
@@ -118,8 +121,6 @@ namespace SWLOR.CLI
                     };
 
                     DB.Set(inventoryItem);
-
-                    Console.WriteLine($"Migrated item '{inventoryItem.Name}' for player '{playerId}' into bank '{storageId}'.");
                 }
             }
 
@@ -133,6 +134,8 @@ namespace SWLOR.CLI
             {
                 oldGuildPoints = context.Pcguildpoint.ToList();
             }
+
+            Console.WriteLine($"Migrating {oldGuildPoints.Count} guild point records.");
 
             foreach (var oldGuildPoint in oldGuildPoints)
             {
@@ -191,8 +194,6 @@ namespace SWLOR.CLI
                 }
 
                 DB.Set(dbPlayer);
-
-                Console.WriteLine($"Migrated guild Id {oldGuildPoint.GuildId} for player {dbPlayer.Name}.");
             }
 
         }
@@ -206,6 +207,7 @@ namespace SWLOR.CLI
                 oldKeyItems = context.Pckeyitem.ToList();
             }
 
+            Console.WriteLine($"Migrating {oldKeyItems.Count} key items.");
             foreach (var oldKeyItem in oldKeyItems)
             {
                 var playerId = oldKeyItem.PlayerId;
@@ -218,7 +220,6 @@ namespace SWLOR.CLI
                 }
 
                 DB.Set(dbPlayer);
-                Console.WriteLine($"Migrated key item {oldKeyItem.KeyItemId} for player {dbPlayer.Name}.");
             }
         }
 
@@ -234,6 +235,7 @@ namespace SWLOR.CLI
                     .ToList();
             }
 
+            Console.WriteLine($"Migrating {oldQuests.Count} quests.");
             foreach (var oldQuest in oldQuests)
             {
                 // Quest Id mappings
@@ -397,6 +399,7 @@ namespace SWLOR.CLI
                 oldVisibilities = context.Pcobjectvisibility.ToList();
             }
 
+            Console.WriteLine($"Migrating {oldVisibilities.Count} visibility records.");
             foreach (var oldVisibility in oldVisibilities)
             {
                 var playerId = oldVisibility.PlayerId;
@@ -422,6 +425,7 @@ namespace SWLOR.CLI
                 oldMapPins = context.Pcmappin.ToList();
             }
 
+            Console.WriteLine($"Migrating {oldMapProgressions.Count} map progressions.");
             foreach (var oldProgression in oldMapProgressions)
             {
                 var playerId = oldProgression.PlayerId;
@@ -432,16 +436,127 @@ namespace SWLOR.CLI
                 DB.Set(dbPlayer);
             }
 
+            Console.WriteLine($"Migrating {oldMapPins.Count} map pins.");
             foreach (var oldPin in oldMapPins)
             {
                 var playerId = oldPin.PlayerId;
                 var dbPlayer = DB.Get<RevampPlayer>(playerId);
+                string resref;
 
-                // todo: legacy used tags, revamp uses resrefs. need to marry the two.
-
-                if (!dbPlayer.MapPins.ContainsKey(oldPin.AreaTag))
+                // Legacy used Tags to identify this data. Revamp uses resrefs.
+                // In the cases where the tag doesn't match the resref, attempt to do a mapping.
+                var mapping = new Dictionary<string, string>
                 {
-                    dbPlayer.MapPins[oldPin.AreaTag] = new List<MapPin>();
+                    { "CZ220MaintenanceLevel", "czs220_maintlvl" },
+                    { "CZ220Hangar", "czs220_hangar" },
+                    { "viscaradeepmountains", "viscaradeepmount" },
+                    { "viscaradeepwoods", "viscaradeepwo001" },
+                    { "ViscaraCavern", "area" },
+                    { "ViscaraVeles", "velescolony" },
+                    { "ForceVisionFirstRites", "visc_forcevision" },
+                    { "moseis_cantina", "viscara_cantina" },
+                    { "ViscaraVelesColonyCzerkaArchives", "viscara_archive" },
+                    { "ShipTheIvoryHarrier", "viscara_npcship1" },
+                    { "ViscaraNorthSwamp", "viscaranswamp" },
+                    { "ViscaraNorthWestSwamp", "viscaranwswamp" },
+                    { "ViscaraOrbit", "viscaraorbit" },
+                    { "ViscaraVelesColonyFoszEstate", "foszestate" },
+                    { "ViscaraFoszEstateExt", "foszestateext" },
+                    { "MonCalaCoralIslesFacility", "moncalacifacilit" },
+                    { "MonCalaCoralIsles2", "moncalacorali001" },
+                    { "MonCalaCoralIsles1", "moncalacoralisle" },
+                    { "MonCalaDacCityExchange", "moncaladaccityex" },
+                    { "MonCalaDacCitySurface", "moncaladaccitysu" },
+                    { "MonCalaOrbit", "moncalaorbit" },
+                    { "KorribanSithAcademyExterior", "gl_ksthacdmyextr" },
+                    { "Dsert", "anc_dsrt_speeder" },
+                    { "TatooineOrbit", "tatooineorbit" },
+                    { "RepublicCruiserTheSovereign", "republicshipevnt" },
+                    { "anchor_rte_com02", "tat_anc_aridhill" },
+                    { "anchor_astroport", "tat_anc_astropor" },
+                    { "anchor_cantina", "tat_anc_cantina" },
+                    { "anchor_rte_com03", "tat_anc_desroad1" },
+                    { "anchor_rte_com04", "tat_anc_desroad2" },
+                    { "TatooineAnchorheadFlatlands", "tat_anc_flatlnd1" },
+                    { "anchor_transport", "tat_anc_gocorpst" },
+                    { "anchor_rte_com01", "tat_anc_hillydes" },
+                    { "anchor_medic_n", "tat_anc_medical" },
+                    { "anchor_road_est", "tat_anc_nedunes" },
+                    { "anchor_entr_mine", "tat_anc_nminecli" },
+                    { "anchor_qn", "tat_anc_northdis" },
+                    { "anchor_entreenor", "tat_anc_northhil" },
+                    { "TatooineAnchorheadNorthernDunes", "tat_anc_nthdunes" },
+                    { "anchor_roche02", "tat_anc_rckpass1" },
+                    { "anchor_vers_mine", "tat_anc_rockdess" },
+                    { "anchor_qs", "tat_anc_southdis" },
+                    { "anchor_entreesud", "tat_anc_southent" },
+                    { "TatooineAnchorheadSouthernPass", "tat_anc_southpas" },
+                    { "night_totochee01", "tat_anc_totoche1" },
+                    { "night_totochee02", "tat_anc_totoche2" },
+                    { "night_totochee03", "tat_anc_totoche3" },
+                    { "anchor_tuskencp", "tat_anc_tuskncmp" },
+                    { "anchor_tusken002", "tat_anc_tuskntnt" },
+                    { "anchor_verpex", "tat_anc_verpexba" },
+                    { "TatooineLestatBigDungeon", "tat_babysarlacc" },
+                    { "anchor_jawa_o", "tat_brokenjawa" },
+                    { "TatooineChasmPass", "tat_chasmpass" },
+                    { "anchor_scarab", "tat_elevagiifarm" },
+                    { "TatooineRancorCave", "tat_rancorcave" },
+                    { "anchor_roche01", "tat_rockypasslge" },
+                    { "anchor_jabba_ext", "tat_smeskspalace" },
+                    { "TatooineTosche", "tat_tocheemain" },
+                    { "TatooineLetstatDungeonMainFloor", "tat_tuskcavebot" },
+                    { "TatooineDungeonMainFloor", "tat_tuskcavemain" },
+                    { "TatooineDungeonTunnels", "tat_tuskcavetunn" },
+                    { "MosEisleySmesksPalace", "smesks_palace" },
+                    { "TatooineSmesksEntryway", "smesks_entry" },
+                    { "mos_canyon_001", "canyon_001" },
+                    { "moseis_bay94", "moseis_dow_ca001" },
+                    { "mos_eis_sand001", "moseis_sand_001" },
+                    { "mos_eis_sand_003", "moseis_sand_003" },
+                    { "mos_eis_sand004", "moseis_sand_004" },
+                    { "mos_eis_sand005", "moseis_sand_005" },
+                    { "EsriaUnchartedIsland", "esriauncharted" },
+                    { "ViscaraRepublicBaseGroundLevel", "v_repubbase_1" },
+                    { "ViscaraRepublicBaseSubLevelOne", "v_repubbase_2" },
+                    { "ViscaraRepublicBaseSubLevelTwo", "v_repubbase_3" },
+                    { "ViscaraRepublicBaseSubLevelThree", "v_repubbase_4" },
+                    { "ViscaraVelesColonyCzerkaTower", "viscara_czerktow" },
+                    { "revan_flagship", "pref_leviathan" },
+                    { "AbandonedStationDirectorsChamber", "zomb_abanstatio3" },
+                    { "anchor_roche03", "tat_anc_rckpass2" },
+                    { "ViscaraRepublicBaseExterior", "v_repubbase_ext" },
+                    { "KashyyykVillage", "kash_village" },
+                    { "Pref_ShipBattle", "pref_shipbattle" },
+                    { "BossArea", "prefabwarehouse" },
+                    { "PlayerApartmentLargeFurnished", "playerap_l_fur" },
+                    { "PlayerApartmentLargeUnfurnished_", "playerap_l_unf" },
+                    { "PlayerApartmentMediumFurnished", "playerap_m_fur" },
+                    { "PlayerApartmentMediumUnfurnished", "playerap_m_unf" },
+                    { "PlayerApartmentSmallUnfurnished", "playerap_s_unf" },
+                    { "hutlar_smugglebase", "hutlar_smuggleba" },
+                    { "Area001", "narshadaar_midoc" },
+                    { "MonCalaBeachside", "moncalabeachside" },
+                    { "MonCalaCoralIslesUnderwaterTunne", "moncalacoralunde" },
+                    { "MonCaladungeon", "moncaladungeon1" },
+                    { "MonCalaCoralIslesSharptoothJungl", "moncalajungelsu" },
+                    { "MonCalaWildJungles", "moncalawildjungl" },
+                    { "MonCalaCoralIslesHauntedCave", "moncalacoralhcav" },
+                    { "MonCalaSunkenLab", "moncalasunkenlab" },
+                    { "ViscaraJediTempleInterior", "jeditemp_int" },
+                    { "RandonCity", "randoncity_01" },
+                    { "ViscaraVelesColonySheriffsOffice", "v_sheriffbhoff" },
+                    { "ViscaraSithLakeOutpostInterior", "v_sithlake_int" },
+                };
+
+                if (mapping.ContainsKey(oldPin.AreaTag))
+                    resref = mapping[oldPin.AreaTag];
+                else
+                    resref = oldPin.AreaTag;
+
+                if (!dbPlayer.MapPins.ContainsKey(resref))
+                {
+                    dbPlayer.MapPins[resref] = new List<MapPin>();
                 }
 
                 var pinId = 0;
@@ -449,8 +564,8 @@ namespace SWLOR.CLI
                 {
                     pinId += pinList.Count;
                 }
-                
-                dbPlayer.MapPins[oldPin.AreaTag].Add(new MapPin
+
+                dbPlayer.MapPins[resref].Add(new MapPin
                 {
                     Id = pinId,
                     Note = oldPin.NoteText,
@@ -471,6 +586,7 @@ namespace SWLOR.CLI
                 oldPlayers = context.Player.ToList();
             }
 
+            Console.WriteLine($"Migrating {oldPlayers.Count} players.");
             foreach (var oldPlayer in oldPlayers)
             {
                 var sp = oldPlayer.TotalSpacquired > 250 ? 250 : oldPlayer.TotalSpacquired;
@@ -515,7 +631,7 @@ namespace SWLOR.CLI
                     AbilityRecastReduction = 0,
                     MarketTill = oldPlayer.GoldTill,
                     // BaseStats
-                    
+
 
                 };
 
@@ -530,8 +646,6 @@ namespace SWLOR.CLI
 
                 DB.Set(newPlayer);
                 DB.Set(migration);
-
-                Console.WriteLine($"Migrated {newPlayer.Name} ({newPlayer.Id})");
             }
 
         }

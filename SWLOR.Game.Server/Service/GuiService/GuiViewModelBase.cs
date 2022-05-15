@@ -94,13 +94,37 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].HasEventBeenHooked = false;
             }
 
+            var valueType = typeof(T);
+
+            // The following section is explicitly for applying the workaround
+            // for the Vector issue outlined here: https://github.com/Beamdog/nwn-issues/issues/427
+            // If Beamdog fixes this issue, this section can be removed.
+            var oldMaxSize = 0;
+            var oldListItemVisibility = new GuiBindingList<bool>();
+
+            if (_propertyValues[propertyName].Value != null)
+            {
+                if (
+                    (valueType == typeof(GuiBindingList<string>) ||
+                     valueType == typeof(GuiBindingList<int>) ||
+                     valueType == typeof(GuiBindingList<bool>) ||
+                     valueType == typeof(GuiBindingList<float>) ||
+                     valueType == typeof(GuiBindingList<GuiRectangle>) ||
+                     valueType == typeof(GuiBindingList<GuiVector2>) ||
+                     valueType == typeof(GuiBindingList<GuiColor>)))
+                {
+                    var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
+                    oldMaxSize = list.MaxSize;
+                    oldListItemVisibility = list.ListItemVisibility;
+                }
+            }
+
             // Update the type and value for this entry.
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].Type = typeof(T);
 
             // Binding lists - The ListChanged event must also be hooked in order to raise
             // the OnPropertyChanged event.
-            var valueType = typeof(T);
             if (
                 (valueType == typeof(GuiBindingList<string>) ||
                  valueType == typeof(GuiBindingList<int>) ||
@@ -112,6 +136,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             {
                 var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
                 list.PropertyName = propertyName;
+                list.MaxSize = oldMaxSize;
+                list.ListItemVisibility = oldListItemVisibility;
 
                 list.ListChanged += OnListChanged;
 
@@ -143,13 +169,45 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
             
-            NuiSetBind(Player, WindowToken, propertyName, json);
-
             if (_propertyValues[propertyName].IsGuiList)
             {
-                var list = (IGuiBindingList) value;
-                NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.Count));
+                var list = (IGuiBindingList)_propertyValues[propertyName].Value;
+
+                // List visibility workaround for issue outlined here: https://github.com/Beamdog/nwn-issues/issues/427
+                // This can be removed if Beamdog fixes the Vector error.
+                if (list.ListItemVisibility == null)
+                {
+                    list.ListItemVisibility = new GuiBindingList<bool>();
+                }
+
+                if (list.Count > list.MaxSize)
+                {
+                    for (var x = list.MaxSize; x <= list.Count; x++)
+                    {
+                        list.ListItemVisibility.Add(true);
+                    }
+
+                    list.MaxSize = list.Count;
+                }
+                else if (list.Count < list.MaxSize)
+                {
+                    for (var x = list.Count; x <= list.MaxSize; x++)
+                    {
+                        list.ListItemVisibility[x] = false;
+                    }
+                }
+
+                for (var x = 0; x < list.Count; x++)
+                {
+                    list.ListItemVisibility[x] = true;
+                }
+
+                var visibilities = _converter.ToJson(list.ListItemVisibility);
+                NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.MaxSize));
+                NuiSetBind(Player, WindowToken, propertyName + "_RowVisibility", visibilities);
             }
+
+            NuiSetBind(Player, WindowToken, propertyName, json);
         }
 
         protected GuiWindowType WindowType { get; private set; }

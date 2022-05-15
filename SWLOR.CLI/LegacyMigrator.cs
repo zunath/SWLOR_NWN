@@ -6,7 +6,8 @@ using SWLOR.CLI.LegacyMigration;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using Player = SWLOR.CLI.LegacyMigration.Player;
+using LegacyPlayer = SWLOR.CLI.LegacyMigration.Player;
+using RevampPlayer = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.CLI
 {
@@ -80,7 +81,7 @@ namespace SWLOR.CLI
 
         private void MigratePlayers()
         {
-            List<Player> oldPlayers;
+            List<LegacyPlayer> oldPlayers;
 
             using (var context = new SwlorContext())
             {
@@ -89,12 +90,67 @@ namespace SWLOR.CLI
 
             foreach (var oldPlayer in oldPlayers)
             {
-                var newPlayer = new SWLOR.Game.Server.Entity.Player
+                var sp = oldPlayer.TotalSpacquired > 250 ? 250 : oldPlayer.TotalSpacquired;
+                var ap = sp / 10;
+
+                var newPlayer = new RevampPlayer
                 {
+                    Id = oldPlayer.Id,
+                    Version = 1,
+                    Name = oldPlayer.CharacterName,
+                    // MaxHP
+                    // MaxFP
+                    // MaxStamina
+                    // HP
+                    // FP
+                    // Stamina
+                    TemporaryFoodHP = 0,
+                    BAB = 1,
+                    // Fortitude
+                    // Reflex
+                    // Will
+                    // CP
+                    // Locations / Respawn Locations
+                    UnallocatedXP = 0,
+                    UnallocatedSP = sp + 10,
+                    UnallocatedAP = ap,
+                    TotalSPAcquired = sp,
+                    TotalAPAcquired = ap,
+                    RegenerationTick = 0,
+                    HPRegen = 0,
+                    FPRegen = 0,
+                    STMRegen = 0,
+                    XPDebt = 0,
+                    DMXPBonus = oldPlayer.Xpbonus,
+                    NumberPerkResetsAvailable = 0,
+                    IsDeleted = oldPlayer.IsDeleted,
+                    IsUsingDualPistolMode = oldPlayer.ModeDualPistol,
+                    CharacterType = CharacterType.ForceSensitive, // Default to force sensitive, can be changed in migration UI
+                    EmoteStyle = oldPlayer.IsUsingNovelEmoteStyle ? EmoteStyle.Novel : EmoteStyle.Regular,
+                    // OriginalAppearanceType
+                    MovementRate = 1.0f,
+                    AbilityRecastReduction = 0,
+                    MarketTill = oldPlayer.GoldTill,
+                    // BaseStats
+                    
 
                 };
 
+                // todo: Quests
+
+                // todo: ObjectVisibilities
+
+                // todo: key items
+
+                // todo: guild points and ranks
+
+                // todo: AbilityPointsByLevel
+
+
+
                 DB.Set(newPlayer);
+
+                Console.WriteLine($"Migrated {newPlayer.Name} ({newPlayer.Id})");
             }
 
         }

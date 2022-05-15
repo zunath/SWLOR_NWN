@@ -31,6 +31,9 @@ namespace SWLOR.CLI.LegacyMigration
         public virtual DbSet<Baseitemtype> Baseitemtype { get; set; }
         public virtual DbSet<Pcguildpoint> Pcguildpoint { get; set; }
         public virtual DbSet<Pckeyitem> Pckeyitem { get; set; }
+        public virtual DbSet<Pcmappin> Pcmappin { get; set; }
+        public virtual DbSet<Pcmapprogression> Pcmapprogression { get; set; }
+        public virtual DbSet<Pcobjectvisibility> Pcobjectvisibility { get; set; }
         public virtual DbSet<Pcquestitemprogress> Pcquestitemprogress { get; set; }
         public virtual DbSet<Pcquestkilltargetprogress> Pcquestkilltargetprogress { get; set; }
         public virtual DbSet<Pcqueststatus> Pcqueststatus { get; set; }
@@ -421,6 +424,125 @@ namespace SWLOR.CLI.LegacyMigration
                     .HasForeignKey(d => d.PlayerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_PCKeyItem_PlayerID");
+            });
+
+            modelBuilder.Entity<Pcmappin>(entity =>
+            {
+                entity.ToTable("pcmappin");
+
+                entity.HasCharSet("utf8mb3")
+                    .UseCollation("utf8_general_ci");
+
+                entity.HasIndex(e => e.ClusterId, "CIX_PCMapPin_ID")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.PlayerId, e.AreaTag, e.NoteText, e.PositionX, e.PositionY }, "IX_PCMapPin_PlayerID")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 255, 0, 0 });
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(64)
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.AreaTag)
+                    .IsRequired()
+                    .HasMaxLength(32);
+
+                entity.Property(e => e.ClusterId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ClusterID");
+
+                entity.Property(e => e.NoteText)
+                    .IsRequired()
+                    .HasMaxLength(1024);
+
+                entity.Property(e => e.PlayerId)
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnName("PlayerID");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.Pcmappin)
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PCMapPin_PlayerID");
+            });
+
+            modelBuilder.Entity<Pcmapprogression>(entity =>
+            {
+                entity.ToTable("pcmapprogression");
+
+                entity.HasCharSet("utf8mb3")
+                    .UseCollation("utf8_general_ci");
+
+                entity.HasIndex(e => e.ClusterId, "CIX_PCMapProgression_ID")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.PlayerId, e.AreaResref, e.Progression }, "IX_PCMapProgression_PlayerID")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 255 });
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(64)
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.AreaResref)
+                    .IsRequired()
+                    .HasMaxLength(16);
+
+                entity.Property(e => e.ClusterId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ClusterID");
+
+                entity.Property(e => e.PlayerId)
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnName("PlayerID");
+
+                entity.Property(e => e.Progression)
+                    .IsRequired()
+                    .HasMaxLength(1024);
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.Pcmapprogression)
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PCMapProgression_PlayerID");
+            });
+
+            modelBuilder.Entity<Pcobjectvisibility>(entity =>
+            {
+                entity.ToTable("pcobjectvisibility");
+
+                entity.HasCharSet("utf8mb3")
+                    .UseCollation("utf8_general_ci");
+
+                entity.HasIndex(e => e.ClusterId, "CIX_PCObjectVisibility_ID")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.PlayerId, e.IsVisible, e.VisibilityObjectId }, "IX_PCObjectVisibility_PlayerID");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(64)
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.ClusterId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ClusterID");
+
+                entity.Property(e => e.PlayerId)
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnName("PlayerID");
+
+                entity.Property(e => e.VisibilityObjectId)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnName("VisibilityObjectID");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.Pcobjectvisibility)
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PCObjectVisibility_PlayerID");
             });
 
             modelBuilder.Entity<Pcquestitemprogress>(entity =>

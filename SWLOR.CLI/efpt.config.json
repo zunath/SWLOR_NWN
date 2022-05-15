@@ -58,6 +58,18 @@
          "ObjectType": 0
       },
       {
+         "Name": "pcmappin",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcmapprogression",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcobjectvisibility",
+         "ObjectType": 0
+      },
+      {
          "Name": "pcquestitemprogress",
          "ObjectType": 0
       },

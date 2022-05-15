@@ -16,6 +16,9 @@ namespace SWLOR.CLI.LegacyMigration
             Bankitem = new HashSet<Bankitem>();
             Pcguildpoint = new HashSet<Pcguildpoint>();
             Pckeyitem = new HashSet<Pckeyitem>();
+            Pcmappin = new HashSet<Pcmappin>();
+            Pcmapprogression = new HashSet<Pcmapprogression>();
+            Pcobjectvisibility = new HashSet<Pcobjectvisibility>();
             Pcquestitemprogress = new HashSet<Pcquestitemprogress>();
             Pcquestkilltargetprogress = new HashSet<Pcquestkilltargetprogress>();
             Pcqueststatus = new HashSet<Pcqueststatus>();
@@ -81,6 +84,9 @@ namespace SWLOR.CLI.LegacyMigration
         public virtual ICollection<Bankitem> Bankitem { get; set; }
         public virtual ICollection<Pcguildpoint> Pcguildpoint { get; set; }
         public virtual ICollection<Pckeyitem> Pckeyitem { get; set; }
+        public virtual ICollection<Pcmappin> Pcmappin { get; set; }
+        public virtual ICollection<Pcmapprogression> Pcmapprogression { get; set; }
+        public virtual ICollection<Pcobjectvisibility> Pcobjectvisibility { get; set; }
         public virtual ICollection<Pcquestitemprogress> Pcquestitemprogress { get; set; }
         public virtual ICollection<Pcquestkilltargetprogress> Pcquestkilltargetprogress { get; set; }
         public virtual ICollection<Pcqueststatus> Pcqueststatus { get; set; }

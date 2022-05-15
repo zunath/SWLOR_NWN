@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SWLOR.CLI.LegacyMigration;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -19,7 +20,7 @@ namespace SWLOR.CLI
     {
         /*
          * Command run on server to get copy of MySQL database.
-         * mysqldump -u <userName> -p swlor ApartmentBuilding Area Association Attribute AuthorizedDM Backgrounds Bank BankItem BaseItemType PCGuildPoint PCKeyItem PCQuestItemProgress PCQuestKillTargetProgress PCQuestStatus Player ServerConfiguration  > swlor_dump.sql
+         * mysqldump -u <userName> -p swlor ApartmentBuilding Area Association Attribute AuthorizedDM Backgrounds Bank BankItem BaseItemType PCGuildPoint PCKeyItem PCMapPin PCMapProgression PCObjectVisibility PCQuestItemProgress PCQuestKillTargetProgress PCQuestStatus Player ServerConfiguration  > swlor_dump.sql
          */
 
 
@@ -38,6 +39,8 @@ namespace SWLOR.CLI
             MigratePCGuildProgress();
             MigratePCKeyItems();
             MigratePCQuests();
+            MigrateObjectVisibilities();
+            MigrateMapData();
 
             sw.Stop();
             Console.WriteLine($"Migration took {sw.ElapsedMilliseconds/1000} seconds");
@@ -383,7 +386,80 @@ namespace SWLOR.CLI
 
                 DB.Set(dbPlayer);
             }
+        }
 
+        private void MigrateObjectVisibilities()
+        {
+            List<Pcobjectvisibility> oldVisibilities;
+
+            using (var context = new SwlorContext())
+            {
+                oldVisibilities = context.Pcobjectvisibility.ToList();
+            }
+
+            foreach (var oldVisibility in oldVisibilities)
+            {
+                var playerId = oldVisibility.PlayerId;
+                var dbPlayer = DB.Get<RevampPlayer>(playerId);
+
+                if (!dbPlayer.ObjectVisibilities.ContainsKey(oldVisibility.VisibilityObjectId))
+                {
+                    dbPlayer.ObjectVisibilities[oldVisibility.VisibilityObjectId] = oldVisibility.IsVisible ? VisibilityType.Visible : VisibilityType.Hidden;
+                }
+
+                DB.Set(dbPlayer);
+            }
+        }
+
+        private void MigrateMapData()
+        {
+            List<Pcmapprogression> oldMapProgressions;
+            List<Pcmappin> oldMapPins;
+
+            using (var context = new SwlorContext())
+            {
+                oldMapProgressions = context.Pcmapprogression.ToList();
+                oldMapPins = context.Pcmappin.ToList();
+            }
+
+            foreach (var oldProgression in oldMapProgressions)
+            {
+                var playerId = oldProgression.PlayerId;
+                var dbPlayer = DB.Get<RevampPlayer>(playerId);
+
+                dbPlayer.MapProgressions[oldProgression.AreaResref] = oldProgression.Progression;
+
+                DB.Set(dbPlayer);
+            }
+
+            foreach (var oldPin in oldMapPins)
+            {
+                var playerId = oldPin.PlayerId;
+                var dbPlayer = DB.Get<RevampPlayer>(playerId);
+
+                // todo: legacy used tags, revamp uses resrefs. need to marry the two.
+
+                if (!dbPlayer.MapPins.ContainsKey(oldPin.AreaTag))
+                {
+                    dbPlayer.MapPins[oldPin.AreaTag] = new List<MapPin>();
+                }
+
+                var pinId = 0;
+                foreach (var (_, pinList) in dbPlayer.MapPins)
+                {
+                    pinId += pinList.Count;
+                }
+                
+                dbPlayer.MapPins[oldPin.AreaTag].Add(new MapPin
+                {
+                    Id = pinId,
+                    Note = oldPin.NoteText,
+                    X = (float)oldPin.PositionX,
+                    Y = (float)oldPin.PositionY
+                });
+
+                DB.Set(dbPlayer);
+            }
         }
 
         private void MigratePlayers()
@@ -443,15 +519,17 @@ namespace SWLOR.CLI
 
                 };
 
-                // todo: Quests
-
-                // todo: ObjectVisibilities
+                var migration = new PlayerMigration
+                {
+                    PlayerId = oldPlayer.Id,
+                    SkillRanks = sp,
+                    StatDistributionPoints = 15 // Determined by 30 points given at character creation at a cost of 2 per point increase. If character creation changes, this needs to change too.
+                };
 
                 // todo: AbilityPointsByLevel
 
-
-
                 DB.Set(newPlayer);
+                DB.Set(migration);
 
                 Console.WriteLine($"Migrated {newPlayer.Name} ({newPlayer.Id})");
             }

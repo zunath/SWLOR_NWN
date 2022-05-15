@@ -1,15 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using SWLOR.CLI.LegacyMigration;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using Player = SWLOR.CLI.LegacyMigration.Player;
 
 namespace SWLOR.CLI
 {
     internal class LegacyMigrator
     {
+        /*
+         * Command run on server to get copy of MySQL database.
+         * mysqldump -u <userName> -p swlor ApartmentBuilding Area Association Attribute AuthorizedDM Backgrounds Bank BankItem BaseItemType PCGuildPoint PCKeyItem PCQuestItemProgress PCQuestKillTargetProgress PCQuestStatus Player ServerConfiguration  > swlor_dump.sql
+         */
+
 
         public void Process()
         {
@@ -73,6 +80,22 @@ namespace SWLOR.CLI
 
         private void MigratePlayers()
         {
+            List<Player> oldPlayers;
+
+            using (var context = new SwlorContext())
+            {
+                oldPlayers = context.Player.ToList();
+            }
+
+            foreach (var oldPlayer in oldPlayers)
+            {
+                var newPlayer = new SWLOR.Game.Server.Entity.Player
+                {
+
+                };
+
+                DB.Set(newPlayer);
+            }
 
         }
     }

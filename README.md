@@ -21,7 +21,7 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 
 1.) Install Git from here: https://git-scm.com/downloads
 
-2.) Install Visual Studio Community Edition 2019 from here: https://www.visualstudio.com/downloads/
+2.) Install Visual Studio Community Edition 2022 from here: https://www.visualstudio.com/downloads/
 
 3.) Start up Visual Studio.
 
@@ -35,9 +35,9 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 
 8.) Open the project you just cloned.
 
-# Hosting a Server
+# Development Guide
 
-Please refer to this guide for hosting a server: https://github.com/zunath/SWLOR_NWN/wiki/Server-Set-Up-(Windows)
+Please refer to this guide for setting up your development environment: https://wiki.starwarsnwn.com/en/Development/Environment-SetUp
 
 # Getting Help
 

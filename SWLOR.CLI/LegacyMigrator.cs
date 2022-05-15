@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SWLOR.CLI.LegacyMigration;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -33,6 +35,7 @@ namespace SWLOR.CLI
 
             DB.Load();
 
+            // Database migration
             MigrateAuthorizedDMs();
             MigratePlayers();
             MigrateBanks();
@@ -42,8 +45,11 @@ namespace SWLOR.CLI
             MigrateObjectVisibilities();
             MigrateMapData();
 
+            // Player file migration
+            ConvertBicsToJson();
+
             sw.Stop();
-            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000} seconds");
+            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000 / 60} minute(s)");
         }
 
         private void MigrateAuthorizedDMs()
@@ -658,7 +664,65 @@ namespace SWLOR.CLI
                 DB.Set(newPlayer);
                 DB.Set(migration);
             }
+        }
 
+        private void ConvertBicsToJson()
+        {
+            var inputPath = ConfigurationManager.AppSettings["ServerVaultPath"];
+            var outputPath = ConfigurationManager.AppSettings["TempVaultPath"];
+
+            if (string.IsNullOrWhiteSpace(inputPath))
+                throw new Exception("Setting 'ServerVaultPath' not set.");
+            if (string.IsNullOrWhiteSpace(outputPath))
+                throw new Exception("Setting 'TempVaultPath' not set.");
+
+            if (Directory.Exists(outputPath))
+                Directory.Delete(outputPath, true);
+
+            Directory.CreateDirectory(outputPath);
+
+            foreach (var folder in Directory.GetDirectories(inputPath))
+            {
+                var files = Directory.GetFiles(folder, "*.bic");
+                Parallel.ForEach(files, file =>
+                {
+                    var fileName = Path.GetFileName(file);
+                    var folderName = new DirectoryInfo(folder).Name;
+                    var outputFolderPath = $"{outputPath}{folderName}";
+                    var outputFilePath = $"{outputFolderPath}/{fileName}.json";
+
+                    if (!Directory.Exists(outputFolderPath))
+                        Directory.CreateDirectory(outputFolderPath);
+
+                    var command = $"nwn_gff -i {file} -o {outputFilePath} -p";
+                    RunProcess(command);
+                });
+            }
+
+        }
+
+        private static void RunProcess(string command)
+        {
+            using (var process = new Process
+            {
+                StartInfo = new ProcessStartInfo("cmd.exe", "/K " + command)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    CreateNoWindow = false
+                },
+                EnableRaisingEvents = true
+            })
+            {
+                process.Start();
+
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
+
+                process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+            }
         }
     }
 }

@@ -174,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             RestartServer();
             SetXPBonus();
             GetXPBonus();
+            GetPlayerId();
 
             return _builder.Build();
         }
@@ -750,6 +751,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
+                });
+        }
+
+        private void GetPlayerId()
+        {
+            _builder.Create("playerid")
+                .Description("Gets a player's Id.")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var playerId = GetObjectUUID(target);
+                    
+                    SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
                 });
         }
     }

@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.CLI.LegacyMigration;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
@@ -47,6 +49,7 @@ namespace SWLOR.CLI
 
             // Player file migration
             ConvertBicsToJson();
+            ProcessJsonFiles();
 
             sw.Stop();
             Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000 / 60} minute(s)");
@@ -681,10 +684,10 @@ namespace SWLOR.CLI
 
             Directory.CreateDirectory(outputPath);
 
-            foreach (var folder in Directory.GetDirectories(inputPath))
+            Parallel.ForEach(Directory.GetDirectories(inputPath), folder =>
             {
                 var files = Directory.GetFiles(folder, "*.bic");
-                Parallel.ForEach(files, file =>
+                foreach (var file in files)
                 {
                     var fileName = Path.GetFileName(file);
                     var folderName = new DirectoryInfo(folder).Name;
@@ -696,9 +699,37 @@ namespace SWLOR.CLI
 
                     var command = $"nwn_gff -i {file} -o {outputFilePath} -p";
                     RunProcess(command);
-                });
-            }
+                }
+            });
+        }
 
+        private void ProcessJsonFiles()
+        {
+            var inputPath = ConfigurationManager.AppSettings["TempVaultPath"];
+
+            Parallel.ForEach(Directory.GetDirectories(inputPath), folder =>
+            {
+                var files = Directory.GetFiles(folder);
+                foreach (var file in files)
+                {
+                    var json = File.ReadAllText(file);
+                    var obj = JObject.Parse(json);
+                    var tag = obj["Tag"].ElementAt(1).First.Value<string>();
+
+                    // Migrate player Id from Tag to UUID property
+                    var playerId = new Guid(tag);
+                    var uuidTypeProperty = new JProperty("type", "cexostring");
+                    var uuidValueProperty = new JProperty("value", playerId);
+                    var uuidJObject = new JObject(uuidTypeProperty, uuidValueProperty);
+                    obj.Add("UUID", uuidJObject);
+
+                    // Wipe the Tag since UUID is now in its own property.
+                    obj["Tag"].ElementAt(1).First.Replace(string.Empty);
+
+                    File.WriteAllText(file, obj.ToString(Formatting.Indented));
+                }
+
+            });
         }
 
         private static void RunProcess(string command)

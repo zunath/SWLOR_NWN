@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(

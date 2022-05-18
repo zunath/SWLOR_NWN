@@ -65,12 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             }
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
-
+            
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
@@ -81,7 +78,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
+            
+            if (inflict) 
+                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
+
+            Enmity.ModifyEnmity(activator, target, damage);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
         }
 
         private static void SaberStrike1(AbilityBuilder builder)

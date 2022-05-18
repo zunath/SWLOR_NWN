@@ -74,8 +74,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber1) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber2) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber3) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber4) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber5))
+            {
+                stat = AbilityType.Might;
+            }
+
+            var attackerStat = GetAbilityScore(activator, stat);
+            var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(

@@ -127,13 +127,17 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (!Ability.GetAbilityResisted(source, target, "Force Drain"))
             {
                 PlaySound("plr_force_absorb");
-                ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
-                ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), source);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+
+                AssignCommand(source, () =>
+                {
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), source);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                });
             }
         }
     }

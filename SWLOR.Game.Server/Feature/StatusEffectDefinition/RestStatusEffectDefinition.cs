@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
@@ -31,6 +32,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void Rest(StatusEffectBuilder builder)
         {
+            void CheckMovement(uint target)
+            {
+                if (!GetIsObjectValid(target) || GetIsDead(target))
+                    return;
+
+                var position = GetPosition(target);
+
+                var originalPosition = Vector3(
+                    GetLocalFloat(target, "REST_POSITION_X"),
+                    GetLocalFloat(target, "REST_POSITION_Y"),
+                    GetLocalFloat(target, "REST_POSITION_Z"));
+
+                // Player has moved since the effect started. Remove it.
+                if (Math.Abs(position.X - originalPosition.X) > 0.1f ||
+                    Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
+                    Math.Abs(position.Z - originalPosition.Z) > 0.1f)
+                {
+                    StatusEffect.Remove(target, StatusEffectType.Rest);
+                }
+
+                DelayCommand(0.5f, () => CheckMovement(target));
+            }
+
             builder.Create(StatusEffectType.Rest)
                 .Name("Rest")
                 .EffectIcon(EffectIconType.Fatigue)
@@ -50,25 +74,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     Activity.SetBusy(target, ActivityStatusType.Resting);
                     Ability.EndConcentrationAbility(target);
+                    
+                    DelayCommand(0.5f, () => CheckMovement(target));
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    var position = GetPosition(target);
-
-                    var originalPosition = Vector3(
-                        GetLocalFloat(target, "REST_POSITION_X"),
-                        GetLocalFloat(target, "REST_POSITION_Y"),
-                        GetLocalFloat(target, "REST_POSITION_Z"));
-
-                    // Player has moved since the effect started. Remove it.
-                    if(Math.Abs(position.X - originalPosition.X) > 0.1f ||
-                       Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
-                       Math.Abs(position.Z - originalPosition.Z) > 0.1f)
-                    {
-                        StatusEffect.Remove(target, StatusEffectType.Rest);
-                        return;
-                    }
-
                     var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, target);
                     if (vitalityBonus < 0)
                         vitalityBonus = 0;

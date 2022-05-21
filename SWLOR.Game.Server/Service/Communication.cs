@@ -189,6 +189,7 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannel.PlayerShout)
             {
                 recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, "DISPLAY_HOLONET")));
+                recipients.AddRange(allDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannel.PlayerParty)

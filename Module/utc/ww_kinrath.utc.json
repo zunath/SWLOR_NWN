@@ -140,7 +140,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 3
+    "value": 12
   },
   "Interruptable": {
     "type": "byte",

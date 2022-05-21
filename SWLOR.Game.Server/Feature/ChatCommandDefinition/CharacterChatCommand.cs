@@ -21,57 +21,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-
-            _builder.Create("cdkey")
-                .Description("Displays your public CD key.")
-                .Permissions(AuthorizationLevel.All)
-                .Action((user, target, location, args) =>
-                {
-                    var cdKey = GetPCPublicCDKey(user);
-                    SendMessageToPC(user, "Your public CD Key is: " + cdKey);
-                });
-
-            _builder.Create("save")
-                .Description("Manually saves your character. Your character also saves automatically every few minutes.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    ExportSingleCharacter(user);
-                    SendMessageToPC(user, "Character saved successfully.");
-                });
-
-            _builder.Create("skills")
-                .Description("Toggles the skills menu.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
-                });
-
-            _builder.Create("endcall")
-                .Description("Ends your current HoloCom call.")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Action((user, target, location, args) =>
-                {
-                    HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
-                });
-
-            _builder.Create("recipe", "recipes")
-                .Description("Toggles the recipes menu.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    Gui.TogglePlayerWindow(user,  GuiWindowType.Recipes);
-                });
-
-            _builder.Create("perk", "perks")
-                .Description("Toggles the perks menu.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
-                });
-
+            CDKey();
+            Save();
+            Skills();
+            EndCall();
+            Recipes();
+            Perks();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
@@ -80,6 +35,75 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ConcentrationAbility();
             
             return _builder.Build();
+        }
+
+        private void CDKey()
+        {
+            _builder.Create("cdkey")
+                .Description("Displays your public CD key.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    var cdKey = GetPCPublicCDKey(user);
+                    SendMessageToPC(user, "Your public CD Key is: " + cdKey);
+                });
+        }
+
+        private void Save()
+        {
+            _builder.Create("save")
+                .Description("Manually saves your character. Your character also saves automatically every few minutes.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    ExportSingleCharacter(user);
+                    SendMessageToPC(user, "Character saved successfully.");
+                });
+        }
+
+        private void Skills()
+        {
+            _builder.Create("skills")
+                .Description("Toggles the skills menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
+                });
+        }
+
+        private void EndCall()
+        {
+            _builder.Create("endcall")
+                .Description("Ends your current HoloCom call.")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
+                });
+        }
+
+        private void Recipes()
+        {
+            _builder.Create("recipe", "recipes")
+                .Description("Toggles the recipes menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Recipes);
+                });
+        }
+
+        private void Perks()
+        {
+            _builder.Create("perk", "perks")
+                .Description("Toggles the perks menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
+                });
+
         }
 
         private void LanguageCommand()

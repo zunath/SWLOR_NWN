@@ -5140,17 +5140,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Qion Slug Claw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "qionslugattack"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Qion Tiger Bite"
                     },
                     "RESREF": {
@@ -5370,6 +5359,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mynock_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Slug Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionslugattack"
                     }
                   },
                   {
@@ -29607,6 +29607,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "oph_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Poacher Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_katar"
                           }
                         },
                         {

@@ -59,13 +59,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff1) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff2) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff3) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff4) ||
+                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff5))
+            {
+                stat = AbilityType.Might;
+            }
+
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
                 CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+                var attackerStat = GetAbilityScore(activator, stat);
+                var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                 var damage = Combat.CalculateDamage(

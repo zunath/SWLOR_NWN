@@ -585,6 +585,9 @@ namespace SWLOR.Game.Server.Native
 
         private static AbilityType GetStrongStyleAbilityType(CNWSItem weapon, CNWSCreature attacker)
         {
+            if (attacker.m_bPlayerCharacter == 0)
+                return AbilityType.Invalid;
+
             if (weapon == null)
                 return AbilityType.Invalid;
 

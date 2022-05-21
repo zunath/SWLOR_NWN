@@ -253,12 +253,16 @@ namespace SWLOR.Game.Server.Feature
                     Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
                 }
 
-                // If this is an attack... make the NPC react.
+                // If this is an attack make the NPC react.
                 if (ability.IsHostileAbility)
                 {
                     if (!GetIsInCombat(target))
                     {
-                        AssignCommand(target, () => { ClearAllActions(); ActionAttack(activator); });
+                        AssignCommand(target, () =>
+                        {
+                            ClearAllActions(); 
+                            ActionAttack(activator);
+                        });
                     }
                 }
 
@@ -284,6 +288,16 @@ namespace SWLOR.Game.Server.Feature
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
             DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
+
+            // If currently attacking a target, re-attack it after the end of the activation period.
+            // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
+            if (GetCurrentAction(activator) == ActionType.AttackObject)
+            {
+                DelayCommand(activationDelay + 0.1f, () =>
+                {
+                    AssignCommand(activator, () => ActionAttack(target));
+                });
+            }
         }
 
         /// <summary>

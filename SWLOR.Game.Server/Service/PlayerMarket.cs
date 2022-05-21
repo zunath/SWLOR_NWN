@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -24,6 +25,30 @@ namespace SWLOR.Game.Server.Service
         {
             LoadMarketCategories();
             LoadMarkets();
+        }
+
+        /// <summary>
+        /// When a player enters the server, if they have credits in their market till, send them a message stating so.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void CheckMarketTill()
+        {
+            var player = GetEnteringObject();
+
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer.MarketTill == 1)
+            {
+                SendMessageToPC(player, $"1 credit is in your market till.");
+            }
+            else if (dbPlayer.MarketTill > 1)
+            {
+                SendMessageToPC(player, $"{dbPlayer.MarketTill} credits are in your market till.");
+            }
         }
 
         /// <summary>

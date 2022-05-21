@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
             if (itemType != BaseItem.Helmet) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);
         }

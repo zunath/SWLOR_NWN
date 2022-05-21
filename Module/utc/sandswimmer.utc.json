@@ -168,7 +168,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 21
   },
   "Interruptable": {
     "type": "byte",
@@ -500,11 +500,11 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 799
+          "value": 90
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 0
+          "value": 10
         },
         "SpellFlags": {
           "type": "byte",
@@ -515,11 +515,11 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 90
+          "value": 799
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 10
+          "value": 0
         },
         "SpellFlags": {
           "type": "byte",

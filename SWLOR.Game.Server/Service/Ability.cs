@@ -439,6 +439,9 @@ namespace SWLOR.Game.Server.Service
         {
             var dbPlayer = DB.Get<Player>(playerId);
 
+            if (dbPlayer == null)
+                return false;
+
             if (dbPlayer.AbilityToggles == null)
                 dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
 

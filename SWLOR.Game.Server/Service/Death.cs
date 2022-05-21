@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_death")]
         public static void OnPlayerDeath()
         {
-
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
             var playerId = GetObjectUUID(player);
@@ -40,10 +39,11 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            if (dbPlayer.Settings.IsSubdualModeEnabled)
+            if (dbPlayer.Settings.IsSubdualModeEnabled &&
+                GetIsPC(hostile))
             {
                 SendMessageToPC(player, "You have been subdued.");
-                SetCurrentHitPoints(player, 1);                
+                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
                 ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
                 ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
@@ -53,10 +53,11 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Social, 10), player, 300f);
                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 10), player, 300f);
                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 10), player, 300f);
             }
             else
             {
-                const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
+                const string RespawnMessage = "You have died. Wait for another player to revive you or respawn to go to your registered medical center.";
                 PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
 
                 WriteAudit(player);

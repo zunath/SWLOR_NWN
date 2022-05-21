@@ -38,8 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 return;
 
             ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(regenAmount, 6f), target, 45f);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
             Enmity.ModifyEnmity(activator, target, 20);
         }
 

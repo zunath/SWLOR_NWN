@@ -30,6 +30,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.Remove(player, StatusEffectType.Rest);
         }
 
+        [NWNEventHandler("mod_enter")]
+        public static void RemoveRestOnLogin()
+        {
+            var player = GetEnteringObject();
+            StatusEffect.Remove(player, StatusEffectType.Rest);
+        }
+
         private void Rest(StatusEffectBuilder builder)
         {
             void CheckMovement(uint target)

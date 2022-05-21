@@ -142,6 +142,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine - Tusken Elite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_tusken_elite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Tusken Raider"
                     },
                     "RESREF": {

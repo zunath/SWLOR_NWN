@@ -5694,6 +5694,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Elite Tusken Raider Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "e_tusken_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Hide"
                     },
                     "RESREF": {
@@ -30054,6 +30065,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "NPC Elite Gaderffii"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "e_gaffistick"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "NPC Gaderffii"
                     },
                     "RESREF": {
@@ -30810,6 +30832,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dakflakgun005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Elite Tusken Cycler Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "elite_tusken_rif"
                           }
                         },
                         {

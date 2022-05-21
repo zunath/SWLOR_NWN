@@ -54,11 +54,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(10)
 
-                .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(30)
-
-                .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
-                .WithFrequency(40)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);

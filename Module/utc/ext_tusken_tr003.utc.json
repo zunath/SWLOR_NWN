@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 14.0
+    "value": 15.0
   },
   "ClassList": {
     "type": "list",
@@ -410,7 +410,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",

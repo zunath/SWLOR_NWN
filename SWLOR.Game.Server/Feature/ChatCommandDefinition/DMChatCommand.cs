@@ -104,9 +104,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), user);
                     }
 
-                    ApplyEffectToObject(DurationType.Instant, EffectHeal(999), user);
-                    Stat.RestoreFP(target, Stat.GetMaxFP(user));
-                    Stat.RestoreStamina(target, Stat.GetMaxStamina(user));
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
+                    Stat.RestoreFP(target, Stat.GetMaxFP(target));
+                    Stat.RestoreStamina(target, Stat.GetMaxStamina(target));
                 });
 
             _builder.Create("spawngold")

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 50
   },
   "Charges": {
     "type": "byte",
@@ -14,19 +14,21 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The Gaderffii, or Gaffi Stick, is a short, staff-like weapon traditional to the native Sand People of Tatooine. Featuring a heavy, blunt-spiked club head at one end and a set of metal blades with another spike at the other, they are brutally effective multi-purpose tools."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,18 +41,27 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 1544,
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Raider Skin"
+      "0": "NPC Elite Gaderffii"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 62
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 11
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 11
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 46
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +78,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 58
         },
         "Param1": {
           "type": "byte",
@@ -83,42 +94,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 41
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 50
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 98
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 1
         }
       }
     ]
@@ -133,10 +113,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_skin"
+    "value": "e_gaffistick"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_skin"
+    "value": "e_gaffistick"
   }
 }

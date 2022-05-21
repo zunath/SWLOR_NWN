@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Raider Skin"
+      "0": "Elite Tusken Raider Skin"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 41
         },
         "Param1": {
           "type": "byte",
@@ -133,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_skin"
+    "value": "e_tusken_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_skin"
+    "value": "e_tusken_skin"
   }
 }

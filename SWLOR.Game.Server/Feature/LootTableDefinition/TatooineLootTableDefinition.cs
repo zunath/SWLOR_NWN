@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             SandDemon();
             SandWorm();
             TuskenRaider();
+            TuskenElite();
             TuskenCrate();
 
             return _builder.Build();
@@ -98,6 +99,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ruby", 2, 1, true);
 
             _builder.Create("TATOOINE_TUSKEN_RAIDER_RARES")
+                .AddItem("map_038", 20, 1, true)
+                .AddItem("map_036", 1, 1, true);
+        }
+
+        private void TuskenElite()
+        {
+            _builder.Create("TATOOINE_TUSKEN_ELITE")
+                .AddItem("elec_imperfect", 12)
+                .AddItem("fiberp_imperfect", 7)
+
+                .AddItem("raider_longsword", 3)
+                .AddItem("raider_knife", 3)
+                .AddItem("raider_gswd", 3)
+                .AddItem("raider_spear", 3)
+                .AddItem("raider_katar", 3)
+                .AddItem("raider_staff", 3)
+                .AddItem("raider_pistol", 3)
+                .AddItem("raider_shuriken", 3)
+                .AddItem("raider_twinblade", 3)
+                .AddItem("raider_rifle", 3)
+                .AddItem("tusken_meat", 7)
+                .AddItem("tusken_bones", 3)
+                .AddItem("tusken_blood", 5)
+                .AddItem("r_flour", 3)
+
+                .AddItem("bread_flour", 2, 1, true)
+                .AddItem("ruby", 5, 1, true);
+
+            _builder.Create("TATOOINE_TUSKEN_ELITE_RARES")
                 .AddItem("map_038", 20, 1, true)
                 .AddItem("map_036", 1, 1, true);
         }

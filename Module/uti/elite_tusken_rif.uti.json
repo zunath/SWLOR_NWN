@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,24 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Raider Skin"
+      "0": "Elite Tusken Cycler Rifle"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 11
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 154
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 11
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 126
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +75,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 58
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +91,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 43
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +137,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 14
         },
         "CostValue": {
           "type": "word",
-          "value": 50
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -114,11 +153,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 98
+          "value": 61
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 1
         }
       }
     ]
@@ -133,10 +172,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_skin"
+    "value": "elite_tusken_rif"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_skin"
+    "value": "elite_tusken_rif"
   }
 }

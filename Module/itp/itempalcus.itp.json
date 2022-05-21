@@ -29613,6 +29613,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Poacher Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Proto Katar"
                           },
                           "RESREF": {

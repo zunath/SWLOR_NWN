@@ -679,6 +679,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DestroyObject(item);
             AssignCommand(Player, () =>
             {
+                ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
         }
@@ -700,6 +701,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DestroyObject(item);
             AssignCommand(Player, () =>
             {
+                ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
         }

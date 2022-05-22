@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshAttributes(Player dbPlayer)
         {
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
+            AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
         }
 
         private void RefreshPortrait()

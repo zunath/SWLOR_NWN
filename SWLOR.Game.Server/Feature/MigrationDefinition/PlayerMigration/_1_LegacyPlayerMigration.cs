@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             // Equipped Items
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var item = GetItemInSlot((InventorySlot)index);
+                var item = GetItemInSlot((InventorySlot)index, player);
                 if (!GetIsObjectValid(item))
                     continue;
 

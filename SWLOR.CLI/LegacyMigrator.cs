@@ -706,7 +706,22 @@ namespace SWLOR.CLI
                     StatDistributionPoints = 15 // Determined by 30 points given at character creation at a cost of 2 per point increase. If character creation changes, this needs to change too.
                 };
 
-                // todo: AbilityPointsByLevel
+                // Spread out the ability point acquisition across all 50 levels.
+                var numberOfIncreases = sp;
+                var level = 1;
+                while (numberOfIncreases > 0)
+                {
+                    if (!newPlayer.AbilityPointsByLevel.ContainsKey(level))
+                        newPlayer.AbilityPointsByLevel[level] = 0;
+
+                    newPlayer.AbilityPointsByLevel[level]++;
+
+                    numberOfIncreases--;
+                    level++;
+
+                    if (level > 50)
+                        level = 1;
+                }
 
                 DB.Set(newPlayer);
                 DB.Set(migration);

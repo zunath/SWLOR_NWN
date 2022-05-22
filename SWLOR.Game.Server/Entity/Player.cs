@@ -104,9 +104,6 @@ namespace SWLOR.Game.Server.Entity
         public int Stamina { get; set; }
         public int TemporaryFoodHP { get; set; }
         public int BAB { get; set; }
-        public int Fortitude { get; set; }
-        public int Reflex { get; set; }
-        public int Will { get; set; }
         public int CP { get; set; }
 
         [Indexed]

@@ -1518,6 +1518,20 @@
           "type": "resref",
           "value": "v_jeditemple_v2"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_frozen_wa"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_wastes_ca"
+        }
       }
     ]
   },

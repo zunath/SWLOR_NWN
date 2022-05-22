@@ -38,6 +38,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private void AutoLevelUp(uint player)
         {
+            // Most players are Force characters so we default to that class. This can be changed via the migration UI.
+            CreaturePlugin.SetClassByPosition(player, 0, ClassType.ForceSensitive);
+
             GiveXPToCreature(player, 800000);
             var @class = GetClassByPosition(1, player);
 
@@ -87,13 +90,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
-
-            // Most players are Force characters so we default to that class. This can be changed via the migration UI.
-            CreaturePlugin.SetClassByPosition(player, 0, ClassType.ForceSensitive);
         }
 
         private void ResetHotBar(uint player)
         {
+            const int MaxSlots = 35;
+            for (var slot = 0; slot <= MaxSlots; slot++)
+            {
+                PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+            }
+
             PlayerInitialization.InitializeHotBar(player);
         }
 
@@ -164,6 +170,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 var item = GetItemInSlot((InventorySlot)index);
+                if (!GetIsObjectValid(item))
+                    continue;
+
                 WipeItemProperties(item);
                 Item.MarkLegacyItem(item);
                 WipeDescription(item);

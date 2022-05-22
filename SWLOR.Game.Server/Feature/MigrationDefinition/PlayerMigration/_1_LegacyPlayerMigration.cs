@@ -204,20 +204,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                     SetCreatureBodyPart(CreaturePart.Head, _catharAppearance.MaleHeads.First());
                 }
 
-                SetCreatureBodyPart(CreaturePart.Torso, _catharAppearance.Torsos.First());
-                SetCreatureBodyPart(CreaturePart.Pelvis, _catharAppearance.Pelvis.First());
-                SetCreatureBodyPart(CreaturePart.RightBicep, _catharAppearance.RightBicep.First());
-                SetCreatureBodyPart(CreaturePart.RightForearm, _catharAppearance.RightForearm.First());
-                SetCreatureBodyPart(CreaturePart.RightHand, _catharAppearance.RightHand.First());
-                SetCreatureBodyPart(CreaturePart.RightThigh, _catharAppearance.RightThigh.First());
-                SetCreatureBodyPart(CreaturePart.RightShin, _catharAppearance.RightShin.First());
-                SetCreatureBodyPart(CreaturePart.RightFoot, _catharAppearance.RightFoot.First());
-                SetCreatureBodyPart(CreaturePart.LeftBicep, _catharAppearance.LeftBicep.First());
-                SetCreatureBodyPart(CreaturePart.LeftForearm, _catharAppearance.LeftForearm.First());
-                SetCreatureBodyPart(CreaturePart.LeftHand, _catharAppearance.LeftHand.First());
-                SetCreatureBodyPart(CreaturePart.LeftThigh, _catharAppearance.LeftThigh.First());
-                SetCreatureBodyPart(CreaturePart.LeftShin, _catharAppearance.LeftShin.First());
-                SetCreatureBodyPart(CreaturePart.LeftFoot, _catharAppearance.LeftFoot.First());
+                SetCreatureBodyPart(CreaturePart.Torso, _catharAppearance.Torsos.First(), player);
+                SetCreatureBodyPart(CreaturePart.Pelvis, _catharAppearance.Pelvis.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightBicep, _catharAppearance.RightBicep.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightForearm, _catharAppearance.RightForearm.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightHand, _catharAppearance.RightHand.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightThigh, _catharAppearance.RightThigh.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightShin, _catharAppearance.RightShin.First(), player);
+                SetCreatureBodyPart(CreaturePart.RightFoot, _catharAppearance.RightFoot.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftBicep, _catharAppearance.LeftBicep.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftForearm, _catharAppearance.LeftForearm.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftHand, _catharAppearance.LeftHand.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftThigh, _catharAppearance.LeftThigh.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftShin, _catharAppearance.LeftShin.First(), player);
+                SetCreatureBodyPart(CreaturePart.LeftFoot, _catharAppearance.LeftFoot.First(), player);
             }
         }
     }

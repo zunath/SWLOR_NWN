@@ -1465,6 +1465,30 @@
                       "type": "byte",
                       "value": 6
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 18.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chirodactyl"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chirodactyl"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6696
@@ -1707,6 +1731,25 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dragonturtle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 17.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sprantal"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sprantal"
                           }
                         }
                       ]
@@ -4370,6 +4413,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 96.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force Witch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitch001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -5333,6 +5395,82 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pho"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris005"
                     }
                   },
                   {

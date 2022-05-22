@@ -4006,6 +4006,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Force Witch's Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force Witch's Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitmsk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gero's Thug outfit"
                     },
                     "RESREF": {
@@ -28025,6 +28047,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmfi_pc_rest003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force Witch's Force infused whip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitweap"
                     }
                   },
                   {

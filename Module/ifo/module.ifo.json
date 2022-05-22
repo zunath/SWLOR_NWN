@@ -1243,13 +1243,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_jeditemple_ext"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "v_sheriffbhoff"
         }
       },
@@ -1510,6 +1503,20 @@
         "Area_Name": {
           "type": "resref",
           "value": "dathvalley"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_jediforest_cav"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_jeditemple_v2"
         }
       }
     ]

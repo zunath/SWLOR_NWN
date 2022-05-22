@@ -1455,6 +1455,13 @@
           "type": "resref",
           "value": "ossustemp"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ship_secchan_int"
+        }
       }
     ]
   },

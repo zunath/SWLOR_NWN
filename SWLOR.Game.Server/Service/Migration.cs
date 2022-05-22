@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => x.Key > serverConfig.MigrationVersion)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
+            var newVersion = 0;
 
             foreach (var migration in migrations)
             {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     sw.Start();
                     migration.Migrate();
-                    serverConfig.MigrationVersion = migration.Version;
+                    newVersion = migration.Version;
                     sw.Stop();
                     Log.Write(LogGroup.Migration, $"Server migration #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
@@ -55,6 +56,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
             
+            // Migrations can edit the server configuration entity. Refresh it before updating the version.
+            serverConfig = DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
+            serverConfig.MigrationVersion = newVersion;
             DB.Set(serverConfig);
         }
 

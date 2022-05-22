@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => x.Key > dbPlayerCopy.Version)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
-            var newVersion = 0;
+            var newVersion = dbPlayer.Version;
 
             foreach (var migration in migrations)
             {

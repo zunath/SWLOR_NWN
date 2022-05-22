@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Core
 
         public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
         {
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
+
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
             coreGameManager.OnSignal += OnSignal;
             coreGameManager.OnServerLoop += OnServerLoop;

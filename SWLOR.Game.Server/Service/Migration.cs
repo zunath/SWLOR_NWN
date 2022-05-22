@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunServerMigrations()
         {
+            var sw = new Stopwatch();
             var serverConfig = DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
             var migrations = _serverMigrations
                 .Where(x => x.Key > serverConfig.MigrationVersion)
@@ -35,11 +37,14 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var migration in migrations)
             {
+                sw.Reset();
                 try
                 {
+                    sw.Start();
                     migration.Migrate();
                     serverConfig.MigrationVersion = migration.Version;
-                    Log.Write(LogGroup.Migration, $"Server migration #{migration.Version} completed successfully.", true);
+                    sw.Stop();
+                    Log.Write(LogGroup.Migration, $"Server migration #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)
                 {
@@ -63,21 +68,27 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            var sw = new Stopwatch();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
+            var dbPlayerCopy = dbPlayer;
             var migrations = _playerMigrations
-                .Where(x => x.Key > dbPlayer.Version)
+                .Where(x => x.Key > dbPlayerCopy.Version)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
+            var newVersion = 0;
 
             foreach (var migration in migrations)
             {
+                sw.Reset();
                 try
                 {
+                    sw.Start();
                     migration.Migrate(player);
-                    dbPlayer.Version = migration.Version;
-                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully.");
+                    newVersion = migration.Version;
+                    sw.Stop();
+                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
                 catch (Exception ex)
                 {
@@ -86,6 +97,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Migrations can edit the database player entity. Refresh it before updating the version.
+            dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            dbPlayer.Version = newVersion;
             DB.Set(dbPlayer);
         }
 

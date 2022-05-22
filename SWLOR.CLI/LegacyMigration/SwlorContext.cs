@@ -37,6 +37,7 @@ namespace SWLOR.CLI.LegacyMigration
         public virtual DbSet<Pcquestitemprogress> Pcquestitemprogress { get; set; }
         public virtual DbSet<Pcquestkilltargetprogress> Pcquestkilltargetprogress { get; set; }
         public virtual DbSet<Pcqueststatus> Pcqueststatus { get; set; }
+        public virtual DbSet<Pcskill> Pcskill { get; set; }
         public virtual DbSet<Player> Player { get; set; }
         public virtual DbSet<Serverconfiguration> Serverconfiguration { get; set; }
 
@@ -679,6 +680,44 @@ namespace SWLOR.CLI.LegacyMigration
                     .HasForeignKey(d => d.PlayerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PCQuesttatus_PlayerID");
+            });
+
+            modelBuilder.Entity<Pcskill>(entity =>
+            {
+                entity.ToTable("pcskill");
+
+                entity.HasCharSet("utf8mb3")
+                    .UseCollation("utf8_general_ci");
+
+                entity.HasIndex(e => e.ClusterId, "CIX_PCSkill_ID")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.SkillId, "FK_PCSkill_SkillID");
+
+                entity.HasIndex(e => new { e.PlayerId, e.IsLocked, e.Rank, e.SkillId, e.Xp }, "IX_PCSkill_PlayerID");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(64)
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.ClusterId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ClusterID");
+
+                entity.Property(e => e.PlayerId)
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnName("PlayerID");
+
+                entity.Property(e => e.SkillId).HasColumnName("SkillID");
+
+                entity.Property(e => e.Xp).HasColumnName("XP");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.Pcskill)
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PCSkill_PlayerID");
             });
 
             modelBuilder.Entity<Player>(entity =>

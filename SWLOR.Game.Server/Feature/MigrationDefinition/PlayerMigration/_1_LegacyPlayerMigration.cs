@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
-    public class _1_LegacyPlayerMigration: IPlayerMigration
+    public class _1_LegacyPlayerMigration: LegacyMigrationBase, IPlayerMigration
     {
         private static readonly CatharRacialAppearanceDefinition _catharAppearance = new();
 
@@ -115,48 +115,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private void MigrateItems(uint player)
         {
-            void WipeItemProperties(uint item)
-            {
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    RemoveItemProperty(item, ip);
-                }
-            }
-
-            void WipeDescription(uint item)
-            {
-                SetDescription(item, string.Empty);
-                SetDescription(item, string.Empty, false);
-            }
-
-            void WipeVariables(uint item)
-            {
-                var variableCount = ObjectPlugin.GetLocalVariableCount(item);
-                for (var variableIndex = 0; variableIndex < variableCount - 1; variableIndex++)
-                {
-                    var stCurVar = ObjectPlugin.GetLocalVariable(item, variableIndex);
-
-                    switch (stCurVar.Type)
-                    {
-                        case LocalVariableType.Int:
-                            DeleteLocalInt(item, stCurVar.Key);
-                            break;
-                        case LocalVariableType.Float:
-                            DeleteLocalFloat(item, stCurVar.Key);
-                            break;
-                        case LocalVariableType.String:
-                            DeleteLocalString(item, stCurVar.Key);
-                            break;
-                        case LocalVariableType.Object:
-                            DeleteLocalObject(item, stCurVar.Key);
-                            break;
-                        case LocalVariableType.Location:
-                            DeleteLocalLocation(item, stCurVar.Key);
-                            break;
-                    }
-                }
-            }
-
             // Inventory Items
             for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
             {
@@ -169,9 +127,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             // Equipped Items
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var item = GetItemInSlot((InventorySlot)index, player);
+                var slot = (InventorySlot)index;
+                var item = GetItemInSlot(slot, player);
+
+                // Skip invalid items (empty item slots)
                 if (!GetIsObjectValid(item))
                     continue;
+
+                // Skip creature items.
+                if (slot == InventorySlot.CreatureLeft ||
+                    slot == InventorySlot.CreatureRight ||
+                    slot == InventorySlot.CreatureBite ||
+                    slot == InventorySlot.CreatureArmor)
+                {
+                    continue;
+                }
 
                 WipeItemProperties(item);
                 Item.MarkLegacyItem(item);
@@ -194,30 +164,33 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         {
             if (GetRacialType(player) == RacialType.Cathar)
             {
-                if (GetGender(player) == Gender.Female)
+                DelayCommand(10f, () =>
                 {
+                    if (GetGender(player) == Gender.Female)
+                    {
 
-                    SetCreatureBodyPart(CreaturePart.Head, _catharAppearance.FemaleHeads.First());
-                }
-                else
-                {
-                    SetCreatureBodyPart(CreaturePart.Head, _catharAppearance.MaleHeads.First());
-                }
+                        SetCreatureBodyPart(CreaturePart.Head, _catharAppearance.FemaleHeads.First(), player);
+                    }
+                    else
+                    {
+                        SetCreatureBodyPart(CreaturePart.Head, _catharAppearance.MaleHeads.First(), player);
+                    }
 
-                SetCreatureBodyPart(CreaturePart.Torso, _catharAppearance.Torsos.First(), player);
-                SetCreatureBodyPart(CreaturePart.Pelvis, _catharAppearance.Pelvis.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightBicep, _catharAppearance.RightBicep.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightForearm, _catharAppearance.RightForearm.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightHand, _catharAppearance.RightHand.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightThigh, _catharAppearance.RightThigh.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightShin, _catharAppearance.RightShin.First(), player);
-                SetCreatureBodyPart(CreaturePart.RightFoot, _catharAppearance.RightFoot.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftBicep, _catharAppearance.LeftBicep.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftForearm, _catharAppearance.LeftForearm.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftHand, _catharAppearance.LeftHand.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftThigh, _catharAppearance.LeftThigh.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftShin, _catharAppearance.LeftShin.First(), player);
-                SetCreatureBodyPart(CreaturePart.LeftFoot, _catharAppearance.LeftFoot.First(), player);
+                    SetCreatureBodyPart(CreaturePart.Torso, _catharAppearance.Torsos.First(), player);
+                    SetCreatureBodyPart(CreaturePart.Pelvis, _catharAppearance.Pelvis.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightBicep, _catharAppearance.RightBicep.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightForearm, _catharAppearance.RightForearm.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightHand, _catharAppearance.RightHand.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightThigh, _catharAppearance.RightThigh.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightShin, _catharAppearance.RightShin.First(), player);
+                    SetCreatureBodyPart(CreaturePart.RightFoot, _catharAppearance.RightFoot.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftBicep, _catharAppearance.LeftBicep.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftForearm, _catharAppearance.LeftForearm.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftHand, _catharAppearance.LeftHand.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftThigh, _catharAppearance.LeftThigh.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftShin, _catharAppearance.LeftShin.First(), player);
+                    SetCreatureBodyPart(CreaturePart.LeftFoot, _catharAppearance.LeftFoot.First(), player);
+                });
             }
         }
     }

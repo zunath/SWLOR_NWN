@@ -60,13 +60,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "ooc_area"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "house_int_2"
         }
       },
@@ -1413,6 +1406,13 @@
           "type": "resref",
           "value": "korribanlandingp"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ooc_area"
+        }
       }
     ]
   },
@@ -1448,23 +1448,23 @@
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
-    "value": 0.0
+    "value": -0.04906796291470528
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": 1.0
+    "value": -0.9987954497337341
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.0
+    "value": 44.67409896850586
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 6.0
+    "value": 36.51171493530273
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 0.0
+    "value": -5.7220458984375e-006
   },
   "Mod_Expan_List": {
     "type": "list",

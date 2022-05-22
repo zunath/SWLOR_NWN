@@ -983,5 +983,24 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Determines if an item is a legacy item.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>true if item is legacy, false otherwise</returns>
+        public static bool IsLegacyItem(uint item)
+        {
+            return GetTag(item) == "LEGACY_ITEM";
+        }
+
+        /// <summary>
+        /// Marks an item as a legacy item.
+        /// </summary>
+        /// <param name="item">The item to mark as legacy.</param>
+        public static void MarkLegacyItem(uint item)
+        {
+            SetTag(item, "LEGACY_ITEM");
+        }
+
     }
 }

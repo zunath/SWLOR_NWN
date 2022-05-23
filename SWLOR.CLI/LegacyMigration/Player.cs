@@ -22,6 +22,7 @@ namespace SWLOR.CLI.LegacyMigration
             Pcquestitemprogress = new HashSet<Pcquestitemprogress>();
             Pcquestkilltargetprogress = new HashSet<Pcquestkilltargetprogress>();
             Pcqueststatus = new HashSet<Pcqueststatus>();
+            Pcskill = new HashSet<Pcskill>();
         }
 
         public string Id { get; set; }
@@ -90,5 +91,6 @@ namespace SWLOR.CLI.LegacyMigration
         public virtual ICollection<Pcquestitemprogress> Pcquestitemprogress { get; set; }
         public virtual ICollection<Pcquestkilltargetprogress> Pcquestkilltargetprogress { get; set; }
         public virtual ICollection<Pcqueststatus> Pcqueststatus { get; set; }
+        public virtual ICollection<Pcskill> Pcskill { get; set; }
     }
 }

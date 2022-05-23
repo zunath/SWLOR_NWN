@@ -200,13 +200,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "customize_char"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscara_archive"
         }
       },
@@ -1531,6 +1524,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "hutlar_wastes_ca"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "char_migration"
         }
       }
     ]

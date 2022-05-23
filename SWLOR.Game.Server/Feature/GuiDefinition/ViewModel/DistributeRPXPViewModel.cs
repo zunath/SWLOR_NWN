@@ -74,6 +74,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you want to distribute {Distribution} RP XP into the {SkillName} skill?",
                 () =>
                 {
+                    if (GetResRef(GetArea(Player)) == "char_migration")
+                    {
+                        FloatingTextStringOnCreature($"XP cannot be distributed in this area.", Player, false);
+                        return;
+                    }
+
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
 

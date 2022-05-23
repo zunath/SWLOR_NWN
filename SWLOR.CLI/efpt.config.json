@@ -82,6 +82,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "pcskill",
+         "ObjectType": 0
+      },
+      {
          "Name": "player",
          "ObjectType": 0
       },

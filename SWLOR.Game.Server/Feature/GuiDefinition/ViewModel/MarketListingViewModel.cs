@@ -192,6 +192,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (Item.IsLegacyItem(item))
+            {
+                FloatingTextStringOnCreature($"Legacy items cannot be sold on the market.", Player, false);
+                return;
+            }
+
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
             var listing = new MarketItem
             {

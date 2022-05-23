@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
                 resref = UtilPlugin.GetNextResRef();
             }
 
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
+            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
             dbModuleCache.ItemNamesByResref = ItemNamesByResref;
             DB.Set(dbModuleCache);
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
             if (_cachedThisRun)
                 return;
 
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
+            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
             ItemNamesByResref = dbModuleCache.ItemNamesByResref;
         }
 

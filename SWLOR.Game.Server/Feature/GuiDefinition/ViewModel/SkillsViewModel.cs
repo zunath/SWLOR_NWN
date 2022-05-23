@@ -256,6 +256,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDistributeRPXP() => () =>
         {
+            if (GetResRef(GetArea(Player)) == "char_migration")
+            {
+                FloatingTextStringOnCreature($"XP cannot be distributed in this area.", Player, false);
+                return;
+            }
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var index = NuiGetEventArrayIndex();

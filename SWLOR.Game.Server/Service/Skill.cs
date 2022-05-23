@@ -143,7 +143,10 @@ namespace SWLOR.Game.Server.Service
 
                 dbPlayer.Skills[skill] = pcSkill;
 
-                ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+                if (details.ContributesToSkillCap)
+                {
+                    ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+                }
                 
                 totalRanks = dbPlayer.Skills
                     .Where(x =>

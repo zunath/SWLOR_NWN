@@ -279,6 +279,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
+            if (GetResRef(GetArea(Player)) == "char_migration")
+            {
+                FloatingTextStringOnCreature($"AP cannot be spent in this area.", Player, false);
+                return;
+            }
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -502,7 +508,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshAttributes(Player dbPlayer)
         {
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
+            AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
         }
 
         private void RefreshPortrait()

@@ -14,7 +14,7 @@
         Settings = 9,
         AppearanceEditor = 10,
         Bank = 11,
-
+        CharacterMigration = 12,
         Outfits = 13,
         MarketListing = 14,
         MarketBuying = 15,
@@ -36,8 +36,6 @@
         ManageStructures = 31,
         PropertyItemStorage = 32,
         BugReport = 33,
-        DMTools = 34,
-
-        Testing = 99,
+        DMTools = 34
     }
 }

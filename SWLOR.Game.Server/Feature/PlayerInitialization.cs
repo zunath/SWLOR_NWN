@@ -28,7 +28,11 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
-            if (dbPlayer.Version >= 1) return;
+            if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
+            {
+                ExecuteScript("char_init_after", OBJECT_SELF);
+                return;
+            }
 
             ClearInventory(player);
             AutoLevelPlayer(player);
@@ -47,6 +51,8 @@ namespace SWLOR.Game.Server.Feature
             RegisterDefaultRespawnPoint(dbPlayer);
 
             DB.Set(dbPlayer);
+
+            ExecuteScript("char_init_after", OBJECT_SELF);
         }
 
         private static void AutoLevelPlayer(uint player)

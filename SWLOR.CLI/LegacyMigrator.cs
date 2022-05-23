@@ -661,8 +661,8 @@ namespace SWLOR.CLI
 
                 var newPlayer = new RevampPlayer(oldPlayer.Id)
                 {
+                    Version = -1, // -1 signifies legacy characters
                     DateCreated = oldPlayer.CreateTimestamp,
-                    Version = 0,
                     Name = oldPlayer.CharacterName,
                     TemporaryFoodHP = 0,
                     BAB = 1,

@@ -89,7 +89,22 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
+            if (dbPlayer == null)
+                return;
+
+            // Rebuilds - Send player to rebuild area if they didn't finish their rebuild.
+            if (!dbPlayer.RebuildComplete)
+            {
+                var rebuildLocation = GetLocation(GetWaypointByTag("REBUILD_LANDING"));
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(rebuildLocation);
+                });
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
@@ -98,6 +113,7 @@ namespace SWLOR.Game.Server.Feature
 
             AssignCommand(player, () =>
             {
+                ClearAllActions();
                 ActionJumpToLocation(location);
             });
         }

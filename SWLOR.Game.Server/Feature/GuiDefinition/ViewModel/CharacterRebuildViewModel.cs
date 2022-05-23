@@ -28,6 +28,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
+        [NWNEventHandler("exit_rebuild")]
+        public static void ExitRebuildArea()
+        {
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player) || GetIsDM(player))
+            {
+                FloatingTextStringOnCreature("Only players may use this.", player, false);
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.RebuildComplete)
+            {
+                FloatingTextStringOnCreature("Your rebuild must be completed before returning to the game world.", player, false);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref))
+            {
+                var location = GetLocation(GetWaypointByTag("CZ220_LANDING"));
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(location);
+                });
+            }
+            else
+            {
+                var area = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+                var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
+                var location = Location(area, position, dbPlayer.LocationOrientation);
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(location);
+                });
+            }
+
+        }
+
         public bool CanDistribute
         {
             get => Get<bool>();
@@ -280,7 +323,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
                 dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
+                dbPlayer.UpgradedStats[AbilityType.Might] = 0;
+                dbPlayer.UpgradedStats[AbilityType.Perception] = 0;
+                dbPlayer.UpgradedStats[AbilityType.Vitality] = 0;
+                dbPlayer.UpgradedStats[AbilityType.Willpower] = 0;
+                dbPlayer.UpgradedStats[AbilityType.Agility] = 0;
+                dbPlayer.UpgradedStats[AbilityType.Social] = 0;
+
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
+                dbPlayer.RebuildComplete = false;
                 DB.Set(dbPlayer);
             }
 
@@ -544,6 +595,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbPlayer.Skills[skill].Rank = rank;
                 }
+
+                dbPlayer.RebuildComplete = true;
 
                 Gui.TogglePlayerWindow(Player, GuiWindowType.CharacterMigration, null, TetherObject);
                 FloatingTextStringOnCreature(ColorToken.Green("Character rebuild complete!"), Player, false);

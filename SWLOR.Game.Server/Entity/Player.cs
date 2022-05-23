@@ -148,6 +148,7 @@ namespace SWLOR.Game.Server.Entity
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
+        public bool RebuildComplete { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

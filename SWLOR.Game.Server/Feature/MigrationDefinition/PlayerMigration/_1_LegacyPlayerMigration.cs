@@ -122,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 Item.MarkLegacyItem(item);
                 WipeDescription(item);
                 WipeVariables(item);
+                CleanItemName(item);
             }
 
             // Equipped Items

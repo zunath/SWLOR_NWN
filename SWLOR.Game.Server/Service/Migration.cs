@@ -63,9 +63,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player logs into the server, run the migration process on their character.
+        /// When a player logs into the server and after initialization has run, run the migration process on their character.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler("char_init_after")]
         public static void RunPlayerMigrations()
         {
             var player = GetEnteringObject();
@@ -76,9 +76,8 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
-            var dbPlayerCopy = dbPlayer;
             var migrations = _playerMigrations
-                .Where(x => x.Key > dbPlayerCopy.Version)
+                .Where(x => x.Key > dbPlayer.Version)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
             var newVersion = dbPlayer.Version;

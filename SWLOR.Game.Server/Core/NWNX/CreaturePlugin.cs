@@ -444,9 +444,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Set the classId ID in a particular position for a creature.
         // Position should be 0, 1, or 2.
         // ClassID should be a valid ID number in classes.2da and be between 0 and 255.
-        public static void SetClassByPosition(uint creature, int position, ClassType classId)
+        public static void SetClassByPosition(uint creature, int position, ClassType classId, bool updateLevels = true)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetClassByPosition");
+            NWNCore.NativeFunctions.nwnxPushInt(updateLevels ? 1 : 0);
             NWNCore.NativeFunctions.nwnxPushInt((int)classId);
             NWNCore.NativeFunctions.nwnxPushInt(position);
             NWNCore.NativeFunctions.nwnxPushObject(creature);

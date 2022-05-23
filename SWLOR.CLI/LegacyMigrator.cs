@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service.SkillService;
 using LegacyPlayer = SWLOR.CLI.LegacyMigration.Player;
 using RevampPlayer = SWLOR.Game.Server.Entity.Player;
 
@@ -24,7 +25,7 @@ namespace SWLOR.CLI
     {
         /*
          * Command run on server to get copy of MySQL database.
-         * mysqldump -u <userName> -p swlor ApartmentBuilding Area Association Attribute AuthorizedDM Backgrounds Bank BankItem BaseItemType PCGuildPoint PCKeyItem PCMapPin PCMapProgression PCObjectVisibility PCQuestItemProgress PCQuestKillTargetProgress PCQuestStatus Player ServerConfiguration  > swlor_dump.sql
+         * mysqldump -u <userName> -p swlor ApartmentBuilding Area Association Attribute AuthorizedDM Backgrounds Bank BankItem BaseItemType PCGuildPoint PCKeyItem PCMapPin PCMapProgression PCObjectVisibility PCQuestItemProgress PCQuestKillTargetProgress PCQuestStatus PCSkill Player ServerConfiguration  > swlor_dump.sql
          */
 
 
@@ -46,13 +47,15 @@ namespace SWLOR.CLI
             MigratePCQuests();
             MigrateObjectVisibilities();
             MigrateMapData();
+            MigrateLanguages();
 
             // Player file migration
             ConvertBicsToJson();
             ProcessJsonFiles();
+            ConvertJsonToBics();
 
             sw.Stop();
-            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000 / 60} minute(s)");
+            Console.WriteLine($"Migration took {sw.ElapsedMilliseconds / 1000 / 60} minute(s), {sw.ElapsedMilliseconds / 1000 % 60} second(s).");
         }
 
         private void MigrateAuthorizedDMs()
@@ -586,6 +589,61 @@ namespace SWLOR.CLI
             }
         }
 
+        private void MigrateLanguages()
+        {
+            var languageSkills = new Dictionary<int, SkillType>
+            {
+                {33, SkillType.Basic},
+                {25, SkillType.Bothese},
+                {29, SkillType.Catharese},
+                {26, SkillType.Cheunh},
+                {30, SkillType.Dosh},
+                {32, SkillType.Droidspeak},
+                {35, SkillType.Huttese},
+                {41, SkillType.KelDor},
+                {34, SkillType.Mandoa},
+                {18, SkillType.Mirialan},
+                {37, SkillType.MonCalamarian},
+                {40, SkillType.Rodese},
+                {31, SkillType.Shyriiwook},
+                {39, SkillType.Togruti},
+                {28, SkillType.Twileki},
+                {38, SkillType.Ugnaught},
+                {27, SkillType.Zabraki},
+            };
+            var languageSkillIds = languageSkills.Select(s => s.Key);
+
+            List<Pcskill> oldLanguages;
+
+            using (var context = new SwlorContext())
+            {
+                oldLanguages = context.Pcskill
+                    .Where(x => languageSkillIds.Contains(x.SkillId))
+                    .ToList();
+            }
+
+            Console.WriteLine($"Migrating {oldLanguages.Count} language skills.");
+            foreach (var oldLanguage in oldLanguages)
+            {
+                var playerId = oldLanguage.PlayerId;
+                var dbPlayer = DB.Get<RevampPlayer>(playerId);
+
+                if (dbPlayer.Skills == null)
+                {
+                    dbPlayer.Skills = new Dictionary<SkillType, PlayerSkill>();
+                }
+
+                dbPlayer.Skills[languageSkills[oldLanguage.SkillId]] = new PlayerSkill
+                {
+                    IsLocked = false,
+                    Rank = oldLanguage.Rank,
+                    XP = oldLanguage.Rank == 20 ? 0 : oldLanguage.Xp
+                };
+
+                DB.Set(dbPlayer);
+            }
+        }
+
         private void MigratePlayers()
         {
             List<LegacyPlayer> oldPlayers;
@@ -601,23 +659,13 @@ namespace SWLOR.CLI
                 var sp = oldPlayer.TotalSpacquired > 250 ? 250 : oldPlayer.TotalSpacquired;
                 var ap = sp / 10;
 
-                var newPlayer = new RevampPlayer
+                var newPlayer = new RevampPlayer(oldPlayer.Id)
                 {
-                    Id = oldPlayer.Id,
-                    Version = 1,
+                    DateCreated = oldPlayer.CreateTimestamp,
+                    Version = 0,
                     Name = oldPlayer.CharacterName,
-                    // MaxHP
-                    // MaxFP
-                    // MaxStamina
-                    // HP
-                    // FP
-                    // Stamina
                     TemporaryFoodHP = 0,
                     BAB = 1,
-                    // Fortitude
-                    // Reflex
-                    // Will
-                    // CP
                     LocationAreaResref = oldPlayer.LocationAreaResref,
                     LocationX = (float)oldPlayer.LocationX,
                     LocationY = (float)oldPlayer.LocationY,
@@ -644,33 +692,37 @@ namespace SWLOR.CLI
                     IsUsingDualPistolMode = oldPlayer.ModeDualPistol,
                     CharacterType = CharacterType.ForceSensitive, // Default to force sensitive, can be changed in migration UI
                     EmoteStyle = oldPlayer.IsUsingNovelEmoteStyle ? EmoteStyle.Novel : EmoteStyle.Regular,
-                    // OriginalAppearanceType
                     MovementRate = 1.0f,
                     AbilityRecastReduction = 0,
                     MarketTill = oldPlayer.GoldTill,
-                    // BaseStats
-
-
                 };
 
                 newPlayer.Settings.ShowHelmet = oldPlayer.DisplayHelmet == null;
 
-                var migration = new PlayerMigration
+                // Spread out the ability point acquisition across all 50 levels.
+                var numberOfIncreases = sp;
+                var level = 1;
+                while (numberOfIncreases > 0)
                 {
-                    PlayerId = oldPlayer.Id,
-                    SkillRanks = sp,
-                    StatDistributionPoints = 15 // Determined by 30 points given at character creation at a cost of 2 per point increase. If character creation changes, this needs to change too.
-                };
+                    if (!newPlayer.AbilityPointsByLevel.ContainsKey(level))
+                        newPlayer.AbilityPointsByLevel[level] = 0;
 
-                // todo: AbilityPointsByLevel
+                    newPlayer.AbilityPointsByLevel[level]++;
+
+                    numberOfIncreases--;
+                    level++;
+
+                    if (level > 50)
+                        level = 1;
+                }
 
                 DB.Set(newPlayer);
-                DB.Set(migration);
             }
         }
 
         private void ConvertBicsToJson()
         {
+            Console.WriteLine($"Converting BIC files to JSON.");
             var inputPath = ConfigurationManager.AppSettings["ServerVaultPath"];
             var outputPath = ConfigurationManager.AppSettings["TempVaultPath"];
 
@@ -705,6 +757,7 @@ namespace SWLOR.CLI
 
         private void ProcessJsonFiles()
         {
+            Console.WriteLine($"Processing Json character files.");
             var inputPath = ConfigurationManager.AppSettings["TempVaultPath"];
 
             Parallel.ForEach(Directory.GetDirectories(inputPath), folder =>
@@ -717,18 +770,57 @@ namespace SWLOR.CLI
                     var tag = obj["Tag"].ElementAt(1).First.Value<string>();
 
                     // Migrate player Id from Tag to UUID property
-                    var playerId = new Guid(tag);
-                    var uuidTypeProperty = new JProperty("type", "cexostring");
-                    var uuidValueProperty = new JProperty("value", playerId);
-                    var uuidJObject = new JObject(uuidTypeProperty, uuidValueProperty);
-                    obj.Add("UUID", uuidJObject);
 
-                    // Wipe the Tag since UUID is now in its own property.
-                    obj["Tag"].ElementAt(1).First.Replace(string.Empty);
+                    if (!string.IsNullOrWhiteSpace(tag))
+                    {
+                        var playerId = new Guid(tag);
+                        var uuidTypeProperty = new JProperty("type", "cexostring");
+                        var uuidValueProperty = new JProperty("value", playerId);
+                        var uuidJObject = new JObject(uuidTypeProperty, uuidValueProperty);
+                        obj.Add("UUID", uuidJObject);
+
+                        // Wipe the Tag since UUID is now in its own property.
+                        obj["Tag"].ElementAt(1).First.Replace(string.Empty);
+                    }
 
                     File.WriteAllText(file, obj.ToString(Formatting.Indented));
                 }
 
+            });
+        }
+
+        private void ConvertJsonToBics()
+        {
+            Console.WriteLine($"Converting JSON files back to Bic files.");
+            var inputPath = ConfigurationManager.AppSettings["TempVaultPath"];
+            var outputPath = ConfigurationManager.AppSettings["MigratedVaultPath"];
+
+            if (string.IsNullOrWhiteSpace(inputPath))
+                throw new Exception("Setting 'ServerVaultPath' not set.");
+            if (string.IsNullOrWhiteSpace(outputPath))
+                throw new Exception("Setting 'TempVaultPath' not set.");
+
+            if (Directory.Exists(outputPath))
+                Directory.Delete(outputPath, true);
+
+            Directory.CreateDirectory(outputPath);
+
+            Parallel.ForEach(Directory.GetDirectories(inputPath), folder =>
+            {
+                var files = Directory.GetFiles(folder, "*.bic.json");
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(file);
+                    var folderName = new DirectoryInfo(folder).Name;
+                    var outputFolderPath = $"{outputPath}{folderName}";
+                    var outputFilePath = $"{outputFolderPath}/{fileName}";
+
+                    if (!Directory.Exists(outputFolderPath))
+                        Directory.CreateDirectory(outputFolderPath);
+
+                    var command = $"nwn_gff -i {file} -o {outputFilePath} -p";
+                    RunProcess(command);
+                }
             });
         }
 

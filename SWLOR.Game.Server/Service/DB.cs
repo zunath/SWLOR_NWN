@@ -51,6 +51,12 @@ namespace SWLOR.Game.Server.Service
             {
                 _cachedEntities.Clear();
             };
+
+            // CLI tools also use this class and don't have access to the NWN context.
+            // Perform an environment variable check to ensure we're in the game server context before executing the event.
+            var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+            if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
+                ExecuteScript("db_loaded", OBJECT_SELF);
         }
 
         /// <summary>

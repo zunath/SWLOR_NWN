@@ -104,9 +104,6 @@ namespace SWLOR.Game.Server.Entity
         public int Stamina { get; set; }
         public int TemporaryFoodHP { get; set; }
         public int BAB { get; set; }
-        public int Fortitude { get; set; }
-        public int Reflex { get; set; }
-        public int Will { get; set; }
         public int CP { get; set; }
 
         [Indexed]
@@ -151,6 +148,7 @@ namespace SWLOR.Game.Server.Entity
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
+        public bool RebuildComplete { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         Togruti = 29,
 
         [Skill(SkillCategoryType.Languages,
-            "KelDor",
+            "Kel Dor",
             20,
             true,
             "Ability to speak the Kel Dor language.",

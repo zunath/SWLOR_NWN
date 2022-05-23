@@ -480,6 +480,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?", 
                 () =>
                 {
+
+                    if (GetResRef(GetArea(Player)) == "char_migration")
+                    {
+                        FloatingTextStringOnCreature($"Perks cannot be purchased in this area.", Player, false);
+                        return;
+                    }
+
                     // Refresh data
                     dbPlayer = DB.Get<Player>(playerId);
                     selectedPerk = _filteredPerks[_selectedPerkIndex];

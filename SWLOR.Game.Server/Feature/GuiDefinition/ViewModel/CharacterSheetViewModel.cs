@@ -279,6 +279,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
+            if (GetResRef(GetArea(Player)) == "char_migration")
+            {
+                FloatingTextStringOnCreature($"AP cannot be spent in this area.", Player, false);
+                return;
+            }
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 

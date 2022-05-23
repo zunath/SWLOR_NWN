@@ -699,13 +699,6 @@ namespace SWLOR.CLI
 
                 newPlayer.Settings.ShowHelmet = oldPlayer.DisplayHelmet == null;
 
-                var migration = new PlayerMigration
-                {
-                    PlayerId = oldPlayer.Id,
-                    SkillRanks = sp,
-                    StatDistributionPoints = 15 // Determined by 30 points given at character creation at a cost of 2 per point increase. If character creation changes, this needs to change too.
-                };
-
                 // Spread out the ability point acquisition across all 50 levels.
                 var numberOfIncreases = sp;
                 var level = 1;
@@ -724,7 +717,6 @@ namespace SWLOR.CLI
                 }
 
                 DB.Set(newPlayer);
-                DB.Set(migration);
             }
         }
 

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 Item.MarkLegacyItem(deserialized);
                 WipeDescription(deserialized);
                 WipeVariables(deserialized);
+                CleanItemName(deserialized);
 
                 item.Data = ObjectPlugin.Serialize(deserialized);
                 DB.Set(item);

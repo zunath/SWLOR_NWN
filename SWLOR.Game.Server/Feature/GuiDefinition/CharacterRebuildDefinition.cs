@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Might)
+                            .SetTooltip("Might - Improves damage dealt by melee weapons and increases carrying capacity.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
+                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons and increases physical accuracy.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Vitality)
+                            .SetTooltip("Vitality - Improves your max hit points and reduces damage received.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -130,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
+                            .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -152,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Agility)
+                            .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -174,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Social)
+                            .SetTooltip("Social - Improves your XP gain and leadership capabilities.")
                             .SetHeight(32f)
                             .SetWidth(500f);
 
@@ -224,6 +230,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 cell.AddLabel()
                                     .BindText(model => model.SkillNames)
+                                    .BindTooltip(model => model.SkillTooltips)
                                     .SetHeight(32f);
                             });
 

@@ -151,6 +151,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> SkillTooltips
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
@@ -200,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var availableSkills = Skill.GetActiveContributingSkills();
             var skills = new GuiBindingList<string>();
+            var tooltips = new GuiBindingList<string>();
 
             _skills.Clear();
             _skillDistributionPoints.Clear();
@@ -208,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _skills.Add(type);
                 _skillDistributionPoints.Add(0);
                 skills.Add($"{detail.Name} [0]");
+                tooltips.Add(detail.Description);
             }
 
             SkillNames = skills;

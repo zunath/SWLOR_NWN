@@ -32,12 +32,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void Premonition2()
         {
-            _builder.Create(FeatType.Premonition1, PerkType.Premonition)
-                .Name("Premonition I")
+            _builder.Create(FeatType.Premonition2, PerkType.Premonition)
+                .Name("Premonition II")
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsConcentrationAbility(StatusEffectType.Premonition1)
+                .IsConcentrationAbility(StatusEffectType.Premonition2)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

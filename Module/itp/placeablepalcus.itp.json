@@ -75666,6 +75666,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Character Rebuilder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "char_rebuilder"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DMFI Bed Roll"
                     },
                     "RESREF": {

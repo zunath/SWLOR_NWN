@@ -106,8 +106,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void TuskenElite()
         {
             _builder.Create("TATOOINE_TUSKEN_ELITE")
-                .AddItem("elec_imperfect", 12)
-                .AddItem("fiberp_imperfect", 7)
+                .AddItem("elec_high", 12)
+                .AddItem("fiberp_high", 7)
 
                 .AddItem("raider_longsword", 3)
                 .AddItem("raider_knife", 3)

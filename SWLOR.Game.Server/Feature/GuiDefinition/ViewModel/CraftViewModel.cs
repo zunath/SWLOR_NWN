@@ -1251,7 +1251,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickCarefulSynthesis() => () =>
         {
             var chance = _isSteadyHandActive ? 100 : 50;
-            var cpCost = 15;
+            var cpCost = 10;
             if (_venerationStepsRemaining > 0)
             {
                 _venerationStepsRemaining--;
@@ -1295,7 +1295,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var chance = _isMuscleMemoryActive ? 100 : 50;
 
-            HandleAction("Precise Touch",  chance, 15, 10, () =>
+            HandleAction("Precise Touch",  chance, 10, 10, () =>
             {
                 var quality = CalculateQuality(80);
                 _quality += quality;

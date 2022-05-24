@@ -147,6 +147,7 @@ namespace SWLOR.Game.Server.Entity
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
+        public int Evasion { get; set; }
         public bool RebuildComplete { get; set; }
 
         public PlayerSettings Settings { get; set; }

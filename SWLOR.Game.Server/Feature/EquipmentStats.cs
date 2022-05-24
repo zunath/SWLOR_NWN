@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
             _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
+            _statChangeActions[ItemPropertyType.Evasion] = ApplyEvasion;
             _statChangeActions[ItemPropertyType.Control] = ApplyControl;
             _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
             _statChangeActions[ItemPropertyType.CPBonus] = ApplyCPBonus;
@@ -259,6 +260,31 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustDefense(dbPlayer, damageType, -amount);
+            }
+
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes evasion on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the evasion, if false we're removing it.</param>
+        private static void ApplyEvasion(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustEvasion(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustEvasion(dbPlayer, -amount);
             }
 
             DB.Set(dbPlayer);

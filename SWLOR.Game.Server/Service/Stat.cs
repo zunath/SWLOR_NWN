@@ -564,6 +564,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's evasion by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustEvasion(Player entity, int adjustBy)
+        {
+            entity.Evasion += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's attack by a certain amount. Attack affects damage output.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>

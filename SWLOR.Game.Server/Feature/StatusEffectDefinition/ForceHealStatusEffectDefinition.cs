@@ -23,6 +23,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyHeal(uint source, uint target, int amount)
         {
+            var wilBonus = GetAbilityModifier(AbilityType.Willpower, source) * 2;
+            if (wilBonus < 0)
+                wilBonus = 0;
+
+            amount += wilBonus;
+
             ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                 ? EffectDamage(amount)
                 : EffectHeal(amount), target);

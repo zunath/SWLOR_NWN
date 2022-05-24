@@ -27,16 +27,16 @@ namespace SWLOR.Game.Server.Feature
 
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                var hpRegen = dbPlayer.HPRegen;
-                var fpRegen = dbPlayer.FPRegen;
-                var stmRegen = dbPlayer.STMRegen;
+                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
+                var fpRegen = dbPlayer.FPRegen + vitalityBonus * 2;
+                var stmRegen = dbPlayer.STMRegen + vitalityBonus * 2;
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
 
                 if (foodEffect != null)
                 {
-                    hpRegen += foodEffect.HPRegen + vitalityBonus * 4;
-                    fpRegen += foodEffect.FPRegen + vitalityBonus * 2;
-                    stmRegen += foodEffect.STMRegen + vitalityBonus * 2;
+                    hpRegen += foodEffect.HPRegen;
+                    fpRegen += foodEffect.FPRegen;
+                    stmRegen += foodEffect.STMRegen;
                 }
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))

@@ -104,7 +104,6 @@ namespace SWLOR.Game.Server.Entity
         public int Stamina { get; set; }
         public int TemporaryFoodHP { get; set; }
         public int BAB { get; set; }
-        public int CP { get; set; }
 
         [Indexed]
         public string LocationAreaResref { get; set; }

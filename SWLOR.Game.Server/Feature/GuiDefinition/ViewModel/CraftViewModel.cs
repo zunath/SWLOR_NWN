@@ -419,7 +419,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (secondaryModifier < 0)
                 secondaryModifier = 0;
 
-            _maxCP = (int)(dbPlayer.CP * 0.33f + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
+            var cp = dbPlayer.CPBonus[recipe.Skill];
+
+            _maxCP = (int)(cp * 0.33f + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;

@@ -121,7 +121,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with heavy vibroblades.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationHeavyVibroblades);
         }
 
@@ -134,7 +133,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a heavy vibroblade.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalHeavyVibroblades);
         }
 
@@ -225,14 +223,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
         }
 
@@ -245,6 +241,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 7.0 DMG and inflicts stun for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon1)
 
                 .AddPerkLevel()
@@ -271,12 +268,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly deals 2.5 DMG to your target.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash1)
 
                 .AddPerkLevel()
                 .Description("Instantly deals 5.0 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash2)
 
                 .AddPerkLevel()
@@ -302,7 +301,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with polearms.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationPolearms);
         }
 
@@ -315,7 +313,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a polearm.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalPolearms);
         }
 
@@ -406,14 +403,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Polearm.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Polearm.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery2);
         }
 
@@ -426,6 +421,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 7.0 DMG and has a 45% chance to interrupt the concentration of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer1)
 
                 .AddPerkLevel()
@@ -452,6 +448,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly attacks twice, each for 1.5 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust1)
 
                 .AddPerkLevel()
@@ -484,7 +481,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with twin blades.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationTwinBlades);
         }
 
@@ -497,7 +493,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a twin blades.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalTwinBlades);
         }
 
@@ -588,14 +583,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Twin Blade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Twin Blade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
@@ -608,12 +601,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl1)
 
                 .AddPerkLevel()
                 .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl2)
 
                 .AddPerkLevel()
@@ -633,6 +628,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly attacks twice, each for 1.5 DMG. Successful hits reduce your target's Evasion by 2 for 1 minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut1)
 
                 .AddPerkLevel()

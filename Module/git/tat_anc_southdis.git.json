@@ -137940,7 +137940,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 7
+                            "value": 4
                           },
                           "Param1": {
                             "type": "byte",
@@ -142248,7 +142248,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",

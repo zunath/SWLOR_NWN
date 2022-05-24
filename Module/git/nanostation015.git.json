@@ -231032,7 +231032,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",
@@ -233779,7 +233779,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",

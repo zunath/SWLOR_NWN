@@ -26004,7 +26004,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -26105,7 +26105,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 998
         },
         "Ref": {
           "type": "byte",
@@ -26113,7 +26113,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -26153,7 +26153,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -26229,7 +26229,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -26330,7 +26330,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 998
         },
         "Ref": {
           "type": "byte",
@@ -26338,7 +26338,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -26378,7 +26378,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -26454,7 +26454,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -26555,7 +26555,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 998
         },
         "Ref": {
           "type": "byte",
@@ -26563,7 +26563,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -26603,7 +26603,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -26679,7 +26679,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -26780,7 +26780,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 998
         },
         "Ref": {
           "type": "byte",
@@ -26788,7 +26788,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -26828,7 +26828,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -26904,7 +26904,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -27005,7 +27005,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 997
         },
         "Ref": {
           "type": "byte",
@@ -27013,7 +27013,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -27053,7 +27053,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -27129,7 +27129,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -27238,7 +27238,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -27278,7 +27278,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -27354,7 +27354,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -27463,7 +27463,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -27503,7 +27503,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -27579,7 +27579,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -27688,7 +27688,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -27728,7 +27728,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",

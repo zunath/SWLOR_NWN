@@ -7400,7 +7400,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 5160
+          "value": 5140
         },
         "NaturalAC": {
           "type": "byte",
@@ -93685,7 +93685,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",

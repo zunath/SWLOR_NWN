@@ -113,6 +113,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }
 
+        private void RemoveDyeKit(uint item)
+        {
+            if (GetResRef(item) == "tk_omnidye")
+            {
+                DestroyObject(item);
+            }
+        }
+
         private void MigrateItems(uint player)
         {
             // Inventory Items
@@ -123,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 WipeDescription(item);
                 WipeVariables(item);
                 CleanItemName(item);
+                RemoveDyeKit(item);
             }
 
             // Equipped Items

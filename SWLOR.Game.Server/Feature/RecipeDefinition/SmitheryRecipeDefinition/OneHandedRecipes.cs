@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_imperfect", 4)
+                .Component("elec_high", 4)
                 .Component("ref_jasioclase", 2);
 
 

@@ -38,6 +38,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     foreach (var player in party)
                     {
+                        if (player == source)
+                            continue;
+
                         var effect = EffectAttackIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
@@ -70,6 +73,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     foreach (var player in party)
                     {
+                        if (player == source)
+                            continue;
+
                         var effect = EffectAttackIncrease(6);
                         effect = EffectLinkEffects(effect, EffectACIncrease(6));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);

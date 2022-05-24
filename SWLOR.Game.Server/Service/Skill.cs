@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyAbilityPoint(uint player, int rank, Player dbPlayer)
         {
             // Total AP have been earned (300SP = 30AP)
-            if (dbPlayer.TotalAPAcquired >= SkillCap) return;
+            if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
             void Apply(int expectedRank, int apLevelMax)
             {
@@ -223,13 +223,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbPlayer.TotalAPAcquired++;
                     dbPlayer.AbilityPointsByLevel[expectedRank]++;
+                    dbPlayer.UnallocatedAP++;
 
-                    if (dbPlayer.TotalAPAcquired % 10 == 0)
-                    {
-                        dbPlayer.UnallocatedAP++;
-
-                        SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
-                    }
+                    SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
                 }
             }
 

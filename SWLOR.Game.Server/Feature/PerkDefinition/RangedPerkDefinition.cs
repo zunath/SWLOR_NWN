@@ -132,7 +132,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with pistols.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
         }
 
@@ -145,7 +144,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a pistol.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalPistol);
         }
 
@@ -236,14 +234,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Pistol.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Pistol.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery2);
         }
 
@@ -256,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly deals 2.0 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw1)
 
                 .AddPerkLevel()
@@ -282,12 +279,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly attacks twice, each for 1.5 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot1)
 
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 4.0 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot2)
 
                 .AddPerkLevel()
@@ -313,7 +312,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with throwing weapons.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
         }
 
@@ -326,7 +324,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a throwing weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalThrowingWeapons);
         }
 
@@ -417,14 +414,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery2);
         }
 
@@ -437,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 2.5 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss1)
 
                 .AddPerkLevel()
@@ -463,12 +459,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 2.5 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss2)
 
                 .AddPerkLevel()
@@ -494,7 +492,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with rifles.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);
         }
 
@@ -507,7 +504,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a rifles.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
         }
 
@@ -598,14 +594,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery2);
         }
 
@@ -618,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack will tranquilize your target for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot1)
 
                 .AddPerkLevel()
@@ -644,12 +639,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 2.5 DMG and has a 50% chance to inflict Bind for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()

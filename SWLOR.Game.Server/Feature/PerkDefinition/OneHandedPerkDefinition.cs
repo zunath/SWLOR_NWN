@@ -127,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with vibroblades.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
         }
 
@@ -140,7 +139,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a vibroblade.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalVibroblades);
         }
 
@@ -231,14 +229,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.VibrobladeMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.VibrobladeMastery2);
         }
 
@@ -251,6 +247,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 6.5 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HackingBlade1)
 
                 .AddPerkLevel()
@@ -277,12 +274,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly deals 2.0 DMG to your target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RiotBlade1)
 
                 .AddPerkLevel()
                 .Description("Instantly deals 4.5 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RiotBlade2)
 
                 .AddPerkLevel()
@@ -308,7 +307,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with finesse vibroblades.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
         }
 
@@ -321,7 +319,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a finesse vibroblade.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalFinesseVibroblades);
         }
 
@@ -412,14 +409,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack with a Finesse Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FinesseVibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack with a Finesse Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FinesseVibrobladeMastery2);
         }
 
@@ -432,6 +427,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 6.0 DMG and has a 50% chance to inflict Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab1)
 
                 .AddPerkLevel()
@@ -458,6 +454,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals 4.0 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab1)
 
                 .AddPerkLevel()

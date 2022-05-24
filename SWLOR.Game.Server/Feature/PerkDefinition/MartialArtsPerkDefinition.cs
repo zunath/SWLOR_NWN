@@ -130,7 +130,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with katars.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationKatars);
         }
 
@@ -143,7 +142,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using katars.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalKatars);
         }
 
@@ -234,14 +232,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Katars.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KatarMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Katars.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KatarMastery2);
         }
 
@@ -254,6 +250,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 4.0 DMG and has a 50% chance to inflict Shock for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ElectricFist1)
 
                 .AddPerkLevel()
@@ -280,12 +277,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 4.5 DMG and has a 50% chance to inflict Poison for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StrikingCobra1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 6.5 DMG and has a 75% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StrikingCobra2)
 
                 .AddPerkLevel()
@@ -311,7 +310,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with staves.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationStaves);
         }
 
@@ -324,7 +322,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves the critical hit chance when using a staff.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalStaff);
         }
 
@@ -415,14 +412,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants an additional attack when equipped with a Staff.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StaffMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Staff.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StaffMastery2);
         }
 
@@ -435,6 +430,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 2.0 DMG and has a 50% chance to inflict Blindness for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Slam1)
 
                 .AddPerkLevel()
@@ -461,6 +457,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 2.0 DMG and has a 25% chance to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.LegSweep1)
 
                 .AddPerkLevel()

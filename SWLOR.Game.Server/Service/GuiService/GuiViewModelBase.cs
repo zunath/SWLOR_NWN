@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             WatchOnClient(model => model.Geometry);
 
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
             var convertedPayload = payload == null ? default : (TPayload)payload;
             Initialize(convertedPayload);
         }
@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             _callerConfirmAction = confirmAction;
             _callerCancelAction = cancelAction;
 
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MODAL%%");
+            ChangePartialView("_window_", "%%WINDOW_MODAL%%");
         }
 
         /// <inheritdoc />
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
 
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
 
         public Action OnModalCancelClick() => () =>
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (_callerCancelAction != null)
                 _callerCancelAction();
 
-            ChangePartialView("%%WINDOW_MAIN_PARTIAL%%", "%%WINDOW_MAIN%%");
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
 
         // The following method works around a NUI issue where the new partial view won't display on screen until the window resizes.

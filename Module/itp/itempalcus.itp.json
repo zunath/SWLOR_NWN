@@ -17787,17 +17787,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Omnidye"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tk_omnidye"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Oprlang"
                     },
                     "RESREF": {

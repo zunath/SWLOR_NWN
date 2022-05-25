@@ -443,10 +443,13 @@ namespace SWLOR.Game.Server.Service
                 if (now > despawnTime)
                 {
                     // Destroy active spawned objects from the module.
-                    foreach (var activeSpawn in _activeSpawnsByArea[area])
+                    if (_activeSpawnsByArea.ContainsKey(area))
                     {
-                        ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
-                        DestroyObject(activeSpawn.SpawnObject);
+                        foreach (var activeSpawn in _activeSpawnsByArea[area])
+                        {
+                            ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
+                            DestroyObject(activeSpawn.SpawnObject);
+                        }
                     }
 
                     if (!_queuedSpawnsByArea.ContainsKey(area))
@@ -458,7 +461,12 @@ namespace SWLOR.Game.Server.Service
 
                     // Remove area from the various cache collections.
                     _queuedSpawnsByArea.Remove(area);
-                    _activeSpawnsByArea[area].Clear();
+
+                    if (_activeSpawnsByArea.ContainsKey(area))
+                    {
+                        _activeSpawnsByArea[area].Clear();
+                    }
+
                     _queuedAreaDespawns.Remove(area);
                 }
             }

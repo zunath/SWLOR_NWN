@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         private void RemoveItems(uint item)
         {
             var resref = GetResRef(item);
-            if (resref == "tk_omnidye" || resref == "fist")
+            if (resref == "tk_omnidye" || resref == "fist" || resref == "player_guide")
             {
                 DestroyObject(item);
             }

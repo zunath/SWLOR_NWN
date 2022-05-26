@@ -1036,7 +1036,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check for a selected target that doesn't have a ship status.
-            if (targetShipStatus == null)
+            if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null)
             {
                 SendMessageToPC(activator, "Invalid target.");
                 return;

@@ -1046,6 +1046,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (dbShip.Status.Hull < dbShip.Status.MaxHull ||
+                        dbShip.Status.Shield < dbShip.Status.MaxShield)
+                    {
+                        FloatingTextStringOnCreature("Please repair your ship fully before unregistering it.", Player, false);
+                        return;
+                    }
+
                     if (dbPlayer.ActiveShipId == shipId)
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 

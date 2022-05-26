@@ -113,67 +113,67 @@ namespace SWLOR.Game.Server.Core
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxSetFunctionDelegate(string plugin, string function);
+        public delegate void NWNXSetFunctionDelegate(string plugin, string function);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushIntDelegate(int n);
+        public delegate void NWNXPushIntDelegate(int n);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushFloatDelegate(float f);
+        public delegate void NWNXPushFloatDelegate(float f);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushObjectDelegate(uint o);
+        public delegate void NWNXPushObjectDelegate(uint o);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushStringDelegate(string s);
+        public delegate void NWNXPushStringDelegate(string s);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushStringUTF8Delegate(string s);
+        public delegate void NWNXPushStringUTF8Delegate(string s);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushEffectDelegate(IntPtr e);
+        public delegate void NWNXPushEffectDelegate(IntPtr e);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxPushItemPropertyDelegate(IntPtr ip);
+        public delegate void NWNXPushItemPropertyDelegate(IntPtr ip);
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int nwnxPopIntDelegate();
+        public delegate int NWNXPopIntDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate float nwnxPopFloatDelegate();
+        public delegate float NWNXPopFloatDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate uint nwnxPopObjectDelegate();
+        public delegate uint NWNXPopObjectDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate string nwnxPopStringDelegate();
+        public delegate string NWNXPopStringDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate string nwnxPopStringUTF8Delegate();
+        public delegate string NWNXPopStringUTF8Delegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr nwnxPopEffectDelegate();
+        public delegate IntPtr NWNXPopEffectDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr nwnxPopItemPropertyDelegate();
+        public delegate IntPtr NWNXPopItemPropertyDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void nwnxCallFunctionDelegate();
+        public delegate void NWNXCallFunctionDelegate();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -182,6 +182,22 @@ namespace SWLOR.Game.Server.Core
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void ReturnHookDelegate(IntPtr hook);
+
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void StackPushRawStringDelegate(IntPtr charPtr);
+        
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate IntPtr StackPopRawStringDelegate();
+        
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void NWNXPushRawStringDelegate(IntPtr charPtr);
+        
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate IntPtr NWNXPopRawStringDelegate();
 
         [StructLayout(LayoutKind.Sequential)]
         public readonly struct NativeHandles
@@ -207,25 +223,29 @@ namespace SWLOR.Game.Server.Core
             public readonly ClosureAssignCommandDelegate ClosureAssignCommand;
             public readonly ClosureDelayCommandDelegate ClosureDelayCommand;
             public readonly ClosureActionDoCommandDelegate ClosureActionDoCommand;
-            public readonly nwnxSetFunctionDelegate nwnxSetFunction;
-            public readonly nwnxPushIntDelegate nwnxPushInt;
-            public readonly nwnxPushFloatDelegate nwnxPushFloat;
-            public readonly nwnxPushObjectDelegate nwnxPushObject;
-            public readonly nwnxPushStringDelegate nwnxPushString;
-            public readonly nwnxPushStringUTF8Delegate nwnxPushStringUTF8;
-            public readonly nwnxPushEffectDelegate nwnxPushEffect;
-            public readonly nwnxPushItemPropertyDelegate nwnxPushItemProperty;
-            public readonly nwnxPopIntDelegate nwnxPopInt;
-            public readonly nwnxPopFloatDelegate nwnxPopFloat;
-            public readonly nwnxPopObjectDelegate nwnxPopObject;
-            public readonly nwnxPopStringDelegate nwnxPopString;
-            public readonly nwnxPopStringUTF8Delegate nwnxPopStringUTF8;
-            public readonly nwnxPopEffectDelegate nwnxPopEffect;
-            public readonly nwnxPopItemPropertyDelegate nwnxPopItemProperty;
-            public readonly nwnxCallFunctionDelegate nwnxCallFunction;
+            public readonly NWNXSetFunctionDelegate nwnxSetFunction;
+            public readonly NWNXPushIntDelegate nwnxPushInt;
+            public readonly NWNXPushFloatDelegate nwnxPushFloat;
+            public readonly NWNXPushObjectDelegate nwnxPushObject;
+            public readonly NWNXPushStringDelegate nwnxPushString;
+            public readonly NWNXPushStringUTF8Delegate nwnxPushStringUTF8;
+            public readonly NWNXPushEffectDelegate nwnxPushEffect;
+            public readonly NWNXPushItemPropertyDelegate nwnxPushItemProperty;
+            public readonly NWNXPopIntDelegate nwnxPopInt;
+            public readonly NWNXPopFloatDelegate nwnxPopFloat;
+            public readonly NWNXPopObjectDelegate nwnxPopObject;
+            public readonly NWNXPopStringDelegate nwnxPopString;
+            public readonly NWNXPopStringUTF8Delegate nwnxPopStringUTF8;
+            public readonly NWNXPopEffectDelegate nwnxPopEffect;
+            public readonly NWNXPopItemPropertyDelegate nwnxPopItemProperty;
+            public readonly NWNXCallFunctionDelegate nwnxCallFunction;
             public readonly GetNWNXExportedGlobalsDelegate GetNWNXExportedGlobals;
             public readonly RequestHookDelegate RequestHook;
             public readonly ReturnHookDelegate ReturnHook;
+            public readonly StackPushRawStringDelegate StackPushRawString;
+            public readonly StackPopRawStringDelegate StackPopRawString;
+            public readonly NWNXPushRawStringDelegate nwnxPushRawString;
+            public readonly NWNXPopRawStringDelegate nwnxPopRawString;
         }
     }
 }

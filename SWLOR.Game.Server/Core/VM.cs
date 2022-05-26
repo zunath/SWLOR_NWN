@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SWLOR.Game.Server.Core
 {
     public static partial class VM
     {
+        public static readonly Encoding Cp1252Encoding;
+
         static VM()
         {
             if (NWNCore.FunctionHandler == null)
             {
                 throw new InvalidOperationException("Attempted to call a VM function before NWN.Core was initialised. Initialise NWN.Core first using NWNCore.Init()");
             }
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Cp1252Encoding = Encoding.GetEncoding("windows-1252");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -21,7 +28,12 @@ namespace SWLOR.Game.Server.Core
         public static void StackPush(float value) => NWNCore.NativeFunctions.StackPushFloat(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(string value) => NWNCore.NativeFunctions.StackPushString(value);
+        public static void StackPush(string value)
+        {
+            IntPtr charPtr = GetNullTerminatedString(value);
+            NWNCore.NativeFunctions.StackPushRawString(charPtr);
+            Marshal.FreeHGlobal(charPtr);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void StackPush(uint value) => NWNCore.NativeFunctions.StackPushObject(value);
@@ -42,7 +54,7 @@ namespace SWLOR.Game.Server.Core
         public static float StackPopFloat() => NWNCore.NativeFunctions.StackPopFloat();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static string StackPopString() => NWNCore.NativeFunctions.StackPopString();
+        public static string? StackPopString() => ReadNullTerminatedString(NWNCore.NativeFunctions.StackPopRawString());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint StackPopObject() => NWNCore.NativeFunctions.StackPopObject();
@@ -76,5 +88,43 @@ namespace SWLOR.Game.Server.Core
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ReturnHook(IntPtr funcPtr) => NWNCore.NativeFunctions.ReturnHook(funcPtr);
+
+        public static IntPtr GetNullTerminatedString(string? value)
+        {
+            if (value == null)
+            {
+                return IntPtr.Zero;
+            }
+
+            byte[] bytes = Cp1252Encoding.GetBytes(value);
+            IntPtr buffer = Marshal.AllocHGlobal(bytes.Length + 1);
+            Marshal.Copy(bytes, 0, buffer, bytes.Length);
+
+            // Write null terminator
+            Marshal.WriteByte(buffer + bytes.Length, 0);
+            return buffer;
+        }
+
+        private static unsafe string? ReadNullTerminatedString(IntPtr cString)
+        {
+            if (cString == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            byte* charPointer = (byte*)cString;
+            return Cp1252Encoding.GetString(charPointer, GetStringLength(charPointer));
+        }
+
+        private static unsafe int GetStringLength(byte* cString)
+        {
+            byte* walk = cString;
+            while (*walk != 0)
+            {
+                walk++;
+            }
+
+            return (int)(walk - cString);
+        }
     }
 }

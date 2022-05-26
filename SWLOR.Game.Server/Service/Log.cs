@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var path = settings.LogDirectory + detail.LoggerName + "/" + detail.LoggerName + "_.log";
                 var logger = new LoggerConfiguration()
-                    .WriteTo.Async(a => a.File(path, rollingInterval: RollingInterval.Day));
+                    .WriteTo.File(path, rollingInterval: RollingInterval.Day);
 
                 // Errors should also be print to the console.
                 if (type == LogGroup.Error)

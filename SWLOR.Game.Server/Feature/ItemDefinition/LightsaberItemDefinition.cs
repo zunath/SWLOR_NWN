@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
                     var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
 
-                    var level = GetLightsaberLevel(lightsaber1);
+                    var level = GetLightsaberLevel(lightsaber1) + 1;
                     var saberstaff = CreateItemOnObject("saberstaff", user);
 
                     // Serialize the individual lightsabers onto the saberstaff

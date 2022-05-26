@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     dmg = 34;
                     break;
                 case 5:
-                    dmg = 48;
+                    dmg = 43;
                     break;
             }
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 PlaySound("plr_force_throw");
-                DoFireball(target);
+                DoThrowRock(target);
             });
 
             DelayCommand(delay, () =>
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
-        private static void DoFireball(uint target)
+        private static void DoThrowRock(uint target)
         {
             var missile = EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Rock);
             ApplyEffectToObject(DurationType.Instant, missile, target);

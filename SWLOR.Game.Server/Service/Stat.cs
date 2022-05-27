@@ -790,7 +790,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// Physical and Force types include effect bonuses, stats, etc.
-        /// Fire/Poison/Electrical/Ice only include bonuses granted by gear.
+        /// Fire/Poison/Electrical/Ice include effect bonuses, stats, etc. at 70% of physical.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
@@ -801,6 +801,8 @@ namespace SWLOR.Game.Server.Service
             var defenseBonus = 0;
             var defenderStat = GetAbilityScore(creature, abilityType);
             int skillLevel;
+            var equipmentDefense = 0;
+            var rate = 1.0f;
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -811,10 +813,12 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return dbPlayer.Defenses[type];
+                {
+                    rate = 0.7f;
+                }
 
                 skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-                defenseBonus += dbPlayer.Defenses[type];
+                equipmentDefense += dbPlayer.Defenses[type];
             }
             else
             {
@@ -824,13 +828,13 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return npcStats.Defenses.ContainsKey(type)
-                        ? npcStats.Defenses[type]
-                        : 0;
+                {
+                    rate = 0.7f;
+                }
 
                 if (_npcDefenses.ContainsKey(creature))
                 {
-                    defenseBonus += _npcDefenses[creature][type];
+                    equipmentDefense += _npcDefenses[creature][type];
                 }
 
                 skillLevel = npcStats.Level;
@@ -841,6 +845,7 @@ namespace SWLOR.Game.Server.Service
                 defenseBonus = CalculateEffectDefense(creature, defenseBonus);
             }
 
+            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return CalculateDefense(defenderStat, skillLevel, defenseBonus);
         }
 
@@ -894,8 +899,10 @@ namespace SWLOR.Game.Server.Service
         public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
             var defenseBonus = 0;
-            int defenderStat = GetStatValueNative(creature, abilityType);
+            var defenderStat = GetStatValueNative(creature, abilityType);
             var skillLevel = 0;
+            var equipmentDefense = 0;
+            var rate = 1.0f;
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -908,10 +915,12 @@ namespace SWLOR.Game.Server.Service
                         type == CombatDamageType.Poison ||
                         type == CombatDamageType.Electrical ||
                         type == CombatDamageType.Ice)
-                        return dbPlayer.Defenses[type];
+                    {
+                        rate = 0.7f;
+                    }
 
                     skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-                    defenseBonus += dbPlayer.Defenses[type];
+                    equipmentDefense += dbPlayer.Defenses[type];
                 }
             }
             else
@@ -921,13 +930,13 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return npcStats.Defenses.ContainsKey(type)
-                        ? npcStats.Defenses[type]
-                        : 0;
+                {
+                    rate = 0.7f;
+                }
 
                 if (_npcDefenses.ContainsKey(creature.m_idSelf))
                 {
-                    defenseBonus += _npcDefenses[creature.m_idSelf][type];
+                    equipmentDefense += _npcDefenses[creature.m_idSelf][type];
                 }
 
                 skillLevel = npcStats.Level;
@@ -938,6 +947,7 @@ namespace SWLOR.Game.Server.Service
                 defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus);
             }
 
+            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 

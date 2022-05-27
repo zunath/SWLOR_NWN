@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxRegisteredShips = 10;
 
-        private static readonly Dictionary<string, ShipDetail> _ships = new();
+        private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
         private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
         
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             LoadShipModules();
             LoadShipEnemies();
 
-            Console.WriteLine($"Loaded {_ships.Count} ships.");
+            Console.WriteLine($"Loaded {_shipTypes.Count} ships.");
             Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (shipType, shipDetail) in ships)
                 {
-                    _ships.Add(shipType, shipDetail);
+                    _shipTypes.Add(shipType, shipDetail);
 
                     if (!_shipItemResrefs.Contains(shipDetail.ItemResref))
                         _shipItemResrefs.Add(shipDetail.ItemResref);
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A ship detail matching the type.</returns>
         public static ShipDetail GetShipDetailByItemTag(string itemTag)
         {
-            return _ships[itemTag];
+            return _shipTypes[itemTag];
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if registered, false otherwise</returns>
         public static bool IsRegisteredShip(string itemTag)
         {
-            return _ships.ContainsKey(itemTag);
+            return _shipTypes.ContainsKey(itemTag);
         }
 
         /// <summary>
@@ -591,7 +591,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
-            var shipDetail = _ships[dbPlayerShip.Status.ItemTag];
+            var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
@@ -866,7 +866,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             
-            var shipDetails = _ships[playerShip.ItemTag];
+            var shipDetails = _shipTypes[playerShip.ItemTag];
 
             // Check ship requirements
             foreach (var (perkType, requiredLevel) in shipDetails.RequiredPerks)
@@ -960,8 +960,8 @@ namespace SWLOR.Game.Server.Service
 
             // Tag must be registered with the system.
             var itemTag = GetTag(item);
-            if (!_ships.ContainsKey(itemTag)) return;
-            var shipDetail = _ships[itemTag];
+            if (!_shipTypes.ContainsKey(itemTag)) return;
+            var shipDetail = _shipTypes[itemTag];
 
             foreach (var (perkType, level) in shipDetail.RequiredPerks)
             {
@@ -1160,7 +1160,7 @@ namespace SWLOR.Game.Server.Service
             if (!_spaceObjects.ContainsKey(creatureTag)) return;
 
             var registeredEnemyType = _spaceObjects[creatureTag];
-            var shipDetail = _ships[registeredEnemyType.ShipItemTag];
+            var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
 
             var shipStatus = new ShipStatus
             {

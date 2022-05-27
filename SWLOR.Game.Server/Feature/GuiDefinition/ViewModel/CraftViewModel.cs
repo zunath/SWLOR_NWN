@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var cp = dbPlayer.CPBonus[recipe.Skill];
 
-            _maxCP = (int)(cp * 0.33f + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
+            _maxCP = (int)(cp + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;

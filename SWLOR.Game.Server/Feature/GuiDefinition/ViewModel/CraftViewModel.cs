@@ -788,13 +788,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're missing some components, clear the serialized component list and the result list.
             if (!hasAllComponents)
             {
-                foreach (var component in _components)
+                DelayCommand(0.1f, () =>
                 {
-                    var item = ObjectPlugin.Deserialize(component);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
+                    foreach (var component in _components)
+                    {
+                        var item = ObjectPlugin.Deserialize(component);
+                        ObjectPlugin.AcquireItem(Player, item);
+                    }
 
-                _components.Clear();
+                    _components.Clear();
+                });
+
                 result.Clear();
             }
 

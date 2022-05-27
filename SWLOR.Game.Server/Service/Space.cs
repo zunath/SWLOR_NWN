@@ -1101,8 +1101,6 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAutoShipRecovery(ShipStatus shipStatus)
         {
-            var shipDetail = _ships[shipStatus.ItemTag];
-
             // Shield recovery
             shipStatus.ShieldCycle++;
             var rechargeRate = shipStatus.ShieldRechargeRate;
@@ -1124,8 +1122,8 @@ namespace SWLOR.Game.Server.Service
             shipStatus.Capacitor++;
 
             // Clamp capacitor to max.
-            if (shipStatus.Capacitor > shipDetail.MaxCapacitor)
-                shipStatus.Capacitor = shipDetail.MaxCapacitor;
+            if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
+                shipStatus.Capacitor = shipStatus.MaxCapacitor;
         }
 
         /// <summary>

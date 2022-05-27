@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Rock")
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 6.0 DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10.0 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 8.5 DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 15 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowRock2)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 12.0 DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 25 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowRock3)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 13.5 DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 34 DMG to a single target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowRock4)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 16.0 DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 43 DMG to a single target.")
                 .Price(8)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

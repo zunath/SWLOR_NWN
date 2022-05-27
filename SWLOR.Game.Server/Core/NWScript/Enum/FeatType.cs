@@ -1803,7 +1803,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceRage1 = 1836,
         ForceRage2 = 1837,
         StrongStyleLightsaber = 1838,
-        StrongStyleSaberstaff = 1839
-
+        StrongStyleSaberstaff = 1839,
+        ThrowRock1 = 1840,
+        ThrowRock2 = 1841,
+        ThrowRock3 = 1842,
+        ThrowRock4 = 1843,
+        ThrowRock5 = 1844,
     }
 }

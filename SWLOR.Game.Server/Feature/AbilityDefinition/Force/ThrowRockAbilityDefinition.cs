@@ -73,7 +73,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Rock), target);
-                ApplyEffectToObject(DurationType.Instant, missile, target);
             });
 
             Enmity.ModifyEnmity(activator, target, damage);

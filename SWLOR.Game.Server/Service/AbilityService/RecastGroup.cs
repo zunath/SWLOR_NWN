@@ -151,6 +151,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         CreepingTerror = 71,
         [RecastGroup("Force Rage", "F. Rage")]
         ForceRage = 72,
+        [RecastGroup("Throw Rock", "Throw Rock")]
+        ThrowRock = 73
     }
 
     public class RecastGroupAttribute: Attribute

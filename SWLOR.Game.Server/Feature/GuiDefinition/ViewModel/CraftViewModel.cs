@@ -419,7 +419,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (secondaryModifier < 0)
                 secondaryModifier = 0;
 
-            var cp = dbPlayer.CPBonus[recipe.Skill];
+            var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill) 
+                ? dbPlayer.CPBonus[recipe.Skill] 
+                : 0;
 
             _maxCP = (int)(cp + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
             _cp = _maxCP;

@@ -8802,17 +8802,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Player Guide"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "player_guide"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Retraining Tome"
                     },
                     "RESREF": {

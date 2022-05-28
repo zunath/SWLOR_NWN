@@ -1051,6 +1051,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return xp;
         }
 
+        private void ApplyProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type)
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    RemoveItemProperty(item, property);
+                }
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+            
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
         private void ProcessSuccess()
         {
             var playerId = GetObjectUUID(Player);
@@ -1065,23 +1085,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemPlugin.SetAddGoldPieceValue(item, 1);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
-            foreach (var ip in _itemPropertiesEnhancement1)
+            var allProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2);
+            foreach (var ip in allProperties)
             {
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-                    SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
-                }
-                else
-                {
-                    SendMessageToPC(Player, ColorToken.Red("Enhancement failed to apply."));
-                }
-            }
-            foreach (var ip in _itemPropertiesEnhancement2)
-            {
-                if (Random.D100(1) <= propertyTransferChance)
-                {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                    ApplyProperty(item, ip);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else

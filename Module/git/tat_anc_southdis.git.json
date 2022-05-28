@@ -122865,7 +122865,7 @@
                     "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
-                      "value": 0
+                      "value": 28
                     },
                     "BaseItem": {
                       "type": "int",
@@ -122877,7 +122877,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2
+                      "value": 30
                     },
                     "Cursed": {
                       "type": "byte",
@@ -124834,7 +124834,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 14
+                            "value": 8
                           },
                           "Param1": {
                             "type": "byte",
@@ -125009,7 +125009,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 22
+                            "value": 16
                           },
                           "Param1": {
                             "type": "byte",
@@ -125184,7 +125184,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 36
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -125359,7 +125359,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 40
+                            "value": 37
                           },
                           "Param1": {
                             "type": "byte",
@@ -125534,7 +125534,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 56
+                            "value": 43
                           },
                           "Param1": {
                             "type": "byte",

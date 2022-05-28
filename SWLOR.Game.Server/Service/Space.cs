@@ -1312,6 +1312,10 @@ namespace SWLOR.Game.Server.Service
             if (amount < 0) return;
 
             var targetShipStatus = GetShipStatus(target);
+
+            if (targetShipStatus == null)
+                return;
+
             var remainingDamage = amount;
             // First deal damage to target's shields.
             if (remainingDamage <= targetShipStatus.Shield)

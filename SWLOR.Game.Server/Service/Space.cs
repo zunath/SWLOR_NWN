@@ -64,6 +64,16 @@ namespace SWLOR.Game.Server.Service
             WarpPlayerInsideShip(player);
         }
 
+        [NWNEventHandler("mod_exit")]
+        public static void ExitServer()
+        {
+            var player = GetExitingObject();
+            if (!IsPlayerInSpaceMode(player))
+                return;
+
+            CloneShip(player);
+        }
+
         /// <summary>
         /// When the module loads, 
         /// </summary>
@@ -772,12 +782,12 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            CloneShip(player);
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
             var dbShip = DB.Get<PlayerShip>(shipId);
-            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-            var shipDetail = GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
@@ -805,7 +815,24 @@ namespace SWLOR.Game.Server.Service
 
                 dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
-            
+
+            DB.Set(dbPlayer);
+            DB.Set(dbShip);
+
+            // Destroy the NPC clone.
+            DestroyPilotClone(player);
+            ExecuteScript("space_exit", player);
+        }
+
+        private static void CloneShip(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var shipId = dbPlayer.ActiveShipId;
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var shipDetail = GetShipDetailByItemTag(dbShip.Status.ItemTag);
+
             // The existence of a current location on a ship property indicates it is currently in space.
             // Spawn an NPC representing the ship at the location of the player.
             if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
@@ -834,14 +861,6 @@ namespace SWLOR.Game.Server.Service
             {
                 _shipClones.Remove(dbShip.Id);
             }
-
-            // Destroy the NPC clone.
-            DestroyPilotClone(player);
-
-            DB.Set(dbPlayer);
-            DB.Set(dbShip);
-
-            ExecuteScript("space_exit", player);
         }
 
         private static void DestroyPilotClone(uint player)

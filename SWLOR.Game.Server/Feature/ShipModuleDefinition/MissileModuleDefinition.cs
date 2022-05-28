@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Texture("iit_ess_089")
                 .Type(ShipModuleType.Missile)
-                .MaxDistance(35f)
+                .MaxDistance(55f)
                 .Description(description)
                 .RequiresTarget()
                 .ValidTargetType(ObjectType.Creature)

@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1);
 
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1);
 
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1);
         }

@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
 

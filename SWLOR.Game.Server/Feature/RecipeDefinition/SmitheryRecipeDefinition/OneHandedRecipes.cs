@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 1)
                 .Component("fine_wood", 1);
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(14)
                 .Quantity(1)
                 .RequirementPerk(PerkType.OneHandedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
 

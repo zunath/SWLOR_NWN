@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 4)
                 .Component("elec_flawed", 2);
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
 
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 5)
                 .Component("elec_flawed", 3);
 

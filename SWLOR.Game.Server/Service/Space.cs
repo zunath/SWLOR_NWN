@@ -1346,7 +1346,7 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
-                ApplyDeath(target);
+                ApplyDeath(attacker, target);
             }
             else
             {
@@ -1386,8 +1386,9 @@ namespace SWLOR.Game.Server.Service
         ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
+        /// <param name="attacker">The attacker who killed the creature.</param>
         /// <param name="creature">The creature who will be killed.</param>
-        private static void ApplyDeath(uint creature)
+        private static void ApplyDeath(uint attacker, uint creature)
         {
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 
@@ -1481,7 +1482,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply normal death mechanics on top of the ship ones.
-            ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
+            AssignCommand(attacker, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
+            });
         }
 
         /// <summary>

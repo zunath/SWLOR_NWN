@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         private void Tier5()
         {
             _builder.Create("pirate_borealis")
-                .ItemTag("NPC_Sybil")
+                .ItemTag("NPC_Borealis")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4");

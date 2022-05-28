@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Native
             attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
             Log.Write(LogGroup.Attack, $"Building combat log message");
-            var message = BuildCombatLogMessage(
+            var message = Combat.BuildCombatLogMessage(
                 (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim(),
                 (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
                 pAttackData.m_nAttackResult,
@@ -345,32 +345,6 @@ namespace SWLOR.Game.Server.Native
             pAttackData.m_nToHitRoll = 1;
 
             Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
-        }
-
-        private static string BuildCombatLogMessage(
-            string attackerName, 
-            string defenderName, 
-            byte attackResultType,
-            int chanceToHit)
-        {
-            var type = string.Empty;
-
-            switch (attackResultType)
-            {
-                case 1:
-                case 7:
-                    type = ": *hit*";
-                    break;
-                case 3:
-                    type = ": *critical*";
-                    break;
-                case 4:
-                    type = ": *miss*";
-                    break;
-            }
-
-            var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
-            return ColorToken.Combat( $"{coloredAttackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
         private static int HasWeaponFocus(CNWSCreature attacker, CNWSItem weapon)

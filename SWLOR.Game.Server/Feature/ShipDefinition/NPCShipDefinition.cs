@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .RequirePerk(PerkType.Starships, 0)
                 .MaxArmor(10)
                 .MaxCapacitor(40)
-                .MaxShield(8)
+                .MaxShield(3)
                 .ShieldRechargeRate(2)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);

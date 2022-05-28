@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -9,6 +11,65 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
+        private static readonly List<CombatDamageType> _allValidDamageTypes = new();
+
+        /// <summary>
+        /// When the module loads, add all valid damage types to the cache.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void LoadDamageTypes()
+        {
+            var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
+
+            foreach (var type in allValues)
+            {
+                if (type == CombatDamageType.Invalid)
+                    continue;
+
+                _allValidDamageTypes.Add(type);
+            }
+        }
+
+        /// <summary>
+        /// When a player enters the server, apply any defenses towards damage types they don't already have.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void AddDamageTypeDefenses()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var foundNewType = false;
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            foreach (var type in _allValidDamageTypes)
+            {
+                if (!dbPlayer.Defenses.ContainsKey(type))
+                {
+                    foundNewType = true;
+                    dbPlayer.Defenses[type] = 0;
+                }
+            }
+
+            if (foundNewType)
+            {
+                DB.Set(dbPlayer);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all valid damage types available in the system.
+        /// </summary>
+        /// <returns>A list of damage types</returns>
+        public static List<CombatDamageType> GetAllDamageTypes()
+        {
+            return _allValidDamageTypes.ToList();
+        }
+
         /// <summary>
         /// Calculates the minimum and maximum damage possible with the provided stats.
         /// </summary>
@@ -186,53 +247,37 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Sends a combat log message to both the attacker and defender.
+        /// Builds a combat log message based on the provided information.
         /// </summary>
-        /// <param name="attacker">The creature attacking</param>
-        /// <param name="defender">The creature defending</param>
-        /// <param name="attackStat">The stat used for the attacker</param>
-        /// <param name="defendStat">The stat used for the defender</param>
-        /// <param name="attackRoll">The base attack roll</param>
-        /// <param name="attackMod">The attack roll modifier</param>
-        /// <param name="isHit">true if the attack hits, false otherwise</param>
-        public static void SendCombatLog(
-            uint attacker, 
-            uint defender,
-            AbilityType attackStat,
-            AbilityType defendStat,
-            int attackRoll,
-            int attackMod,
-            bool isHit)
+        /// <param name="attackerName">The name of the attacker</param>
+        /// <param name="defenderName">The name of the defender</param>
+        /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
+        /// <param name="chanceToHit">The percent chance to hit</param>
+        /// <returns></returns>
+        public static string BuildCombatLogMessage(
+            string attackerName,
+            string defenderName,
+            int attackResultType,
+            int chanceToHit)
         {
-            string GetStatName(AbilityType type)
+            var type = string.Empty;
+
+            switch (attackResultType)
             {
-                switch (type)
-                {
-                    case AbilityType.Might:
-                        return "MGT";
-                    case AbilityType.Perception:
-                        return "PER";
-                    case AbilityType.Vitality:
-                        return "VIT";
-                    case AbilityType.Willpower:
-                        return "WIL";
-                    case AbilityType.Social:
-                        return "SOC";
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
-                }
+                case 1:
+                case 7:
+                    type = ": *hit*";
+                    break;
+                case 3:
+                    type = ": *critical*";
+                    break;
+                case 4:
+                    type = ": *miss*";
+                    break;
             }
 
-            var total = attackRoll + attackMod;
-            var operation = attackMod < 0 ? "-" : "+";
-            var attackStatName = GetStatName(attackStat);
-            var defendStatName = GetStatName(defendStat);
-            var attackText = isHit ? "*hit*" : "*miss*";
-            var coloredAttackerName = ColorToken.Custom(GetName(attacker), 153, 255, 255);
-            var message = ColorToken.Combat($"{coloredAttackerName} attacks {GetName(defender)} {attackText} [{attackStatName} vs {defendStatName}] : ({attackRoll} {operation} {Math.Abs(attackMod)} = {total})");
-
-            SendMessageToPC(attacker, message);
-            SendMessageToPC(defender, message);
+            var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
+            return ColorToken.Combat($"{coloredAttackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
     }
 }

@@ -472,8 +472,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
             var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
             DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride);
-            Evasion = Stat.GetEvasion(Player);
+            Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride, SkillType.Invalid);
+            Evasion = Stat.GetEvasion(Player, SkillType.Invalid);
 
             var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)
                 ? dbPlayer.Control[SkillType.Smithery]

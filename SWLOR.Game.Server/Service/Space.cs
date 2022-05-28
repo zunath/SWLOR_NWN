@@ -837,23 +837,27 @@ namespace SWLOR.Game.Server.Service
             // Spawn an NPC representing the ship at the location of the player.
             if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
-                var location = GetLocation(player);
-                var position = GetPositionFromLocation(location);
-                dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
+                if (_shipClones.ContainsKey(shipId) &&
+                    !GetIsObjectValid(_shipClones[shipId]))
                 {
-                    AreaResref = GetResRef(GetAreaFromLocation(location)),
-                    X = position.X,
-                    Y = position.Y,
-                    Z = position.Z,
-                    Orientation = GetFacingFromLocation(location)
-                };
-                DB.Set(dbProperty);
+                    var location = GetLocation(player);
+                    var position = GetPositionFromLocation(location);
+                    dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
+                    {
+                        AreaResref = GetResRef(GetAreaFromLocation(location)),
+                        X = position.X,
+                        Y = position.Y,
+                        Z = position.Z,
+                        Orientation = GetFacingFromLocation(location)
+                    };
+                    DB.Set(dbProperty);
 
-                var clone = CreateObject(ObjectType.Creature, "player_starship", location);
-                SetCreatureAppearanceType(clone, shipDetail.Appearance);
-                SetName(clone, dbProperty.CustomName);
+                    var clone = CreateObject(ObjectType.Creature, "player_starship", location);
+                    SetCreatureAppearanceType(clone, shipDetail.Appearance);
+                    SetName(clone, dbProperty.CustomName);
 
-                _shipClones[dbShip.Id] = clone;
+                    _shipClones[dbShip.Id] = clone;
+                }
             }
             // Otherwise the assumption is the ship is docked. A clone isn't needed and the ship should be removed
             // from the cache.

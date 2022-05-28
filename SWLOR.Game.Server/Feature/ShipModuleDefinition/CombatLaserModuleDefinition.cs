@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture("iit_ess_004")
                 .Description(description)
                 .RequiresTarget()
+                .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)

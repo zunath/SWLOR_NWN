@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public delegate int ShipModuleCalculateCapacitorDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);
     public delegate void ShipModuleActivatedDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus, int moduleBonus);
     public delegate string ShipModuleValidationDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus, int moduleBonus);
+    public delegate float ShipModuleCalculateMaxDistanceDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus, int moduleBonus);
 
     public class ShipModuleDetail
     {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleUnequippedDelegate ModuleUnequippedAction { get; set; }
         public ShipModuleActivatedDelegate ModuleActivatedAction { get; set; }
         public ShipModuleValidationDelegate ModuleValidationAction { get; set; }
+        public ShipModuleCalculateMaxDistanceDelegate ModuleMaxDistanceAction { get; set; }
 
         public ShipModuleDetail()
         {

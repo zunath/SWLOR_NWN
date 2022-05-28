@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -67,6 +69,22 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             RemoveCreatureEnmity(player);
+        }
+
+        /// <summary>
+        /// When a DM limbos creatures, ensure their enmity is wiped.
+        /// </summary>
+        [NWNEventHandler("dm_limbo_bef")]
+        public static void CreatureLimbo()
+        {
+            var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));
+
+            for (var x = 1; x <= count; x++)
+            {
+                var target = Convert.ToUInt32(EventsPlugin.GetEventData($"TARGET_{x}"));
+                ClearEnmityTables(target);
+                RemoveCreatureEnmity(target);
+            }
         }
 
         /// <summary>

@@ -281,6 +281,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Removes all status effects from a creature.
+        /// </summary>
+        /// <param name="creature">The creature to remove all effects from.</param>
+        public static void RemoveAll(uint creature)
+        {
+            if (!_creaturesWithStatusEffects.ContainsKey(creature))
+                return;
+
+            foreach (var effectType in _creaturesWithStatusEffects[creature].Keys)
+            {
+                Remove(creature, effectType);
+            }
+        }
+
+        /// <summary>
         /// Checks if a creature has a status effect.
         /// If ignoreExpiration is true, even if the effect is expired this will return true.
         /// This should only be used within this class to avoid confusion.

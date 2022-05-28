@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -15,16 +16,24 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals light thermal damage to your target.", 1, 3f, 6, 5);
-            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals light thermal damage to your target.", 2, 4f, 9, 8);
-            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals light thermal damage to your target.", 3, 5f, 12, 11);
-            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals light thermal damage to your target.", 4, 6f, 15, 14);
-            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals light thermal damage to your target.", 5, 7f, 18, 16);
+            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals light thermal damage to your target.", 1, 3f, 6, 8);
+            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals light thermal damage to your target.", 2, 4f, 9, 12);
+            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals light thermal damage to your target.", 3, 5f, 12, 17);
+            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals light thermal damage to your target.", 4, 6f, 15, 21);
+            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals light thermal damage to your target.", 5, 7f, 18, 26);
 
             return _builder.Build();
         }
 
-        private void CombatLaser(string itemTag, string name, string shortName, string description, int requiredLevel, float recast, int capacitor, int baseDamage)
+        private void CombatLaser(
+            string itemTag, 
+            string name, 
+            string shortName, 
+            string description, 
+            int requiredLevel, 
+            float recast, 
+            int capacitor, 
+            int dmg)
         {
             _builder.Create(itemTag)
                 .Name(name)
@@ -41,11 +50,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var targetDefense = targetShipStatus.ThermalDefense;
-                    var attackerDamage = baseDamage + activatorShipStatus.ThermalDamage + moduleBonus;
+                    var attackBonus = moduleBonus * 2 + activatorShipStatus.ThermalDamage;
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                    var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
 
-                    var damage = attackerDamage - targetDefense;
-                    if (damage < 0) damage = 0;
+                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
+                    var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
+                        0);
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
@@ -57,7 +75,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest);
                             ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
-                            Space.ApplyShipDamage(activator, target, damage);
+                            DelayCommand(0.3f, () =>
+                            {
+                                Space.ApplyShipDamage(activator, target, damage);
+                            });
                         });
                     }
                     else
@@ -67,8 +88,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest, true);
                             ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
                         });
-                        SendMessageToPC(activator, "You miss your target.");
                     }
+
+                    var attackId = isHit ? 1 : 4;
+                    var combatLogMessage = Combat.BuildCombatLogMessage(GetName(activator), GetName(target), attackId, chanceToHit);
+                    Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
 
                     Enmity.ModifyEnmity(activator, target, damage);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);

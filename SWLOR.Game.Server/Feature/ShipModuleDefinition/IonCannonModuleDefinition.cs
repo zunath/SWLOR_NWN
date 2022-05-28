@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -15,16 +16,24 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals light EM damage to your target.", 1, 3f, 6, 5);
-            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals light EM damage to your target.", 2, 4f, 9, 8);
-            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals light EM damage to your target.", 3, 5f, 12, 11);
-            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals light EM damage to your target.", 4, 6f, 15, 14);
-            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals light EM damage to your target.", 5, 7f, 18, 16);
+            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals light EM damage to your target.", 1, 3f, 6, 8);
+            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals light EM damage to your target.", 2, 4f, 9, 12);
+            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals light EM damage to your target.", 3, 5f, 12, 17);
+            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals light EM damage to your target.", 4, 6f, 15, 21);
+            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals light EM damage to your target.", 5, 7f, 18, 26);
 
             return _builder.Build();
         }
 
-        private void IonCannon(string itemTag, string name, string shortName, string description, int requiredLevel, float recast, int capacitor, int baseDamage)
+        private void IonCannon(
+            string itemTag, 
+            string name, 
+            string shortName, 
+            string description, 
+            int requiredLevel, 
+            float recast, 
+            int capacitor, 
+            int dmg)
         {
             _builder.Create(itemTag)
                 .Name(name)
@@ -41,11 +50,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var targetDefense = targetShipStatus.EMDefense;
-                    var attackerDamage = baseDamage + activatorShipStatus.EMDamage + moduleBonus;
+                    var attackBonus = moduleBonus * 2 + activatorShipStatus.EMDamage;
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                    var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
 
-                    var damage = attackerDamage - targetDefense;
-                    if (damage < 0) damage = 0;
+                    var defenseBonus = targetShipStatus.EMDefense * 2;
+                    var defense = Stat.GetDefense(target, CombatDamageType.EM, AbilityType.Vitality, defenseBonus);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
+                        0);
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
@@ -85,8 +103,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
                             });
                         });
-                        SendMessageToPC(activator, "You miss your target.");
                     }
+
+                    var attackId = isHit ? 1 : 4;
+                    var combatLogMessage = Combat.BuildCombatLogMessage(GetName(activator), GetName(target), attackId, chanceToHit);
+                    Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
 
                     Enmity.ModifyEnmity(activator, target, damage);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);

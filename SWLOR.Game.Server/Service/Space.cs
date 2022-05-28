@@ -10,10 +10,12 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using Vector3 = System.Numerics.Vector3;
 
@@ -596,6 +598,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="shipId">The Id of the ship to enter space with.</param>
         public static void EnterSpaceMode(uint player, string shipId)
         {
+            // Ground effects must be removed when entering space mode.
+            // Otherwise players could buff on the ground, then get those same bonuses while in space.
+            StatusEffect.RemoveAll(player);
+            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
+            {
+                RemoveEffect(player, effect);
+            }
+
             ClonePlayerAndSit(player);
 
             var playerId = GetObjectUUID(player);
@@ -1125,9 +1135,9 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(target);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                dbShip.Status = activatorShipStatus;
+                dbShip.Status = targetShipStatus;
 
-                DB.Set(dbPlayer);
+                DB.Set(dbShip);
             }
         }
 
@@ -1311,15 +1321,15 @@ namespace SWLOR.Game.Server.Service
         /// Calculates attacker's chance to hit target.
         /// </summary>
         /// <param name="attacker">The creature attacking.</param>
-        /// <param name="target">The creature being targeted.</param>
-        public static int CalculateChanceToHit(uint attacker, uint target)
+        /// <param name="defender">The creature being targeted.</param>
+        public static int CalculateChanceToHit(uint attacker, uint defender)
         {
             var attackerShipStatus = GetShipStatus(attacker);
-            var targetShipStatus = GetShipStatus(target);
-            
-            var delta = attackerShipStatus.Accuracy - targetShipStatus.Evasion;
-            var chanceToHit = 75 + delta * 0.5f;
-            return (int)chanceToHit;
+            var defenderShipStatus = GetShipStatus(defender);
+            var attackerAccuracy = Stat.GetAccuracy(attacker, OBJECT_INVALID, AbilityType.Agility, SkillType.Piloting) + attackerShipStatus.Accuracy;
+            var defenderEvasion = Stat.GetEvasion(defender, SkillType.Piloting) + defenderShipStatus.Evasion;
+
+            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion);
         }
 
         /// <summary>
@@ -1370,6 +1380,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
                 ApplyDeath(attacker, target);
+                ClearCurrentTarget(attacker);
             }
             else
             {

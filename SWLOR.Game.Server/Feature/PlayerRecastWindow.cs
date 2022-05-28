@@ -65,6 +65,9 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var now = DateTime.UtcNow;
 
             var numberOfRecasts = 0;
@@ -120,6 +123,9 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
             if (dbPlayerShip == null)
@@ -160,6 +166,9 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var now = DateTime.UtcNow;
 
             foreach (var (group, dateTime) in dbPlayer.RecastTimes)

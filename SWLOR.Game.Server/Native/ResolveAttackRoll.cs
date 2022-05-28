@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Native
                         Log.Write(LogGroup.Attack, $"Immune to critical hits");
                         // Immune!
                         var pData = new CNWCCMessageData();
-                        pData.SetObjectID(0, attacker.m_idSelf);
+                        pData.SetObjectID(0, defender.m_idSelf);
                         pData.SetInteger(0, 126); //Critical Hit Immunity Feedback
                         pAttackData.m_alstPendingFeedback.Add(pData);
                         pAttackData.m_nAttackResult = 1;

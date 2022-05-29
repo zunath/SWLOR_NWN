@@ -10373,6 +10373,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Microtench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_microtench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Octotench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_octotench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_scorchys"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 7.0
                     },
                     "FACTION": {

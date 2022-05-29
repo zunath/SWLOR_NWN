@@ -1166,20 +1166,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "moncalabeachside"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalacoralunde"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "moncaladungeon1"
         }
       },
@@ -1195,20 +1181,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "moncalawildjungl"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalacoralhcav"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "moncalasunkenlab"
         }
       },
       {
@@ -1552,6 +1524,34 @@
         "Area_Name": {
           "type": "resref",
           "value": "korr_valley"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefab_beachside"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefab_hauntcave"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefab_underwtun"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefab_sunkenlab"
         }
       }
     ]

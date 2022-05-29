@@ -5699,922 +5699,6 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31443
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 1.685873627366163e-007
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 15
-        },
-        "Description": {
-          "id": 16810924,
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 15
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 16
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 15
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 16811008,
-          "type": "cexolocstring",
-          "value": {
-            "0": "[NWN2] Rockface 3"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 18
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NWN2Rockface3"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nwn2rockface003"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 19.80000305175781
-        },
-        "Y": {
-          "type": "float",
-          "value": 3.490001678466797
-        },
-        "Z": {
-          "type": "float",
-          "value": -0.9800000190734863
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 31443
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 1.685873627366163e-007
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 15
-        },
-        "Description": {
-          "id": 16810924,
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 15
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 16
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 15
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 16811008,
-          "type": "cexolocstring",
-          "value": {
-            "0": "[NWN2] Rockface 3"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 18
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NWN2Rockface3"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nwn2rockface003"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 9.919998168945313
-        },
-        "Y": {
-          "type": "float",
-          "value": 3.319999694824219
-        },
-        "Z": {
-          "type": "float",
-          "value": -0.9800000190734863
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 31443
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 1.685873627366163e-007
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 15
-        },
-        "Description": {
-          "id": 16810924,
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 15
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 16
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 15
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 16811008,
-          "type": "cexolocstring",
-          "value": {
-            "0": "[NWN2] Rockface 3"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 18
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NWN2Rockface3"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nwn2rockface003"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 29.54000091552734
-        },
-        "Y": {
-          "type": "float",
-          "value": 3.279998779296875
-        },
-        "Z": {
-          "type": "float",
-          "value": -0.9800000190734863
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 31443
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 1.685873627366163e-007
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 15
-        },
-        "Description": {
-          "id": 16810924,
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 15
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 16
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 15
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 16811008,
-          "type": "cexolocstring",
-          "value": {
-            "0": "[NWN2] Rockface 3"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 18
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NWN2Rockface3"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nwn2rockface003"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 38.97000122070313
-        },
-        "Y": {
-          "type": "float",
-          "value": 2.880001068115234
-        },
-        "Z": {
-          "type": "float",
-          "value": -0.9800000190734863
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
           "value": 3994
         },
         "AutoRemoveKey": {
@@ -10462,6 +9546,460 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 4
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 30072
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -3.141592264175415
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 15
+        },
+        "Description": {
+          "id": 16810924,
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 15
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 16
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 15
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "id": 16811008,
+          "type": "cexolocstring",
+          "value": {
+            "0": "[NWN2] Rockface 2"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 18
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NWN2Rockface2"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nwn2rockface002"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 35.99552154541016
+        },
+        "Y": {
+          "type": "float",
+          "value": 10.22357749938965
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 3994
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 3.117157936096191
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Cliff TNO end 2"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "ZEP_CliffTNOend2"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "zep_tno_cliff_2"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 73.91000366210938
+        },
+        "Y": {
+          "type": "float",
+          "value": 2.700000047683716
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   },
@@ -11377,45 +10915,30 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -27.97992897033691
+                "value": -6.660449981689453
               },
               "PointY": {
                 "type": "float",
-                "value": -0.1817193031311035
+                "value": 3.144018173217773
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.5020660161972046
+                "value": 0.0250005591660738
               }
             },
             {
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -27.85472297668457
+                "value": -6.645366668701172
               },
               "PointY": {
                 "type": "float",
-                "value": -3.007201910018921
+                "value": 0.1037616729736328
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.02801933325827122
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -0.3772506713867188
-              },
-              "PointY": {
-                "type": "float",
-                "value": -2.893035173416138
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
+                "value": 0.02096501924097538
               }
             },
             {
@@ -11430,7 +10953,22 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.02500000037252903
+                "value": 0.02096484042704105
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.1613426208496094
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.337247848510742
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500049956142902
               }
             }
           ]
@@ -11445,7 +10983,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_moncala_beachdise1"
+          "value": "WP_moncala_sabersouth_to_north"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -11494,7 +11032,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "moncala_tobeachside"
+          "value": "moncala_sabernorth_to_south"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11534,7 +11072,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 42.66432952880859
+          "value": 39.21617889404297
         },
         "YOrientation": {
           "type": "float",
@@ -11542,7 +11080,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 4.473418235778809
+          "value": 18.78630447387695
         },
         "ZOrientation": {
           "type": "float",
@@ -11551,6 +11089,56 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 97
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "IS_BUILDABLE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 59
         }
       }
     ]
@@ -11590,7 +11178,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_moncala_tobeachside"
+          "value": "WP_moncala_sabernorth_to_south"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11598,11 +11186,11 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 2.626570860235622e-038
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
-          "value": 28.37298011779785
+          "value": 35.96662521362305
         },
         "YOrientation": {
           "type": "float",
@@ -11610,11 +11198,1712 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 4.873404026031494
+          "value": 20.35831451416016
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.02298269979655743
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.02454144880175591
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.91741943359375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 39.76357650756836
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.003746956586837769
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.02454144880175591
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 51.15021514892578
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 38.65917205810547
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.003746956586837769
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.3598949909210205
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 80.68206787109375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.9329928159713745
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 40.54320907592773
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 88.66665649414063
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 58.72368621826172
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 98.83329010009766
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 39.29566192626953
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 98.34503173828125
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 44.00582122802734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9891765117645264
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 111.0195617675781
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.1467304974794388
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 39.7049446105957
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9891765117645264
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 112.1466369628906
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.1467304974794388
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 45.37714004516602
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01000607013702393
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 103.5260391235352
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 70.89462280273438
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01655960083007813
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 102.3772888183594
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 68.95692443847656
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.2429801672697067
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.15332794189453
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.9700312614440918
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 68.80728912353516
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.673433859304292e-040
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 51.20571899414063
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 69.57701873779297
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 9.384971618652344
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 60.14562225341797
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -7.033348083496094e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.98431396484375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 50.48979949951172
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -7.62939453125e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9142097234725952
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 30.85535621643066
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.4052413702011108
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 59.92571258544922
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -6.914138793945313e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 11.13010215759277
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.08956909179688
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9807853102684021
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 17.24881362915039
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.1950902044773102
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 91.76287841796875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.2429801672697067
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.64066314697266
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.9700312614440918
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 86.18795013427734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 33.27330780029297
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 98.77058410644531
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 34.01000595092773
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 104.1858520507813
         },
         "ZPosition": {
           "type": "float",
           "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 34.60775756835938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 107.0028610229492
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 74.42322540283203
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 111.1341781616211
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01000607013702393
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 68.62405395507813
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 99.34593963623047
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 83.37183380126953
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 98.66287994384766
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.5367431640625e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 78.42740631103516
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 89.89199066162109
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.002180576324462891
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 101.6731643676758
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 96.43129730224609
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala - Eco-Terrorists"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORISTS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "creature_spaw001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9852777719497681
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 100.1326293945313
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.170961007475853
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 106.2778167724609
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.5367431640625e-007
         }
       }
     ]

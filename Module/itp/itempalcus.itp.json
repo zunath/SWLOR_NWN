@@ -5387,6 +5387,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Microtench Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "microtench_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moraband Serpent Bite"
                     },
                     "RESREF": {
@@ -5403,6 +5414,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mynock_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Octotench Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "octotench_claw"
                     }
                   },
                   {
@@ -5436,6 +5458,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandswimmerclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorchys_claw"
                     }
                   },
                   {
@@ -5859,6 +5892,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Microtench Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "microtench_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Calamari Cruiser Properties"
                     },
                     "RESREF": {
@@ -5875,6 +5919,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mora_serp_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Octotench Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "octotench_skin"
                     }
                   },
                   {
@@ -6073,6 +6128,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandswimmer_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorchys_skin"
                     }
                   },
                   {
@@ -19327,6 +19393,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Scorchellus Antennae"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorch_antennae"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus Chitin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorch_chitin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorch_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus Tail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scorch_tail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Scrap Metal"
                     },
                     "RESREF": {
@@ -20476,6 +20586,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_t"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tench Ink"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mtench_ink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tench Mantle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tench_mantle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tench Poison"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mtench_poison"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tench Sac"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mtench_sac"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tench Tentacle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mtench_tentacle"
                     }
                   },
                   {
@@ -24934,6 +25099,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_029"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Sharptooth Caverns Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_60"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Sharptooth Jungles Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_59"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Sunkenhedge Swamp Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_58"
                     }
                   },
                   {

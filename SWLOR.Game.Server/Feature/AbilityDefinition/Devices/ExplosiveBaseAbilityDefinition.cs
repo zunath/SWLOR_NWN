@@ -44,6 +44,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         /// <returns>true if at least one explosives item is found, false otherwise.</returns>
         protected bool HasExplosives(uint activator)
         {
+            if (!GetIsPC(activator))
+                return true;
+
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;

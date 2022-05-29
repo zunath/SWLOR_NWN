@@ -90,10 +90,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sith_twinblade", 5)
                 .AddItem("sith_rifle", 5)
                 .AddItem("sith_shuriken", 5)
-                .AddItem("sith_katar", 5)
+                .AddItem("sith_electro", 1)
 
                 .AddItem("abdamaryllia", 2, 1, true)
-                .AddItem("map_56", 5, 1, true)
+                .AddItem("map_56", 10, 1, true)
+                .AddItem("recipe_sithlngsd", 1, 1, true)
+                .AddItem("recipe_sithknf", 1, 1, true)
+                .AddItem("recipe_sithtwb", 1, 1, true)
+                .AddItem("recipe_sithrif", 1, 1, true)
+                .AddItem("recipe_sithgsw", 1, 1, true)
+                .AddItem("recipe_sithsp", 1, 1, true)
+                .AddItem("recipe_sithstf", 1, 1, true)
+                .AddItem("recipe_sithpis", 1, 1, true)
+                .AddItem("recipe_sithkat", 1, 1, true)
+                .AddItem("recipe_sithshu", 1, 1, true)
+                .AddItem("recipe_sithelec", 1, 1, true)
                 .AddGold(32, 5);
         }
 
@@ -138,8 +149,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("v_apple", 3)
                 .AddItem("green_curry", 5)
                 .AddItem("med_supplies", 3)
-                .AddItem("agate", 1, 1, true)
-                .AddItem("map_56", 1, 1, true)
+                .AddItem("agate", 10, 1, true)
+                .AddItem("map_56", 5, 1, true)
+                .AddItem("recipe_sithlngsd", 1, 1, true)
+                .AddItem("recipe_sithknf", 1, 1, true)
+                .AddItem("recipe_sithtwb", 1, 1, true)
+                .AddItem("recipe_sithrif", 1, 1, true)
+                .AddItem("recipe_sithgsw", 1, 1, true)
+                .AddItem("recipe_sithsp", 1, 1, true)
+                .AddItem("recipe_sithstf", 1, 1, true)
+                .AddItem("recipe_sithpis", 1, 1, true)
+                .AddItem("recipe_sithkat", 1, 1, true)
+                .AddItem("recipe_sithshu", 1, 1, true)
+                .AddItem("recipe_sithelec", 1, 1, true)
 
                 .AddGold(40, 10);
         }

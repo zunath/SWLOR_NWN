@@ -2187,49 +2187,6 @@
                       "type": "byte",
                       "value": 32
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 10.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Apprentice Ghost"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_ghost"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 10.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Apprentice Ghost"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_ghost_male"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 2155
@@ -10204,6 +10161,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Apprentice Ghost"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_ghost"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Apprentice Ghost"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_ghost_male"
                     }
                   },
                   {

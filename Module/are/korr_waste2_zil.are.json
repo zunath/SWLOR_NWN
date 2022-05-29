@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban - South Wasteland"
+      "0": "Korriban - Wastelands - South"
     }
   },
   "NoRest": {
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 14
+    "value": 16
   },
   "Width": {
     "type": "int",

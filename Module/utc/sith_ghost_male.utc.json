@@ -10,7 +10,7 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 138
+    "value": 132
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 21
   },
   "Disarmable": {
     "type": "byte",
@@ -78,17 +78,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 65536,
+        "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_cairnmog_bite"
+          "value": "s_app_gh_electro"
+        }
+      },
+      {
+        "__struct_id": 32,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "s_app_gh_electro"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_cairnmog_prop"
+          "value": "s_app_gh_hide"
         }
       }
     ]
@@ -185,11 +192,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 138
+    "value": 132
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -219,7 +226,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 144
+    "value": 156
   },
   "NaturalAC": {
     "type": "byte",
@@ -231,7 +238,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 32
+    "value": 155
   },
   "PerceptionRange": {
     "type": "byte",
@@ -546,26 +553,6 @@
     "type": "resref",
     "value": "sith_ghost_male"
   },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 26
-        }
-      }
-    ]
-  },
   "WalkRate": {
     "type": "int",
     "value": 7
@@ -580,6 +567,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 9
+    "value": 24
   }
 }

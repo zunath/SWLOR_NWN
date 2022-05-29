@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             AmphiHydrus();
             EcoTerrorist();
             EcoTerroristLeader();
+            Microtench();
+            Octotench();
+            Scorchellus();
 
             return _builder.Build();
         }
@@ -77,6 +80,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_ECOTERRORIST_RARES")
                 .AddItem("map_027", 3, 1, true)
+                .AddItem("map_59", 1, 1, true)
+                .AddItem("map_60", 1, 1, true)
                 .AddItem("poach_shield", 5)
                 .AddItem("poach_cloak", 5)
                 .AddItem("poach_belt", 5)
@@ -137,7 +142,42 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("MONCALA_ECOTERRORIST_LEADER_RARES")
                 .AddItem("map_027", 1, 1, true)
                 .AddItem("citrine", 1, 1, true)
-                .AddItem("rruchi", 1, 1, true);
+                .AddItem("rruchi", 1, 1, true)
+                .AddItem("map_59", 1, 1, true)
+                .AddItem("map_60", 1, 1, true);
+        }
+
+        private void Microtench()
+        {
+            _builder.Create("MONCALA_MICROTENCH")
+                .AddItem("mtench_tentacle", 20)
+                .AddItem("mtench_mantle", 10)
+                .AddItem("mtench_ink", 3)
+
+                .AddItem("mtench_poison", 2, 1, true);
+        }
+
+        private void Octotench()
+        {
+            _builder.Create("MONCALA_OCTOTENCH")
+                .AddItem("mtench_tentacle", 25)
+                .AddItem("mtench_mantle", 20)
+                .AddItem("mtench_ink", 3)
+                .AddItem("mtench_sac", 1)
+
+                .AddItem("mtench_poison", 5, 1, true)
+                .AddItem("map_58", 1, 1, true);
+        }
+
+        private void Scorchellus()
+        {
+            _builder.Create("MONCALA_SCORCHELLUS")
+                .AddItem("scorch_tail", 20)
+                .AddItem("scorch_leg", 10)
+                .AddItem("scorch_chitin", 15)
+                .AddItem("scorch_antennae", 5)
+
+                .AddItem("map_58", 1, 1, true);
         }
     }
 }

@@ -6090,6 +6090,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Apprentice Ghost Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app_gh_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -29734,6 +29745,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "wook_lilryyk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Ghost Apprentice Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "s_app_gh_electro"
                           }
                         },
                         {

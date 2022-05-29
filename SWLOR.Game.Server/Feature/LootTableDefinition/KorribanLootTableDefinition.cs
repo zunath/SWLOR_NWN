@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Terentatek();
             Tukata();
 
+            SithCryptCrates();
+
             return _builder.Build();
         }
 
@@ -46,6 +48,15 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("KORRIBAN_TUKATA")
                 .AddItem("lth_good", 20);
+        }
+
+        private void SithCryptCrates()
+        {
+            _builder.Create("KORRIBAN_SITH_CRATE_1");
+
+            _builder.Create("KORRIBAN_SITH_CRATE_2");
+
+            _builder.Create("KORRIBAN_SITH_CRATE_3");
         }
     }
 }

@@ -6,19 +6,21 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class MonCalaSpawnDefinition: ISpawnListDefinition
     {
+        private readonly SpawnTableBuilder _builder = new();
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
-            var builder = new SpawnTableBuilder();
-            CoralIsles(builder);
-            EcoTerrorists(builder);
-            EcoTerroristLeader(builder);
+            CoralIsles();
+            EcoTerrorists();
+            EcoTerroristLeader();
+            SunkenhedgeSwamps();
+            SharptoothCaverns();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void CoralIsles(SpawnTableBuilder builder)
+        private void CoralIsles()
         {
-            builder.Create("MONCALA_CORAL_ISLES", "Coral Isles")
+            _builder.Create("MONCALA_CORAL_ISLES", "Coral Isles")
                 .AddSpawn(ObjectType.Creature, "viper")
                 .WithFrequency(20)
                 .RandomlyWalks()
@@ -35,9 +37,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void EcoTerrorists(SpawnTableBuilder builder)
+        private void EcoTerrorists()
         {
-            builder.Create("MONCALA_ECOTERRORISTS", "Eco-Terrorists")
+            _builder.Create("MONCALA_ECOTERRORISTS", "Eco-Terrorists")
                 .AddSpawn(ObjectType.Creature, "ecoterr_1")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -49,11 +51,39 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void EcoTerroristLeader(SpawnTableBuilder builder)
+        private void EcoTerroristLeader()
         {
-            builder.Create("MONCALA_ECOTERRORIST_LEADER", "Eco-Terrorist Leader")
+            _builder.Create("MONCALA_ECOTERRORIST_LEADER", "Eco-Terrorist Leader")
                 .AddSpawn(ObjectType.Creature, "ecoterr_ldr")
                 .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void SunkenhedgeSwamps()
+        {
+            _builder.Create("MONCALA_SUNKENHEAD_SWAMPS", "Sunkenhead Swamps")
+                .AddSpawn(ObjectType.Creature, "mc_octotench")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mc_scorchys")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mc_microtench")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void SharptoothCaverns()
+        {
+            _builder.Create("MONCALA_SHARPTOOTH_CAVERNS", "Sharptooth Caverns")
+                .AddSpawn(ObjectType.Creature, "mc_microtench")
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

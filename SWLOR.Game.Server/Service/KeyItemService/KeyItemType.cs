@@ -125,6 +125,13 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         KorribanSithCryptMap = 56,
         [KeyItem(KeyItemCategoryType.Maps, "Korriban - Caverns Map", true, "Map of the caverns on Korriban.")]
         KorribanCavernsMap = 57,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sunkenhead Swamps Map", true, "Map of the Sunkenhead Swamps on Mon Cala.")]
+        MonCalaSunkenhedgeSwampsMap = 58,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sharptooth Jungles Map", true, "Map of the Sharptooth Jungles on Mon Cala.")]
+        MonCalaSharptoothJunglesMap = 59,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sharptooth Caverns Map", true, "Map of the Sharptooth Caverns on Mon Cala.")]
+        MonCalaSharptoothCavernsMap = 60,
     }
 
     public class KeyItemAttribute : Attribute

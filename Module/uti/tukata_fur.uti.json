@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 25
+    "value": 15
   },
   "BaseItem": {
     "type": "int",
-    "value": 516
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,18 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 25
+    "value": 15
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 90753,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,14 +42,15 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Abdamaryllia"
+      "0": "Tuk'ata Fur"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 5
+    "value": 39
   },
   "PaletteID": {
     "type": "byte",
@@ -54,42 +58,11 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 3
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 101
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 8
-        }
-      },
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -133,7 +106,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -151,6 +124,37 @@
           "type": "word",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 55
+        }
       }
     ]
   },
@@ -164,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "abdamaryllia"
+    "value": "tukata_fur"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "abdamaryllia"
+    "value": "tukata_fur"
   }
 }

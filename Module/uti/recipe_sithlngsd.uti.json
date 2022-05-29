@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 25
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 516
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 25
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Abdamaryllia"
+      "0": "Blueprint: Sith Longsword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 5
+    "value": 52
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 26
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 3
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -82,74 +82,12 @@
           "value": 0
         },
         "PropertyName": {
-          "type": "word",
-          "value": 101
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 8
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
           "type": "word",
           "value": 15
         },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 44
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 20
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 95
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 335
         }
       }
     ]
@@ -164,10 +102,30 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "abdamaryllia"
+    "value": "RECIPE"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "abdamaryllia"
+    "value": "recipe_sithlngsd"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RECIPES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "186"
+        }
+      }
+    ]
   }
 }

@@ -553,6 +553,26 @@
     "type": "resref",
     "value": "sith_ghost_male"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "KORRIBAN_HSSISS,40,2"
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 7

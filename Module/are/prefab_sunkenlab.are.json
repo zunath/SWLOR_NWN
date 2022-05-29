@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mon Cala, Sunken Lab"
+      "0": "[Prefab] Sunken Lab"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "moncalasunkenlab"
+    "value": "prefab_sunkenlab"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "MonCalaSunkenLab"
+    "value": "prefab_sunkenlab"
   },
   "Tile_List": {
     "type": "list",
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 6
   },
   "Width": {
     "type": "int",

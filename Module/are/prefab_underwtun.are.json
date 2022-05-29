@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mon Cala - Coral Isles - Underwater Tunnel"
+      "0": "[Prefab] Underwater Tunnel"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "moncalacoralunde"
+    "value": "prefab_underwtun"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "MonCalaCoralIslesUnderwaterTunne"
+    "value": "prefab_underwtun"
   },
   "Tile_List": {
     "type": "list",
@@ -1193,7 +1193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 9
   },
   "Width": {
     "type": "int",

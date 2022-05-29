@@ -72,6 +72,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_214", NPCGroupType.Viscara_CrystalSpider, 10, 1);
             BuildItemTask("hun_tsk_215", "steel", 3, 1);
             BuildItemTask("hun_tsk_216", "elec_flawed", 10, 1);
+            BuildKillTask("hun_tsk_217", NPCGroupType.Korriban_Tukata, 10, 1);
+            BuildKillTask("hun_tsk_218", NPCGroupType.Korriban_Hssiss, 10, 1);
+            BuildKillTask("hun_tsk_219", NPCGroupType.Korriban_Shyrack, 10, 1);
+            BuildKillTask("hun_tsk_220", NPCGroupType.Korriban_MorabandSerpent, 10, 1);
+            BuildKillTask("hun_tsk_221", NPCGroupType.Korriban_SithApprenticeGhost, 10, 1);
+            BuildKillTask("hun_tsk_222", NPCGroupType.Korriban_Terentatek, 5, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask("hun_tsk_400", "amphi_brain", 6, 2);

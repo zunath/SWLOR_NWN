@@ -116,12 +116,14 @@ namespace SWLOR.Game.Server.Service
                     var delta = npcLevel - highestRank;
                     var baseXP = Skill.GetDeltaXP(delta);
                     var totalPoints = (float)cpList.Sum(s => s.Value);
+                    var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
 
                     // Each skill used during combat receives a percentage of the baseXP amount depending on the number of combat points earned.
                     foreach (var (skillType, cp) in cpList)
                     {
                         var percentage = cp / totalPoints;
                         var adjustedXP = baseXP * percentage;
+                        adjustedXP += areaBonus * adjustedXP;
 
                         Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
                     }
@@ -132,7 +134,9 @@ namespace SWLOR.Game.Server.Service
                         var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
                         delta = npcLevel - armorRank;
                         baseXP = Skill.GetDeltaXP(delta);
-                        Skill.GiveSkillXP(player, SkillType.Armor, baseXP);
+                        var adjustedXP = baseXP + areaBonus * baseXP;
+
+                        Skill.GiveSkillXP(player, SkillType.Armor, (int)adjustedXP);
                     }
                 }
 

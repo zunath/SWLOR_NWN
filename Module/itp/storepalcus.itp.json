@@ -71,6 +71,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Korriban General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "korr_general"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mon Cala General Store"
               },
               "RESREF": {

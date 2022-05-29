@@ -119,8 +119,12 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 
         [KeyItem(KeyItemCategoryType.Maps, "Korriban Orbit Map", true, "Map of the space surrounding Korriban.")]
         KorribanOrbitMap = 54,
-        [KeyItem(KeyItemCategoryType.Maps, "Dathomir Orbit Map", true, "Map of the space surrounding Dathomir.")]
-        DathomirOrbitMap = 55,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Wastelands Map", true, "Map of the wastelands on Korriban.")]
+        KorribanWastelandsMap = 55,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Sith Crypt Map", true, "Map of the Sith crypt on Korriban.")]
+        KorribanSithCryptMap = 56,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Caverns Map", true, "Map of the caverns on Korriban.")]
+        KorribanCavernsMap = 57,
     }
 
     public class KeyItemAttribute : Attribute

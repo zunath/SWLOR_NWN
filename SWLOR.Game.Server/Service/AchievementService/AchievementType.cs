@@ -246,8 +246,14 @@ namespace SWLOR.Game.Server.Service.AchievementService
         [Achievement("Explore Korriban Orbit", "Explore Korriban's Orbit", true)]
         ExploreKorribanOrbit = 92,
 
-        [Achievement("Explore Dathomir Orbit", "Explore Dathomir's Orbit", true)]
-        ExploreDathomirOrbit = 93,
+        [Achievement("Explore Wastelands", "Explore the wastelands on Korriban", true)]
+        ExploreKorribanWastelands = 93,
+
+        [Achievement("Explore Sith Crypt", "Explore the Sith crypt on Korriban", true)]
+        ExploreKorribanSithCrypt = 94,
+
+        [Achievement("Explore Korriban Caverns", "Explore the caverns on Korriban", true)]
+        ExploreKorribanCaverns = 95,
     }
 
     public class AchievementAttribute: Attribute

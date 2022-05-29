@@ -10153,7 +10153,26 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 3.0
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hssiss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_hssiss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10172,7 +10191,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 8.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10191,7 +10210,26 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Terentatek"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_terentatek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
                     },
                     "FACTION": {
                       "type": "cexostring",

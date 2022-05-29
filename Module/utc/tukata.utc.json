@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 12
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 6.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -3
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 98
+    "value": 120
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -78,10 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 65536,
+        "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "warocas_bite"
+          "value": "tukata_bite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tukata_skin"
         }
       }
     ]
@@ -122,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 98
+    "value": 120
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -156,7 +163,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 122
   },
   "NaturalAC": {
     "type": "byte",
@@ -477,7 +484,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -506,75 +513,15 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 48
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
           "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 14
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 49
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 50
+          "value": "KORRIBAN_TUKATA,40,2"
         }
       }
     ]
@@ -593,6 +540,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 22
   }
 }

@@ -5354,6 +5354,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hssiss Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Hound Bite"
                     },
                     "RESREF": {
@@ -5370,6 +5381,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kinrath_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moraband Serpent Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mora_serpent_bit"
                     }
                   },
                   {
@@ -5420,6 +5442,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shyrack Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Swamp Vine Thorns"
                     },
                     "RESREF": {
@@ -5442,11 +5475,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Terentatek Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "terentatek_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Test Claw"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "test_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_bite"
                     }
                   },
                   {
@@ -5749,6 +5804,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hssiss Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Hound Skin"
                     },
                     "RESREF": {
@@ -5798,6 +5864,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "moncal_cruiser_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moraband Serpent Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mora_serp_skin"
                     }
                   },
                   {
@@ -6002,6 +6079,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shyrock Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrock_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -6024,11 +6112,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Terentatek Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "terentatek_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Test Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "test_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_skin"
                     }
                   },
                   {

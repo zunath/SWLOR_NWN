@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             MonCalaOrbit();
             HutlarOrbit();
             TatooineOrbit();
+            KorribanOrbit();
+            DathomirOrbit();
 
             return _builder.Build();
         }
@@ -64,6 +66,27 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
                 .WithFrequency(5);
+        }
+
+        private void KorribanOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_KORRIBAN_ORBIT", "Space Resources - Korriban Orbit")
+                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(30);
+        }
+
+        private void DathomirOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
+                
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(10);
         }
     }
 }

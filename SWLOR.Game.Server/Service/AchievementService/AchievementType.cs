@@ -243,6 +243,11 @@ namespace SWLOR.Game.Server.Service.AchievementService
         [Achievement("Explore Player House", "Explore a player's house", true)]
         ExplorePlayerHouse = 91,
 
+        [Achievement("Explore Korriban Orbit", "Explore Korriban's Orbit", true)]
+        ExploreKorribanOrbit = 92,
+
+        [Achievement("Explore Dathomir Orbit", "Explore Dathomir's Orbit", true)]
+        ExploreDathomirOrbit = 93,
     }
 
     public class AchievementAttribute: Attribute

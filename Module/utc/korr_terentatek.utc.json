@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10029
+    "value": 10043
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 6.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 5
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 13
+    "value": 12
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -5
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 207
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Force-sensitive tuk'ata, or Sith hounds, were used for thousands of years to guard the tombs of the Dark Lords of the Sith on Korriban. "
+      "0": ""
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_bite"
+          "value": "terentatek_claw"
+        }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "terentatek_claw"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_skin"
+          "value": "terentatek_hide"
         }
       }
     ]
@@ -104,6 +111,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1750
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -112,7 +126,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata"
+      "0": "Terentatek"
     }
   },
   "fortbonus": {
@@ -129,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 207
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 14
   },
   "Interruptable": {
     "type": "byte",
@@ -163,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 122
+    "value": 212
   },
   "NaturalAC": {
     "type": "byte",
@@ -456,7 +470,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 452
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
@@ -465,7 +479,7 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 299
+          "value": 229
         },
         "SpellCasterLevel": {
           "type": "byte",
@@ -484,7 +498,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -492,7 +506,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Tukata"
+    "value": "korr_terentatek"
   },
   "Tail_New": {
     "type": "dword",
@@ -504,7 +518,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata"
+    "value": "korr_terentatek"
   },
   "VarTable": {
     "type": "list",
@@ -521,7 +535,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_TUKATA,40,2"
+          "value": "KORRIBAN_TERENTATEK,40,2"
         }
       }
     ]
@@ -540,6 +554,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 16
   }
 }

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             MonCalaOrbit();
             HutlarOrbit();
             TatooineOrbit();
+            KorribanOrbit();
+            DathomirOrbit();
 
             return _builder.Build();
         }
@@ -94,6 +96,45 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "pirate_eleyna")
                 .WithFrequency(1)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void KorribanOrbit()
+        {
+            _builder.Create("SPACE_KORRIBAN_ORBIT", "Space - Korriban Orbit")
+                .AddSpawn(ObjectType.Creature, "pirate_night")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_ferron")
+                .WithFrequency(5)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_storm")
+                .WithFrequency(1)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void DathomirOrbit()
+        {
+            _builder.Create("SPACE_DATHOMIR_ORBIT", "Space - Dathomir Orbit")
+                
+                .AddSpawn(ObjectType.Creature, "pirate_drake")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_borealis")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_eleyna")
+                .WithFrequency(10)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

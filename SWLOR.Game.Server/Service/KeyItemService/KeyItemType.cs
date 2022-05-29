@@ -116,6 +116,11 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         ViscaraSewersMap = 52,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildwoods Map", true, "Map of the Wildwoods.")]
         WildwoodsMap = 53,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban Orbit Map", true, "Map of the space surrounding Korriban.")]
+        KorribanOrbitMap = 54,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir Orbit Map", true, "Map of the space surrounding Dathomir.")]
+        DathomirOrbitMap = 55,
     }
 
     public class KeyItemAttribute : Attribute

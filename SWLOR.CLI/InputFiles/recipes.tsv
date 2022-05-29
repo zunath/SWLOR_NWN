@@ -1,10 +1,1 @@
-Smithery	recipe_sithlngsd	One-Handed Blueprints	SithLongsword	2	Sith Longsword	18	1	sith_longsword	Weapon	1	ref_scordspar	5	fine_wood	3																	
-Smithery	recipe_sithknf	One-Handed Blueprints	SithKnife	2	Sith Knife	17	1	sith_knife	Weapon	1	ref_scordspar	4	fine_wood	2																	
-Smithery	recipe_sithtwb	Two-Handed Blueprints	SithTwinBlade	2	Sith Twin Blade	16	1	sith_twinblade	Weapon	1	ref_scordspar	4	fine_wood	2																	
-Smithery	recipe_sithrif	Ranged Blueprints	SithRifle	2	Sith Rifle	15	1	sith_rifle	Weapon	1	ref_scordspar	3	elec_flawed	2																	
-Smithery	recipe_sithgsw	Two-Handed Blueprints	SithGreatSword	2	Sith Great Sword	14	1	sith_gswd	Weapon	1	ref_scordspar	3	fine_wood	2																	
-Smithery	recipe_sithsp	Two-Handed Blueprints	SithSpear	2	Sith Spear	13	1	sith_spear	Weapon	1	ref_scordspar	3	fine_wood	2																	
-Smithery	recipe_sithstf	Two-Handed Blueprints	SithStaff	2	Sith Staff	12	1	sith_staff	Weapon	1	ref_scordspar	2	fine_wood	1																	
-Smithery	recipe_sithpis	Ranged Blueprints	SithPistol	2	Sith Pistol	19	1	sith_rifle	Weapon	1	ref_scordspar	5	elec_flawed	3																	
-Smithery	recipe_sithkat	Martial Blueprints	SithKatar	2	Sith Katar	18	1	sith_katar	Weapon	1	ref_scordspar	3	fine_wood	2																	
-Smithery	recipe_sithshu	Ranged Blueprints	SithShuriken	2	Sith Shuriken	18	1	sith_shuriken	Weapon	1	ref_scordspar	3	fine_wood	2																	
+Smithery	recipe_sithelec	One-Handed Blueprints	SithElectroblade	2	Sith Electroblade	19	1	sith_electro	Weapon	1	elec_flawed	5	ref_scordspar	3																	

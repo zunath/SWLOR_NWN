@@ -197,6 +197,18 @@
         TrainingSaber4 = 184,
         TrainingSaber5 = 185,
 
+        SithLongsword = 186,
+        SithKnife = 187,
+        SithGreatSword = 188,
+        SithSpear = 189,
+        SithKatar = 190,
+        SithStaff = 191,
+        SithPistol = 192,
+        SithTwinBlade = 193,
+        SithRifle = 194,
+        SithShuriken = 195,
+        SithElectroblade = 196,
+
         // Fabrication:  1001-2000
         BedRoll = 1001,
         Easel = 1002,
@@ -513,6 +525,7 @@
         WildBloodBroth = 2078,
         GrandioseSandwich = 2079,
         WildStew = 2080,
+        HssissSurprise = 2081,
 
 
         // Engineering: 3001-4000

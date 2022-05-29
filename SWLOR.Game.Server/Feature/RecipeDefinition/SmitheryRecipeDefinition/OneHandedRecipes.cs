@@ -42,6 +42,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 1)
                 .Component("fine_wood", 1);
 
+            // Sith Knife
+            _builder.Create(RecipeType.SithKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("sith_knife")
+                .Level(17)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
+
             // Delta Knife
             _builder.Create(RecipeType.DeltaKnife, SkillType.Smithery)
                 .Category(RecipeCategoryType.Knife)
@@ -100,6 +111,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
 
+            // Sith Longsword
+            _builder.Create(RecipeType.SithLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("sith_longsword")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3);
+
             // Delta Longsword
             _builder.Create(RecipeType.DeltaLongsword, SkillType.Smithery)
                 .Category(RecipeCategoryType.Longsword)
@@ -157,6 +179,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_flawed", 4)
                 .Component("ref_scordspar", 2);
+
+            // Sith Electroblade
+            _builder.Create(RecipeType.SithElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("sith_electro")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
 
             // Electroblade III
             _builder.Create(RecipeType.Electroblade3, SkillType.Smithery)

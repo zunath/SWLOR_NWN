@@ -42,6 +42,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3);
 
+            // Sith Great Sword
+            _builder.Create(RecipeType.SithGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("sith_gswd")
+                .Level(14)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
             // Delta Great Sword
             _builder.Create(RecipeType.DeltaGreatSword, SkillType.Smithery)
                 .Category(RecipeCategoryType.GreatSword)
@@ -100,6 +111,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
 
+            // Sith Spear
+            _builder.Create(RecipeType.SithSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("sith_spear")
+                .Level(13)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
             // Delta Spear
             _builder.Create(RecipeType.DeltaSpear, SkillType.Smithery)
                 .Category(RecipeCategoryType.Spear)
@@ -156,6 +178,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
+            // Sith Twin Blade
+            _builder.Create(RecipeType.SithTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("sith_twinblade")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
 
             // Delta Twin Blade

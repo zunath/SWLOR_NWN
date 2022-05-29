@@ -18,6 +18,7 @@ namespace SWLOR.CLI
             ClearOutputDirectory();
 
             var componentTemplate = $"{Environment.NewLine}\t.Component(\"%%COMPONENTRESREF%%\", %%COMPONENTQUANTITY%%)";
+            var enhancementTemplate = $"{Environment.NewLine}\t.EnhancementSlots(RecipeEnhancementType.xxx, %%ENHANCEMENTSLOTS%%)";
 
             var recipeTemplate = File.ReadAllText(Template);
             var inputLines = File.ReadAllLines(InputData);
@@ -36,7 +37,7 @@ namespace SWLOR.CLI
                 var resref = data[8].Trim();
                 var level = data[6].Trim();
                 var perkLevel = data[4].Trim();
-                var modSlots = data[10].Trim();
+                var enhancementSlots = data[10].Trim();
                 var component1Resref = data[11].Trim();
                 var component1Quantity = data[12].Trim();
                 var component2Resref = data[13].Trim();
@@ -53,8 +54,15 @@ namespace SWLOR.CLI
                     .Replace("%%RECIPEENUMNAME%%", recipeEnumName)
                     .Replace("%%RESREF%%", resref)
                     .Replace("%%LEVEL%%", level)
-                    .Replace("%%PERKLEVEL%%", perkLevel)
-                    .Replace("%%MODSLOTS%%", modSlots);
+                    .Replace("%%PERKLEVEL%%", perkLevel);
+
+                var enhancements = string.Empty;
+                if (!string.IsNullOrWhiteSpace(enhancementSlots))
+                {
+                    enhancements = enhancementTemplate.Replace("%%ENHANCEMENTSLOTS%%", enhancementSlots);
+                }
+
+                recipeCode = recipeCode.Replace("%%ENHANCEMENTSLOTS%%", enhancements);
 
                 var components = string.Empty;
                 if (!string.IsNullOrWhiteSpace(component1Resref) && !string.IsNullOrWhiteSpace(component1Quantity))

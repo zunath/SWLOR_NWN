@@ -78,6 +78,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         Korriban_SithApprenticeGhost = 35,
         [NPCGroup("Terentatek")]
         Korriban_Terentatek = 36,
+        [NPCGroup("Octotench")]
+        MonCala_Octotench = 37,
+        [NPCGroup("Microtench")]
+        MonCala_Microtench = 38,
+        [NPCGroup("Scorchellus")]
+        MonCala_Scorchellus = 39,
     }
 
     public class NPCGroupAttribute : Attribute

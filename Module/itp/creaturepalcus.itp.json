@@ -4905,6 +4905,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Merchant"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nather"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_shopkeeper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {

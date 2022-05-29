@@ -419,9 +419,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (secondaryModifier < 0)
                 secondaryModifier = 0;
 
-            var cp = dbPlayer.CPBonus[recipe.Skill];
+            var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill) 
+                ? dbPlayer.CPBonus[recipe.Skill] 
+                : 0;
 
-            _maxCP = (int)(cp * 0.33f + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
+            _maxCP = (int)(cp + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;
@@ -786,13 +788,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're missing some components, clear the serialized component list and the result list.
             if (!hasAllComponents)
             {
-                foreach (var component in _components)
+                DelayCommand(0.1f, () =>
                 {
-                    var item = ObjectPlugin.Deserialize(component);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
+                    foreach (var component in _components)
+                    {
+                        var item = ObjectPlugin.Deserialize(component);
+                        ObjectPlugin.AcquireItem(Player, item);
+                    }
 
-                _components.Clear();
+                    _components.Clear();
+                });
+
                 result.Clear();
             }
 
@@ -1045,6 +1051,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return xp;
         }
 
+        private void ApplyProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type)
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    RemoveItemProperty(item, property);
+                }
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+            
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
         private void ProcessSuccess()
         {
             var playerId = GetObjectUUID(Player);
@@ -1059,23 +1085,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemPlugin.SetAddGoldPieceValue(item, 1);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
-            foreach (var ip in _itemPropertiesEnhancement1)
+            var allProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2);
+            foreach (var ip in allProperties)
             {
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-                    SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
-                }
-                else
-                {
-                    SendMessageToPC(Player, ColorToken.Red("Enhancement failed to apply."));
-                }
-            }
-            foreach (var ip in _itemPropertiesEnhancement2)
-            {
-                if (Random.D100(1) <= propertyTransferChance)
-                {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                    ApplyProperty(item, ip);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else

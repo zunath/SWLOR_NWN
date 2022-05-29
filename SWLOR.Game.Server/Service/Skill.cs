@@ -223,9 +223,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbPlayer.TotalAPAcquired++;
                     dbPlayer.AbilityPointsByLevel[expectedRank]++;
-                    dbPlayer.UnallocatedAP++;
 
-                    SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
+                    if (dbPlayer.TotalAPAcquired % 10 == 0)
+                    {
+                        dbPlayer.UnallocatedAP++;
+
+                        SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
+                    }
                 }
             }
 

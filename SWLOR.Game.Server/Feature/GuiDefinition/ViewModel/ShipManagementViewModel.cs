@@ -879,7 +879,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = currentLocation == OBJECT_INVALID ? "Space" : GetName(currentLocation);
+                ShipLocation = currentLocation == OBJECT_INVALID ? "In Space" : GetName(currentLocation);
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1043,6 +1043,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbShip.Status.LowPowerModules.Count > 0)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
+                        return;
+                    }
+
+                    if (dbShip.Status.Hull < dbShip.Status.MaxHull ||
+                        dbShip.Status.Shield < dbShip.Status.MaxShield)
+                    {
+                        FloatingTextStringOnCreature("Please repair your ship fully before unregistering it.", Player, false);
                         return;
                     }
 

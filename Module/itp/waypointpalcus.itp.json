@@ -109,6 +109,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Cala - Sharptooth Caverrns"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spwn_microtench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Sand Beetle"
                     },
                     "RESREF": {

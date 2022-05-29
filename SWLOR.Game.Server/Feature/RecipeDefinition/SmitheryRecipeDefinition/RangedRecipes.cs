@@ -38,9 +38,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 4)
                 .Component("elec_flawed", 2);
+
+            // Sith Pistol
+            _builder.Create(RecipeType.SithPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("sith_rifle")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 5)
+                .Component("elec_flawed", 3);
 
             // Delta Pistol
             _builder.Create(RecipeType.DeltaPistol, SkillType.Smithery)
@@ -96,9 +107,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
+
+            // Sith Shuriken
+            _builder.Create(RecipeType.SithShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("sith_shuriken")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
 
             // Delta Shuriken
             _builder.Create(RecipeType.DeltaShuriken, SkillType.Smithery)
@@ -154,9 +176,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 5)
                 .Component("elec_flawed", 3);
+
+            // Sith Rifle
+            _builder.Create(RecipeType.SithRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("sith_rifle")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 2);
 
             // Delta Rifle
             _builder.Create(RecipeType.DeltaRifle, SkillType.Smithery)

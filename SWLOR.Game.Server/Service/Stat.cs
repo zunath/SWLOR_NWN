@@ -648,15 +648,12 @@ namespace SWLOR.Game.Server.Service
         public static void LoadNPCDefense()
         {
             var creature = OBJECT_SELF;
-            _npcDefenses[creature] = new Dictionary<CombatDamageType, int>
+            _npcDefenses[creature] = new Dictionary<CombatDamageType, int>();
+
+            foreach (var type in Combat.GetAllDamageTypes())
             {
-                {CombatDamageType.Physical, 0},
-                {CombatDamageType.Force, 0},
-                {CombatDamageType.Fire, 0},
-                {CombatDamageType.Poison, 0},
-                {CombatDamageType.Electrical, 0},
-                {CombatDamageType.Ice, 0},
-            };
+                _npcDefenses[creature][type] = 0;
+            }
 
             // Pull defense values off skin.
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
@@ -722,9 +719,20 @@ namespace SWLOR.Game.Server.Service
             return attack;
         }
         
-        public static int GetAttack(uint creature, AbilityType abilityType, SkillType skillType)
+        /// <summary>
+        /// Calculates the attack for a given creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate.</param>
+        /// <param name="abilityType">The type of ability to use.</param>
+        /// <param name="skillType">The type of skill to use.</param>
+        /// <param name="attackBonusOverride">Overrides the attack bonus granted by equipment. Usually only used by Space combat.</param>
+        /// <returns>The total Attack value of a creature.</returns>
+        public static int GetAttack(uint creature, AbilityType abilityType, SkillType skillType, int attackBonusOverride = 0)
         {
-            var attackBonus = 0;
+            if (attackBonusOverride < 0)
+                attackBonusOverride = 0;
+
+            var attackBonus = 0 + attackBonusOverride;
             var skillLevel = 0;
             var stat = GetAbilityScore(creature, abilityType);
             
@@ -736,10 +744,13 @@ namespace SWLOR.Game.Server.Service
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
 
-                if (skillType == SkillType.Force)
-                    attackBonus += dbPlayer.ForceAttack;
-                else
-                    attackBonus += dbPlayer.Attack;
+                if (attackBonusOverride <= 0)
+                {
+                    if (skillType == SkillType.Force)
+                        attackBonus += dbPlayer.ForceAttack;
+                    else
+                        attackBonus += dbPlayer.Attack;
+                }
             }
             else
             {
@@ -790,17 +801,23 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// Physical and Force types include effect bonuses, stats, etc.
-        /// Fire/Poison/Electrical/Ice only include bonuses granted by gear.
+        /// Fire/Poison/Electrical/Ice include effect bonuses, stats, etc. at 70% of physical.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
         /// <param name="abilityType"></param>
+        /// <param name="defenseBonusOverride">Overrides the defense bonus granted by equipment. Usually only used for Space combat.</param>
         /// <returns>The defense value toward a given damage type.</returns>
-        public static int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType)
+        public static int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType, int defenseBonusOverride = 0)
         {
+            if (defenseBonusOverride < 0)
+                defenseBonusOverride = 0;
+
             var defenseBonus = 0;
             var defenderStat = GetAbilityScore(creature, abilityType);
             int skillLevel;
+            var equipmentDefense = 0 + defenseBonusOverride;
+            var rate = 1.0f;
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -811,10 +828,14 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return dbPlayer.Defenses[type];
+                {
+                    rate = 0.7f;
+                }
 
                 skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-                defenseBonus += dbPlayer.Defenses[type];
+
+                if(defenseBonusOverride <= 0)
+                    equipmentDefense += dbPlayer.Defenses[type];
             }
             else
             {
@@ -824,13 +845,13 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return npcStats.Defenses.ContainsKey(type)
-                        ? npcStats.Defenses[type]
-                        : 0;
-
-                if (_npcDefenses.ContainsKey(creature))
                 {
-                    defenseBonus += _npcDefenses[creature][type];
+                    rate = 0.7f;
+                }
+
+                if (_npcDefenses.ContainsKey(creature) && defenseBonusOverride <= 0)
+                {
+                    equipmentDefense += _npcDefenses[creature][type];
                 }
 
                 skillLevel = npcStats.Level;
@@ -841,6 +862,7 @@ namespace SWLOR.Game.Server.Service
                 defenseBonus = CalculateEffectDefense(creature, defenseBonus);
             }
 
+            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return CalculateDefense(defenderStat, skillLevel, defenseBonus);
         }
 
@@ -894,8 +916,10 @@ namespace SWLOR.Game.Server.Service
         public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
             var defenseBonus = 0;
-            int defenderStat = GetStatValueNative(creature, abilityType);
+            var defenderStat = GetStatValueNative(creature, abilityType);
             var skillLevel = 0;
+            var equipmentDefense = 0;
+            var rate = 1.0f;
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -908,10 +932,12 @@ namespace SWLOR.Game.Server.Service
                         type == CombatDamageType.Poison ||
                         type == CombatDamageType.Electrical ||
                         type == CombatDamageType.Ice)
-                        return dbPlayer.Defenses[type];
+                    {
+                        rate = 0.7f;
+                    }
 
                     skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-                    defenseBonus += dbPlayer.Defenses[type];
+                    equipmentDefense += dbPlayer.Defenses[type];
                 }
             }
             else
@@ -921,13 +947,13 @@ namespace SWLOR.Game.Server.Service
                     type == CombatDamageType.Poison ||
                     type == CombatDamageType.Electrical ||
                     type == CombatDamageType.Ice)
-                    return npcStats.Defenses.ContainsKey(type)
-                        ? npcStats.Defenses[type]
-                        : 0;
+                {
+                    rate = 0.7f;
+                }
 
                 if (_npcDefenses.ContainsKey(creature.m_idSelf))
                 {
-                    defenseBonus += _npcDefenses[creature.m_idSelf][type];
+                    equipmentDefense += _npcDefenses[creature.m_idSelf][type];
                 }
 
                 skillLevel = npcStats.Level;
@@ -938,6 +964,7 @@ namespace SWLOR.Game.Server.Service
                 defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus);
             }
 
+            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 
@@ -947,15 +974,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="weapon">The weapon being used.</param>
         /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
+        /// <param name="skillOverride">The skill override used to calculate accuracy. This skill will be used instead of whatever skill is defined for the weapon type.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride)
+        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
         {
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ? 
                 Item.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
-            var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
             var skillLevel = 0;
             var accuracyBonus = 0;
 
@@ -1082,13 +1110,15 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a creature's evasion.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
+        /// <param name="skillOverride">The skill override to use instead of Armor for the purposes of calculating evasion.</param>
         /// <returns>The evasion rating of a creature.</returns>
-        public static int GetEvasion(uint creature)
+        public static int GetEvasion(uint creature, SkillType skillOverride)
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
             var evasionBonus = 0;
             var ac = GetAC(creature) - 10; // Offset by natural 10 AC granted to all characters.
+            var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
 
             Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
 
@@ -1097,7 +1127,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                skillLevel = dbPlayer.Skills[skillType].Rank;
             }
             else
             {

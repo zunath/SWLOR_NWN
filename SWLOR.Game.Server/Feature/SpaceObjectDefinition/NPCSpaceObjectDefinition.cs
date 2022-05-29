@@ -27,8 +27,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_terror")
                 .ItemTag("NPC_Terror")
                 .ShipModule("com_laser_b")
-                .ShipModule("msl_launch_b")
-                .ShipModule("shld_rep_b");
+                .ShipModule("msl_launch_b");
         }
 
         private void Tier2()
@@ -42,8 +41,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_ferron")
                 .ItemTag("NPC_Ferron")
                 .ShipModule("com_laser_1")
-                .ShipModule("msl_launch_1")
-                .ShipModule("shld_rep_1");
+                .ShipModule("msl_launch_1");
         }
 
         private void Tier3()
@@ -51,15 +49,13 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_storm")
                 .ItemTag("NPC_Storm")
                 .ShipModule("msl_launch_2")
-                .ShipModule("msl_launch_2")
-                .ShipModule("hull_rep_2");
+                .ShipModule("msl_launch_2");
 
             _builder.Create("pirate_ranger")
                 .ItemTag("NPC_Ranger")
                 .ShipModule("ion_cann_2")
                 .ShipModule("ion_cann_2")
-                .ShipModule("ion_cann_2")
-                .ShipModule("shld_rep_2");
+                .ShipModule("ion_cann_2");
         }
 
         private void Tier4()
@@ -75,25 +71,22 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ItemTag("NPC_Drake")
                 .ShipModule("ion_cann_3")
                 .ShipModule("msl_launch_3")
-                .ShipModule("msl_launch_3")
-                .ShipModule("shld_rep_3");
+                .ShipModule("msl_launch_3");
         }
 
         private void Tier5()
         {
             _builder.Create("pirate_borealis")
-                .ItemTag("NPC_Sybil")
+                .ItemTag("NPC_Borealis")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4")
-                .ShipModule("ion_cann_4")
-                .ShipModule("hull_rep_4");
+                .ShipModule("ion_cann_4");
 
             _builder.Create("pirate_eleyna")
                 .ItemTag("NPC_Eleyna")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
-                .ShipModule("msl_launch_4")
-                .ShipModule("shld_rep_4");
+                .ShipModule("msl_launch_4");
         }
     }
 }

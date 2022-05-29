@@ -1,11 +1,7 @@
 ﻿// %%RECIPENAME%%
-_builder.Create(RecipeType.%%RECIPEENUMNAME%%, SkillType.Engineering)
-	.Category(RecipeCategoryType.Enhancement)
+_builder.Create(RecipeType.%%RECIPEENUMNAME%%, SkillType.%%RECIPESKILL%%)
+	.Category(RecipeCategoryType.xxx)
 	.Resref("%%RESREF%%")
 	.Level(%%LEVEL%%)
 	.Quantity(1)
-	.RequirementPerk(PerkType.EnhancementBlueprints, %%PERKLEVEL%%)
-	.Component("%%COMPONENT1RESREF%%", %%COMPONENT1QUANTITY%%)
-	.Component("%%COMPONENT2RESREF%%", %%COMPONENT2QUANTITY%%)
-	.Component("%%COMPONENT3RESREF%%", %%COMPONENT3QUANTITY%%)
-	.Component("%%COMPONENT4RESREF%%", %%COMPONENT4QUANTITY%%);
+	.RequirementPerk(PerkType.%%CATEGORYENUMNAME%%, %%PERKLEVEL%%)%%ENHANCEMENTSLOTS%%%%COMPONENTS%%;

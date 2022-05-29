@@ -113,9 +113,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }
 
-        private void RemoveDyeKit(uint item)
+        private void RemoveItems(uint item)
         {
-            if (GetResRef(item) == "tk_omnidye")
+            var resref = GetResRef(item);
+            if (resref == "tk_omnidye" || resref == "fist" || resref == "player_guide")
             {
                 DestroyObject(item);
             }
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 WipeDescription(item);
                 WipeVariables(item);
                 CleanItemName(item);
-                RemoveDyeKit(item);
+                RemoveItems(item);
             }
 
             // Equipped Items
@@ -157,6 +158,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 Item.MarkLegacyItem(item);
                 WipeDescription(item);
                 WipeVariables(item);
+                RemoveItems(item);
 
                 AssignCommand(player, () => ActionUnequipItem(item));
             }

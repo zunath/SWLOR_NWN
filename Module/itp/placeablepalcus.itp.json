@@ -67836,6 +67836,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Desert Shrub"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "desert_shrub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Docking Point: <Location>"
                     },
                     "RESREF": {
@@ -68655,6 +68666,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shipguncontrols"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_3"
                     }
                   },
                   {

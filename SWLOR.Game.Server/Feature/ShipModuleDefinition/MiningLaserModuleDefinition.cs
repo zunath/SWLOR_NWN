@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Texture("iit_ess_084")
                 .Type(ShipModuleType.MiningLaser)
+                .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Placeable)
                 .Description($"Mines targets up to tier {requiredLevel}.")
                 .PowerType(ShipModulePowerType.High)

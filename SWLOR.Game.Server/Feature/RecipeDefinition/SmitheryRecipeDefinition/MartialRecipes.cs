@@ -37,9 +37,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(13)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
+
+            // Sith Katar
+            _builder.Create(RecipeType.SithKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("sith_katar")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.MartialBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
 
             // Delta Katar
             _builder.Create(RecipeType.DeltaKatar, SkillType.Smithery)
@@ -95,9 +106,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
+
+            // Sith Staff
+            _builder.Create(RecipeType.SithStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("sith_staff")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 1);
 
             // Delta Staff
             _builder.Create(RecipeType.DeltaStaff, SkillType.Smithery)

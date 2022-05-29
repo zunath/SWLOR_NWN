@@ -243,6 +243,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Runs an action to determine the maximum distance the ship module can be used.
+        /// </summary>
+        /// <param name="action">The action to run when max distance is calculated.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder MaxDistance(ShipModuleCalculateMaxDistanceDelegate action)
+        {
+            _activeShipModule.ModuleMaxDistanceAction = action;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a static maximum distance the module can be used.
+        /// </summary>
+        /// <param name="distance">The maximum distance in meters the module can be used.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder MaxDistance(float distance)
+        {
+            _activeShipModule.ModuleMaxDistanceAction = (activator, status, target, shipStatus, bonus) => distance;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds a dictionary of ship module details.
         /// </summary>
         /// <returns>A dictionary of ship module details.</returns>

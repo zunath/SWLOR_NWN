@@ -65,7 +65,25 @@ namespace SWLOR.Game.Server.Service.QuestService
         [NPCGroup("Qion Slugs")]
         Hutlar_QionSlugs = 29,
         [NPCGroup("Qion Tigers")]
-        Hutlar_QionTigers = 30
+        Hutlar_QionTigers = 30,
+        [NPCGroup("Tuk'ata")]
+        Korriban_Tukata = 31,
+        [NPCGroup("Hssiss")]
+        Korriban_Hssiss = 32,
+        [NPCGroup("Shyrack")]
+        Korriban_Shyrack = 33,
+        [NPCGroup("Moraband Serpent")]
+        Korriban_MorabandSerpent = 34,
+        [NPCGroup("Sith Apprentice Ghost")]
+        Korriban_SithApprenticeGhost = 35,
+        [NPCGroup("Terentatek")]
+        Korriban_Terentatek = 36,
+        [NPCGroup("Octotench")]
+        MonCala_Octotench = 37,
+        [NPCGroup("Microtench")]
+        MonCala_Microtench = 38,
+        [NPCGroup("Scorchellus")]
+        MonCala_Scorchellus = 39,
     }
 
     public class NPCGroupAttribute : Attribute

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ship - Condor Class"
+      "0": "Starship - Condor"
     }
   },
   "NoRest": {
@@ -935,7 +935,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 4
+    "value": 5
   },
   "Width": {
     "type": "int",

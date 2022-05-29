@@ -493,6 +493,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a DM spawns a creature, attach all required scripts to it.
+        /// </summary>
+        [NWNEventHandler("dm_spwnobj_aft")]
+        public static void DMSpawnCreature()
+        {
+            var objectType = (ObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
+
+            if (objectType != ObjectType.Creature)
+                return;
+
+            var spawn = Convert.ToUInt32(EventsPlugin.GetEventData("OBJECT"));
+            AdjustScripts(spawn);
+        }
+
+        /// <summary>
         /// Creates a new spawn object into its spawn area.
         /// Hand-placed objects are deserialized and added to the area.
         /// Spawn tables run their own logic to determine which object to spawn.

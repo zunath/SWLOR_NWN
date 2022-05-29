@@ -243,6 +243,26 @@ namespace SWLOR.Game.Server.Service.AchievementService
         [Achievement("Explore Player House", "Explore a player's house", true)]
         ExplorePlayerHouse = 91,
 
+        [Achievement("Explore Korriban Orbit", "Explore Korriban's Orbit", true)]
+        ExploreKorribanOrbit = 92,
+
+        [Achievement("Explore Wastelands", "Explore the wastelands on Korriban", true)]
+        ExploreKorribanWastelands = 93,
+
+        [Achievement("Explore Sith Crypt", "Explore the Sith crypt on Korriban", true)]
+        ExploreKorribanSithCrypt = 94,
+
+        [Achievement("Explore Korriban Caverns", "Explore the caverns on Korriban", true)]
+        ExploreKorribanCaverns = 95,
+
+        [Achievement("Explore Sunkenhead Swamps", "Explore the Sunkenhead Swamps on Mon Cala.", true)]
+        ExploreMonCalaSunkenhedgeSwamp = 96,
+
+        [Achievement("Explore Sharptooth Jungle", "Explore the Sharptooth Jungle on Mon Cala", true)]
+        ExploreMonCalaSharptoothJungle = 97,
+
+        [Achievement("Explore Sharptooth Caverns", "Explore the Sharptooth Caverns on Mon Cala", true)]
+        ExploreMonCalaSharptoothCaverns = 98,
     }
 
     public class AchievementAttribute: Attribute

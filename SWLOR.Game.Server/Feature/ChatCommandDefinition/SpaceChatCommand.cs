@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("exit")
                 .Description("Exits the pilot seat when controlling a starship.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
                     if (!Space.IsPlayerInSpaceMode(user))

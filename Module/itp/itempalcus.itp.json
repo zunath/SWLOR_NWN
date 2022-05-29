@@ -14168,6 +14168,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hssiss Innards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_innards"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hssiss Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hssiss Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_skin2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hssiss Tail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_tail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hull Plating"
                     },
                     "RESREF": {
@@ -17666,6 +17710,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moraband Serpent Bile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mserp_bile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moraband Serpent Guts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mserp_guts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moraband Serpent Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mserp_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mushroom"
                     },
                     "RESREF": {
@@ -19294,6 +19371,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shyrack Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shyrack Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shyrack Wing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_wing"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Silo"
                     },
                     "RESREF": {
@@ -20372,6 +20482,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Terentatek Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "teren_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Terentatek Spine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "teren_spine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Terentatek Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "teren_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Terentatek Tusk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "teren_tusk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tiger Blood"
                     },
                     "RESREF": {
@@ -20443,6 +20597,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Fur"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_fur"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_tooth"
                     }
                   },
                   {
@@ -23599,6 +23797,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hssiss Surprise"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hssiss_surprise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Blood Broth"
                     },
                     "RESREF": {
@@ -24456,6 +24665,127 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Sith Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Great Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithgsw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Katar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithkat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Knife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithknf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Longsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithlngsd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithpis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithrif"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithshu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithsp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithstf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sithtwb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Training Sabers"
                     },
                     "RESREF": {
@@ -24527,6 +24857,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_031"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Caverns Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_57"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Sith Crypt Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_56"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Wastelands Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_55"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_54"
                     }
                   },
                   {
@@ -29004,6 +29378,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Striker Knife"
                           },
                           "RESREF": {
@@ -29289,6 +29674,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "raider_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_gswd"
                           }
                         },
                         {
@@ -29751,11 +30147,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_electro"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Ghost Apprentice Electroblade"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "s_app_gh_electro"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_longsword"
                           }
                         },
                         {
@@ -30069,6 +30487,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "raider_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_katar"
                           }
                         },
                         {
@@ -30791,6 +31220,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Striker Staff"
                     },
                     "RESREF": {
@@ -31307,6 +31758,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_pike"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_spear"
                     }
                   },
                   {
@@ -31888,6 +32350,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Striker Pistol"
                           },
                           "RESREF": {
@@ -32179,6 +32652,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Striker Rifle"
                           },
                           "RESREF": {
@@ -32427,6 +32911,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raider_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_shuriken"
                     }
                   },
                   {

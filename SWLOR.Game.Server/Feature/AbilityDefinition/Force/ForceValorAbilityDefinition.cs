@@ -33,7 +33,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceValor1, 60f * 15f);
+                    var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
+
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceValor1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
@@ -53,7 +55,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceValor2, 60f * 15f);
+                    var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
+
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceValor2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

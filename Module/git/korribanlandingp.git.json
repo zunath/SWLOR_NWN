@@ -45933,7 +45933,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Market Terminal"
+            "0": "Korriban Market Terminal"
           }
         },
         "OnClick": {
@@ -46195,7 +46195,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Market Terminal"
+            "0": "Korriban Market Terminal"
           }
         },
         "OnClick": {

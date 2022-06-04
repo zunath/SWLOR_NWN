@@ -352,6 +352,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 ResetControls();
 
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(Player)), Player);
+
                 FloatingTextStringOnCreature(ColorToken.Green("Character reset successfully!"), Player, false);
             });
         };
@@ -565,6 +567,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please distribute all ability points and skill points first. Resize the window if needed."), Player, false);
+                    return;
+                }
+
+                var forceIndex = _skills.IndexOf(SkillType.Force);
+                var devicesIndex = _skills.IndexOf(SkillType.Devices);
+
+                if (_skillDistributionPoints[forceIndex] > 0 && CharacterType == 0)
+                {
+                    FloatingTextStringOnCreature("Standard characters cannot gain ranks in the Force skill.", Player, false);
+                    return;
+                }
+
+                if (_skillDistributionPoints[devicesIndex] > 0 && CharacterType == 1)
+                {
+                    FloatingTextStringOnCreature("Force characters cannot gain ranks in the Devices skill.", Player, false);
                     return;
                 }
 

@@ -129,7 +129,11 @@ namespace SWLOR.Game.Server.Feature
 
             foreach (var (_, detail) in Perk.GetAllPerks())
             {
-                foreach (var (_, perkLevel) in detail.PerkLevels)
+                var levelOneFeatDescriptionId = -1;
+                var levelOneSpellDescriptionId = -1;
+                var levelOneDescription = string.Empty;
+
+                foreach (var (level, perkLevel) in detail.PerkLevels)
                 {
                     foreach (var feat in perkLevel.GrantedFeats)
                     {
@@ -174,11 +178,32 @@ namespace SWLOR.Game.Server.Feature
                             recast,
                             perkLevel.Description);
 
+                        if (level == 1)
+                        {
+                            levelOneDescription = description;
+                            levelOneFeatDescriptionId = featDescriptionId;
+                        }
+
                         // Update both the feat and the spell descriptions, if applicable
                         SetTlkOverride(featDescriptionId, description);
 
-                        if(spellDescriptionId > 0)
+                        if (spellDescriptionId > 0)
+                        {
                             SetTlkOverride(spellDescriptionId, description);
+                            levelOneSpellDescriptionId = spellDescriptionId;
+                        }
+                    }
+
+                    // Some perks only grant one feat and improve the effectiveness of that feat on each level.
+                    // For these, we display every perk level on the feat & spell description (if applicable)
+                    if (level > 1 && 
+                        !string.IsNullOrWhiteSpace(levelOneDescription) &&
+                        perkLevel.GrantedFeats.Count <= 0)
+                    {
+                        levelOneDescription += $"\n\nLevel #{level}: {perkLevel.Description}";
+                        SetTlkOverride(levelOneFeatDescriptionId, levelOneDescription);
+                        if(levelOneSpellDescriptionId > 0)
+                            SetTlkOverride(levelOneSpellDescriptionId, levelOneDescription);
                     }
                 }
             }

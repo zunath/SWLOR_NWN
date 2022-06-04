@@ -699,23 +699,6 @@ namespace SWLOR.CLI
 
                 newPlayer.Settings.ShowHelmet = oldPlayer.DisplayHelmet == null;
 
-                // Spread out the ability point acquisition across all 50 levels.
-                var numberOfIncreases = sp;
-                var level = 1;
-                while (numberOfIncreases > 0)
-                {
-                    if (!newPlayer.AbilityPointsByLevel.ContainsKey(level))
-                        newPlayer.AbilityPointsByLevel[level] = 0;
-
-                    newPlayer.AbilityPointsByLevel[level]++;
-
-                    numberOfIncreases--;
-                    level++;
-
-                    if (level > 50)
-                        level = 1;
-                }
-
                 DB.Set(newPlayer);
             }
         }

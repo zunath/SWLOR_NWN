@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (details.ContributesToSkillCap)
                 {
-                    ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+                    ApplyAbilityPoint(player, dbPlayer);
                 }
                 
                 totalRanks = dbPlayer.Skills
@@ -203,39 +203,22 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gives the player an ability point which can be distributed to the attribute of their choice
-        /// from the character menu. Earned at 0.1 points per skill rank.  
+        /// from the character menu. One point is earned per 10 skill ranks
         /// </summary>
         /// <param name="player">The player to receive the AP.</param>
         /// <param name="rank">The rank attained.</param>
         /// <param name="dbPlayer">The database entity.</param>
-        private static void ApplyAbilityPoint(uint player, int rank, Player dbPlayer)
+        private static void ApplyAbilityPoint(uint player, Player dbPlayer)
         {
             // Total AP have been earned (300SP = 30AP)
             if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
-            void Apply(int expectedRank, int apLevelMax)
+            if (dbPlayer.TotalSPAcquired % 10 == 0)
             {
-                if (!dbPlayer.AbilityPointsByLevel.ContainsKey(expectedRank))
-                    dbPlayer.AbilityPointsByLevel[expectedRank] = 0;
+                dbPlayer.UnallocatedAP++;
+                dbPlayer.TotalAPAcquired++;
 
-                if (rank == expectedRank &&
-                    dbPlayer.AbilityPointsByLevel[expectedRank] < apLevelMax)
-                {
-                    dbPlayer.TotalAPAcquired++;
-                    dbPlayer.AbilityPointsByLevel[expectedRank]++;
-
-                    if (dbPlayer.TotalAPAcquired % 10 == 0)
-                    {
-                        dbPlayer.UnallocatedAP++;
-
-                        SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
-                    }
-                }
-            }
-
-            for (var level = 1; level <= 50; level++)
-            {
-                Apply(level, 8);
+                SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
             }
         }
 

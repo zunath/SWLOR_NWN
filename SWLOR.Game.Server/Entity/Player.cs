@@ -79,7 +79,6 @@ namespace SWLOR.Game.Server.Entity
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
-            AbilityPointsByLevel = new Dictionary<int, int>();
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
             AppearanceScale = 1.0f;
@@ -168,7 +167,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
-        public Dictionary<int, int> AbilityPointsByLevel { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }

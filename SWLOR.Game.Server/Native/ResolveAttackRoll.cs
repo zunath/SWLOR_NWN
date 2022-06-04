@@ -86,9 +86,13 @@ namespace SWLOR.Game.Server.Native
             }
 
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
-
+            
             var strongStyleAbilityOverride = GetStrongStyleAbilityType(weapon, attacker);
-            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, strongStyleAbilityOverride);
+            var zenMarksmanshipAbilityOverride = GetZenMarksmanshipAbilityType(weapon, attacker);
+            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, 
+                strongStyleAbilityOverride == AbilityType.Invalid 
+                    ? zenMarksmanshipAbilityOverride 
+                    : strongStyleAbilityOverride);
             var defenderEvasion = Stat.GetEvasionNative(defender);
 
             //---------------------------------------------------------------------------------------------
@@ -612,6 +616,31 @@ namespace SWLOR.Game.Server.Native
             }
 
             return AbilityType.Invalid;
+        }
+
+        private static AbilityType GetZenMarksmanshipAbilityType(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.ZenArchery) == 0)
+                return AbilityType.Invalid;
+
+            var baseItem = (BaseItem)weapon.m_nBaseItem;
+            if (!Item.PistolBaseItemTypes.Contains(baseItem) &&
+                !Item.RifleBaseItemTypes.Contains(baseItem) &&
+                !Item.ThrowingWeaponBaseItemTypes.Contains(baseItem))
+            {
+                return AbilityType.Invalid;
+            }
+
+            var weaponAccuracy = Item.GetWeaponAccuracyAbilityType(baseItem);
+
+            switch (weaponAccuracy)
+            {
+                case AbilityType.Perception when attacker.m_pStats.m_nWisdomBase > attacker.m_pStats.m_nDexterityBase:
+                case AbilityType.Agility when attacker.m_pStats.m_nWisdomBase > attacker.m_pStats.m_nIntelligenceBase:
+                    return AbilityType.Willpower;
+                default:
+                    return AbilityType.Invalid;
+            }
         }
     }
 }

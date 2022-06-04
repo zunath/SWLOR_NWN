@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Zen Marksmanship")
 
                 .AddPerkLevel()
-                .Description("Willpower guides your ranged attacks. If your WIL modifier is higher than PER, it will be used when firing ranged weapons.")
+                .Description("Willpower guides your ranged attacks. If your WIL modifier is higher than the weapon's accuracy attribute, it will be used when firing ranged weapons.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ZenArchery);

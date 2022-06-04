@@ -100,7 +100,7 @@
           "id": 14717,
           "type": "cexolocstring",
           "value": {
-            "0": "Welcome back to Star Wars: Legends of the Old Republic!\n\nMany changes have occurred since the last time you logged in. Please to take this time to redistribute your character's starting stats and skills.\n\nThis is a one-time free rebuild of your character. Please be sure to read your player guide to learn more about the changes. Further information can be found at  https://wiki.starwarsnwn.com/\n"
+            "0": "Welcome back to Star Wars: Legends of the Old Republic!\n\nMany changes have occurred since the last time you logged in. Please take this time to redistribute your character's starting stats and skills.\n\nThis is a one-time free rebuild of your character. Please be sure to read your player guide to learn more about the changes. Further information can be found at  https://wiki.starwarsnwn.com/\n"
           }
         },
         "DisarmDC": {

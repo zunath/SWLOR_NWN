@@ -19021,6 +19021,418 @@
                       "type": "float",
                       "value": -1.0
                     }
+                  },
+                  {
+                    "__struct_id": 16,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 250
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 513
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 250
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Mining Laser I"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 84
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "min_laser_1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "min_laser_1"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 17,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 350
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 513
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 350
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Mining Laser II"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 84
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "min_laser_2"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "min_laser_2"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 18,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 450
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 513
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 450
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Mining Laser III"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 84
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "min_laser_3"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "min_laser_3"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 19,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 550
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 513
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 550
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Mining Laser IV"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 84
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 8
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "min_laser_4"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "min_laser_4"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
                   }
                 ]
               }

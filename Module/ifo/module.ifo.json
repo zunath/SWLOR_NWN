@@ -1369,13 +1369,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "ooc_area"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "ossu_wastesruin"
         }
       },
@@ -1553,6 +1546,13 @@
           "type": "resref",
           "value": "prefab_sunkenlab"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ooc_area"
+        }
       }
     ]
   },
@@ -1588,23 +1588,23 @@
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
-    "value": -0.04906796291470528
+    "value": 0.9972904920578003
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": -0.9987954497337341
+    "value": -0.07356446236371994
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 44.67409896850586
+    "value": 24.53971290588379
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 36.51171493530273
+    "value": 27.19264793395996
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": -5.7220458984375e-006
+    "value": 9.5367431640625e-007
   },
   "Mod_Expan_List": {
     "type": "list",

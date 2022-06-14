@@ -57,18 +57,9 @@ export default class Downloads extends React.Component {
                             <tr>
                                 <td>SWLOR Haks</td>
                                 <td>These are the DEVELOPMENT-ONLY hakpaks. If you only want to play, you DO NOT need these. Simply connect to the server to get the files and start playing.</td>
-                                <td>Extract all .hak files to your My Documents/Neverwinter Nights/hak directory. Extract the swlor_tlk.tlk file to your tlk directory. Make the tlk directory if it doesn't already exist</td>
+                                <td>Extract all files to your "My Documents/Neverwinter Nights/" directory. Read the included Readme if you'd like to host your own server.</td>
                                 <td>
                                     <a className="btn btn-primary btn-block" href={this.buildURL(2)} target="_blank" rel="noopener noreferrer">Download</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Android Texture Override</td>
-                                <td>These are texture overrides for the Android version of the game to correct issues on this specific platform.</td>
-                                <td>Extract these to your override folder of NWN.</td>
-                                <td>
-                                    <a className="btn btn-primary btn-block" href={this.buildURL(3)} target="_blank" rel="noopener noreferrer">Download</a>
                                 </td>
                             </tr>
                         </tbody>

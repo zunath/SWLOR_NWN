@@ -25,9 +25,9 @@ export default class Header extends React.Component {
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/rules">
+                                <a className="nav-link" href="https://forums.starwarsnwn.com/t/server-rules-and-dm-standards-new/1573" target="_blank" rel="noopener noreferrer">
                                     <i className="fa fa-list-ul fa-lg" /> Rules
-                                </Link>
+                                </a>
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to="/gallery">

@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40674039-6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-40674039-6');
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>Star Wars: Legends of the Old Republic - A Neverwinter Nights Server</title>
+
+    <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
+    
+    <link rel="stylesheet" href="css/bootswatch-cyborg.css" />
+</head>
+<body>
+    <div class="container">
+        <a class="navbar-brand" to="/">
+            <img src="images/swollogo2.png" alt="Star Wars: LOR" class="img-fluid" />
+        </a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="navbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">
+                            <i class="fa fa-home fa-lg"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "About")">
+                            <i class="fa fa-info-circle fa-lg"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://forums.starwarsnwn.com/t/server-rules-and-dm-standards-new/1573" target="_blank" rel="noopener noreferrer">
+                            <i class="fa fa-list-ul fa-lg"></i> Rules
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Gallery")">
+                            <i class="fa fa-image fa-lg"></i> Gallery
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Downloads")">
+                            <i class="fa fa-download fa-lg"></i> Downloads
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://wiki.starwarsnwn.com/" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-wikipedia-w fa-lg"></i> Wiki
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://forums.starwarsnwn.com/" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-forumbee fa-lg"></i> Forums
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://discord.gg/MyQAM6m" target="_blank" rel="noopener noreferrer">
+                            <i class="fa fa-comment fa-lg"></i> Discord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zunath/SWLOR_NWN" target="_blank" rel="noopener noreferrer">
+                            <i class="fa fa-code fa-lg"></i> Server Source Code
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
+
+        </nav>
+    </div>
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <div class="container">
+
+        <div class="row">&nbsp;</div>
+        <footer>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <span>
+                    Star Wars: Legends of the Old Republic is a free mod developed for Neverwinter Nights. Star Wars, the Expanded Universe, all logos, characters, artwork, stories, information, names, and other elements associated thereto, are sole and exclusive property of Lucasfilm Limited. We are a completely free, open source non-profit project and operate under the definition of "fair use" under United States copyright laws.
+                </span>
+            </nav>
+        </footer>
+    </div>
+    
+<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="lib/font-awesome/js/all.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

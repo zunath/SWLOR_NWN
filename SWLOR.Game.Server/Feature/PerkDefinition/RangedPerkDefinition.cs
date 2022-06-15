@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var builder = new PerkBuilder();
             RapidShot(builder);
             RapidReload(builder);
-            ZenMarksmanship(builder);
             PrecisionAim(builder);
             PointBlankShot(builder);
             WeaponFocusPistols(builder);
@@ -62,18 +61,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidReload);
-        }
-
-        private void ZenMarksmanship(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.ZenMarksmanship)
-                .Name("Zen Marksmanship")
-
-                .AddPerkLevel()
-                .Description("Willpower guides your ranged attacks. If your WIL modifier is higher than the weapon's accuracy attribute, it will be used when firing ranged weapons.")
-                .Price(4)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .GrantsFeat(FeatType.ZenArchery);
         }
 
         private void PrecisionAim(PerkBuilder builder)

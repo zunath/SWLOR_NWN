@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
                 .Name("Deflector Shield I")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.Kneel)
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.15f, false, 180f);
+                    Impact(activator, 0.05f, false, 180f);
                 });
         }
 
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
                 .Name("Deflector Shield II")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.Kneel)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.30f, false, 300f);
+                    Impact(activator, 0.10f, false, 300f);
                 });
         }
 
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
                 .Name("Deflector Shield III")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(9)
                 .UsesAnimation(Animation.Kneel)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.40f, true, 300f);
+                    Impact(activator, 0.15f, true, 300f);
                 });
         }
     }

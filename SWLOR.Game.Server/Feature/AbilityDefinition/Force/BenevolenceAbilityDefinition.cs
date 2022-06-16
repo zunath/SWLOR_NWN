@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int amount)
+        private void Impact(uint activator, uint target, int baseAmount)
         {
-            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 4;
-            amount += willBonus;
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+            var amount = baseAmount + willBonus * 8 + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
                 .Name("Benevolence I")
-                .HasRecastDelay(RecastGroup.Benevolence, 30f)
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
                 .Name("Benevolence II")
-                .HasRecastDelay(RecastGroup.Benevolence, 30f)
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
                 .Name("Benevolence III")
-                .HasRecastDelay(RecastGroup.Benevolence, 30f)
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(8)
                 .IsCastedAbility()
                 .HasMaxRange(10f)

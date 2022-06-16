@@ -1,11 +1,11 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -29,6 +29,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else return string.Empty;
         }
 
+        private static void ApplyMindTrick(uint activator, uint target)
+        {
+            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick"))
+            {
+                var effect = EffectConfused();
+                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
+                effect = TagEffect(effect, "StatusEffectType.MindTrick");
+                ApplyEffectToObject(DurationType.Permanent, effect, target);
+            }
+            CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+        }
+
         private static void MindTrick1(AbilityBuilder builder)
         {
             builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
@@ -38,9 +50,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
-                .IsConcentrationAbility(StatusEffectType.MindTrick1)
                 .IsHostileAbility()
-                .DisplaysVisualEffectWhenActivating();
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    ApplyMindTrick(activator, target);
+                });
         }
 
         private static void MindTrick2(AbilityBuilder builder)
@@ -52,9 +67,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
-                .IsConcentrationAbility(StatusEffectType.MindTrick2)
                 .IsHostileAbility()
-                .DisplaysVisualEffectWhenActivating();
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    const float radiusSize = RadiusSize.Medium;
+                    ApplyMindTrick(activator, target);
+                    // Target the next nearest creature and do the same thing.
+                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
+                    while (GetIsObjectValid(targetCreature))
+                    {
+                        if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator) &&
+                            !(GetRacialType(targetCreature) == RacialType.Cyborg || GetRacialType(targetCreature) == RacialType.Robot))
+                        {
+                            ApplyMindTrick(activator, targetCreature);
+                        }
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
+                    }
+                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+                });
         }
     }
 }

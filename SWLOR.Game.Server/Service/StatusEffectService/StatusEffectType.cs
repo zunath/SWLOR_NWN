@@ -30,13 +30,10 @@
         ForceHeal3 = 25,
         ForceHeal4 = 26,
         ForceHeal5 = 27,
-        ForceStun1 = 28,
-        ForceStun2 = 29,
-        ForceStun3 = 30,
+
         BattleInsight1 = 31,
         BattleInsight2 = 32,
-        MindTrick1 = 33,
-        MindTrick2 = 34,
+
         ForceDrain1 = 35,
         ForceDrain2 = 36,
         ForceDrain3 = 37,

@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Feature
                 // If this is an attack make the NPC react.
                 if (ability.IsHostileAbility)
                 {
-                    if (!GetIsInCombat(target))
+                    if (!GetIsInCombat(target) && !GetIsPC(target))
                     {
                         AssignCommand(target, () =>
                         {

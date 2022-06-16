@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
                 channel == ChatChannel.PlayerWhisper ||
                 channel == ChatChannel.PlayerParty ||
                 channel == ChatChannel.PlayerShout;
-
+            
             var messageToDm = channel == ChatChannel.PlayerDM;
             
             // Ignore messages on other channels.
@@ -93,7 +93,8 @@ namespace SWLOR.Game.Server.Service
 
             if (channel == ChatChannel.PlayerShout &&
                 GetIsPC(sender) &&
-                !GetIsDM(sender))
+                !GetIsDM(sender) &&
+                !GetIsDMPossessed(sender))
             {
                 var playerId = GetObjectUUID(sender);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -609,7 +610,7 @@ namespace SWLOR.Game.Server.Service
 
         public static EmoteStyle GetEmoteStyle(uint player)
         {
-            if (GetIsPC(player) && !GetIsDM(player))
+            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);

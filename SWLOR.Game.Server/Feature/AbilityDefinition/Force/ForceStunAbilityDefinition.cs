@@ -23,20 +23,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void Impact(uint source, uint target, int level)
+        private static void Impact(uint source, uint target)
         {
             if (!Ability.GetAbilityResisted(source, target, "Force Stun"))
             {
                 var effect = EffectDazed();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-                effect = TagEffect(effect, $"StatusEffectType.ForceStun{level}");
+                effect = TagEffect(effect, $"StatusEffectType.ForceStun");
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
             else
             {
                 var effect = EffectAttackDecrease(2);
                 effect = EffectLinkEffects(effect, EffectACDecrease(2));
-                effect = TagEffect(effect, $"StatusEffectType.ForceStun{level}");
+                effect = TagEffect(effect, $"StatusEffectType.ForceStun");
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 1);
+                    Impact(activator, target);
                 });
         }
 
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 2);
+                    Impact(activator, target);
 
                     // Target the next nearest creature and do the same thing.
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
@@ -82,8 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator))
                         {
                             // Apply to nearest other creature, then exit loop. 
-                            // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
-                            StatusEffect.Apply(activator, targetCreature, StatusEffectType.ForceStun1, 6.1f);
+                            Impact(activator, targetCreature);
                             break;
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 3);
+                    Impact(activator, target);
 
                     // Target the next nearest creature and do the same thing.
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
@@ -113,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         {
                             // Apply to nearest other creature, then move on to the next.
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
-                            StatusEffect.Apply(activator, targetCreature, StatusEffectType.ForceStun1, 6.1f);
+                            Impact(activator, targetCreature);
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
                     }

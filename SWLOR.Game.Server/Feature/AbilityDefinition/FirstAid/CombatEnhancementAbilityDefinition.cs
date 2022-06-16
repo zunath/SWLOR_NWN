@@ -35,13 +35,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private void Impact(uint activator, uint target, int baseAmount)
         {
+            for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
+            {
+                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT")
+                {
+                    RemoveEffect(target, e);
+                }
+            }
+
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 30f;
 
-            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, baseAmount), target, length);
-            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Perception, baseAmount), target, length);
-            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, baseAmount), target, length);
+            var effect = EffectLinkEffects(
+                EffectAbilityIncrease(AbilityType.Might, baseAmount),
+                EffectAbilityIncrease(AbilityType.Perception, baseAmount));
+            effect = EffectLinkEffects(effect, EffectAbilityIncrease(AbilityType.Vitality, baseAmount));
+            effect = TagEffect(effect, "COMBAT_ENHANCEMENT");
+
+            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
 
             TakeStimPack(activator);

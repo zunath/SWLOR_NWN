@@ -489,6 +489,7 @@ namespace SWLOR.Game.Server.Service
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
+            AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => ActionJumpToLocation(location));
         }
 
@@ -724,6 +725,8 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var location = GetLocalLocation(player, "SPACE_INSTANCE_LOCATION");
+            
+            AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => ActionJumpToLocation(location));
 
             DeleteLocalLocation(player, "SPACE_INSTANCE_LOCATION");

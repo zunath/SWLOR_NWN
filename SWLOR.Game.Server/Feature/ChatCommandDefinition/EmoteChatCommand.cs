@@ -256,11 +256,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .AnimationLoopingAction(Animation.Facepalm)
                 .IsEmote();
-            builder.Create("handonhip")
-                .Description("Play a hand on hip animation.")
-                .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.HandOnHip)
-                .IsEmote();
             builder.Create("wallfoot")
                 .Description("Play a lean back on wall, foot up animation.")
                 .Permissions(AuthorizationLevel.All)

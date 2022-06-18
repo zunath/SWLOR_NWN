@@ -25,7 +25,9 @@ namespace SWLOR.Game.Server.Feature
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
             _statChangeActions[ItemPropertyType.FPBonus] = ApplyFPBonus;
+            _statChangeActions[ItemPropertyType.FPRegen] = ApplyFPRegenBonus;
             _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
+            _statChangeActions[ItemPropertyType.STMRegen] = ApplySTMRegenBonus;
             _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
             _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
@@ -140,6 +142,31 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Applies or removes an FP Regen bonus on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
+        private static void ApplyFPRegenBonus(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustFPRegen(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustFPRegen(dbPlayer, -amount);
+            }
+
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
         /// Applies or removes a STM bonus on a player.
         /// </summary>
         /// <param name="player">The player to adjust</param>
@@ -159,6 +186,31 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, player);
+            }
+
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes a STM Regen bonus on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
+        private static void ApplySTMRegenBonus(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustSTMRegen(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustSTMRegen(dbPlayer, -amount);
             }
 
             DB.Set(dbPlayer);

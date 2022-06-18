@@ -1106,31 +1106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
 				;
-
-			// Weapon Enhancement - DMG - Physical II
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical2, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_phy2")
-				.Level(19)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
-				.Component("ref_currian", 5)
-				.Component("ref_scordspar", 3)
-				.Component("elec_flawed", 2)
-				;
-
-			// Weapon Enhancement - DMG - Force II
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_for2")
-				.Level(18)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
-				.Component("ref_currian", 5)
-				.Component("ref_scordspar", 3)
-				.Component("elec_flawed", 2)
-				;
-
+			
 			// Weapon Enhancement - DMG - Poison II
 			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
@@ -1856,10 +1832,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 1)
 				;
 
-			// Weapon Enhancement - DMG - Physical III
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical3, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Physical II
+			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_phy3")
+				.Resref("wen_dmg_phy2")
 				.Level(29)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -1868,10 +1844,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Weapon Enhancement - DMG - Force III
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Force II
+			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_for3")
+				.Resref("wen_dmg_for2")
 				.Level(28)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -2604,31 +2580,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
 				;
-
-			// Weapon Enhancement - DMG - Physical IV
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical4, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_phy4")
-				.Level(39)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
-				.Component("ref_barinium", 5)
-				.Component("ref_keromber", 3)
-				.Component("elec_imperfect", 2)
-				;
-
-			// Weapon Enhancement - DMG - Force IV
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce4, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_for4")
-				.Level(38)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
-				.Component("ref_barinium", 5)
-				.Component("ref_keromber", 3)
-				.Component("elec_imperfect", 2)
-				;
-
+			
 			// Weapon Enhancement - DMG - Poison IV
 			_builder.Create(RecipeType.WeaponEnhancementDMGPoison4, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
@@ -3354,10 +3306,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 1)
 				;
 
-			// Weapon Enhancement - DMG - Physical V
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical5, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Physical III
+			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical3, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_phy5")
+				.Resref("wen_dmg_phy3")
 				.Level(49)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
@@ -3366,10 +3318,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Weapon Enhancement - DMG - Force V
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce5, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Force III
+			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_for5")
+				.Resref("wen_dmg_for3")
 				.Level(48)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 5)

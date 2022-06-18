@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
                 .Name("Force Drain 1")
-                .HasRecastDelay(RecastGroup.ForceDrain, 60f)
+                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain1)
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
                 .Name("Force Drain II")
-                .HasRecastDelay(RecastGroup.ForceDrain, 60f)
+                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain2)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
                 .Name("Force Drain III")
-                .HasRecastDelay(RecastGroup.ForceDrain, 60f)
+                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain3)
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
                 .Name("Force Drain IV")
-                .HasRecastDelay(RecastGroup.ForceDrain, 60f)
+                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain4)
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain5, PerkType.ForceDrain)
                 .Name("Force Drain V")
-                .HasRecastDelay(RecastGroup.ForceDrain, 60f)
+                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain5)

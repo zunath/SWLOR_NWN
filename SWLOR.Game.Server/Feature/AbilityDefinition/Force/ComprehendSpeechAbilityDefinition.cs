@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech1, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech I")
-                .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
+                .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
-                .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
+                .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech3, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech III")
-                .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
+                .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech4, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech IV")
-                .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
+                .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
                 .UsesAnimation(Animation.LoopingConjure1)

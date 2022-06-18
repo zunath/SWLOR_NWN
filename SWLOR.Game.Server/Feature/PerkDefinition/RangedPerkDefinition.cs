@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Gain an extra attack per round when a Ranged weapon is equipped. All attacks within the round suffer a -2 penalty.")
+                .Description("Gain an extra attack per round when a ranged weapon (except rifles) is equipped. All attacks within the round suffer a -2 penalty.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidShot);

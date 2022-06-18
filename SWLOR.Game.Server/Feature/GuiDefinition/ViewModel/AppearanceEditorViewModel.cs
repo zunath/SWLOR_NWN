@@ -600,6 +600,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - Increment);
+                SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
@@ -615,6 +616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + Increment);
+                SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
             }
         };
 
@@ -627,7 +629,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DB.Set(dbPlayer);
 
-            SendMessageToPC(Player, "Height saved successfully.");
+            SendMessageToPC(Player, $"Height saved successfully. (New Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)})");
         };
 
         public Action OnSelectColorCategory() => () =>

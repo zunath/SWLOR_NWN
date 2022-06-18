@@ -73495,7 +73495,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -73699,7 +73699,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -73903,7 +73903,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -180672,7 +180672,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -183914,7 +183914,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -186984,7 +186984,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -190211,7 +190211,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",
@@ -193316,7 +193316,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 12
+                      "value": 537
                     },
                     "Charges": {
                       "type": "byte",

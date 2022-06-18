@@ -620,6 +620,7 @@ namespace SWLOR.Game.Server.Service
         public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade
         };
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal1, PerkType.ForceHeal)
                 .Name("Force Heal 1")
-                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(1)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal2, PerkType.ForceHeal)
                 .Name("Force Heal II")
-                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(2)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal3, PerkType.ForceHeal)
                 .Name("Force Heal III")
-                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(3)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal4, PerkType.ForceHeal)
                 .Name("Force Heal IV")
-                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(4)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal5, PerkType.ForceHeal)
                 .Name("Force Heal V")
-                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(5)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)

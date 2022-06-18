@@ -157016,7 +157016,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Resource Harvester"
+                        "0": "Resource Harvester I"
                       }
                     },
                     "ModelPart1": {
@@ -157136,7 +157136,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 29
+                      "value": 526
                     },
                     "Charges": {
                       "type": "byte",
@@ -158398,7 +158398,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Resource Harvester I"
+                        "0": "Resource Harvester II"
                       }
                     },
                     "ModelPart1": {

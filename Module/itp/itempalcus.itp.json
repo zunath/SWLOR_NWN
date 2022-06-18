@@ -11803,17 +11803,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Resource Harvester"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "harvest_r_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Resource Scanner"
                     },
                     "RESREF": {
@@ -19034,7 +19023,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "harvest_r_1"
+                      "value": "harvest_r_b"
                     }
                   },
                   {
@@ -19045,7 +19034,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "harvest_r_2"
+                      "value": "harvest_r_1"
                     }
                   },
                   {
@@ -19056,7 +19045,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "harvest_r_3"
+                      "value": "harvest_r_2"
                     }
                   },
                   {
@@ -19064,6 +19053,17 @@
                     "NAME": {
                       "type": "cexostring",
                       "value": "Resource Harvester IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "harvest_r_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Resource Harvester V"
                     },
                     "RESREF": {
                       "type": "resref",

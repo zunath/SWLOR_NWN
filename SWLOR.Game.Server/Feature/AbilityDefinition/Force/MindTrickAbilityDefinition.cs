@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var effect = EffectConfused();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
                 effect = TagEffect(effect, "StatusEffectType.MindTrick");
-                ApplyEffectToObject(DurationType.Permanent, effect, target);
+                ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
             CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
         }

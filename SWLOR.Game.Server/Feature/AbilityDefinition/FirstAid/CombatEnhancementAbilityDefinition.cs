@@ -54,8 +54,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             effect = TagEffect(effect, "COMBAT_ENHANCEMENT");
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, length);
-            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
-            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
 
             TakeStimPack(activator);

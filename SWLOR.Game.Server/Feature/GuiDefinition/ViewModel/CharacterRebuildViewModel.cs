@@ -345,6 +345,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses/penalties are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
+                if (Ability.IsAnyAbilityToggled(Player))
+                {
+                    FloatingTextStringOnCreature(ColorToken.Red("Please toggle all abilities OFF and try again."), Player, false);
+                    return;
+                }
+
                 UnequipAllItems();
                 RefundAllPerks();
                 RefundAllSkills();

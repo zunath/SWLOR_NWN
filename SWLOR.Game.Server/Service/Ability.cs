@@ -450,5 +450,31 @@ namespace SWLOR.Game.Server.Service
 
             return dbPlayer.AbilityToggles[toggleType];
         }
+
+        /// <summary>
+        /// Determines if any ability is toggled by a player.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <returns>true if any ability is toggled, false otherwise</returns>
+        public static bool IsAnyAbilityToggled(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return false;
+
+            if (dbPlayer.AbilityToggles == null)
+                return false;
+
+            foreach (var toggle in dbPlayer.AbilityToggles.Values)
+            {
+                if (toggle)
+                    return true;
+            }
+
+            return false;
+        }
+
     }
 }

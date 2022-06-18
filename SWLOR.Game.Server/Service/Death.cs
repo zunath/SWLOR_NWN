@@ -48,12 +48,6 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
                 ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
                 ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Perception, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Social, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 10), player, 300f);
             }
             else
             {

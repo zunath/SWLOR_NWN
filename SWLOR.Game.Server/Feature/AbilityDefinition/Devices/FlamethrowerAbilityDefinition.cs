@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 3, 0);
+                    Impact(activator, targetLocation, 6, 0);
                 });
         }
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 5, 30);
+                    Impact(activator, targetLocation, 10, 30);
                 });
         }
 
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, 50);
+                    Impact(activator, targetLocation, 16, 50);
                 });
         }
     }

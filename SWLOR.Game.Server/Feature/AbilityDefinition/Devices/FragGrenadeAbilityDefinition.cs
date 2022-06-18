@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 3, 0, 0f);
+                        Impact(activator, target, 6, 0, 0f);
                     });
                 });
         }
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 5, 30, 30f);
+                        Impact(activator, target, 10, 30, 30f);
                     });
                 });
         }
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 8, 50, 60f);
+                        Impact(activator, target, 16, 50, 60f);
                     });
                 });
         }

@@ -38,9 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 return;
 
             ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(regenAmount, 6f), target, 45f);
-            
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 20);
+            Enmity.ModifyEnmityOnAll(activator, 20);
         }
 
         private void KoltoGrenade1()
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Kolto Grenade I")
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(1)
+                .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Kolto Grenade II")
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(3)
+                .RequirementStamina(5)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Kolto Grenade III")
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(5)
+                .RequirementStamina(7)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

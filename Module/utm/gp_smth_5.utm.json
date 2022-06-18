@@ -795,7 +795,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_melee_5"
+                "value": "imp_neutro_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -814,7 +814,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_molytex_5"
+                "value": "imp_phrik_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -833,7 +833,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_neutro_5"
+                "value": "imp_plasteel_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -852,7 +852,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_phrik_5"
+                "value": "imp_quadran_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -871,7 +871,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_plasteel_5"
+                "value": "imp_steelfab_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -890,7 +890,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_quadran_5"
+                "value": "imp_steelhide_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -909,7 +909,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_steelfab_5"
+                "value": "imp_ultrachr_5"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -928,49 +928,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_steelhide_5"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
-              }
-            },
-            {
-              "__struct_id": 37,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "imp_ultrachr_5"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
-              }
-            },
-            {
-              "__struct_id": 38,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "imp_zersium_5"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 6
+                "value": 2
               },
               "Repos_Posy": {
                 "type": "word",

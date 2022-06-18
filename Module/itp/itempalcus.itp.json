@@ -15741,28 +15741,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Improved Meleenium IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_melee_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Meleenium V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_melee_5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Improved Molytex I"
                     },
                     "RESREF": {
@@ -15790,28 +15768,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "imp_molytex_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Molytex IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_molytex_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Molytex V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_molytex_5"
                     }
                   },
                   {

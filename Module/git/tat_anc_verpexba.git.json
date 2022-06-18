@@ -66140,7 +66140,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 7
+                            "value": 4
                           },
                           "Param1": {
                             "type": "byte",
@@ -67280,7 +67280,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Resource Harvester"
+                        "0": "Resource Harvester I"
                       }
                     },
                     "ModelPart1": {
@@ -67400,7 +67400,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 29
+                      "value": 526
                     },
                     "Charges": {
                       "type": "byte",
@@ -67649,7 +67649,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Resource Harvester I"
+                        "0": "Resource Harvester II"
                       }
                     },
                     "ModelPart1": {
@@ -67806,7 +67806,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Resource Harvester II"
+                        "0": "Resource Harvester III"
                       }
                     },
                     "ModelPart1": {
@@ -67963,7 +67963,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Resource Harvester III"
+                        "0": "Resource Harvester IV"
                       }
                     },
                     "ModelPart1": {
@@ -69133,7 +69133,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Resource Harvester IV"
+                        "0": "Resource Harvester V"
                       }
                     },
                     "ModelPart1": {

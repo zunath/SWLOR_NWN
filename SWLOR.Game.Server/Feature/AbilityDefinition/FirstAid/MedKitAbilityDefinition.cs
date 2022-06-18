@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(1)
+                .RequirementStamina(4)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(2)
+                .RequirementStamina(6)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -108,14 +108,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(3)
+                .RequirementStamina(8)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 90);
+                    Impact(activator, target, 80);
                 });
         }
 
@@ -126,14 +126,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(4)
+                .RequirementStamina(10)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 140);
+                    Impact(activator, target, 110);
                 });
         }
         private void MedKit5()
@@ -143,14 +143,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(5)
+                .RequirementStamina(12)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 180);
+                    Impact(activator, target, 140);
                 });
         }
     }

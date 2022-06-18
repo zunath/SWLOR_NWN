@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature,  2);
+            ApplyEffect(creature,  4);
         }
 
         [NWNEventHandler("grenade_gas1_hb")]
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature,  2);
+                ApplyEffect(creature,  4);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 6);
+            ApplyEffect(creature, 12);
         }
 
         [NWNEventHandler("grenade_gas2_hb")]
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 6);
+                ApplyEffect(creature, 12);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 8);
+            ApplyEffect(creature, 16);
         }
 
         [NWNEventHandler("grenade_gas3_hb")]
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 8);
+                ApplyEffect(creature, 16);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }

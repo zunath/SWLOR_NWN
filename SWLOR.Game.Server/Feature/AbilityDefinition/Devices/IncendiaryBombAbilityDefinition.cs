@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 2);
+            ApplyEffect(creature, 4);
         }
 
         [NWNEventHandler("grenade_inc1_hb")]
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 2);
+                ApplyEffect(creature, 4);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 5);
+            ApplyEffect(creature, 10);
         }
 
         [NWNEventHandler("grenade_inc2_hb")]
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 5);
+                ApplyEffect(creature, 10);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 8);
+            ApplyEffect(creature, 16);
         }
 
         [NWNEventHandler("grenade_inc3_hb")]
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 8);
+                ApplyEffect(creature, 16);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }

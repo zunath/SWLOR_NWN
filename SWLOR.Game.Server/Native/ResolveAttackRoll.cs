@@ -288,6 +288,11 @@ namespace SWLOR.Game.Server.Native
                     : attackerStats.m_nDexterityBase;
                 var criticalRoll = Random.Next(1, 100);
                 var criticalBonus = HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
+                if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)
+                    criticalBonus += 4;
+                else if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim1) == 1)
+                    criticalBonus += 2;
+
                 var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.m_nIntelligenceBase, criticalBonus);
 
                 // Critical

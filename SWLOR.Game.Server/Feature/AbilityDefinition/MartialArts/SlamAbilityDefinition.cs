@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam1, PerkType.Slam)
                 .Name("Slam I")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam2, PerkType.Slam)
                 .Name("Slam II")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
                 .HasCustomValidation(Validation)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam3, PerkType.Slam)
                 .Name("Slam III")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
                 .HasCustomValidation(Validation)

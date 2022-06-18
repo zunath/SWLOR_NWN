@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class ApplyPlayerTemporaryEffects
+    public class PlayerTemporaryEffects
     {
         [NWNEventHandler("mod_enter")]
         public static void ApplyTemporaryEffects()
@@ -42,6 +42,26 @@ namespace SWLOR.Game.Server.Feature
                     RemoveEffect(player, effect);
                 }
             }
+        }
+
+        /// <summary>
+        /// Whenever a player unequips an item, if they have any action modes enabled, disable them.
+        /// This works around issues 
+        /// </summary>
+        [NWNEventHandler("mod_unequip")]
+        public static void RemoveEquipmentEffects()
+        {
+            DisableRapidShotMode();
+        }
+
+        private static void DisableRapidShotMode()
+        {
+            var player = GetPCItemLastUnequippedBy();
+            if (!GetIsPC(player))
+                return;
+
+            if(GetActionMode(player, ActionMode.RapidShot))
+                SetActionMode(player, ActionMode.RapidShot, false);
         }
     }
 }

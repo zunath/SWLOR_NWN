@@ -48,17 +48,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 case 1:
                     dmg = 12;
-                    duration = 30f;
+                    duration = 12f;
                     if (d2() == 1) inflict = true;
                     break;
                 case 2:
                     dmg = 21;
-                    duration = 60f;
+                    duration = 12f;
                     if (d4() > 1) inflict = true;
                     break;
                 case 3:
                     dmg = 34;
-                    duration = 60f;
+                    duration = 12f;
                     inflict = true;
                     break;
                 default:

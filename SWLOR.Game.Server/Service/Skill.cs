@@ -17,7 +17,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
-        public const int SkillCap = 300;
+        public const int SkillCap = 350;
+
+        /// <summary>
+        /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
+        /// </summary>
+        public static int APCap { get; } = SkillCap / 10;
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.
@@ -206,11 +211,10 @@ namespace SWLOR.Game.Server.Service
         /// from the character menu. One point is earned per 10 skill ranks
         /// </summary>
         /// <param name="player">The player to receive the AP.</param>
-        /// <param name="rank">The rank attained.</param>
         /// <param name="dbPlayer">The database entity.</param>
         private static void ApplyAbilityPoint(uint player, Player dbPlayer)
         {
-            // Total AP have been earned (300SP = 30AP)
+            // Total AP have been earned (350SP = 35AP)
             if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
             if (dbPlayer.TotalSPAcquired % 10 == 0)

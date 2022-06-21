@@ -474,23 +474,7 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 229
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",

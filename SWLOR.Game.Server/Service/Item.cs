@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
+            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
 
             // Martial Arts Skills
             _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
@@ -175,6 +176,7 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
 
             // Martial Arts Skills
             _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;

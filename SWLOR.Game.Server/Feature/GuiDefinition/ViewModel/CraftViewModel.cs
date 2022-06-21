@@ -1054,10 +1054,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ApplyProperty(uint item, ItemProperty ip)
         {
             var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
             var amount = GetItemPropertyCostTableValue(ip);
             for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
             {
-                if (GetItemPropertyType(property) == type)
+                if (GetItemPropertyType(property) == type &&
+                    (GetItemPropertySubType(property) == -1 || GetItemPropertySubType(property) == subType))
                 {
                     amount += GetItemPropertyCostTableValue(property);
                     RemoveItemProperty(item, property);

@@ -871,7 +871,13 @@ namespace SWLOR.Game.Server.Service
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
 
-        private static int GetStatValueNative(CNWSCreature creature, AbilityType statType)
+        /// <summary>
+        /// Retrieves the native stat value of a given type on a particular creature.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <param name="statType">The type of stat to check</param>
+        /// <returns>The stat value of a creature based on the ability type</returns>
+        public static int GetStatValueNative(CNWSCreature creature, AbilityType statType)
         {
             var stat = 0;
             switch (statType)

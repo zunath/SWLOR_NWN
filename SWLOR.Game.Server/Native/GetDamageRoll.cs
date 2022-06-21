@@ -143,19 +143,10 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] = 1;
             }
 
-            int attackerStat = attackerStats.m_nStrengthBase;
-
-            if (attackType == (uint) AttackType.Ranged)
-            {
-                if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-                {
-                    attackerStat = attackerStats.m_nStrengthBase;
-                }
-                else
-                {
-                    attackerStat = attackerStats.m_nDexterityBase;
-                }
-            }
+            var attackerStatType = weapon == null
+                ? AbilityType.Might
+                : Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+            var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
             // Strong Style Toggle (Saberstaff/Lightsaber)
             // Uses STR for damage if enabled and increases DMG.
@@ -169,7 +160,7 @@ namespace SWLOR.Game.Server.Native
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
             if (attackerStat > 128) attackerStat -= 256;
 
-            var log = "DAMAGE: attacker attribute modifier: " + attackerStat.ToString() + ", weapon damage ratings ";
+            var log = "DAMAGE: attacker attribute modifier: " + attackerStat + ", weapon damage ratings ";
             foreach(var damageType in dmgValues.Keys)
             {
                 log += damageType + ": " + dmgValues[damageType] + ";";

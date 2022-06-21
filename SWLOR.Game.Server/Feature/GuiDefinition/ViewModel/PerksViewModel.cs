@@ -561,6 +561,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IsBuyEnabled = nextUpgrade != null &&
                                    dbPlayer.UnallocatedSP >= nextUpgrade.Price &&
                                    meetsRequirements;
+
+                    BuyText = nextUpgrade != null
+                        ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
+                        : "Buy Upgrade";
                 });
         };
 

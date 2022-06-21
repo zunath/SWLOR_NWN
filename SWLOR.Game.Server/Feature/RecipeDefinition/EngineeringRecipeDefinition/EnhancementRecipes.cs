@@ -382,55 +382,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Weapon Enhancement - DMG - Poison I
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison1, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_psn1")
-				.Level(7)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
-				.Component("ref_tilarium", 4)
-				.Component("ref_veldite", 2)
-				.Component("elec_ruined", 2)
-				;
-
-			// Weapon Enhancement - DMG - Fire I
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire1, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_fir1")
-				.Level(6)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
-				.Component("ref_tilarium", 4)
-				.Component("ref_veldite", 2)
-				.Component("elec_ruined", 2)
-				;
-
-			// Weapon Enhancement - DMG - Ice I
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce1, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_ice1")
-				.Level(5)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
-				.Component("ref_tilarium", 3)
-				.Component("ref_veldite", 2)
-				.Component("elec_ruined", 2)
-				;
-
-			// Weapon Enhancement - DMG - Electrical I
-			_builder.Create(RecipeType.WeaponEnhancementElectrical1, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_elec1")
-				.Level(6)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
-				.Component("ref_tilarium", 4)
-				.Component("ref_veldite", 2)
-				.Component("elec_ruined", 2)
-				;
-
-			// Weapon Enhancement - Evasion I
+            // Weapon Enhancement - Evasion I
 			_builder.Create(RecipeType.WeaponEnhancementEvasion1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_eva1")
@@ -1107,10 +1059,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 1)
 				;
 			
-			// Weapon Enhancement - DMG - Poison II
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Poison I
+			_builder.Create(RecipeType.WeaponEnhancementDMGPoison1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_psn2")
+				.Resref("wen_dmg_psn1")
 				.Level(17)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
@@ -1119,10 +1071,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Fire II
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire2, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Fire I
+			_builder.Create(RecipeType.WeaponEnhancementDMGFire1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_fir2")
+				.Resref("wen_dmg_fir1")
 				.Level(16)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
@@ -1131,10 +1083,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Ice II
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce2, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Ice I
+			_builder.Create(RecipeType.WeaponEnhancementDMGIce1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_ice2")
+				.Resref("wen_dmg_ice1")
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
@@ -1143,10 +1095,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Electrical II
-			_builder.Create(RecipeType.WeaponEnhancementElectrical2, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Electrical I
+			_builder.Create(RecipeType.WeaponEnhancementElectrical1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_elec2")
+				.Resref("wen_dmg_elec1")
 				.Level(16)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
@@ -1855,55 +1807,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
 				;
-
-			// Weapon Enhancement - DMG - Poison III
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison3, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_psn3")
-				.Level(27)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
-				.Component("ref_idailia", 4)
-				.Component("ref_plagionite", 2)
-				.Component("elec_good", 2)
-				;
-
-			// Weapon Enhancement - DMG - Fire III
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire3, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_fir3")
-				.Level(26)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
-				.Component("ref_idailia", 4)
-				.Component("ref_plagionite", 2)
-				.Component("elec_good", 2)
-				;
-
-			// Weapon Enhancement - DMG - Ice III
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce3, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_ice3")
-				.Level(25)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
-				.Component("ref_idailia", 3)
-				.Component("ref_plagionite", 2)
-				.Component("elec_good", 2)
-				;
-
-			// Weapon Enhancement - DMG - Electrical III
-			_builder.Create(RecipeType.WeaponEnhancementElectrical3, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_elec3")
-				.Level(26)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
-				.Component("ref_idailia", 4)
-				.Component("ref_plagionite", 2)
-				.Component("elec_good", 2)
-				;
-
+			
 			// Weapon Enhancement - Evasion III
 			_builder.Create(RecipeType.WeaponEnhancementEvasion3, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
@@ -2581,10 +2485,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 1)
 				;
 			
-			// Weapon Enhancement - DMG - Poison IV
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison4, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Poison II
+			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_psn4")
+				.Resref("wen_dmg_psn2")
 				.Level(37)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
@@ -2593,10 +2497,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Fire IV
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire4, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Fire II
+			_builder.Create(RecipeType.WeaponEnhancementDMGFire2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_fir4")
+				.Resref("wen_dmg_fir2")
 				.Level(36)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
@@ -2605,10 +2509,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Ice IV
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce4, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Ice II
+			_builder.Create(RecipeType.WeaponEnhancementDMGIce2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_ice4")
+				.Resref("wen_dmg_ice2")
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
@@ -2617,10 +2521,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Electrical IV
-			_builder.Create(RecipeType.WeaponEnhancementElectrical4, SkillType.Engineering)
+			// Weapon Enhancement - DMG - Electrical II
+			_builder.Create(RecipeType.WeaponEnhancementElectrical2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_elec4")
+				.Resref("wen_dmg_elec2")
 				.Level(36)
 				.Quantity(1)
 				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
@@ -3330,55 +3234,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Weapon Enhancement - DMG - Poison V
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison5, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_psn5")
-				.Level(47)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
-				.Component("ref_gostian", 4)
-				.Component("ref_jasioclase", 2)
-				.Component("elec_high", 2)
-				;
-
-			// Weapon Enhancement - DMG - Fire V
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire5, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_fir5")
-				.Level(46)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
-				.Component("ref_gostian", 4)
-				.Component("ref_jasioclase", 2)
-				.Component("elec_high", 2)
-				;
-
-			// Weapon Enhancement - DMG - Ice V
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce5, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_ice5")
-				.Level(45)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
-				.Component("ref_gostian", 3)
-				.Component("ref_jasioclase", 2)
-				.Component("elec_high", 2)
-				;
-
-			// Weapon Enhancement - DMG - Electrical V
-			_builder.Create(RecipeType.WeaponEnhancementElectrical5, SkillType.Engineering)
-				.Category(RecipeCategoryType.Enhancement)
-				.Resref("wen_dmg_elec5")
-				.Level(46)
-				.Quantity(1)
-				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
-				.Component("ref_gostian", 4)
-				.Component("ref_jasioclase", 2)
-				.Component("elec_high", 2)
-				;
-
-			// Weapon Enhancement - Evasion V
+            // Weapon Enhancement - Evasion V
 			_builder.Create(RecipeType.WeaponEnhancementEvasion5, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_eva5")

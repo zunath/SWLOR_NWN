@@ -14949,39 +14949,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Improved Duranium III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_duranium_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Duranium IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_duranium_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Duranium V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_duranium_5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Improved Elastex I"
                     },
                     "RESREF": {
@@ -15548,39 +15515,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "imp_lamina_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Laminasteel III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_lamina_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Laminasteel IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_lamina_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Laminasteel V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_lamina_5"
                     }
                   },
                   {
@@ -16219,39 +16153,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "imp_quadran_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Quadranium III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_quadran_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Quadranium IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_quadran_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Quadranium V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_quadran_5"
                     }
                   },
                   {
@@ -16934,39 +16835,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "imp_ultrachr_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Ultrachrome III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_ultrachr_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Ultrachrome IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_ultrachr_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Improved Ultrachrome V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "imp_ultrachr_5"
                     }
                   },
                   {
@@ -21769,39 +21637,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Electrical III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_elec3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Electrical IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_elec4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Electrical V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_elec5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Weapon Enhancement - DMG - Fire I"
                     },
                     "RESREF": {
@@ -21818,39 +21653,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wen_dmg_fir2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Fire III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_fir3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Fire IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_fir4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Fire V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_fir5"
                     }
                   },
                   {
@@ -21890,28 +21692,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Force IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_for4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Force V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_for5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Weapon Enhancement - DMG - Ice I"
                     },
                     "RESREF": {
@@ -21928,39 +21708,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wen_dmg_ice2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Ice III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_ice3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Ice IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_ice4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Ice V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_ice5"
                     }
                   },
                   {
@@ -22000,28 +21747,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Physical IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_phy4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Physical V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_phy5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Weapon Enhancement - DMG - Poison I"
                     },
                     "RESREF": {
@@ -22038,39 +21763,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wen_dmg_psn2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Poison III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_psn3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Poison IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_psn4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Poison V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wen_dmg_psn5"
                     }
                   },
                   {

@@ -1332,7 +1332,7 @@ namespace SWLOR.Game.Server.Service
             var attackerAccuracy = Stat.GetAccuracy(attacker, OBJECT_INVALID, AbilityType.Agility, SkillType.Piloting) + attackerShipStatus.Accuracy;
             var defenderEvasion = Stat.GetEvasion(defender, SkillType.Piloting) + defenderShipStatus.Evasion;
 
-            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion);
+            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
         }
 
         /// <summary>

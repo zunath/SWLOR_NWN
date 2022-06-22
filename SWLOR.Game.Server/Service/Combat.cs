@@ -136,14 +136,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attackerAccuracy">The total accuracy of the attacker.</param>
         /// <param name="defenderEvasion">The total evasion of the defender.</param>
+        /// <param name="percentageModifier">Modifies the raw hit change by a certain percentage. This is done after all prior calculations.</param>
         /// <returns>The hit rate, clamped between 20 and 95, inclusive.</returns>
         public static int CalculateHitRate(
             int attackerAccuracy,
-            int defenderEvasion)
+            int defenderEvasion,
+            int percentageModifier)
         {
             const int BaseHitRate = 75;
             
-            var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f);
+            var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f) + percentageModifier;
 
             if (hitRate < 20)
                 hitRate = 20;

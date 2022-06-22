@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 6 DMG and has a 50% chance to inflict Blindness for 12 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Slam1)

@@ -82,6 +82,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             var dbPlayer = DB.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
+            if (!dbPlayer.Quests[questId].ItemProgresses.ContainsKey(_resref))
+                return "N/A";
 
             var numberRemaining = dbPlayer.Quests[questId].ItemProgresses[_resref];
             var itemName = Cache.GetItemNameByResref(_resref);

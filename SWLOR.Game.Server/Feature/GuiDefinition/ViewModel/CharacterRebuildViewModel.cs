@@ -240,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             void UnequipAllItems()
             {
+                AssignCommand(Player, () => ClearAllActions());
                 for (var index = 0; index < NumberOfInventorySlots; index++)
                 {
                     var slot = (InventorySlot)index;
@@ -252,7 +253,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         AssignCommand(Player, () =>
                         {
-                            ClearAllActions();
                             ActionUnequipItem(item);
                         });
                     }

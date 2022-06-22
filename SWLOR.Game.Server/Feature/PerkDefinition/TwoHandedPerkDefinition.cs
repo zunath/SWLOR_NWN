@@ -599,7 +599,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attacks up to 3 nearby enemies for 10 DMG each.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl1)

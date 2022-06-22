@@ -456,7 +456,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Set creature's base attack bonus (BAB)
         // Modifying the BAB will also affect the creature's attacks per round and its
-        // eligability for feats, prestige classes, etc.
+        // eligibility for feats, prestige classes, etc.
         // The BAB value should be between 0 and 254.
         // Setting BAB to 0 will cause the creature to revert to its original BAB based
         // on its classes and levels. A creature can never have an actual BAB of zero.

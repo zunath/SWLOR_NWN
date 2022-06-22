@@ -101,33 +101,6 @@ namespace SWLOR.Game.Server.Native
             // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
             var modifiers = 0;
 
-            // Dual wield penalty.
-            var offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
-            var bDoubleWeapon = 
-                weapon != null && 
-                (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
-
-            if (bDoubleWeapon ||
-                (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 
-                 offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
-            {
-                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
-                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
-                // in to the proficiency perks rather than granting them separately. 
-
-                if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
-                {
-                    // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
-                    modifiers -= 10;
-                    logMessage += "- offhand weapon is unwieldy -";
-                }
-
-                // Apply the base two weapon fighting penalty. 
-                modifiers -= 10;
-                Log.Write(LogGroup.Attack, logMessage);
-            }
-
             // Defender not targeting the attacker.
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
             // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
@@ -269,12 +242,42 @@ namespace SWLOR.Game.Server.Native
                 modifiers += 30;
             }
 
+            // Dual wield penalty.
+            var offhand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+            var bDoubleWeapon =
+                weapon != null &&
+                (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
+            var percentageModifier = 0;
+
+            if (bDoubleWeapon ||
+                (offhand != null &&
+                 offhand.m_nBaseItem != (uint)BaseItem.LargeShield &&
+                 offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
+                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
+            {
+                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
+                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
+                // in to the proficiency perks rather than granting them separately. 
+
+                if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
+                {
+                    // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
+                    percentageModifier -= 10;
+                    logMessage += "- offhand weapon is unwieldy -";
+                }
+
+                // Apply the base two weapon fighting penalty. 
+                percentageModifier -= 20;
+                Log.Write(LogGroup.Attack, logMessage);
+            }
+
             // End modifiers
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             var attackRoll = Random.Next(1, 100);
-            var hitRate = Combat.CalculateHitRate(attackerAccuracy + modifiers, defenderEvasion);
+            var hitRate = Combat.CalculateHitRate(attackerAccuracy + modifiers, defenderEvasion, percentageModifier);
             var isHit = attackRoll <= hitRate;
 
             Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {modifiers}, defenderEvasion = {defenderEvasion}");

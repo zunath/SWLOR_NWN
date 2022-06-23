@@ -95,20 +95,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 2.0 DMG. Can hit up to 1 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 8 DMG. Can hit up to 1 targets along the path thrown.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber1)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 6.0 DMG. Can hit up to 2 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 17 DMG. Can hit up to 2 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber2)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 9.0 DMG. Can hit up to 3 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 24 DMG. Can hit up to 3 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lightning")
 
                 .AddPerkLevel()
-                .Description("Deals 6.0 DMG to a single target.")
+                .Description("Deals 12 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 8.5 DMG to a single target.")
+                .Description("Deals 19 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning2)
 
                 .AddPerkLevel()
-                .Description("Deals 12.0 DMG to a single target.")
+                .Description("Deals 28 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning3)
 
                 .AddPerkLevel()
-                .Description("Deals 13.5 DMG to a single target.")
+                .Description("Deals 40 DMG to a single target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

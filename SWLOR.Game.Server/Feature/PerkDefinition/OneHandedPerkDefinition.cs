@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Doublehand")
                 
                 .AddPerkLevel()
-                .Description("Increases damage of one-handed weapons to 1.5xMGT when no off-hand item is equipped.")
+                .Description("Increases damage of one-handed weapons by 50% of Might when no off-hand item is equipped.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.Doublehand)

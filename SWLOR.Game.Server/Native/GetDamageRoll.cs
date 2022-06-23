@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Native
                                   attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand) == 1;
                 if (isDoubleHand)
                 {
-                    var mightBonus = (int)(attackerStats.m_nStrengthBase * 1.5f);
+                    var mightBonus = (int)(attackerStats.m_nStrengthBase * 0.5f);
                     attackerStat += mightBonus;
                     Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{mightBonus})");
                 }

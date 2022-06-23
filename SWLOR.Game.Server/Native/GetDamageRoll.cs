@@ -185,12 +185,13 @@ namespace SWLOR.Game.Server.Native
             // 2-handed weapons and Doublehand perk
             if (attackType == (uint)AttackType.Melee && weapon != null)
             {
-                var isDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)InventorySlot.LeftHand) == null &&
+                var isDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null &&
                                   attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand) == 1;
                 if (isDoubleHand)
                 {
-                    Log.Write(LogGroup.Attack, "DAMAGE: Applying doublehand damage bonus.");
-                    attackerStat = (int)(attackerStat * 1.5f);
+                    var mightBonus = (int)(attackerStats.m_nStrengthBase * 1.5f);
+                    attackerStat += mightBonus;
+                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{mightBonus})");
                 }
             }
 

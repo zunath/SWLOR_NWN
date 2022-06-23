@@ -1122,6 +1122,7 @@ namespace SWLOR.Game.Server.Service
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
+            var effectEvasion = 0;
             var evasionBonus = 0;
             var ac = GetAC(creature) - 10; // Offset by natural 10 AC granted to all characters.
             var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
@@ -1134,6 +1135,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 skillLevel = dbPlayer.Skills[skillType].Rank;
+                evasionBonus = dbPlayer.Evasion;
             }
             else
             {
@@ -1141,9 +1143,9 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            evasionBonus = CalculateEffectEvasion(creature, evasionBonus);
+            effectEvasion = CalculateEffectEvasion(creature, effectEvasion);
 
-            return stat * 3 + skillLevel + evasionBonus + ac;
+            return stat * 3 + skillLevel + effectEvasion + ac + evasionBonus;
         }
 
         /// <summary>
@@ -1155,6 +1157,7 @@ namespace SWLOR.Game.Server.Service
         {
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
+            var effectEvasion = 0;
             var evasionBonus = 0;
             var ac = creature.m_pStats.m_nACArmorBase + creature.m_pStats.m_nACNaturalBase;
 
@@ -1168,6 +1171,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                 {
                     skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                    evasionBonus = dbPlayer.Evasion;
                 }
             }
             else
@@ -1176,9 +1180,9 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            evasionBonus = CalculateEffectEvasionNative(creature, evasionBonus);
+            effectEvasion = CalculateEffectEvasionNative(creature, effectEvasion);
 
-            return stat * 3 + skillLevel + evasionBonus + ac;
+            return stat * 3 + skillLevel + effectEvasion + ac + evasionBonus;
         }
 
         private static int CalculateEffectEvasion(uint creature, int evasion)

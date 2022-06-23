@@ -1170,6 +1170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _components.Clear();
 
             SwitchToSetUpMode();
+            LoadCraftingState();
             RefreshRecipeStats();
             StatusText = "Failed to craft the item...";
             StatusColor = _red;

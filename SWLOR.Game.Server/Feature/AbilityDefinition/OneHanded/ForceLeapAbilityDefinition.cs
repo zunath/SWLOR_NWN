@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             {
                 PlaySound("plr_force_flip");
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
+                SetCommandable(false, activator);
             });
 
             Enmity.ModifyEnmityOnAll(activator, 1);
@@ -97,9 +98,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
-
+            
             DelayCommand(Delay, () =>
-            {                
+            {
+                SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
                 AssignCommand(activator, () =>

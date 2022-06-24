@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Willpower);
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(

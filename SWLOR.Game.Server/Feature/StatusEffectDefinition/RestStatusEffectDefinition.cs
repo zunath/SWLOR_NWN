@@ -83,6 +83,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     Ability.EndConcentrationAbility(target);
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
+
+                    ExecuteScript("rest_started", target);
                 })
                 .TickAction((source, target, effectData) =>
                 {

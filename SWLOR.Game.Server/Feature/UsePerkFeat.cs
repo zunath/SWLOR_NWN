@@ -382,6 +382,24 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetEnteringObject();
 
+            ClearQueuedAbility(player);
+        }
+
+        /// <summary>
+        /// Whenever a player starts resting, clear any queued abilities.
+        /// </summary>
+        [NWNEventHandler("rest_started")]
+        public static void ClearTemporaryQueuedVariablesOnRest()
+        {
+            ClearQueuedAbility(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Clears the queued ability of a player.
+        /// </summary>
+        /// <param name="player">The player to clear</param>
+        private static void ClearQueuedAbility(uint player)
+        {
             DeleteLocalInt(player, ActiveAbilityName);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);

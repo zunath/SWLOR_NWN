@@ -25734,17 +25734,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ashla's greatsaber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ashlasaber00"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Capacitor Booster"
                     },
                     "RESREF": {
@@ -31269,6 +31258,171 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Apprentice Inquisitor's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valis2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apprentice Sorcerer's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valsos2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apprentice Warrior's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Consular's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valcs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valgs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Consular's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valcs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Guardian's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valgs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Inquisitor's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valis1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Sentinel's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valss1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Sorcerer's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valsos1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Initiate Warrior's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inquisitor's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valgs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Sage's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valcs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Shadow's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valss4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mpiandry's Soul"
                     },
                     "RESREF": {
@@ -31285,6 +31439,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mpiandrystorment"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Padawan Consular's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valcs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Padawan Guardian's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valgs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Padawan Sentinel's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valss2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sentinel's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valss3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valis4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Blademaster's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Lord's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valsos4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorcerer's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valsos3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warrior's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valws3"
                     }
                   }
                 ]
@@ -31304,6 +31557,143 @@
                     "ID": {
                       "type": "byte",
                       "value": 48
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apprentice Inquisitor's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valil2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apprentice Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apprentice Warrior's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valwl2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Inquisitor's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valil1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Warrior's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valwl1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valil3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Assassin's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valil4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Blademaster's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valwl4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Lord's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valwl3"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -31340,6 +31730,94 @@
                             "type": "resref",
                             "value": "wookshamanstaff"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apprentice Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol2_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl3_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl1_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol1_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jedi Sage's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl4_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Padawan Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl2_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Lord's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol4_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sorcerer's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsol3_1"
+                          }
                         }
                       ]
                     },
@@ -31353,6 +31831,143 @@
                     "ID": {
                       "type": "byte",
                       "value": 50
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Guardian's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valgl3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Guardian's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valgl1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Initiate Sentinel's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsl1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jedi Knight's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valgl4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jedi Sage's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jedi Shadow's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsl4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Padawan Consular's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valcl2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Padawan Guardian's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valgl2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Padawan Sentinel's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsl2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sentinel's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "valsl3"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",

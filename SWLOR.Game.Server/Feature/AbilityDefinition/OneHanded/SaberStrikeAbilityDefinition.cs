@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Saber Strike I")
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(3)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Saber Strike II")
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(5)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Saber Strike III")
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(8)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

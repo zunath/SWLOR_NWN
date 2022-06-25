@@ -189,13 +189,6 @@
           "type": "resref",
           "value": "item034"
         }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "sithring"
-        }
       }
     ]
   },

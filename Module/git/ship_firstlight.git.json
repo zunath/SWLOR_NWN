@@ -237,7 +237,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -781,7 +781,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -1215,7 +1215,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -1766,7 +1766,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -2310,7 +2310,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -3295,7 +3295,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -4017,7 +4017,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -5081,7 +5081,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -6145,7 +6145,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -6696,7 +6696,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -7240,7 +7240,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -8225,7 +8225,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -8947,7 +8947,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -10011,7 +10011,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -10928,7 +10928,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -11362,7 +11362,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -12279,7 +12279,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -12713,7 +12713,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -13777,7 +13777,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -14694,7 +14694,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -16192,7 +16192,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -17109,7 +17109,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -18094,7 +18094,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -18638,7 +18638,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -19072,7 +19072,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -19989,7 +19989,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -20974,7 +20974,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -21518,7 +21518,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -22503,7 +22503,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -23047,7 +23047,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -23481,7 +23481,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -24398,7 +24398,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -24832,7 +24832,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -25749,7 +25749,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -26183,7 +26183,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -27247,7 +27247,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -28311,7 +28311,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -28862,7 +28862,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -29584,7 +29584,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -30648,7 +30648,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -31199,7 +31199,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -31743,7 +31743,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -32177,7 +32177,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -32728,7 +32728,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -33272,7 +33272,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -35035,7 +35035,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -39528,7 +39528,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 200
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",

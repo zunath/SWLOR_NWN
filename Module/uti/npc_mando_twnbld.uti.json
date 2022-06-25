@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -40,7 +42,7 @@
     "id": 172,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Mandolorian Twin Blade"
+      "0": "[NPC] Mandalorian Twin Blade"
     }
   },
   "ModelPart1": {

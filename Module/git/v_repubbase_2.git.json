@@ -17522,11 +17522,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 20
+                "value": 103
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 103
               },
               "Cost": {
                 "type": "dword",
@@ -17552,26 +17552,26 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 2
+                "value": 103
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 37
+                "value": 103
               },
               "LocalizedName": {
                 "id": 90531,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Helmet"
+                  "0": "[NPC] Mandalorian Helmet"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 63
+                "value": 91
               },
               "ModelPart1": {
                 "type": "byte",
@@ -17630,59 +17630,59 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 156
+                "value": 106
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 101
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 199
+                "value": 3
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 9
+                "value": 75
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -17690,19 +17690,19 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 102
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 63
+                "value": 75
               },
               "BaseItem": {
                 "type": "int",
@@ -17714,11 +17714,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cost": {
                 "type": "dword",
@@ -17742,22 +17742,22 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 25
+                "value": 127
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 22
+                "value": 127
               },
               "LocalizedName": {
                 "id": 12838,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Armor"
+                  "0": "[NPC] Mandalorian Armor"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
@@ -17769,39 +17769,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",
@@ -18543,11 +18511,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 20
+                "value": 103
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 103
               },
               "Cost": {
                 "type": "dword",
@@ -18573,26 +18541,26 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 2
+                "value": 103
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 37
+                "value": 103
               },
               "LocalizedName": {
                 "id": 90531,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Helmet"
+                  "0": "[NPC] Mandalorian Helmet"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 63
+                "value": 91
               },
               "ModelPart1": {
                 "type": "byte",
@@ -18651,59 +18619,59 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 156
+                "value": 106
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 101
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 199
+                "value": 3
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 9
+                "value": 75
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -18711,19 +18679,19 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 102
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 63
+                "value": 75
               },
               "BaseItem": {
                 "type": "int",
@@ -18735,11 +18703,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cost": {
                 "type": "dword",
@@ -18763,22 +18731,22 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 25
+                "value": 127
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 22
+                "value": 127
               },
               "LocalizedName": {
                 "id": 12838,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Armor"
+                  "0": "[NPC] Mandalorian Armor"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
@@ -18790,39 +18758,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",
@@ -19564,11 +19500,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 20
+                "value": 103
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 103
               },
               "Cost": {
                 "type": "dword",
@@ -19594,26 +19530,26 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 2
+                "value": 103
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 37
+                "value": 103
               },
               "LocalizedName": {
                 "id": 90531,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Helmet"
+                  "0": "[NPC] Mandalorian Helmet"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 63
+                "value": 91
               },
               "ModelPart1": {
                 "type": "byte",
@@ -19672,59 +19608,59 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 156
+                "value": 106
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 101
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 199
+                "value": 3
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 9
+                "value": 75
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 186
+                "value": 75
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 3
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 4
+                "value": 245
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 4
+                "value": 198
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -19732,19 +19668,19 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 232
+                "value": 75
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 57
+                "value": 102
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 118
+                "value": 161
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 63
+                "value": 75
               },
               "BaseItem": {
                 "type": "int",
@@ -19756,11 +19692,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 127
               },
               "Cost": {
                 "type": "dword",
@@ -19784,22 +19720,22 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 25
+                "value": 127
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 22
+                "value": 127
               },
               "LocalizedName": {
                 "id": 12838,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Mandalorian Armor"
+                  "0": "[NPC] Mandalorian Armor"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 7
               },
               "Metal2Color": {
                 "type": "byte",
@@ -19811,39 +19747,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",

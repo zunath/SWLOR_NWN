@@ -180,13 +180,6 @@
           "type": "resref",
           "value": "sirtulieutenanto"
         }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "item010"
-        }
       }
     ]
   },

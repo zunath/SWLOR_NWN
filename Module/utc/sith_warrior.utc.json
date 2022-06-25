@@ -191,13 +191,6 @@
           "type": "resref",
           "value": "sith_war_saber"
         }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "sithring"
-        }
       }
     ]
   },

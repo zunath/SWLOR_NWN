@@ -14,6 +14,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AppearanceEditorViewModel: GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>
     {
+        public const string PartialElement = "PARTIAL_VIEW";
+        public const string EditorPartial = "APPEARANCE_EDITOR_PARTIAL";
+        public const string SettingsPartial = "SETTINGS_PARTIAL";
+
         private const int ColorWidthCells = 16;
         private const int ColorHeightCells = 11;
 
@@ -54,6 +58,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsSettingsSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ColorSheetResref
         {
             get => Get<string>();
@@ -67,6 +77,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public bool DoesNotHaveItemEquipped
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowHelmet
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowCloak
         {
             get => Get<bool>();
             set => Set(value);
@@ -198,8 +220,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            ChangePartialView(PartialElement, EditorPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
+            IsSettingsSelected = false;
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -210,11 +234,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ColorCategorySelected[0] = true;
             PartCategorySelected[0] = true;
             LoadBodyParts();
+            LoadSettings();
 
             WatchOnClient(model => model.SelectedColorCategoryIndex);
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
+            WatchOnClient(model => model.ShowHelmet);
+            WatchOnClient(model => model.ShowCloak);
         }
 
         private void LoadColorCategoryOptions()
@@ -451,6 +478,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartSelected[SelectedPartIndex] = true;
         }
 
+        private void LoadSettings()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            ShowHelmet = dbPlayer.Settings.ShowHelmet;
+            ShowCloak = dbPlayer.Settings.ShowCloak;
+        }
+
         private void LoadItemParts()
         {
             if (DoesNotHaveItemEquipped)
@@ -567,8 +603,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectAppearance() => () =>
         {
+            ChangePartialView(PartialElement, EditorPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
+            IsSettingsSelected = false;
             ToggleItemEquippedFlags();
 
             LoadColorCategoryOptions();
@@ -578,8 +616,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectEquipment() => () =>
         {
+            ChangePartialView(PartialElement, EditorPartial);
             IsAppearanceSelected = false;
             IsEquipmentSelected = true;
+            IsSettingsSelected = false;
             ToggleItemEquippedFlags();
 
             LoadColorCategoryOptions();
@@ -587,6 +627,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
         };
+
+        public Action OnSelectSettings() => () =>
+        {
+            ChangePartialView(PartialElement, SettingsPartial);
+            IsAppearanceSelected = false;
+            IsEquipmentSelected = false;
+            IsSettingsSelected = true;
+
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            ShowHelmet = dbPlayer.Settings.ShowHelmet;
+            ShowCloak = dbPlayer.Settings.ShowCloak;
+        };
+
         public Action OnDecreaseAppearanceScale() => () =>
         {
             var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
@@ -619,19 +674,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
             }
         };
-
-        public Action OnSaveAppearanceScale() => () =>
-        {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            dbPlayer.AppearanceScale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
-
-            DB.Set(dbPlayer);
-
-            SendMessageToPC(Player, $"Height saved successfully. (New Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)})");
-        };
-
+        
         public Action OnSelectColorCategory() => () =>
         {
             ToggleItemEquippedFlags();
@@ -989,5 +1032,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
+
+        public Action OnClickSaveSettings() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.Settings.ShowCloak = ShowCloak;
+            dbPlayer.Settings.ShowHelmet = ShowHelmet;
+
+            var newHeight = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            dbPlayer.AppearanceScale = newHeight;
+
+            DB.Set(dbPlayer);
+            SendMessageToPC(Player, ColorToken.Green("Appearance settings saved successfully."));
+
+            UpdateArmorDisplay();
+        };
+
+        private void UpdateArmorDisplay()
+        {
+            var helmet = GetItemInSlot(InventorySlot.Head, Player);
+            if (GetIsObjectValid(helmet))
+            {
+                SetHiddenWhenEquipped(helmet, !ShowHelmet);
+            }
+
+            var cloak = GetItemInSlot(InventorySlot.Cloak, Player);
+            if (GetIsObjectValid(cloak))
+            {
+                SetHiddenWhenEquipped(cloak, !ShowCloak);
+            }
+        }
+
     }
 }

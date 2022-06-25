@@ -123,6 +123,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of enmity to adjust by</param>
         public static void ModifyEnmity(uint creature, uint enemy, int amount)
         {
+            // Players cannot be placed on an enmity table against each other.
+            if (GetIsPC(creature) && GetIsPC(enemy))
+                return;
+
             // Value is zero, no action necessary.
             if (amount == 0) return;
 

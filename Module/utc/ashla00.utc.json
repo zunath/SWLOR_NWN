@@ -81,13 +81,6 @@
           "type": "resref",
           "value": "ashlarobes00"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "ashlasaber00"
-        }
       }
     ]
   },

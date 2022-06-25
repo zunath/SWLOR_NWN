@@ -29,20 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     })
                         .SetHeight(30f);
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-
-                        row.AddCheckBox()
-                            .SetText("Show Helmet")
-                            .SetTooltip("Shows or hides your helmet graphic.")
-                            .BindIsChecked(model => model.DisplayHelmet);
-
-                        row.AddSpacer();
-                    })
-                        .SetHeight(30f);
-
+                    
                     col.AddRow(row =>
                     {
                         row.AddSpacer();

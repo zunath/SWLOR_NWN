@@ -15,12 +15,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool DisplayHelmet
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool DisplayHolonetChannel
         {
             get => Get<bool>();
@@ -53,13 +47,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
-            DisplayHelmet = dbPlayer.Settings.ShowHelmet;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
 
             WatchOnClient(model => model.DisplayAchievementNotification);
-            WatchOnClient(model => model.DisplayHelmet);
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.ShareLightsaberForceXP);
@@ -71,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
-            dbPlayer.Settings.ShowHelmet = DisplayHelmet;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
@@ -81,7 +72,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 
             // Post-save actions
-            UpdateHelmetDisplay();
             UpdateHolonetSetting();
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
@@ -96,15 +86,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
-
-        private void UpdateHelmetDisplay()
-        {
-            var helmet = GetItemInSlot(InventorySlot.Head, Player);
-            if (GetIsObjectValid(helmet))
-            {
-                SetHiddenWhenEquipped(helmet, !DisplayHelmet);
-            }
-        }
 
         private void UpdateHolonetSetting()
         {

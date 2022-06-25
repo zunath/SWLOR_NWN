@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
                     var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
 
-                    var level = GetLightsaberLevel(lightsaber1) + 1;
+                    var level = GetLightsaberLevel(lightsaber1);
                     var saberstaff = CreateItemOnObject("saberstaff", user);
 
                     // Serialize the individual lightsabers onto the saberstaff
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var dmgItemPropertyId = DetermineDMGValue(level);
                     var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, dmgItemPropertyId);
                     var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.SaberstaffProficiency, level);
-                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
                     BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, perkRequirementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
 
                     // Destroy the original saberstaff, keeping the one we just copied and modified.
@@ -166,6 +166,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "Only force sensitive characters may use this kit.";
                     }
 
+                    if (GetItemInSlot(InventorySlot.RightHand, user) == target ||
+                        GetItemInSlot(InventorySlot.LeftHand, user) == target)
+                    {
+                        return "Lightsaber must be unequipped.";
+                    }
+
                     return string.Empty;
                 })
                 .ApplyAction((user, item, target, location) =>
@@ -176,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, dmgItemPropertyId);
                     var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.LightsaberProficiency, numberOfUpgrades+1);
 
-                    BiowareXP2.IPSafeAddItemProperty(target, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+                    BiowareXP2.IPSafeAddItemProperty(target, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
                     BiowareXP2.IPSafeAddItemProperty(target, perkRequirementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
 
                     DestroyObject(item);

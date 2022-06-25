@@ -41,25 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HideActivationMessage()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    switch (level)
-                    {
-                        case 1:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff1);
-                            break;
-                        case 2:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff2);
-                            break;
-                        case 3:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff3);
-                            break;
-                        case 4:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff4);
-                            break;
-                        case 5:
-                            DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff5);
-                            break;
-                    }
-
+                    DoToggle(activator, AbilityToggleType.StrongStyleSaberstaff);
                 });
         }
     }

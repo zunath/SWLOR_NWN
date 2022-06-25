@@ -1093,7 +1093,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         RenameCraftedItem = 1119,
         ChatCommandTargeter = 1120,
         
-        Doublehand = 1121,
+        Doublehand1 = 1121,
         DualWield = 1122,
         
         WeaponFocusVibroblades = 1123,
@@ -1803,7 +1803,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceRage1 = 1836,
         ForceRage2 = 1837,
         StrongStyleLightsaber = 1838,
-        StrongStyleSaberstaff = 1839
+        StrongStyleSaberstaff = 1839,
+
+        Doublehand2 = 1840,
+        Doublehand3 = 1841,
+        Doublehand4 = 1842,
+        Doublehand5 = 1843,
 
     }
 }

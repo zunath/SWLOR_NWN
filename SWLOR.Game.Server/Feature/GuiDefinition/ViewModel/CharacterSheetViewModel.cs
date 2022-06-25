@@ -441,22 +441,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             
             // Strong Style (Lightsaber)
             if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                (Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber1) ||
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber2) ||
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber3) ||
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber4) ||
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber5)))
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber))
             {
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
             }
             // Strong Style (Saberstaff)
             if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                (Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff1) ||
-                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff2) ||
-                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff3) ||
-                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff4) ||
-                 Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff5)))
+                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff))
             {
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;

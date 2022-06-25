@@ -149,11 +149,10 @@ namespace SWLOR.Game.Server.Native
             var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
             // Strong Style Toggle (Saberstaff/Lightsaber)
-            // Uses STR for damage if enabled and increases DMG.
-            var (bonusDMG, damageStat) = GetStrongStyleDMGBonus(weapon, attacker);
-            if (bonusDMG > -1)
+            // Uses MGT for damage if enabled.
+            var damageStat = GetStrongStyleStat(weapon, attacker);
+            if (damageStat > -1)
             {
-                dmgValues[CombatDamageType.Physical] += bonusDMG;
                 attackerStat = damageStat;
             }
 
@@ -185,13 +184,11 @@ namespace SWLOR.Game.Server.Native
             // 2-handed weapons and Doublehand perk
             if (attackType == (uint)AttackType.Melee && weapon != null)
             {
-                var isDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null &&
-                                  attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand) == 1;
-                if (isDoubleHand)
+                if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
-                    var mightBonus = (int)(attackerStats.m_nStrengthBase * 0.5f);
-                    attackerStat += mightBonus;
-                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{mightBonus})");
+                    var doublehandDMGBonus = GetDoublehandDMGBonus(attacker);
+                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
+                    dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                 }
             }
 
@@ -438,40 +435,40 @@ namespace SWLOR.Game.Server.Native
             return false;
         }
 
-        private static (int, int) GetStrongStyleDMGBonus(CNWSItem weapon, CNWSCreature attacker)
+        private static int GetStrongStyleStat(CNWSItem weapon, CNWSCreature attacker)
         {
             if (weapon == null)
-                return (-1, -1);
+                return -1;
 
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
             if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber1))
-                    return (2, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber2))
-                    return (4, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber3))
-                    return (6, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber4))
-                    return (8, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber5))
-                    return (10, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                    return attacker.m_pStats.m_nStrengthBase;
             }
             else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff1))
-                    return (2, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff2))
-                    return (4, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff3))
-                    return (6, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff4))
-                    return (8, attacker.m_pStats.m_nStrengthBase);
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff5))
-                    return (10, attacker.m_pStats.m_nStrengthBase);
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                    return attacker.m_pStats.m_nStrengthBase;
             }
 
-            return (-1, -1);
+            return -1;
+        }
+
+        private static int GetDoublehandDMGBonus(CNWSCreature attacker)
+        {
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand5) == 1)
+                return 19;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
+                return 14;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
+                return 10;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
+                return 6;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
+                return 2;
+
+            return 0;
         }
     }
 }

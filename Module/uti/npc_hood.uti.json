@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -58,7 +58,7 @@
     "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Hood"
+      "0": "[NPC] Hood"
     }
   },
   "Metal1Color": {

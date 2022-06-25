@@ -2182,6 +2182,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sol_npc_man_armo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Agent Tunic"
                     },
                     "RESREF": {
@@ -2473,6 +2484,105 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Arcona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Devaronian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Kaleesh"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Kaleesh(Hood)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Karkarodon B"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Karkarodon C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] KarkarodonA"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sol_npc_man_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Neimoidian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Republic Trooper Helmet"
                     },
                     "RESREF": {
@@ -2484,95 +2594,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "[NPC]Arcona"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item022"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]Devaronian"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item021"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]Kaleesh"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item023"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]Kaleesh(Hood)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item024"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]KarkarodonA"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item013"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]KarkarodonB"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item014"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]KarkarodonC"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item015"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]Neimoidian"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item017"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC]Shaman"
+                      "value": "[NPC] Shaman"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -3400,22 +3422,6 @@
                 "type": "byte",
                 "value": 7
               },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Poor Heavy Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pr_heavy_helm"
-                    }
-                  }
-                ]
-              },
               "STRREF": {
                 "type": "dword",
                 "value": 6669
@@ -3439,50 +3445,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keyanzioneclothi"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[Head] Kel Dor 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "alienhead002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[Head] Kel Dor 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "alienhead003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[Head] Kel Dor 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "alienhead004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[Head] Rodian"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "alienhead1"
                     }
                   },
                   {
@@ -3516,6 +3478,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bernieclothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Bounty Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_bountyh"
                     }
                   },
                   {
@@ -3599,6 +3572,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Eco-Terrorist Outfit 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_ecot_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Eco-Terrorist Outfit 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_ecot_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Eco-Terrorist Outfit 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_ecot_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Elk's Clothes"
                     },
                     "RESREF": {
@@ -3643,6 +3649,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_hood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Jedi Robes, Brown"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcrobes_brown"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Jedi Temple Guard Mask"
                     },
                     "RESREF": {
@@ -3659,6 +3687,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jeditempleguardr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Jedi Tunic, Brown"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npctunic_brown"
                     }
                   },
                   {
@@ -3687,6 +3726,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Kel Dor 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alienhead002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Kel Dor 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alienhead003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Kel Dor 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alienhead004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Leiza's Dress"
                     },
                     "RESREF": {
@@ -3703,6 +3775,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "lucciacoat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_armor_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_armor_npc_gr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Helmet Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc_gr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian War Hero Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_larmor_npc"
                     }
                   },
                   {
@@ -3742,11 +3869,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Outlaw Outfit Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Outlaw Outfit Female 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_f_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Outlaw Outfit Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Outlaw Outfit Male (trando)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m_t"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Outlaw Outfit Male 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Reika's Leathers"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "directoroutfi001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Rodian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alienhead1"
                     }
                   },
                   {
@@ -3780,6 +3973,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shu_clothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 2 Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler2_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 2 Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 3 Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler3_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 3 Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 4 Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler4_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit 4 Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Smuggler Outfit Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_smuggler_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Turqoise Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turq_npc_breast"
                     }
                   },
                   {
@@ -4248,281 +4540,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "NPC Bounty Hunter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_bountyh"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Eco-Terrorist Outfit 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_ecot_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Eco-Terrorist Outfit 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_ecot_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Eco-Terrorist Outfit 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_ecot_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Hood"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_hood"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Jedi Robes, Brown"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npcrobes_brown"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Jedi Tunic, Brown"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npctunic_brown"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandalorian Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_armor_npc"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandalorian Armor Green"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_armor_npc_gr"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandalorian Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_helm_npc"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandalorian Helmet Green"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_helm_npc_gr"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandalorian War Hero Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_larmor_npc"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Outlaw Outfit Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Outlaw Outfit Female 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_f_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Outlaw Outfit Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Outlaw Outfit Male (trando)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_m_t"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Outlaw Outfit Male 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_m_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 2 Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler2_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 2 Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler2_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 3 Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler3_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 3 Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler3_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 4 Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler4_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit 4 Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler4_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Smuggler Outfit Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_smuggler_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Oriental Dress"
                     },
                     "RESREF": {
@@ -4858,17 +4875,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tina_droidshopcl"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Turqoise NPC Breastplate"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "turq_npc_breast"
                     }
                   },
                   {
@@ -8994,17 +9000,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "refund_tome"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Cards - Rules of the Game"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesrule"
                     }
                   },
                   {
@@ -26722,1221 +26717,6 @@
                 "type": "byte",
                 "value": 1
               },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[NPC] Gogen's Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gogen_staff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Defender (3/4), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_70"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Healer (0/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_68"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Light (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_66"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Archangel (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_69"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Atlantian (1+/1+), cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Avenging Angel (3/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_67"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bear (2/3), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_35"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beholder (4/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_64"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bone Golem (3/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_26"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bugbear Bezerker (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bulette (1/6), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_93"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaos Witch (3/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_59"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cougar (4/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_36"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cow (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_33"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Demon Knight (5/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_81"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dragon (7/7), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_65"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Druid (2/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_30"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dwarven Defender (1/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Elder Fire Elemental (5/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_9"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fairy Dragon (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_60"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Feral Rat (2/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_32"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Giant Spider (2/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_6"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Crossbow (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_31"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Shaman (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_23"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Warlord (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_29"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Witchdoctor (2/2), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_61"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hill Giant (3/4), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_8"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hohen's Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hohensstaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hook Horror (3/1), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_62"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Intellect Devourer (1/3), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_58"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_85"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Chief (3/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_84"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Engineer (0/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_87"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Kamakazie (1/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_86"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Pogostick (0/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_88"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lich (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_27"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Loremaster (0/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_43"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Magic Generator"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Maiden of Paradise (0/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_44"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Ark'Neth (5/5), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_89"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Deekin (1/3), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_91"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Jysirael (5/5), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_90"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Saeshen (0/1), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_92"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pain Golem (4/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_45"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Phase Spider (3/1), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_82"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pit Fiend (7/7), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_46"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Plague Bearer (2/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_40"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_17"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat King (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_28"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Revenant (5/0), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_83"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Cards Destroy Card Wand"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "destroycard"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Cards Sacrifice Wand"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sacrifice"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Animal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck006"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Big Creatures"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Goblin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck005"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Small Creatures"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Special"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck007"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Spells"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Deck - Undead"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "creaturesdeck001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sea Hag (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_94"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sewer Rat (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_63"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shadow Assassin (4/1), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_47"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sirtu's Ring"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item010"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Archer (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_24"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Warrior (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_48"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Solar Stone, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_49"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Angelic Choir, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_75"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Armor, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_19"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Assassin, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_12"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Boomerang, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_78"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Counterspell, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_80"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Death Pact, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_41"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Dispel Magic, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_39"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Elixir of Life, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_22"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Energy Disruption, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_76"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Eye of the Beholder, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_77"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Fire Shield, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_71"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Fireball, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_20"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Flux, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_42"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Healing Light, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_13"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Higher Calling, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_96"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Holy Vengeance, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_18"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Life Drain, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_14"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Lightning Bolt, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_21"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Mind Control, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_73"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Mind Over Matter, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_79"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Paralyze, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_38"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Potion of Heroism, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_72"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Power Stream, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_97"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Resurrect, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_57"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Sabotage, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_25"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Scorched Earth, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_56"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Simulacrum, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_74"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Vortex, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_55"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Warp Reality, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_51"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Wrath of the Horde, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_54"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spirit Guardian (0/4), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Steel Guardian (1/5), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Troglodyte (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_95"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Umber Hulk (2/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire (2/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_16"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire Master (5/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_50"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Stag (5/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_37"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Wolf (3/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_52"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Wolf (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_34"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_15"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie Lord (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "di_card_53"
-                    }
-                  }
-                ]
-              },
               "STRREF": {
                 "type": "dword",
                 "value": 6689
@@ -28246,55 +27026,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "NPC Buff Ring"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npcbuffring"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Debuff Ring"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npcdebuffring"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Sith Powers"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sithring"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Revan's Jedi Lightsaber"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "revan_saber_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zez_Kai Ell's Masterstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item026"
                     }
                   }
                 ]
@@ -29586,6 +28322,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Mandalorian Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_blade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "[NPC] Ranz Morgal's Lightsaber"
                           },
                           "RESREF": {
@@ -29910,17 +28657,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_blade"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Mandalorian Blade"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_mando_blade"
                           }
                         },
                         {
@@ -30516,11 +29252,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Elite Gaderffii"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "e_gaffistick"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Gaderffii"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_gaffi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Gogen's Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gogen_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Hohen's Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hohensstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Jedi Temple Guard Saberstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "templeguardstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_mando_twnbld"
                     }
                   },
                   {
@@ -30906,39 +29697,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_twinblade"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Elite Gaderffii"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "e_gaffistick"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Gaderffii"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tusken_gaffi"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Mandolorian Twin Blade"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_mando_twnbld"
                     }
                   },
                   {
@@ -32492,6 +31250,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Blaster Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Outlaw Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_outlaw_pisto"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Alask's Blaster"
                           },
                           "RESREF": {
@@ -32712,28 +31492,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "NPC Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_pistol"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Outlaw Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_outlaw_pisto"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Ophidian Pistol"
                           },
                           "RESREF": {
@@ -32867,6 +31625,39 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Eco Terrorist Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_eco_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Mandalorian Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Outlaw Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_outlaw_rifle"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -33025,39 +31816,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "NPC Eco Terrorist Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_eco_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Mandalorian Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_mando_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Outlaw Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_outlaw_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Ophidian Rifle"
                           },
                           "RESREF": {
@@ -33165,6 +31923,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Eco Terrorist Leader Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_eco_shuriken"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -33317,17 +32086,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_shuriken"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Eco Terrorist Leader Shuriken"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_eco_shuriken"
                     }
                   },
                   {

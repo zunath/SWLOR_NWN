@@ -198,13 +198,6 @@
           "type": "resref",
           "value": "npcsaberstaff001"
         }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "sithring"
-        }
       }
     ]
   },

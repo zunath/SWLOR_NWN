@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hohen's Staff"
+      "0": "[NPC] Hohen's Staff"
     }
   },
   "ModelPart1": {
@@ -56,7 +56,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 1
+    "value": 46
   },
   "Plot": {
     "type": "byte",

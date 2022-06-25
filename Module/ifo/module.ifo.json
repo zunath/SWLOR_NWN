@@ -816,20 +816,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "cardgame002"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "cardgame003"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "esriauncharted"
         }
       },
@@ -1636,6 +1622,20 @@
         "Area_Name": {
           "type": "resref",
           "value": "dathgrottocavern"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "sol_hutlarqcanyo"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "sol_mandaloriani"
         }
       }
     ]

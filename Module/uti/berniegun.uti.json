@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50200
+    "value": 50002
   },
   "Cursed": {
     "type": "byte",

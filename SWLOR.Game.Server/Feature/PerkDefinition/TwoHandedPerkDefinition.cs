@@ -855,19 +855,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Strong Style (Saberstaff)")
                 .TriggerRefund((player, type, level) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff1, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff2, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff3, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff4, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff5, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff1, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff2, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff3, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff4, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff5, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })
 
                 .AddPerkLevel()

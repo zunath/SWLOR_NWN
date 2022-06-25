@@ -45,59 +45,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Doublehand)
                 .Name("Doublehand")
-                
+
                 .AddPerkLevel()
-                .Description("Increases damage of one-handed weapons by 50% of Might when no off-hand item is equipped.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(FeatType.Doublehand)
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
-                    var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Price(1)
+                .GrantsFeat(FeatType.Doublehand1)
 
-                    // Item is going to right hand and no item is in left hand.
-                    if (slot == InventorySlot.RightHand && !GetIsObjectValid(leftHand))
-                    {
-                        WeaponPlugin.SetOneHalfStrength(item, true, true);
-                    }
+                .AddPerkLevel()
+                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 10)
+                .GrantsFeat(FeatType.Doublehand2)
 
-                    // Item is going to left hand and an item is already in the right hand.
-                    if (slot == InventorySlot.LeftHand && GetIsObjectValid(rightHand))
-                    {
-                        WeaponPlugin.SetOneHalfStrength(rightHand, false, true);
-                    }
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    var itemType = GetBaseItemType(item);
-                    var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
-                    var rightType = GetBaseItemType(rightHand);
-                    var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
-                    var leftType = GetBaseItemType(leftHand);
+                .AddPerkLevel()
+                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 20)
+                .GrantsFeat(FeatType.Doublehand3)
 
-                    // Item is being unequipped from right hand and there's a weapon in left hand.
-                    if (slot == InventorySlot.RightHand &&
-                        GetIsObjectValid(leftHand) &&
-                        Item.OneHandedMeleeItemTypes.Contains(leftType))
-                    {
-                        WeaponPlugin.SetOneHalfStrength(leftHand, true, true);
-                    }
+                .AddPerkLevel()
+                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Price(1)
+                .RequirementSkill(SkillType.OneHanded, 30)
+                .GrantsFeat(FeatType.Doublehand4)
 
-                    // Item is being unequipped from left hand and there's a weapon in the right hand.
-                    if(slot == InventorySlot.LeftHand &&
-                       GetIsObjectValid(rightHand) &&
-                       Item.OneHandedMeleeItemTypes.Contains(rightType))
-                    {
-                        WeaponPlugin.SetOneHalfStrength(rightHand, true, true);
-                    }
-
-                    // Always remove the item's one-half bonus
-                    if (Item.OneHandedMeleeItemTypes.Contains(itemType))
-                    {
-                        WeaponPlugin.SetOneHalfStrength(item, false, true);
-                    }
-                });
+                .AddPerkLevel()
+                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Price(2)
+                .RequirementSkill(SkillType.OneHanded, 40)
+                .GrantsFeat(FeatType.Doublehand5);
         }
 
         private void DualWield()
@@ -681,49 +657,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Strong Style (Lightsaber)")
                 .TriggerRefund((player, type, level) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber1, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber2, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber3, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber4, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber5, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber1, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber2, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber3, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber4, false);
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber5, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 
                 .AddPerkLevel()
-                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active. Also increases DMG of lightsabers by 2 while in effect.")
+                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active.")
                 .Price(1)
-                .GrantsFeat(FeatType.StrongStyleLightsaber)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 4 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.OneHanded, 10)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 6 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.OneHanded, 20)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 8 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Lightsaber)' to 10 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .GrantsFeat(FeatType.StrongStyleLightsaber);
         }
     }
 }

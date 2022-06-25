@@ -67,11 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             var stat = AbilityType.Perception;
-            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber1) ||
-                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber2) ||
-                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber3) ||
-                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber4) ||
-                Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber5))
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
             {
                 stat = AbilityType.Might;
             }

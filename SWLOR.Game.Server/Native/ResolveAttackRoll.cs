@@ -606,20 +606,12 @@ namespace SWLOR.Game.Server.Native
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
             if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber1) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber2) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber3) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber4) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber5))
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
                     return AbilityType.Perception;
             }
             else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff1) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff2) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff3) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff4) ||
-                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff5))
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return AbilityType.Perception;
             }
 

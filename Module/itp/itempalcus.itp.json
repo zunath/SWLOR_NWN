@@ -2182,17 +2182,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "[NPC] Mandalorian Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sol_npc_man_armo"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Agent Tunic"
                     },
                     "RESREF": {
@@ -3786,6 +3775,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_armor_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sol_npc_man_armo"
                     }
                   },
                   {

@@ -1122,7 +1122,6 @@ namespace SWLOR.Game.Server.Service
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
-            var effectEvasion = 0;
             var evasionBonus = 0;
             var ac = GetAC(creature) - 10; // Offset by natural 10 AC granted to all characters.
             var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
@@ -1143,9 +1142,7 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            effectEvasion = CalculateEffectEvasion(creature, effectEvasion);
-
-            return stat * 3 + skillLevel + effectEvasion + ac + evasionBonus;
+            return stat * 3 + skillLevel + ac * 2 + evasionBonus;
         }
 
         /// <summary>
@@ -1157,9 +1154,14 @@ namespace SWLOR.Game.Server.Service
         {
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
-            var effectEvasion = 0;
             var evasionBonus = 0;
-            var ac = creature.m_pStats.m_nACArmorBase + creature.m_pStats.m_nACNaturalBase;
+            var ac = creature.m_pStats.m_nACArmorBase +
+                     creature.m_pStats.m_nACNaturalBase +
+                     creature.m_pStats.m_nACArmorMod +
+                     creature.m_pStats.m_nACDeflectionMod +
+                     creature.m_pStats.m_nACDodgeMod +
+                     creature.m_pStats.m_nACNaturalMod +
+                     creature.m_pStats.m_nACShieldMod;
 
             Log.Write(LogGroup.Attack, $"Evasion native AC = {ac}");
 
@@ -1180,46 +1182,9 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            effectEvasion = CalculateEffectEvasionNative(creature, effectEvasion);
-
-            return stat * 3 + skillLevel + effectEvasion + ac + evasionBonus;
+            return stat * 3 + skillLevel + ac * 2 + evasionBonus;
         }
-
-        private static int CalculateEffectEvasion(uint creature, int evasion)
-        {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (type == EffectTypeScript.ACIncrease)
-                {
-                    evasion += 2 * GetEffectInteger(effect, 1);
-                }
-                else if (type == EffectTypeScript.ACDecrease)
-                {
-                    evasion -= 2 * GetEffectInteger(effect, 1);
-                }
-            }
-
-            return evasion;
-        }
-
-        private static int CalculateEffectEvasionNative(CNWSCreature creature, int evasion)
-        {
-            foreach (var effect in creature.m_appliedEffects)
-            {
-                if (effect.m_nType == (ushort)EffectTrueType.ACIncrease)
-                {
-                    evasion += 2 * effect.GetInteger(1);
-                }
-                else if (effect.m_nType == (ushort)EffectTrueType.ACDecrease)
-                {
-                    evasion -= 2 * effect.GetInteger(1);
-                }
-            }
-
-            return evasion;
-        }
-
+        
         /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.

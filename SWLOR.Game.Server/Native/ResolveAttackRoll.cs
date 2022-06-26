@@ -137,20 +137,7 @@ namespace SWLOR.Game.Server.Native
                     modifiers += 5 * effect.GetInteger(0);
                 }
             }
-
-            // Effects - Defender
-            foreach (var effect in defender.m_appliedEffects)
-            {
-                if (effect.m_nType == (int)EffectTypeEngine.ACDecrease)
-                {
-                    modifiers += 5 * effect.GetInteger(1);
-                }
-                else if (effect.m_nType == (int)EffectTypeEngine.ACIncrease)
-                {
-                    modifiers -= 5 * effect.GetInteger(1);
-                }
-            }
-
+            
             // Weapon focus feats.
             modifiers += 5 * HasWeaponFocus(attacker, weapon);
             modifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);

@@ -342,6 +342,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     partCategoryOptions.Add("Helmet");
                 }
+                else if (SelectedItemTypeIndex == 2) // 2 = Cloak
+                {
+                    partCategoryOptions.Add("Cloak");
+                }
+                else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
+                {
+                    partCategoryOptions.Add("Top");
+                    partCategoryOptions.Add("Middle");
+                    partCategoryOptions.Add("Bottom");
+                }
+                else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off-Hand)
+                {
+                    partCategoryOptions.Add("Top");
+                    partCategoryOptions.Add("Middle");
+                    partCategoryOptions.Add("Bottom");
+                }
             }
 
             var partCategorySelected = new GuiBindingList<bool>();
@@ -383,9 +399,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 return GetItemInSlot(InventorySlot.Chest, Player);
             }
-            else if(SelectedItemTypeIndex == 1) // 1 = Helmet
+            else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
                 return GetItemInSlot(InventorySlot.Head, Player);
+            }
+            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
+            {
+                return GetItemInSlot(InventorySlot.Cloak, Player);
+            }
+            else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
+            {
+                return GetItemInSlot(InventorySlot.RightHand, Player);
+            }
+            else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
+            {
+                return GetItemInSlot(InventorySlot.LeftHand, Player);
             }
 
             return OBJECT_INVALID;
@@ -589,6 +617,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 partIds = _armorAppearances.Helmet;
                 selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
             }
+            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
+            {
+                partIds = _armorAppearances.Cloak;
+                selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+            }
+            else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
+            {
+                throw new NotImplementedException();
+            }
+            else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
+            {
+                throw new NotImplementedException();
+            }
             else
             {
                 throw new ArgumentOutOfRangeException(nameof(SelectedItemTypeIndex));
@@ -721,15 +762,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // will result in the wrong equipped item being destroyed.
         private uint _lastModifiedItem = OBJECT_INVALID;
 
+        private InventorySlot GetInventorySlot()
+        {
+            var slot = InventorySlot.Invalid;
+
+            switch (SelectedItemTypeIndex)
+            {
+                case 0: // 0 = Chest
+                    slot = InventorySlot.Chest;
+                    break;
+                case 1: // 1 = Head
+                    slot = InventorySlot.Head;
+                    break;
+                case 2: // 2 = Cloak
+                    slot = InventorySlot.Cloak;
+                    break;
+                case 3: // 3 = Weapon (Main Hand)
+                    slot = InventorySlot.RightHand;
+                    break;
+                case 4: // 4 = Weapon (Off Hand)
+                    slot = InventorySlot.LeftHand;
+                    break;
+            }
+
+            return slot;
+        }
+
+        private ItemAppearanceType GetModelType()
+        {
+            var modelType = ItemAppearanceType.ArmorModel;
+
+            switch (SelectedItemTypeIndex)
+            {
+                case 0: // 0 = Chest
+                    modelType = ItemAppearanceType.ArmorModel;
+                    break;
+                case 1: // 1 = Head
+                    modelType = ItemAppearanceType.SimpleModel;
+                    break;
+                case 2: // 2 = Cloak
+                    modelType = ItemAppearanceType.SimpleModel;
+                    break;
+                case 3: // 3 = Weapon (Main Hand)
+                    modelType = ItemAppearanceType.WeaponModel;
+                    break;
+                case 4: // 4 = Weapon (Off Hand)
+                    modelType = ItemAppearanceType.WeaponModel;
+                    break;
+            }
+
+            return modelType;
+        }
+
         private void ModifyItemColor(AppearanceArmorColor colorChannel, int colorId)
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
                 return;
 
-            var slot = SelectedItemTypeIndex == 0
-                ? InventorySlot.Chest
-                : InventorySlot.Head;
+            var slot = GetInventorySlot();
             var item = GetItem();
             var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
             
@@ -757,13 +848,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (DoesNotHaveItemEquipped)
                 return;
 
-            var slot = SelectedItemTypeIndex == 0
-                ? InventorySlot.Chest
-                : InventorySlot.Head;
+            var slot = GetInventorySlot();
             var item = GetItem();
-            var modelType = SelectedItemTypeIndex == 0
-                ? ItemAppearanceType.ArmorModel
-                : ItemAppearanceType.SimpleModel;
+            var modelType = GetModelType();
             var copy = CopyItemAndModify(item, modelType, (int) part, partId, true);
             DestroyObject(item);
 
@@ -1001,6 +1088,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
                 ModifyItemPart(AppearanceArmor.Invalid, _armorAppearances.Helmet[SelectedPartIndex]);
+            }
+            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
+            {
+                ModifyItemPart(AppearanceArmor.Invalid, _armorAppearances.Cloak[SelectedPartIndex]);
+            }
+            else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
+            {
+                //ModifyItemPart(AppearanceArmor.Invalid, _armorAppearances.Cloak[SelectedPartIndex]);
+            }
+            else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
+            {
+                //ModifyItemPart(AppearanceArmor.Invalid, _armorAppearances.Cloak[SelectedPartIndex]);
             }
         }
 

@@ -32,7 +32,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("StoreCleanup", ServerEnvironmentType.All)]
         StoreCleanup,
         [LogGroup("Migration", ServerEnvironmentType.All)]
-        Migration
+        Migration,
+        [LogGroup("Crafting", ServerEnvironmentType.All)]
+        Crafting
     }
 
     public class LogGroupAttribute : Attribute

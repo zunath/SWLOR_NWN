@@ -7,12 +7,15 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AppearanceEditorViewModel: GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>
+    public class AppearanceEditorViewModel: 
+        GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>, 
+        IGuiRefreshable<EquipItemRefreshEvent>
     {
         public const string PartialElement = "PARTIAL_VIEW";
         public const string EditorPartial = "APPEARANCE_EDITOR_PARTIAL";
@@ -184,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();
+                _lastModifiedItem = OBJECT_INVALID;
             }
         }
 
@@ -612,6 +616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
             SelectedColorCategoryIndex = 0;
+            _lastModifiedItem = OBJECT_INVALID;
         };
 
         public Action OnSelectEquipment() => () =>
@@ -626,6 +631,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPartCategoryOptions();
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
+            _lastModifiedItem = OBJECT_INVALID;
         };
 
         public Action OnSelectSettings() => () =>
@@ -640,6 +646,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
+            _lastModifiedItem = OBJECT_INVALID;
         };
 
         public Action OnDecreaseAppearanceScale() => () =>
@@ -710,6 +717,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
+        // Tracking the last modified item is done to avoid an issue where disruption in the client's network
+        // will result in the wrong equipped item being destroyed.
+        private uint _lastModifiedItem = OBJECT_INVALID;
+
         private void ModifyItemColor(AppearanceArmorColor colorChannel, int colorId)
         {
             ToggleItemEquippedFlags();
@@ -721,12 +732,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : InventorySlot.Head;
             var item = GetItem();
             var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
-            DestroyObject(item);
+            
+            if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
+            {
+                DestroyObject(_lastModifiedItem);
+            }
+            else
+            {
+                DestroyObject(item);
+            }
+
             AssignCommand(Player, () =>
             {
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
+
+            _lastModifiedItem = copy;
         }
 
         private void ModifyItemPart(AppearanceArmor part, int partId)
@@ -744,11 +766,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : ItemAppearanceType.SimpleModel;
             var copy = CopyItemAndModify(item, modelType, (int) part, partId, true);
             DestroyObject(item);
+
+            if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
+            {
+                DestroyObject(_lastModifiedItem);
+            }
+            else
+            {
+                DestroyObject(item);
+            }
+
             AssignCommand(Player, () =>
             {
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
+
+            _lastModifiedItem = copy;
         }
 
         public Action OnSelectColor() => () =>
@@ -1065,5 +1099,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        public void Refresh(EquipItemRefreshEvent payload)
+        {
+            _lastModifiedItem = OBJECT_INVALID;
+        }
     }
 }

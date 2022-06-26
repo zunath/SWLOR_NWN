@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddComboBox()
                                 .AddOption("Armor", 0)
                                 .AddOption("Helmet", 1)
+                                .AddOption("Cloak", 2)
+                                //.AddOption("Weapon (Main)", 3)
+                                //.AddOption("Weapon (Off)", 4)
                                 .BindSelectedIndex(model => model.SelectedItemTypeIndex);
 
                             row.AddButton()

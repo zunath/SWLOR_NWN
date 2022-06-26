@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -1075,6 +1076,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ProcessSuccess()
         {
+            // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
+            if (!IsInCraftMode)
+                return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
@@ -1131,10 +1136,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = _green;
+
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
         private void ProcessFailure()
         {
+            // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
+            if (!IsInCraftMode)
+                return;
+
             var recipe = Craft.GetRecipe(_recipe);
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -1179,6 +1190,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp);
+
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }
 
         private void HandleAction(

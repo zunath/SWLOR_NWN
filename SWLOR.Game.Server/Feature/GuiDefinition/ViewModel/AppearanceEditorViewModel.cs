@@ -742,7 +742,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var modelType = SelectedItemTypeIndex == 0
                 ? ItemAppearanceType.ArmorModel
                 : ItemAppearanceType.SimpleModel;
-            var copy = CopyItemAndModify(item, modelType, (int) part, partId);
+            var copy = CopyItemAndModify(item, modelType, (int) part, partId, true);
             DestroyObject(item);
             AssignCommand(Player, () =>
             {

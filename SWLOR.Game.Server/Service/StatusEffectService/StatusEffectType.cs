@@ -20,8 +20,7 @@
         StaminaPack5 = 15,
         Poison = 16,
         Bleed = 17,
-        BurstOfSpeed1 = 18,
-        BurstOfSpeed2 = 19,
+
         Premonition1 = 20,
         Premonition2 = 21,
         CreepingTerror = 22,

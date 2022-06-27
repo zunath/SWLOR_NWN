@@ -5649,6 +5649,451 @@
                 "type": "byte",
                 "value": 59
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Conscript Baton"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmcon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Conscript Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrcon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Droid Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Elite Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrelite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Elite Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmelite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Marksman Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrmark1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Sith Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmwar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Sith Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmstaff1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Sorcerer's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsorc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Trooper Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrtroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Trooper Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmtroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Vanguard Hammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmvang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Vanguard Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrvang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Conscript Baton"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmcon2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Conscript Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrcon2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Droid Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Elite Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrelite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Elite Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmelite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Marksman Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrmark2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Sith Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmwar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Sith Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmstaff2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Sorcerer's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Trooper Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrtroop2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Trooper Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmtroop2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Vanguard Hammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmvang2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 2) Vanguard Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrvang2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Droid Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Elite Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrelite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Elite Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmelite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Marksman Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrmark3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Sith Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmwar3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Sith Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmstaff3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Sorcerer's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsorc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Vanguard Hammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmvang3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Vanguard Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrvang3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Droid Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbot4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Sith Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmwar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Sith Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmstaff4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Sorcerer's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 5) Warform Hammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmbot5"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6814
@@ -6173,6 +6618,347 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Assassin T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsass1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsass2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsass3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin T4 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsass4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Droid T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsbot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Droid T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsbot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Droid T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsbot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Droid T4 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsbot4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Droid T5 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsbot5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Elite T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcselite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Elite T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcselite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Elite T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcselite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsmark1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsmark2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsmark3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Slave T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Slave T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscon2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Slave T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscon3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer T4 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Vanguard T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsvang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Vanguard T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsvang2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Vanguard T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsvang3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior T2 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior T3 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior T4 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -6414,6 +7200,226 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qionbeastslam"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcaass4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Blademaster Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchwar3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Conscript Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcacon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Elite Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcaelite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Elite Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchtroop4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcaelite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchtroop5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchsith1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcaass3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Lord Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcasorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcamark1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchmark1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcasorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcatroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchtroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Vanguard Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcavang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Vanguard Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchvang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior Armor 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcawar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior Armor 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcawar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior Armor 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcawar3"
                     }
                   },
                   {

@@ -59,7 +59,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static void LoadWeaponAppearances()
         {
+            _weaponAppearances[BaseItem.Dagger] = new DaggerAppearanceDefinition();
+            _weaponAppearances[BaseItem.Electroblade] = new ElectrobladeAppearanceDefinition();
+            _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
+            _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
+            _weaponAppearances[BaseItem.Pistol] = new PistolAppearanceDefinition();
+            _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
+            _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
+            _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
+            _weaponAppearances[BaseItem.ShortSpear] = new SpearAppearanceDefinition();
+            _weaponAppearances[BaseItem.TwoBladedSword] = new TwinBladeAppearanceDefinition();
+            _weaponAppearances[BaseItem.TwinElectroBlade] = new TwinElectrobladeAppearanceDefinition();
         }
 
         public bool IsAppearanceSelected

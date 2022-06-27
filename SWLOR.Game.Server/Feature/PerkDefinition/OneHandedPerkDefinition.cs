@@ -47,30 +47,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Doublehand")
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 2 when no off-hand item is equipped.")
                 .Price(1)
                 .GrantsFeat(FeatType.Doublehand1)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 6 when no off-hand item is equipped.")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Doublehand2)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 10 when no off-hand item is equipped.")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.Doublehand3)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 14 when no off-hand item is equipped.")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .GrantsFeat(FeatType.Doublehand4)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by X when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 19 when no off-hand item is equipped.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .GrantsFeat(FeatType.Doublehand5);

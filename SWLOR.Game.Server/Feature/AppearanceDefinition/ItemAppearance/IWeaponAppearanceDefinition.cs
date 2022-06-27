@@ -3,6 +3,7 @@
     internal interface IWeaponAppearanceDefinition
     {
         bool IsSimple { get; }
+        int[] SimpleParts { get; }
         int[] TopParts { get; }
 
         int[] MiddleParts { get; }

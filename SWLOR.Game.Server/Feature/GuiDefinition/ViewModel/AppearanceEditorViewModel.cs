@@ -268,21 +268,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return false;
 
                 var appearance = _weaponAppearances[itemType];
-                var topId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                var middleId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                var bottomId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                var topColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
-                var middleColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
-                var bottomColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
 
-                var topPartId = topId + topColor * 100;
-                var middlePartId = middleId + middleColor * 100;
-                var bottomPartId = bottomId + bottomColor * 100;
+                if (appearance.IsSimple)
+                {
+                    var partId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                    if (!appearance.SimpleParts.Contains(partId))
+                        return false;
+                }
+                else
+                {
+                    var topId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
+                    var middleId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
+                    var bottomId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
+                    var topColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
+                    var middleColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
+                    var bottomColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
 
-                if (!appearance.TopParts.Contains(topPartId) ||
-                    !appearance.MiddleParts.Contains(middlePartId) ||
-                    !appearance.BottomParts.Contains(bottomPartId))
-                    return false;
+                    var topPartId = topId + topColor * 100;
+                    var middlePartId = middleId + middleColor * 100;
+                    var bottomPartId = bottomId + bottomColor * 100;
+
+                    if (!appearance.TopParts.Contains(topPartId) ||
+                        !appearance.MiddleParts.Contains(middlePartId) ||
+                        !appearance.BottomParts.Contains(bottomPartId))
+                        return false;
+                }
             }
 
             return true;
@@ -432,9 +442,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
                 {
-                    partCategoryOptions.Add("Top");
-                    partCategoryOptions.Add("Middle");
-                    partCategoryOptions.Add("Bottom");
+                    var item = GetItem();
+                    var type = GetBaseItemType(item);
+                    var partAppearance = _weaponAppearances[type];
+
+                    if (partAppearance.IsSimple)
+                    {
+                        partCategoryOptions.Add("Simple");
+                    }
+                    else
+                    {
+                        partCategoryOptions.Add("Top");
+                        partCategoryOptions.Add("Middle");
+                        partCategoryOptions.Add("Bottom");
+                    }
                 }
             }
 
@@ -706,28 +727,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
                 int offset;
-                switch (SelectedPartCategoryIndex)
-                {
-                    case 0: // 0 = Top
-                        partIds = _weaponAppearances[type].TopParts;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                        offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
-                        break;
-                    case 1: // 1 = Middle
-                        partIds = _weaponAppearances[type].MiddleParts;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                        offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
-                        break;
-                    case 2: // 2 = Bottom
-                        partIds = _weaponAppearances[type].BottomParts;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                        offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-                }
 
-                selectedPartId = offset * 100 + selectedPartId;
+                if (_weaponAppearances[type].IsSimple)
+                {
+                    partIds = _weaponAppearances[type].SimpleParts;
+                    selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                }
+                else
+                {
+                    switch (SelectedPartCategoryIndex)
+                    {
+                        case 0: // 0 = Top
+                            partIds = _weaponAppearances[type].TopParts;
+                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
+                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
+                            break;
+                        case 1: // 1 = Middle
+                            partIds = _weaponAppearances[type].MiddleParts;
+                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
+                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
+                            break;
+                        case 2: // 2 = Bottom
+                            partIds = _weaponAppearances[type].BottomParts;
+                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
+                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
+                    }
+
+                    selectedPartId = offset * 100 + selectedPartId;
+                }
             }
             else
             {
@@ -949,6 +979,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var slot = GetInventorySlot();
             var item = GetItem();
+            var itemType = GetBaseItemType(item);
             var modelType = GetModelType();
             var copy = item;
 
@@ -963,7 +994,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(copy);
             }
 
-            copy = CopyItemAndModify(copy, modelType, type, partId, true);
+            if (_weaponAppearances.ContainsKey(itemType) && _weaponAppearances[itemType].IsSimple)
+            {
+                copy = CopyItemAndModify(copy, ItemAppearanceType.SimpleModel, type, partId, true);
+            }
+            else
+            {
+                copy = CopyItemAndModify(copy, modelType, type, partId, true);
+            }
 
             DestroyObject(item);
 
@@ -1213,25 +1251,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 int color;
                 int partId;
 
-                switch (SelectedPartCategoryIndex)
+                if (_weaponAppearances[itemType].IsSimple)
                 {
-                    case 0: // Top
-                        color = _weaponAppearances[itemType].TopParts[SelectedPartIndex] / 100;
-                        partId = _weaponAppearances[itemType].TopParts[SelectedPartIndex] % 100;
-                        ModifyItemPart((int)AppearanceWeapon.Top, partId, color);
-                        break;
-                    case 1: // Middle
-                        color = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] / 100;
-                        partId = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] % 100;
-                        ModifyItemPart((int)AppearanceWeapon.Middle, partId, color);
-                        break;
-                    case 2: // Bottom
-                        color = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] / 100;
-                        partId = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] % 100;
-                        ModifyItemPart((int)AppearanceWeapon.Bottom, partId, color);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
+                    partId = _weaponAppearances[itemType].SimpleParts[SelectedPartIndex];
+                    ModifyItemPart((int)ItemAppearanceType.SimpleModel, partId);
+                }
+                else
+                {
+                    switch (SelectedPartCategoryIndex)
+                    {
+                        case 0: // Top
+                            color = _weaponAppearances[itemType].TopParts[SelectedPartIndex] / 100;
+                            partId = _weaponAppearances[itemType].TopParts[SelectedPartIndex] % 100;
+                            ModifyItemPart((int)AppearanceWeapon.Top, partId, color);
+                            break;
+                        case 1: // Middle
+                            color = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] / 100;
+                            partId = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] % 100;
+                            ModifyItemPart((int)AppearanceWeapon.Middle, partId, color);
+                            break;
+                        case 2: // Bottom
+                            color = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] / 100;
+                            partId = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] % 100;
+                            ModifyItemPart((int)AppearanceWeapon.Bottom, partId, color);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
+                    }
                 }
             }
         }

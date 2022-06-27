@@ -6,9 +6,9 @@
 
         public override int[] TopParts { get; } =
         {
-            102, 103, 104, // Color #1
-            202, 203, 204, // Color #2
-            302, 303, 304, // Color #3
+            101, 102, 103, 104, // Color #1
+            201, 202, 203, 204, // Color #2
+            302, 303, 304, 305, 325, // Color #3
             401, 402, 403, 404, // Color #4
             // Color #5
             // Color #6
@@ -18,8 +18,8 @@
         };
         public override int[] MiddleParts { get; } =
         {
-            102, 103, 104, // Color #1
-            202, 203, 204, // Color #2
+            101, 102, 103, 104, 105, // Color #1
+            201, 202, 203, 204, 225, // Color #2
             302, 303, 304, // Color #3
             401, 402, 403, 404, // Color #4
             // Color #5
@@ -30,9 +30,9 @@
         };
         public override int[] BottomParts { get; } =
         {
-            102, 103, 104, // Color #1
-            202, 203, 204, // Color #2
-            302, 303, 304, // Color #3
+            101, 102, 103, 104, // Color #1
+            201, 202, 203, 204, // Color #2
+            301, 302, 303, 304, 305, 325, // Color #3
             402, 403, 404, // Color #4
             // Color #5
             // Color #6

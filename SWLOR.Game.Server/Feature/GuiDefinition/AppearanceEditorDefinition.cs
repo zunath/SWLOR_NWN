@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .AddOption("Armor", 0)
                                 .AddOption("Helmet", 1)
                                 .AddOption("Cloak", 2)
-                                //.AddOption("Weapon (Main)", 3)
-                                //.AddOption("Weapon (Off)", 4)
+                                .AddOption("Weapon (Main)", 3)
+                                .AddOption("Weapon (Off)", 4)
                                 .BindSelectedIndex(model => model.SelectedItemTypeIndex);
 
                             row.AddButton()
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         col.AddRow(row =>
                         {
                             row.AddLabel()
-                                .SetText("No item is equipped.")
+                                .SetText("No item is equipped or the equipped item cannot be modified.")
                                 .BindIsVisible(model => model.DoesNotHaveItemEquipped);
 
                             row.SetHeight(20f);
@@ -104,7 +104,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                         .SetAspect(NuiAspect.ExactScaled)
-                                        .BindOnMouseDown(model => model.OnSelectColor());
+                                        .BindOnMouseDown(model => model.OnSelectColor())
+                                        .BindIsVisible(model => model.IsColorPickerVisible);
                                 });
 
                                 col2.AddRow(row2 =>

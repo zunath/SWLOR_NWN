@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
-    public interface IAppearanceDefinition
+    public interface IRacialAppearanceDefinition
     {
         int[] MaleHeads { get; }
         int[] FemaleHeads { get; }

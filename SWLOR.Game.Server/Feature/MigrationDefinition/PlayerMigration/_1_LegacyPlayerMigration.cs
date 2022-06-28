@@ -115,8 +115,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private void RemoveItems(uint item)
         {
+            string[] resrefsToRemove =
+            {
+                "tk_omnidye",
+                "fist",
+                "player_guide",
+                "xp_tome_1",
+                "xp_tome_2",
+                "xp_tome_3",
+                "xp_tome_4",
+                "refund_tome"
+            };
+
             var resref = GetResRef(item);
-            if (resref == "tk_omnidye" || resref == "fist" || resref == "player_guide")
+            if (resrefsToRemove.Contains(resref))
             {
                 DestroyObject(item);
             }

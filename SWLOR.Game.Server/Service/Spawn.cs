@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Service.AIService;
@@ -477,6 +478,8 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) || GetIsDM(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return;
 
+            var originalSpawnScript = GetEventScript(creature, EventScript.Creature_OnSpawnIn);
+
             SetEventScript(creature, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
             SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
             //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
@@ -490,6 +493,13 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(creature, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
             SetEventScript(creature, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
             SetEventScript(creature, EventScript.Creature_OnUserDefined, "x2_def_userdef");
+
+            // The spawn script will not fire because it has already executed. In the event there wasn't a script
+            // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
+            if (string.IsNullOrWhiteSpace(originalSpawnScript))
+            {
+                ExecuteScript("x2_def_spawn", creature);
+            }
         }
 
         /// <summary>
@@ -498,12 +508,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("dm_spwnobj_aft")]
         public static void DMSpawnCreature()
         {
-            var objectType = (ObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
+            var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
 
-            if (objectType != ObjectType.Creature)
+            if (objectType != InternalObjectType.Creature)
                 return;
 
-            var spawn = Convert.ToUInt32(EventsPlugin.GetEventData("OBJECT"));
+            var objectData = EventsPlugin.GetEventData("OBJECT");
+            var spawn = Convert.ToUInt32(objectData, 16); // Not sure why this is in hex.
             AdjustScripts(spawn);
         }
 

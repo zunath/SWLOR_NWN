@@ -60,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 PlaySound("plr_force_blast");
                 DoFireball(target);
             });

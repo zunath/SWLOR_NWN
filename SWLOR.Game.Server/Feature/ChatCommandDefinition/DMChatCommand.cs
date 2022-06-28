@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     if (GetIsDead(target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectResurrection(), user);
+                        ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);

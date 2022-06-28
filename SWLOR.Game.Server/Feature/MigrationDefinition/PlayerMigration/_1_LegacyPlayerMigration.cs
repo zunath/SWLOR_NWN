@@ -124,7 +124,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 "xp_tome_2",
                 "xp_tome_3",
                 "xp_tome_4",
-                "refund_tome"
+                "refund_tome",
+                "slug_shake"
             };
 
             var resref = GetResRef(item);

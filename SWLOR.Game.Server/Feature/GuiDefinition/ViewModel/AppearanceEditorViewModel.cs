@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Electroblade] = new ElectrobladeAppearanceDefinition();
             _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
             _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
+            _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
             _weaponAppearances[BaseItem.Pistol] = new PistolAppearanceDefinition();
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();

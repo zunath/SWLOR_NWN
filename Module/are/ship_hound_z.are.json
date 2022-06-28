@@ -22,7 +22,7 @@
   },
   "DayNightCycle": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Expansion_List": {
     "type": "list",
@@ -935,7 +935,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 8
   },
   "Width": {
     "type": "int",

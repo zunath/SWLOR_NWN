@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("emotestyle")
                 .Description("Toggles your emote style between regular and novel.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
                     var curStyle = Communication.GetEmoteStyle(user);

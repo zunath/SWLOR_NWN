@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Service
         public static uint GetHighestEnmityTarget(uint enemy)
         {
             var enmityTable = GetEnmityTable(enemy);
-            var target = enmityTable.Count <= 0 ? OBJECT_INVALID : enmityTable.OrderBy(o => o.Value).First().Key;
+            var target = enmityTable.Count <= 0 ? OBJECT_INVALID : enmityTable.MaxBy(o => o.Value).Key;
 
             return target;
         }

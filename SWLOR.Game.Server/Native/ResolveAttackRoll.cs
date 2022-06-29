@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
-            var modifiers = 0;
+            var accuracyModifiers = 0;
 
             // Defender not targeting the attacker.
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
@@ -122,25 +122,12 @@ namespace SWLOR.Game.Server.Native
             if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
             {
                 Log.Write(LogGroup.Attack, "Defender current target ("+oidTarget +") is not attacker ("+attacker.m_idSelf+"). Assign circumstance bonus");
-                modifiers += 5;
+                accuracyModifiers += 5;
             }
 
-            // Effects - Attacker
-            foreach (var effect in attacker.m_appliedEffects)
-            {
-                if (effect.m_nType == (int)EffectTypeEngine.AttackDecrease)
-                {
-                    modifiers -= 5 * effect.GetInteger(0);
-                }
-                else if (effect.m_nType == (int)EffectTypeEngine.AttackIncrease)
-                {
-                    modifiers += 5 * effect.GetInteger(0);
-                }
-            }
-            
             // Weapon focus feats.
-            modifiers += 5 * HasWeaponFocus(attacker, weapon);
-            modifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);
+            accuracyModifiers += 5 * HasWeaponFocus(attacker, weapon);
+            accuracyModifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);
 
             // Range bonuses and penalties.
             if (attackType == (uint)AttackType.Ranged)
@@ -157,38 +144,38 @@ namespace SWLOR.Game.Server.Native
                     // Force powers or point blank shot feat make close range an advantage.
                     if (attacker.m_pStats.HasFeat((ushort)FeatType.PointBlankShot) == 1)
                     {
-                        modifiers += 5;
+                        accuracyModifiers += 5;
                     }
                     else if (weapon != null)
                     {
-                        modifiers -= 20;
+                        accuracyModifiers -= 20;
                     }
                 }
                 else if (range > 40.0f)
                 {
                     if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                     {
-                        modifiers -= 20;
+                        accuracyModifiers -= 20;
                     }
                     else
                     {
-                        modifiers -= 10;
+                        accuracyModifiers -= 10;
                     }
                 }
                 else if (range > 30.0f)
                 {
                     if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                     {
-                        modifiers -= 10;
+                        accuracyModifiers -= 10;
                     }
                     else
                     {
-                        modifiers -= 5;
+                        accuracyModifiers -= 5;
                     }
                 }
                 else if (weapon != null && range > 20.0f && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                 {
-                    modifiers = -5;
+                    accuracyModifiers = -5;
                 }
                 
             }
@@ -226,7 +213,7 @@ namespace SWLOR.Game.Server.Native
             {
                 Log.Write(LogGroup.Attack, "Backstab!  Attacker angle (radians): " + Math.Atan2(attY, attX) + 
                                            ", Defender angle (radians): " + Math.Atan2(defY, defX));
-                modifiers += 30;
+                accuracyModifiers += 30;
             }
 
             // Dual wield penalty.
@@ -264,10 +251,10 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             var attackRoll = Random.Next(1, 100);
-            var hitRate = Combat.CalculateHitRate(attackerAccuracy + modifiers, defenderEvasion, percentageModifier);
+            var hitRate = Combat.CalculateHitRate(attackerAccuracy + accuracyModifiers, defenderEvasion, percentageModifier);
             var isHit = attackRoll <= hitRate;
 
-            Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {modifiers}, defenderEvasion = {defenderEvasion}");
+            Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
             Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
             // Hit

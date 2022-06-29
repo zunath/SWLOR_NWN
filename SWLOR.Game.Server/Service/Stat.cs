@@ -1085,13 +1085,16 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 2 * GetEffectInteger(effect, 1);
+                    accuracy += 3 * GetEffectInteger(effect, 1);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 2 * GetEffectInteger(effect, 1);
+                    accuracy -= 3 * GetEffectInteger(effect, 1);
                 }
             }
+
+            Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
+
             return accuracy;
         }
 
@@ -1101,13 +1104,15 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 2 * effect.GetInteger(1);
+                    accuracy += 3 * effect.GetInteger(1);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 2 * effect.GetInteger(1);
+                    accuracy -= 3 * effect.GetInteger(1);
                 }
             }
+
+            Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
         }
@@ -1123,7 +1128,11 @@ namespace SWLOR.Game.Server.Service
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
             var evasionBonus = 0;
-            var ac = GetAC(creature) - 10; // Offset by natural 10 AC granted to all characters.
+
+            // Base NWN applies an AC bonus based on the DEX stat. The Perception stat is based upon this.
+            // Perception should not increase AC in SWLOR, so this is subtracted from the AC.
+            var dexOffset = GetAbilityModifier(AbilityType.Perception, creature);
+            var ac = GetAC(creature) - dexOffset - 10; // Offset by natural 10 AC granted to all characters.
             var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
 
             Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
@@ -1142,7 +1151,9 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            return stat * 3 + skillLevel + ac * 2 + evasionBonus;
+            Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
+
+            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
         }
 
         /// <summary>
@@ -1155,6 +1166,8 @@ namespace SWLOR.Game.Server.Service
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
             var evasionBonus = 0;
+
+            // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
                      creature.m_pStats.m_nACNaturalBase +
                      creature.m_pStats.m_nACArmorMod +
@@ -1163,7 +1176,7 @@ namespace SWLOR.Game.Server.Service
                      creature.m_pStats.m_nACNaturalMod +
                      creature.m_pStats.m_nACShieldMod;
 
-            Log.Write(LogGroup.Attack, $"Evasion native AC = {ac}");
+            Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -1182,7 +1195,7 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            return stat * 3 + skillLevel + ac * 2 + evasionBonus;
+            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
         }
         
         /// <summary>

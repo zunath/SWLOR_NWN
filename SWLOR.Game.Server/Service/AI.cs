@@ -242,10 +242,10 @@ namespace SWLOR.Game.Server.Service
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = GetTarget();
+            var target = Enmity.GetHighestEnmityTarget(self);
             if (!GetIsObjectValid(target))
             {
-                AssignCommand(self, () => ClearAllActions());
+                ClearAllActions();
                 return;
             }
 
@@ -278,21 +278,6 @@ namespace SWLOR.Game.Server.Service
                     ActionUseFeat(feat, featTarget);
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns the creature with the highest enmity on this enemy's enmity table.
-        /// If no target can be determined, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <returns>The creature with the highest enmity, or OBJECT_INVALID if it cannot be determined.</returns>
-        private static uint GetTarget()
-        {
-            var self = OBJECT_SELF;
-            var enmityTable = Enmity.GetEnmityTable(self);
-            if (enmityTable.Count <= 0) return OBJECT_INVALID;
-
-            var highest = enmityTable.OrderByDescending(o => o.Value).First();
-            return highest.Key;
         }
 
         /// <summary>

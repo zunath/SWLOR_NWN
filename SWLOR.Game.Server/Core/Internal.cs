@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Core
 
         public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
         {
+
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
@@ -52,11 +53,18 @@ namespace SWLOR.Game.Server.Core
             Log.Register();
             Console.WriteLine("Loggers registered successfully.");
 
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
             Console.WriteLine("Registering scripts...");
             LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");
 
             return retVal;
+        }
+
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
+        {
+            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace());
         }
 
         /// <summary>

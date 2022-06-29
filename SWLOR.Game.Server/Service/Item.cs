@@ -54,17 +54,22 @@ namespace SWLOR.Game.Server.Service
 
             // Cache 2da values that we need.  Create a new array for each row, otherwise they
             // end up pointing to the same array object (and get overwritten).
-            foreach (var baseItem in Enum.GetValues(typeof(BaseItem)).Cast<int>())
+            for (var row = 0; row < UtilPlugin.Get2DARowCount("baseitems"); row++)
             {
-                var values = new int[3];
-                var threat = Get2DAString("baseitems", "CritThreat", baseItem);
-                var mult = Get2DAString("baseitems", "CritHitMult", baseItem);
-                var size = Get2DAString("baseitems", "WeaponSize", baseItem);
+                var threatString = Get2DAString("baseitems", "CritThreat", row);
+                var multString = Get2DAString("baseitems", "CritHitMult", row);
+                var sizeString = Get2DAString("baseitems", "WeaponSize", row);
 
-                values[0] = string.IsNullOrEmpty(threat) ? 0 : Int32.Parse(threat);
-                values[1] = string.IsNullOrEmpty(mult) ? 0 : Int32.Parse(mult);
-                values[2] = string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
-                _2daCache[baseItem] = values;
+                var threat = string.IsNullOrWhiteSpace(threatString) ? 1 : Convert.ToInt32(threatString);
+                var mult = string.IsNullOrWhiteSpace(multString) ? 1 : Convert.ToInt32(multString);
+                var size = string.IsNullOrWhiteSpace(sizeString) ? 1 : Convert.ToInt32(sizeString);
+
+                var values = new int[3];
+                values[0] = threat;
+                values[1] = mult;
+                values[2] = size;
+
+                _2daCache[row] = values;
             }
 
             Console.WriteLine($"Loaded {_2daCache.Count} base items.");

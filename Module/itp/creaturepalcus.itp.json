@@ -3333,6 +3333,101 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Combot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Defensive Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Observation Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Patrol Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Warform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 70.0
                     },
                     "FACTION": {

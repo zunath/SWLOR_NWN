@@ -1112,54 +1112,70 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     switch (gender)
                     {
                         case Gender.Male:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
+                            if(appearance.MaleHeads.Contains(SelectedPartIndex))
+                                SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
                             break;
                         default:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
+                            if (appearance.FemaleHeads.Contains(SelectedPartIndex))
+                                SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
                             break;
                     }
                     break;
                 case 1: // Torso
-                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
+                    if (appearance.Torsos.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
                     break;
                 case 2: // Pelvis
-                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
+                    if (appearance.Pelvis.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
                     break;
                 case 3: // Right Bicep
-                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
+                    if (appearance.RightBicep.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
                     break;
                 case 4: // Right Forearm
-                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
+                    if (appearance.RightForearm.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
                     break;
                 case 5: // Right Hand
-                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
+                    if (appearance.RightHand.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
                     break;
                 case 6: // Right Thigh
-                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
+                    if (appearance.RightThigh.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
                     break;
                 case 7: // Right Shin
-                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
+                    if (appearance.RightShin.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
                     break;
                 case 8: // Right Foot
-                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
+                    if (appearance.RightFoot.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
                     break;
                 case 9: // Left Bicep
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
+                    if (appearance.LeftBicep.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
                     break;
                 case 10: // Left Forearm
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
+                    if (appearance.LeftForearm.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
                     break;
                 case 11: // Left Hand
-                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
+                    if (appearance.LeftHand.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
                     break;
                 case 12: // Left Thigh
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
+                    if (appearance.LeftThigh.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
                     break;
                 case 13: // Left Shin
-                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
+                    if (appearance.LeftShin.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
                     break;
                 case 14: // Left Foot
-                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
+                    if (appearance.LeftFoot.Contains(SelectedPartIndex))
+                        SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1179,61 +1195,80 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 switch (SelectedPartCategoryIndex)
                 {
                     case 0: // Neck
-                        ModifyItemPart((int)AppearanceArmor.Neck, _armorAppearances.Neck[SelectedPartIndex]);
+                        if (_armorAppearances.Neck.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.Neck, _armorAppearances.Neck[SelectedPartIndex]);
                         break;
                     case 1: // Torso
-                        ModifyItemPart((int)AppearanceArmor.Torso, _armorAppearances.Torso[SelectedPartIndex]);
+                        if (_armorAppearances.Torso.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.Torso, _armorAppearances.Torso[SelectedPartIndex]);
                         break;
                     case 2: // Belt
-                        ModifyItemPart((int)AppearanceArmor.Belt, _armorAppearances.Belt[SelectedPartIndex]);
+                        if (_armorAppearances.Belt.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.Belt, _armorAppearances.Belt[SelectedPartIndex]);
                         break;
                     case 3: // Pelvis
-                        ModifyItemPart((int)AppearanceArmor.Pelvis, _armorAppearances.Pelvis[SelectedPartIndex]);
+                        if (_armorAppearances.Pelvis.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.Pelvis, _armorAppearances.Pelvis[SelectedPartIndex]);
                         break;
                     case 4: // Right Shoulder
-                        ModifyItemPart((int)AppearanceArmor.RightShoulder, _armorAppearances.Shoulder[SelectedPartIndex]);
+                        if (_armorAppearances.Shoulder.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightShoulder, _armorAppearances.Shoulder[SelectedPartIndex]);
                         break;
                     case 5: // Right Bicep
-                        ModifyItemPart((int)AppearanceArmor.RightBicep, _armorAppearances.Bicep[SelectedPartIndex]);
+                        if (_armorAppearances.Bicep.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightBicep, _armorAppearances.Bicep[SelectedPartIndex]);
                         break;
                     case 6: // Right Forearm
-                        ModifyItemPart((int)AppearanceArmor.RightForearm, _armorAppearances.Forearm[SelectedPartIndex]);
+                        if (_armorAppearances.Forearm.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightForearm, _armorAppearances.Forearm[SelectedPartIndex]);
                         break;
                     case 7: // Right Hand
-                        ModifyItemPart((int)AppearanceArmor.RightHand, _armorAppearances.Hand[SelectedPartIndex]);
+                        if (_armorAppearances.Hand.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightHand, _armorAppearances.Hand[SelectedPartIndex]);
                         break;
                     case 8: // Right Thigh
-                        ModifyItemPart((int)AppearanceArmor.RightThigh, _armorAppearances.Thigh[SelectedPartIndex]);
+                        if (_armorAppearances.Thigh.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightThigh, _armorAppearances.Thigh[SelectedPartIndex]);
                         break;
                     case 9: // Right Shin
-                        ModifyItemPart((int)AppearanceArmor.RightShin, _armorAppearances.Shin[SelectedPartIndex]);
+                        if (_armorAppearances.Shin.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightShin, _armorAppearances.Shin[SelectedPartIndex]);
                         break;
                     case 10: // Right Foot
-                        ModifyItemPart((int)AppearanceArmor.RightFoot, _armorAppearances.Foot[SelectedPartIndex]);
+                        if (_armorAppearances.Foot.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.RightFoot, _armorAppearances.Foot[SelectedPartIndex]);
                         break;
                     case 11: // Left Shoulder
-                        ModifyItemPart((int)AppearanceArmor.LeftShoulder, _armorAppearances.Shoulder[SelectedPartIndex]);
+                        if (_armorAppearances.Shoulder.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftShoulder, _armorAppearances.Shoulder[SelectedPartIndex]);
                         break;
                     case 12: // Left Bicep
-                        ModifyItemPart((int)AppearanceArmor.LeftBicep, _armorAppearances.Bicep[SelectedPartIndex]);
+                        if (_armorAppearances.Bicep.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftBicep, _armorAppearances.Bicep[SelectedPartIndex]);
                         break;
                     case 13: // Left Forearm
-                        ModifyItemPart((int)AppearanceArmor.LeftForearm, _armorAppearances.Forearm[SelectedPartIndex]);
+                        if (_armorAppearances.Forearm.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftForearm, _armorAppearances.Forearm[SelectedPartIndex]);
                         break;
                     case 14: // Left Hand
-                        ModifyItemPart((int)AppearanceArmor.LeftHand, _armorAppearances.Hand[SelectedPartIndex]);
+                        if (_armorAppearances.Hand.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftHand, _armorAppearances.Hand[SelectedPartIndex]);
                         break;
                     case 15: // Left Thigh
-                        ModifyItemPart((int)AppearanceArmor.LeftThigh, _armorAppearances.Thigh[SelectedPartIndex]);
+                        if (_armorAppearances.Thigh.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftThigh, _armorAppearances.Thigh[SelectedPartIndex]);
                         break;
                     case 16: // Left Shin
-                        ModifyItemPart((int)AppearanceArmor.LeftShin, _armorAppearances.Shin[SelectedPartIndex]);
+                        if (_armorAppearances.Shin.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftShin, _armorAppearances.Shin[SelectedPartIndex]);
                         break;
                     case 17: // Left Foot
-                        ModifyItemPart((int)AppearanceArmor.LeftFoot, _armorAppearances.Foot[SelectedPartIndex]);
+                        if (_armorAppearances.Foot.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.LeftFoot, _armorAppearances.Foot[SelectedPartIndex]);
                         break;
                     case 18: // Robe
-                        ModifyItemPart((int)AppearanceArmor.Robe, _armorAppearances.Robe[SelectedPartIndex]);
+                        if (_armorAppearances.Robe.Contains(SelectedPartIndex))
+                            ModifyItemPart((int)AppearanceArmor.Robe, _armorAppearances.Robe[SelectedPartIndex]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));

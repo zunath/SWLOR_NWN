@@ -44,6 +44,17 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
             Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
 
             return _actions;
         }

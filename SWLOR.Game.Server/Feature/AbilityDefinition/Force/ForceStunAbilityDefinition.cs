@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
 
-            Enmity.ModifyEnmity(source, target, 10);
+            Enmity.ModifyEnmity(source, target, 100);
         }
         
         private static void ForceStun1(AbilityBuilder builder)

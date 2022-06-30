@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Fabrication",
             50,
             true,
-            "Ability to create base structures, furniture, and starships.",
+            "Ability to create base structures and furniture.",
             true,
             true)]
         Fabrication = 10,

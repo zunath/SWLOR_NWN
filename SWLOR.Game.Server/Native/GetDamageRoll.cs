@@ -170,15 +170,15 @@ namespace SWLOR.Game.Server.Native
             // attack attribute, so it can't happen earlier.
             dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
 
-            // Combat Mode - Power Attack (+1 DMG)
+            // Combat Mode - Power Attack (+3 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
             {
-                dmgValues[CombatDamageType.Physical] += 1;
+                dmgValues[CombatDamageType.Physical] += 3;
             }
-            // Combat Mode - Improved Power Attack (+3 DMG)
+            // Combat Mode - Improved Power Attack (+6 DMG)
             else if (attacker?.m_nCombatMode == 3) // 3 = Improved Power Attack
             {
-                dmgValues[CombatDamageType.Physical] += 3;
+                dmgValues[CombatDamageType.Physical] += 6;
             }
 
             // 2-handed weapons and Doublehand perk

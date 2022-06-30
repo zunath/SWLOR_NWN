@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var channel = ChatPlugin.GetChannel();
             var player = ChatPlugin.GetSender();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
 
             var message = ChatPlugin.GetMessage().Trim();
             var now = DateTime.UtcNow;

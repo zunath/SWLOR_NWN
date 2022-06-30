@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             {
                 allPlayersAndDMs.Add(player);
                 
-                if (GetIsDM(player))
+                if (GetIsDM(player) || GetIsDMPossessed(player))
                 {
                     allDMs.Add(player);
                 }
@@ -226,8 +226,10 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var player in allPlayersAndDMs)
                 {
+                    var distance = GetDistanceBetween(sender, player);
+
                     if (GetArea(player) == GetArea(sender) &&
-                        GetDistanceBetween(sender, player) <= distanceCheck &&
+                        distance <= distanceCheck &&
                         !recipients.Contains(player))
                     {
                         recipients.Add(player);

@@ -863,33 +863,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
-                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active. Also increases DMG of saberstaffs by 2 while in effect.")
+                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active.")
                 .Price(1)
-                .GrantsFeat(FeatType.StrongStyleSaberstaff)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 4 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.TwoHanded, 10)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 6 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.TwoHanded, 20)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 8 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.TwoHanded, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-
-                .AddPerkLevel()
-                .Description("Improves the DMG bonus of 'Strong Style (Saberstaff)' to 10 while in effect.")
-                .Price(1)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .GrantsFeat(FeatType.StrongStyleSaberstaff);
         }
     }
 }

@@ -14,8 +14,8 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AppearanceEditorViewModel: 
-        GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>, 
+    public class AppearanceEditorViewModel :
+        GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
         public const string PartialElement = "PARTIAL_VIEW";
@@ -346,6 +346,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 colorCategoryOptions.Add("Hair Color");
                 colorCategoryOptions.Add("Tattoo 1 Color");
                 colorCategoryOptions.Add("Tattoo 2 Color");
+
+                IsColorPickerVisible = true;
             }
             else if (IsEquipmentSelected)
             {
@@ -406,7 +408,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 partCategoryOptions.Add("Left Shin");
                 partCategoryOptions.Add("Left Foot");
             }
-            else if(IsEquipmentSelected)
+            else if (IsEquipmentSelected)
             {
                 if (SelectedItemTypeIndex == 0) // 0 = Armor
                 {
@@ -433,7 +435,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     partCategoryOptions.Add("Robe");
                 }
-                else if(SelectedItemTypeIndex == 1) // 1 = Helmet
+                else if (SelectedItemTypeIndex == 1) // 1 = Helmet
                 {
                     partCategoryOptions.Add("Helmet");
                 }
@@ -484,7 +486,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var partId in partIds)
             {
                 var partIndex = partId;
-                
+
                 partNames.Add($"Part #{partId}");
                 partSelected.Add(false);
                 partIdToIndex[partIndex] = index;
@@ -788,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPartCategoryOptions();
             SelectedColorCategoryIndex = 0;
             _lastModifiedItem = OBJECT_INVALID;
+            LoadBodyParts();
         };
 
         public Action OnSelectEquipment() => () =>
@@ -825,7 +828,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
             const float MinimumScale = 0.85f;
-            
+
             if (scale - Increment < MinimumScale)
             {
                 SendMessageToPC(Player, "You cannot decrease your height any further.");
@@ -852,7 +855,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
             }
         };
-        
+
         public Action OnSelectColorCategory() => () =>
         {
             ToggleItemEquippedFlags();
@@ -953,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var slot = GetInventorySlot();
             var item = GetItem();
             var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
-            
+
             if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
             {
                 DestroyObject(_lastModifiedItem);
@@ -1040,8 +1043,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var tileWidth = 16f * scale;
             var tileHeight = 16f * scale;
             var cellX = (int)(x * scale / tileWidth);
-            var cellY = (int) (y * scale / tileHeight);
-            
+            var cellY = (int)(y * scale / tileHeight);
+
             if (cellX < 0)
                 cellX = 0;
             else if (cellX > ColorWidthCells)
@@ -1112,70 +1115,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     switch (gender)
                     {
                         case Gender.Male:
-                            if(appearance.MaleHeads.Contains(SelectedPartIndex))
-                                SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
                             break;
                         default:
-                            if (appearance.FemaleHeads.Contains(SelectedPartIndex))
-                                SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
                             break;
                     }
                     break;
                 case 1: // Torso
-                    if (appearance.Torsos.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
                     break;
                 case 2: // Pelvis
-                    if (appearance.Pelvis.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
                     break;
                 case 3: // Right Bicep
-                    if (appearance.RightBicep.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
                     break;
                 case 4: // Right Forearm
-                    if (appearance.RightForearm.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
                     break;
                 case 5: // Right Hand
-                    if (appearance.RightHand.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
                     break;
                 case 6: // Right Thigh
-                    if (appearance.RightThigh.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
                     break;
                 case 7: // Right Shin
-                    if (appearance.RightShin.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
                     break;
                 case 8: // Right Foot
-                    if (appearance.RightFoot.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
                     break;
                 case 9: // Left Bicep
-                    if (appearance.LeftBicep.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
                     break;
                 case 10: // Left Forearm
-                    if (appearance.LeftForearm.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
                     break;
                 case 11: // Left Hand
-                    if (appearance.LeftHand.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
                     break;
                 case 12: // Left Thigh
-                    if (appearance.LeftThigh.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
                     break;
                 case 13: // Left Shin
-                    if (appearance.LeftShin.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
                     break;
                 case 14: // Left Foot
-                    if (appearance.LeftFoot.Contains(SelectedPartIndex))
-                        SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1340,7 +1327,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartSelected[SelectedPartIndex] = false;
             SelectedPartIndex = index;
             PartSelected[index] = true;
-            
+
             LoadPart();
         };
 

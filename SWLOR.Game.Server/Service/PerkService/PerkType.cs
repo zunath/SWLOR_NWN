@@ -55,7 +55,7 @@
         CircleSlash = 48,
         DoubleStrike = 49,
         Knockdown = 50,
-        FlurryOfBlows = 51,
+        Furor = 51,
         InnerStrength = 52,
         ImprovedTwoWeaponFightingOneHanded = 53,
         WeaponFocusKatars = 54,

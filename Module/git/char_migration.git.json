@@ -974,7 +974,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 391
+          "value": 2466
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1003,7 +1003,9 @@
         "Description": {
           "id": 14533,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -1043,7 +1045,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -1126,7 +1128,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 826
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -1138,11 +1140,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "nw_plc_portal2"
+          "value": "tele_obj"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "nw_plc_portal2"
+          "value": "tele_obj"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -1182,11 +1184,11 @@
         },
         "X": {
           "type": "float",
-          "value": 19.81394195556641
+          "value": 19.64620399475098
         },
         "Y": {
           "type": "float",
-          "value": 17.60021781921387
+          "value": 16.63976669311523
         },
         "Z": {
           "type": "float",
@@ -1268,6 +1270,66 @@
         "ZPosition": {
           "type": "float",
           "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SPENDING_TO_REBUILD_LANDING"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 19.51840591430664
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 17.69967269897461
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -9.5367431640625e-007
         }
       }
     ]

@@ -1651,6 +1651,13 @@
           "type": "resref",
           "value": "viscara_lakegrou"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "spending_area"
+        }
       }
     ]
   },

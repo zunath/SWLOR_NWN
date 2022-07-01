@@ -1382,7 +1382,7 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
-                ApplyDeath(attacker, target);
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
                 ClearCurrentTarget(attacker);
             }
             else
@@ -1423,10 +1423,14 @@ namespace SWLOR.Game.Server.Service
         ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
-        /// <param name="attacker">The attacker who killed the creature.</param>
-        /// <param name="creature">The creature who will be killed.</param>
-        private static void ApplyDeath(uint attacker, uint creature)
+        [NWNEventHandler("mod_death")]
+        public static void ApplyDeath()
         {
+            var creature = GetLastPlayerDied();
+
+            if (!IsPlayerInSpaceMode(creature))
+                return;
+
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 
             // When a player dies, they have a chance to drop every module installed on their ship.
@@ -1517,12 +1521,6 @@ namespace SWLOR.Game.Server.Service
 
                 DestroyPilotClone(creature);
             }
-
-            // Apply normal death mechanics on top of the ship ones.
-            AssignCommand(attacker, () =>
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
-            });
         }
 
         /// <summary>

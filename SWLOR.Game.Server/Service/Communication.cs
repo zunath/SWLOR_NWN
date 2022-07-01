@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Communication
     {
+        private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
+
         private class CommunicationComponent
         {
             public string Text { get; set; }
@@ -32,6 +34,30 @@ namespace SWLOR.Game.Server.Service
             ColonForward,
             ColonBackward
         };
+
+        /// <summary>
+        /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
+        /// sent to them during the possession.
+        /// </summary>
+        [NWNEventHandler("dm_poss_bef")]
+        [NWNEventHandler("dm_possfull_bef")]
+        public static void OnDMPossess()
+        {
+            var dm = OBJECT_SELF;
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            
+            // Unpossession - Remove the variable
+            if (!GetIsObjectValid(target))
+            {
+                dm = GetMaster(dm);
+                DeleteLocalObject(dm, DMPossessedCreature);
+            }
+            // Possession - Store the variable
+            else
+            {
+                SetLocalObject(dm, DMPossessedCreature, target);
+            }
+        }
 
         /// <summary>
         /// When a player enters the server, set a local bool on their PC representing
@@ -226,13 +252,20 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var player in allPlayersAndDMs)
                 {
-                    var distance = GetDistanceBetween(sender, player);
-
-                    if (GetArea(player) == GetArea(sender) &&
-                        distance <= distanceCheck &&
-                        !recipients.Contains(player))
+                    var target = player;
+                    var possessedNPC = GetLocalObject(player, DMPossessedCreature);
+                    if (GetIsObjectValid(possessedNPC))
                     {
-                        recipients.Add(player);
+                        target = possessedNPC;
+                    }
+                    
+                    var distance = GetDistanceBetween(sender, target);
+
+                    if (GetArea(target) == GetArea(sender) &&
+                        distance <= distanceCheck &&
+                        !recipients.Contains(target))
+                    {
+                        recipients.Add(target);
                     }
                 }
             }

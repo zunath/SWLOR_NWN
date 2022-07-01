@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             Knockdown();
-            FlurryOfBlows();
+            Furor();
             InnerStrength();
             Chi();
             WeaponFocusKatars();
@@ -47,17 +47,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Knockdown);
         }
 
-        private void FlurryOfBlows()
+        private void Furor()
         {
-            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.FlurryOfBlows)
-                .Name("Flurry of Blows")
+            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Furor)
+                .Name("Furor")
 
                 .AddPerkLevel()
-                .Description("Grants the Flurry of Blows feat. You receive an extra attack per round when fighting with unarmed attacks or a staff. However, all attacks in that round suffer a -2 attack penalty.")
+                .Description("Grants an additional attack to the user for one minute.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.FlurryOfBlows);
+                .GrantsFeat(FeatType.Furor);
         }
 
         private void InnerStrength()

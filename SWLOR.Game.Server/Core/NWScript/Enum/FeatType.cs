@@ -1809,6 +1809,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Doublehand3 = 1841,
         Doublehand4 = 1842,
         Doublehand5 = 1843,
+        Furor = 1844,
 
     }
 }

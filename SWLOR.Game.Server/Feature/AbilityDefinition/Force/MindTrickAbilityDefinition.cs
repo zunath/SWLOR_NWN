@@ -31,6 +31,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyMindTrick(uint activator, uint target)
         {
+            if (activator == target ||
+                GetRacialType(target) == RacialType.Cyborg &&
+                GetRacialType(target) == RacialType.Robot)
+            {
+                return;
+            }
+
             if (!Ability.GetAbilityResisted(activator, target, "Mind Trick"))
             {
                 var effect = EffectConfused();
@@ -38,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, "StatusEffectType.MindTrick");
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
-            CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 80);
         }
 
@@ -78,14 +85,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator) &&
-                            !(GetRacialType(targetCreature) == RacialType.Cyborg || GetRacialType(targetCreature) == RacialType.Robot))
-                        {
-                            ApplyMindTrick(activator, targetCreature);
-                        }
+                        ApplyMindTrick(activator, targetCreature);
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

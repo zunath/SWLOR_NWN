@@ -181,12 +181,12 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] += 6;
             }
 
-            // 2-handed weapons and Doublehand perk
+            // Doublehand perk
             if (attackType == (uint)AttackType.Melee && weapon != null)
             {
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
-                    var doublehandDMGBonus = GetDoublehandDMGBonus(attacker);
+                    var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
                     Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
                     dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                 }
@@ -453,22 +453,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return -1;
-        }
-
-        private static int GetDoublehandDMGBonus(CNWSCreature attacker)
-        {
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand5) == 1)
-                return 19;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
-                return 14;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
-                return 10;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
-                return 6;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
-                return 2;
-
-            return 0;
         }
     }
 }

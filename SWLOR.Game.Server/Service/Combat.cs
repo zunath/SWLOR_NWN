@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -280,6 +283,60 @@ namespace SWLOR.Game.Server.Service
 
             var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
             return ColorToken.Combat($"{coloredAttackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by doublehand.
+        /// If attacker does not meet the requirements of Doublehand, 0 will be returned.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+        public static int GetDoublehandDMGBonus(uint attacker)
+        {
+            var dmg = 0;
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+
+            if (!GetIsObjectValid(rightHand) || GetIsObjectValid(leftHand))
+                return 0;
+
+            if (GetHasFeat(FeatType.Doublehand5, attacker))
+                dmg = 19;
+            if (GetHasFeat(FeatType.Doublehand4, attacker))
+                dmg = 14;
+            if (GetHasFeat(FeatType.Doublehand3, attacker))
+                dmg = 10;
+            if (GetHasFeat(FeatType.Doublehand2, attacker))
+                dmg = 6;
+            if (GetHasFeat(FeatType.Doublehand1, attacker))
+                dmg = 2;
+
+            return dmg;
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by doublehand.
+        /// If attacker does not meet the requirements of Doublehand, 0 will be returned.
+        /// Must be called from within a native context.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+        public static int GetDoublehandDMGBonusNative(CNWSCreature attacker)
+        {
+            var dmg = 0;
+
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand5) == 1)
+                dmg = 19;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
+                dmg = 14;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
+                dmg = 10;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
+                dmg = 6;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
+                dmg = 2;
+
+            return dmg;
         }
     }
 }

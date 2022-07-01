@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("crea_hb_bef", OBJECT_SELF);
             RestoreCreatureStats();
             ProcessFlags();
+            AttackHighestEnmityTarget();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
             ExecuteScript("crea_hb_aft", OBJECT_SELF);
         }
@@ -228,6 +229,26 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_aggro_hb")]
         public static void CreatureAggroHeartbeat()
         {
+        }
+
+        /// <summary>
+        /// Fail-safe to ensure the creature attacks 
+        /// </summary>
+        private static void AttackHighestEnmityTarget()
+        {
+            var self = OBJECT_SELF;
+            if (GetIsInCombat(self))
+                return;
+
+            var target = Enmity.GetHighestEnmityTarget(self);
+            if (GetCurrentAction(self) != ActionType.Invalid)
+                return;
+
+            AssignCommand(self, () =>
+            {
+                ClearAllActions();
+                ActionAttack(target);
+            });
         }
 
         /// <summary>

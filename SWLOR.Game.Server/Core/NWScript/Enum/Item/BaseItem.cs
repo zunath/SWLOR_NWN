@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ElectronicsStackable9 = 535,
         MiscellaneousSmallStackable = 536,
         TwinElectroBlade = 537,
+        MiscellaneousThinStackable = 538,
 
     }
 }

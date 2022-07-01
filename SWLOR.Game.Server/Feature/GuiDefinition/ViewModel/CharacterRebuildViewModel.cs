@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
+            Stat.RestoreFP(player, Stat.GetMaxFP(player));
+            Stat.RestoreStamina(player, Stat.GetMaxStamina(player));
             Gui.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 

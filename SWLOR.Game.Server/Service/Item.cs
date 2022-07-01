@@ -765,10 +765,12 @@ namespace SWLOR.Game.Server.Service
                 switch (baseItem)
                 {
                     case BaseItem.MiscSmall:
+                    case BaseItem.MiscellaneousSmallStackable:
                     case BaseItem.CraftMaterialSmall:
                         sDefaultIcon = "iit_smlmisc_" + sSimpleModelId;
                         break;
                     case BaseItem.MiscMedium:
+                    case BaseItem.MiscMediumStackable:
                     case BaseItem.CraftMaterialMedium:
                     case BaseItem.CraftBase:
                         sDefaultIcon = "iit_midmisc_" + sSimpleModelId;
@@ -777,6 +779,7 @@ namespace SWLOR.Game.Server.Service
                         sDefaultIcon = "iit_talmisc_" + sSimpleModelId;
                         break;
                     case BaseItem.MiscThin:
+                    case BaseItem.MiscellaneousThinStackable:
                         sDefaultIcon = "iit_thnmisc_" + sSimpleModelId;
                         break;
                 }

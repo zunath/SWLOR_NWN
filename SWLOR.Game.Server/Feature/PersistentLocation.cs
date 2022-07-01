@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
             var areaResref = GetResRef(area);
             var isSpace = GetLocalBool(area, "SPACE") || GetName(area).StartsWith("Space -");
 
-            if (!GetIsPC(player) || GetIsDM(player) || areaResref == "ooc_area" || isSpace || areaResref == "char_migration")
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player) || areaResref == "ooc_area" || isSpace || areaResref == "char_migration" || areaResref == "spending_area")
                 return;
 
             // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.

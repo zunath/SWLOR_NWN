@@ -47,6 +47,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!dbPlayer.RebuildComplete)
             {
+                FloatingTextStringOnCreature("Your rebuild must be completed before returning to the spending area.", player, false);
+                return;
+            }
+
+            var location = GetLocation(GetWaypointByTag("REBUILD_TO_SPENDING_LANDING"));
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(location);
+            });
+        }
+
+        [NWNEventHandler("exit_spending")]
+        public static void ExitSpendingArea()
+        {
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player) || GetIsDM(player))
+            {
+                FloatingTextStringOnCreature("Only players may use this.", player, false);
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.RebuildComplete)
+            {
                 FloatingTextStringOnCreature("Your rebuild must be completed before returning to the game world.", player, false);
                 return;
             }

@@ -111,7 +111,8 @@ namespace SWLOR.Game.Server.Feature
         /// <returns>An empty string if successful or an error message if failed</returns>
         private static string CanItemBeUsed(uint creature, uint item)
         {
-            if (!GetIsPC(creature) || GetIsDM(creature)) return string.Empty;
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
+                return string.Empty;
 
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);

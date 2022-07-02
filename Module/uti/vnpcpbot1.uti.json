@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 511
+    "value": 11
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -30,18 +30,16 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Lord's Saberstaff"
+      "0": "(NPC 1) Droid Pistol"
     }
   },
   "ModelPart1": {
@@ -54,11 +52,11 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 11
   },
   "PaletteID": {
     "type": "byte",
-    "value": 47
+    "value": 59
   },
   "Plot": {
     "type": "byte",
@@ -75,42 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 10
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 118
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 28
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -137,42 +104,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 18
+          "value": 14
         },
         "CostValue": {
           "type": "word",
-          "value": 4
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 9
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 3
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 44
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -184,11 +120,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 100
+          "value": 61
         },
         "Subtype": {
           "type": "word",
-          "value": 46
+          "value": 0
         }
       }
     ]
@@ -203,10 +139,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithLordsSaberstaff"
+    "value": "NPC1DroidPistol"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "valsos4"
+    "value": "vnpcpbot1"
   }
 }

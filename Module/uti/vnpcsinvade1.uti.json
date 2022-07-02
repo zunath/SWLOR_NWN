@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 512
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -26,41 +26,29 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "DM Note: This item is not to be dual wielded in any way. It is intended to provide consular-types a way of achieving 4 enhancement effects on a single item without having to dual wield."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "DM Note: This item is not to be dual wielded in any way. It is intended to provide consular-types a way of achieving 4 enhancement effects on a single item without having to dual wield."
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sorcerer's Lightsaber"
+      "0": "Sith Invader T1 Skin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 11
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 14
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 49
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -77,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -93,11 +81,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 118
+          "value": 94
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -108,11 +96,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 26
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -124,7 +112,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 94
         },
         "Subtype": {
           "type": "word",
@@ -139,11 +127,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 45
         },
         "Param1": {
           "type": "byte",
@@ -155,73 +143,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 99
         },
         "Subtype": {
           "type": "word",
           "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 18
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 3
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 9
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 3
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 44
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 18
         }
       }
     ]
@@ -236,10 +162,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SorcerersLightsaber2"
+    "value": "SithInvaderT1Skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "valsol3_1"
+    "value": "vnpcsinvade1"
   }
 }

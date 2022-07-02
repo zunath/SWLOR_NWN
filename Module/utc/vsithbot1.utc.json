@@ -76,7 +76,15 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcpbot1"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -222,7 +230,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 6
+    "value": 150
   },
   "refbonus": {
     "type": "short",

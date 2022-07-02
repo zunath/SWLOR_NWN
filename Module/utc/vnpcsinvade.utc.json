@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 1
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 10016
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -32,13 +108,29 @@
       }
     ]
   },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
+  },
   "Comment": {
     "type": "cexostring",
     "value": ""
   },
   "Con": {
     "type": "byte",
-    "value": 25
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 24
+    "value": 27
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 70
+    "value": 30
   },
   "DecayTime": {
     "type": "dword",
@@ -63,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Quadrupedal and mounted with two blaster cannons along its spine, this combat model represents everything the Sith expect out of their soldiers. It marches tirelessly, conquering new worlds wherever it goes. It exists only to kill, nothing else. Finally, and most importantly, it does not question orders."
+      "0": "Heralds of destruction. Spreading rapidly across the outer and mid rim, already several important worlds have fallen to these cruel men and women, along with countless more as yet unaccounted for. Only time will tell if the Republic can weather the endless onslaught of the Sith Empire."
     }
   },
   "Dex": {
@@ -78,17 +170,31 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpchtroop1"
+        }
+      },
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcatroop1"
+        }
+      },
+      {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrbot4"
+          "value": "vnpcrinvade1"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsbot4"
+          "value": "vnpcsinvade1"
         }
       }
     ]
@@ -154,7 +260,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Imperial Combot"
+      "0": "Sith Soldier"
     }
   },
   "fortbonus": {
@@ -171,11 +277,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 70
+    "value": 30
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 19
   },
   "Interruptable": {
     "type": "byte",
@@ -188,6 +294,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcminvade1"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -205,7 +331,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 350
+    "value": 150
   },
   "NaturalAC": {
     "type": "byte",
@@ -233,11 +359,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4300
+    "value": 4125
   },
   "Race": {
     "type": "byte",
-    "value": 150
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -498,7 +624,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 910
+    "value": 932
   },
   "SpecAbilityList": {
     "type": "list",
@@ -518,7 +644,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ImperialCombot"
+    "value": "SithSoldier"
   },
   "Tail_New": {
     "type": "dword",
@@ -530,7 +656,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vsithbot4"
+    "value": "vnpcsinvade"
   },
   "WalkRate": {
     "type": "int",
@@ -546,6 +672,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 19
+    "value": 11
   }
 }

@@ -573,7 +573,7 @@ namespace SWLOR.Game.Server.Feature
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (!GetIsPC(player) || GetIsDM(player))
+                if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                     continue;
 
                 ExecuteScript("interval_pc_1s", player);

@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
             _shipModuleIdReservation = Gui.ReserveIds(nameof(PlayerRecastWindow) + "_SHIPMODULES", MaxNumberOfShipModules * 2);
         }
 
-        [NWNEventHandler("interval_pc_1s")]
+        [NWNEventHandler("pc_ui_update")]
         public static void ProcessRecastWindows()
         {
             DrawGuiElements();
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature
         private static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;
-            if (GetIsDM(player)) return;
+            if (GetIsDM(player) || GetIsDMPossessed(player)) return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);

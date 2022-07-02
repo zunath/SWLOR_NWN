@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "spending_area"
+      "0": "*Character Rebuild - Spending Area"
     }
   },
   "NoRest": {
@@ -548,7 +548,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 2
+    "value": 3
   },
   "Width": {
     "type": "int",

@@ -3447,7 +3447,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 70.0
+                      "value": 74.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3504,7 +3504,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 45.0
+                      "value": 35.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3650,6 +3650,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcssnipe3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvade"
                     }
                   },
                   {

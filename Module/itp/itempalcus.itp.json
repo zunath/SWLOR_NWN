@@ -5678,6 +5678,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 1) Droid Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcpbot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 1) Droid Rifle"
                     },
                     "RESREF": {
@@ -5705,6 +5716,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcmelite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Invader Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrinvade1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 1) Invader Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcminvade1"
                     }
                   },
                   {
@@ -6744,6 +6777,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcselite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Invader T1 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvade1"
                     }
                   },
                   {
@@ -31493,94 +31537,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "wookshamanstaff"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Apprentice Sorcerer's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valsol2_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Consular's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valcl3_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Initiate Consular's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valcl1_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Initiate Sorcerer's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valsol1_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Jedi Sage's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valcl4_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Padawan Consular's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valcl2_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Lord's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valsol4_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sorcerer's Lightsaber"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "valsol3_1"
                           }
                         }
                       ]

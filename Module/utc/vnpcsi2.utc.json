@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 31
+    "value": 19
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 22
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 75
+    "value": 255
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 19
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -305,11 +305,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 75
+    "value": 255
   },
   "Int": {
     "type": "byte",
-    "value": 31
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -680,6 +680,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 25
+    "value": 19
   }
 }

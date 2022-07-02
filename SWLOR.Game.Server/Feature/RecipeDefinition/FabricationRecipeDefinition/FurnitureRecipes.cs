@@ -778,7 +778,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 			// Bookshelf, Pedestal (White)
 			_builder.Create(RecipeType.BookshelfPedestalWhite, SkillType.Fabrication)
 				.Category(RecipeCategoryType.MiscellaneousFurniture)
-				.Resref("structure_0137")
+				.Resref("structure_0138")
 				.Level(19)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)

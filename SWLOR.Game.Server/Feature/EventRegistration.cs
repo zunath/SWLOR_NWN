@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -7,8 +8,25 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class EventRegistration
+    public static class EventRegistration
     {
+        private class UIList
+        {
+            public DateTime LastUpdate { get; set; }
+            public List<uint> Players { get; set; }
+
+            public UIList()
+            {
+                LastUpdate = DateTime.MinValue;
+                Players = new List<uint>();
+            }
+
+        }
+
+        private const int MaxPlayersPerList = 5;
+        private static int _currentUIList = 1;
+        private static readonly Dictionary<int, UIList> _uiPlayerLists = new();
+
         /// <summary>
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
@@ -52,7 +70,12 @@ namespace SWLOR.Game.Server.Feature
         public static void StartScheduledEvents()
         {
             RunOneSecondPCIntervalEvent();
-            //Scheduler.ScheduleRepeating(RunOneSecondPCIntervalEvent, TimeSpan.FromSeconds(1));
+            Scheduler.ScheduleRepeating(() =>
+            {
+                ProfilerPlugin.PushPerfScope(nameof(RunUIProcessor), "RunScript", "Script");
+                RunUIProcessor();
+                ProfilerPlugin.PopPerfScope();
+            }, TimeSpan.FromSeconds(0.1f));
         }
 
         [NWNEventHandler("mod_heartbeat")]
@@ -64,11 +87,22 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// When a player enters the server, hook their event scripts.
+        /// Also add them to a UI processor list.
+        /// </summary>
         [NWNEventHandler("mod_enter")]
-        public static void HookPlayerEvents()
+        public static void EnterServer()
+        {
+            HookPlayerEvents();
+            AddPlayerToUIProcessor();
+        }
+
+        private static void HookPlayerEvents()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player)) 
+                return;
 
             SetEventScript(player, EventScript.Creature_OnHeartbeat, "pc_heartbeat");
             SetEventScript(player, EventScript.Creature_OnNotice, "pc_perception");
@@ -83,6 +117,60 @@ namespace SWLOR.Game.Server.Feature
             SetEventScript(player, EventScript.Creature_OnUserDefined, "pc_userdef");
             SetEventScript(player, EventScript.Creature_OnBlockedByDoor, "pc_blocked");
         }
+
+        private static void AddPlayerToUIProcessor()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var uiList = 0;
+            foreach (var (uiListId, list) in _uiPlayerLists)
+            {
+                if (list.Players.Count < MaxPlayersPerList)
+                {
+                    uiList = uiListId;
+                    break;
+                }
+            }
+
+            if (uiList == 0)
+            {
+                uiList = _uiPlayerLists.Count + 1;
+                _uiPlayerLists[uiList] = new UIList();
+            }
+
+            _uiPlayerLists[uiList].Players.Add(player);
+
+            SetLocalInt(player, "UI_PROCESSING_LIST", uiList);
+        }
+
+        /// <summary>
+        /// When a player exits the server, remove them from the UI processor list.
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void ExitServer()
+        {
+            RemovePlayerFromUIProcessor();
+        }
+
+        private static void RemovePlayerFromUIProcessor()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var uiList = GetLocalInt(player, "UI_PROCESSING_LIST");
+
+            if (!_uiPlayerLists.ContainsKey(uiList))
+                return;
+
+            if (!_uiPlayerLists[uiList].Players.Contains(player))
+                return;
+
+            _uiPlayerLists[uiList].Players.Remove(player);
+        }
+
 
         /// <summary>
         /// Hooks module-wide scripts.
@@ -578,6 +666,34 @@ namespace SWLOR.Game.Server.Feature
 
                 ExecuteScript("interval_pc_1s", player);
             }
+        }
+
+        private static void RunUIProcessor()
+        {
+            if (_uiPlayerLists.Count <= 0)
+                return;
+
+            var now = DateTime.UtcNow;
+            var list = _uiPlayerLists[_currentUIList];
+
+            // Only process a list at most once per second.
+            if (now - list.LastUpdate < TimeSpan.FromSeconds(1))
+                return;
+
+            foreach (var player in list.Players)
+            {
+                if(GetIsObjectValid(player))
+                    ExecuteScript("pc_ui_update", player);
+            }
+
+            _uiPlayerLists[_currentUIList].LastUpdate = now;
+            _currentUIList++;
+
+            if (_currentUIList > _uiPlayerLists.Count)
+            {
+                _currentUIList = 1;
+            }
+
         }
     }
 }

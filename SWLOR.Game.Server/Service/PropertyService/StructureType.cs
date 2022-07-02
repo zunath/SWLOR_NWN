@@ -696,8 +696,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         StatueTwilek = 127,
-        [Structure("Chair, Chancellor", 
-            "chair_chancellor", 
+        [Structure("Chair, Chancellor",
+            "statue_twilek001", 
             "", 
             true, 
             1)]

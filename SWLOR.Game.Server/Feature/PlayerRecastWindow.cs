@@ -26,11 +26,17 @@ namespace SWLOR.Game.Server.Feature
             _shipModuleIdReservation = Gui.ReserveIds(nameof(PlayerRecastWindow) + "_SHIPMODULES", MaxNumberOfShipModules * 2);
         }
 
+        [NWNEventHandler("interval_pc_1s")]
+        public static void ProcessRecastWindows()
+        {
+            DrawGuiElements();
+            CleanUpExpiredRecastTimers();
+        }
+
         /// <summary>
         /// Every second, redraw the window for the player. Window drawn depends on the mode the player is currently in (Character or Space).
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
-        public static void DrawGuiElements()
+        private static void DrawGuiElements()
         {
             var player = OBJECT_SELF;
 
@@ -158,8 +164,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        [NWNEventHandler("interval_pc_1s")]
-        public static void CleanUpExpiredRecastTimers()
+        private static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;
             if (GetIsDM(player)) return;

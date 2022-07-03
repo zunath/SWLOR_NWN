@@ -182,6 +182,13 @@
           "type": "resref",
           "value": "npc_eco_rifle"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ecoter_hide"
+        }
       }
     ]
   },

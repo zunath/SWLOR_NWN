@@ -1329,6 +1329,10 @@ namespace SWLOR.Game.Server.Service
         {
             var attackerShipStatus = GetShipStatus(attacker);
             var defenderShipStatus = GetShipStatus(defender);
+
+            if (attackerShipStatus == null || defenderShipStatus == null)
+                return 0;
+
             var attackerAccuracy = Stat.GetAccuracy(attacker, OBJECT_INVALID, AbilityType.Agility, SkillType.Piloting) + attackerShipStatus.Accuracy;
             var defenderEvasion = Stat.GetEvasion(defender, SkillType.Piloting) + defenderShipStatus.Evasion;
 

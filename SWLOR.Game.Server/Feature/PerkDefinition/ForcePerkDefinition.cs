@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Burst")
 
                 .AddPerkLevel()
-                .Description("Deals 6.0 DMG to a single target.")
+                .Description("Deals 12 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 8.5 DMG to a single target.")
+                .Description("Deals 19 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 12.0 DMG to a single target.")
+                .Description("Deals 28 DMG to a single target.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
-                .Description("Deals 13.5 DMG to a single target.")
+                .Description("Deals 40 DMG to a single target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

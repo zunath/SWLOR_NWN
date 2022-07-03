@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -26,17 +27,11 @@ namespace SWLOR.Game.Server.Feature
             _shipModuleIdReservation = Gui.ReserveIds(nameof(PlayerRecastWindow) + "_SHIPMODULES", MaxNumberOfShipModules * 2);
         }
 
-        [NWNEventHandler("update_staggered")]
-        public static void ProcessRecastWindows()
-        {
-            DrawGuiElements();
-            CleanUpExpiredRecastTimers();
-        }
-
         /// <summary>
         /// Every second, redraw the window for the player. Window drawn depends on the mode the player is currently in (Character or Space).
         /// </summary>
-        private static void DrawGuiElements()
+        [NWNEventHandler("interval_pc_1s")]
+        public static void DrawGuiElements()
         {
             var player = OBJECT_SELF;
 
@@ -164,26 +159,34 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void CleanUpExpiredRecastTimers()
+        [NWNEventHandler("interval_pc_1s")]
+        public static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;
             if (GetIsDM(player) || GetIsDMPossessed(player)) return;
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Retrieval", "RunScript", "Script");
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            ProfilerPlugin.PopPerfScope();
+
             if (dbPlayer == null)
                 return;
 
             var now = DateTime.UtcNow;
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Iteration", "RunScript", "Script");
             foreach (var (group, dateTime) in dbPlayer.RecastTimes)
             {
                 if (dateTime > now) continue;
 
                 dbPlayer.RecastTimes.Remove(group);
             }
+            ProfilerPlugin.PopPerfScope();
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Save", "RunScript", "Script");
             DB.Set(dbPlayer);
+            ProfilerPlugin.PopPerfScope();
         }
     }
 }

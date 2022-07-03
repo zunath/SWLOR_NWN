@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Every second, draws all GUI elements on the player's screen.
         /// </summary>
-        [NWNEventHandler("update_staggered")]
+        [NWNEventHandler("interval_pc_1s")]
         public static void DrawGuiElements()
         {
             var player = OBJECT_SELF;

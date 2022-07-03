@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Every second, redraw the window for the player. Window drawn depends on the mode the player is currently in (Character or Space).
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
+        //[NWNEventHandler("interval_pc_1s")] // todo: temporarily disabled due to performance reasons.
         public static void DrawGuiElements()
         {
             var player = OBJECT_SELF;
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        [NWNEventHandler("interval_pc_1s")]
+        //[NWNEventHandler("interval_pc_1s")] // todo: temporarily disabled due to performance issues
         public static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;

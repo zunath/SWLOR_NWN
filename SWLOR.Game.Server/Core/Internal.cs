@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Core
                 {
                     foreach (var action in _conditionalScripts[script])
                     {
-                        ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                        ProfilerPlugin.PushPerfScope(action.Name, "RunScript", "Script");
                         var actionResult = action.Action.Invoke();
                         ProfilerPlugin.PopPerfScope();
 
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Core
                     {
                         try
                         {
-                            ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                            ProfilerPlugin.PushPerfScope(action.Name, "RunScript", "Script");
                             action.Action();
                             ProfilerPlugin.PopPerfScope();
                         }

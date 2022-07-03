@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -553,7 +556,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
         }
-        
+
         /// <summary>
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
@@ -565,27 +568,94 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
         }
 
+        private static readonly Dictionary<int, List<uint>> _intervalPlayers = new();
+
+        /// <summary>
+        /// Schedules ten player processors which fire off at 0.1 second intervals.
+        /// This is done to stagger out the processing overhead of scripts that run on player one-second events.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void ScheduleProcessors()
+        {
+            const int GroupCount = 10;
+
+            for (var x = 1; x <= GroupCount; x++)
+            {
+                _intervalPlayers[x] = new List<uint>();
+            }
+            
+            DelayCommand(0.0f, () => ProcessIntervalGroup(1));
+            DelayCommand(0.1f, () => ProcessIntervalGroup(2));
+            DelayCommand(0.2f, () => ProcessIntervalGroup(3));
+            DelayCommand(0.3f, () => ProcessIntervalGroup(4));
+            DelayCommand(0.4f, () => ProcessIntervalGroup(5));
+            DelayCommand(0.5f, () => ProcessIntervalGroup(6));
+            DelayCommand(0.6f, () => ProcessIntervalGroup(7));
+            DelayCommand(0.7f, () => ProcessIntervalGroup(8));
+            DelayCommand(0.8f, () => ProcessIntervalGroup(9));
+            DelayCommand(0.9f, () => ProcessIntervalGroup(10));
+        }
+
+        /// <summary>
+        /// When a player joins the server they are added to the processor queue with the
+        /// fewest number of active players.
+        /// DMs are excluded from this.
+        /// </summary>
         [NWNEventHandler("mod_enter")]
         public static void ScheduleProcessor()
         {
             var player = GetEnteringObject();
-
-            RunUIProcessor(player);
-
-            for (var x = 1; x <= 50; x++)
-            {
-                DelayCommand(0.1f * x, () => RunUIProcessor(player));
-            }
-
-        }
-
-        private static void RunUIProcessor(uint player)
-        {
-            if (!GetIsObjectValid(player))
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ExecuteScript("interval_pc_1s", player);
-            DelayCommand(1f, () => RunUIProcessor(player));
+            AddPlayerToIntervalGroup(player);
+        }
+
+        private static void AddPlayerToIntervalGroup(uint player)
+        {
+            var groupId = 1;
+            var lowestCount = 999;
+            foreach (var (group, players) in _intervalPlayers)
+            {
+                if (players.Count < lowestCount)
+                {
+                    lowestCount = players.Count;
+                    groupId = group;
+                }
+            }
+
+            _intervalPlayers[groupId].Add(player);
+
+            SetLocalInt(player, "PLAYER_INTERVAL_GROUP_ID", groupId);
+        }
+
+        private static void ProcessIntervalGroup(int intervalGroup)
+        {
+            var players = _intervalPlayers[intervalGroup];
+
+            for (var index = players.Count - 1; index >= 0; index--)
+            {
+                var player = players[index];
+
+                if (GetIsObjectValid(player))
+                {
+                    // It's imperative a script doesn't cause this processor to exit upon error.
+                    try
+                    {
+                        ExecuteScript("interval_pc_1s", player);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+                    }
+                }
+                else
+                {
+                    _intervalPlayers[intervalGroup].Remove(player);
+                }
+            }
+
+            DelayCommand(1f, () => ProcessIntervalGroup(intervalGroup));
         }
     }
 }

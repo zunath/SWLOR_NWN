@@ -70,7 +70,8 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Katar,
                     BaseItem.Lightsaber,
                     BaseItem.Saberstaff,
-                    BaseItem.Electroblade
+                    BaseItem.Electroblade,
+                    BaseItem.TwinElectroBlade
         };
 
         /// <summary>

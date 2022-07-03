@@ -74676,39 +74676,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_hut"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mos Eisley Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_tat"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Station Key Card"
                     },
                     "RESREF": {
@@ -74725,17 +74692,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tele_obj"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Veles Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_1"
                     }
                   }
                 ]

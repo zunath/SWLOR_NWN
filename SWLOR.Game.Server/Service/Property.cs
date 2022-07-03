@@ -2086,6 +2086,12 @@ namespace SWLOR.Game.Server.Service
         public static void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            {
+                SendMessageToPC(player, "Only players may use this terminal.");
+                return;
+            }
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 

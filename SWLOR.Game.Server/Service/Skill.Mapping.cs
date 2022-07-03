@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.TwoHanded;
+            _itemToSkillMapping[BaseItem.TwinElectroBlade] = SkillType.TwoHanded;
 
             // Martial Arts Skills
             _itemToSkillMapping[BaseItem.Club] = SkillType.MartialArts;

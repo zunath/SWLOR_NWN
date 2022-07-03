@@ -1174,7 +1174,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the player's heartbeat fires, recover capacitor and shield.
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
+        [NWNEventHandler("update_staggered")]
         public static void PlayerShipRecovery()
         {
             var player = OBJECT_SELF;

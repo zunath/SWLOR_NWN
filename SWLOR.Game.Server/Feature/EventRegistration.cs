@@ -69,7 +69,6 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void StartScheduledEvents()
         {
-            RunOneSecondPCIntervalEvent();
             Scheduler.ScheduleRepeating(() =>
             {
                 ProfilerPlugin.PushPerfScope(nameof(RunUIProcessor), "RunScript", "Script");
@@ -648,26 +647,7 @@ namespace SWLOR.Game.Server.Feature
             var firstObject = GetFirstObjectInArea(GetFirstArea());
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
         }
-
-
-        /// <summary>
-        /// Fires an event on every player every second.
-        /// We do it this way so we don't run into a situation
-        /// where we iterate over the player list more than once per second
-        /// </summary>
-        private static void RunOneSecondPCIntervalEvent()
-        {
-            DelayCommand(1f, RunOneSecondPCIntervalEvent);
-
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                    continue;
-
-                ExecuteScript("interval_pc_1s", player);
-            }
-        }
-
+        
         private static void RunUIProcessor()
         {
             if (_uiPlayerLists.Count <= 0)
@@ -683,7 +663,7 @@ namespace SWLOR.Game.Server.Feature
             foreach (var player in list.Players)
             {
                 if(GetIsObjectValid(player))
-                    ExecuteScript("pc_ui_update", player);
+                    ExecuteScript("update_staggered", player);
             }
 
             _uiPlayerLists[_currentUIList].LastUpdate = now;

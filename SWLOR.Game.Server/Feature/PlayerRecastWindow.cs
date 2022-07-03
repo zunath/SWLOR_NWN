@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
             _shipModuleIdReservation = Gui.ReserveIds(nameof(PlayerRecastWindow) + "_SHIPMODULES", MaxNumberOfShipModules * 2);
         }
 
-        [NWNEventHandler("pc_ui_update")]
+        [NWNEventHandler("update_staggered")]
         public static void ProcessRecastWindows()
         {
             DrawGuiElements();

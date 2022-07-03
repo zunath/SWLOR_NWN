@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("item_valid_bef")]
         public static void ValidateItemUse()
         {
-            var creature = OBJECT_SELF;
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            // todo: removed due to performance issues. Revisit later.
 
-            EventsPlugin.SetEventResult(string.IsNullOrWhiteSpace(CanItemBeUsed(creature, item)) ? "1" : "0");
-            EventsPlugin.SkipEvent();
+            //var creature = OBJECT_SELF;
+            //var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+
+            //EventsPlugin.SetEventResult(string.IsNullOrWhiteSpace(CanItemBeUsed(creature, item)) ? "1" : "0");
+            //EventsPlugin.SkipEvent();
         }
 
         /// <summary>

@@ -625,8 +625,6 @@ namespace SWLOR.Game.Server.Feature
             }
 
             _intervalPlayers[groupId].Add(player);
-
-            SetLocalInt(player, "PLAYER_INTERVAL_GROUP_ID", groupId);
         }
 
         private static void ProcessIntervalGroup(int intervalGroup)

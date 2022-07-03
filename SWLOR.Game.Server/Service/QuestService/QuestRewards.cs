@@ -102,15 +102,12 @@ namespace SWLOR.Game.Server.Service.QuestService
             _quantity = quantity;
             IsSelectable = isSelectable;
 
-            var tempStorage = GetObjectByTag("TEMP_QUEST_ITEM_STORAGE");
-            var tempItem = CreateItemOnObject(resref, tempStorage, quantity);
-            var name = GetName(tempItem);
-            DestroyObject(tempItem, 0.1f);
+            var itemName = Cache.GetItemNameByResref(resref);
 
             if (_quantity > 1)
-                MenuName = _quantity + "x " + name;
+                MenuName = _quantity + "x " + itemName;
             else
-                MenuName = name;
+                MenuName = itemName;
         }
 
         public void GiveReward(uint player)

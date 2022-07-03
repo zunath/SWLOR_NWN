@@ -7,7 +7,6 @@ using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 
@@ -154,15 +153,12 @@ namespace SWLOR.Game.Server.Service
             where T : EntityBase
         {
             var type = typeof(T);
-            ProfilerPlugin.PushPerfScope($"DB.Set:Serialize", "RunScript", "Script");
             var data = JsonConvert.SerializeObject(entity);
-            ProfilerPlugin.PopPerfScope();
 
             var keyPrefix = _keyPrefixByType[type];
             var indexKey = $"Index:{keyPrefix}:{entity.Id}";
             var indexData = new Dictionary<string, RedisValue>();
 
-            ProfilerPlugin.PushPerfScope($"DB.Set:Iteration", "RunScript", "Script");
             foreach (var prop in _indexedPropertiesByName[type])
             {
                 var property = type.GetProperty(prop);
@@ -187,18 +183,9 @@ namespace SWLOR.Game.Server.Service
                     indexData[prop] = (dynamic)value;
                 }
             }
-            ProfilerPlugin.PopPerfScope();
-
-            ProfilerPlugin.PushPerfScope($"DB.Set:ReplaceDoc", "RunScript", "Script");
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            ProfilerPlugin.PopPerfScope();
-
-            ProfilerPlugin.PushPerfScope($"DB.Set:Redis", "RunScript", "Script");
             _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
-            ProfilerPlugin.PopPerfScope();
-            ProfilerPlugin.PushPerfScope($"DB.Set:Cache", "RunScript", "Script");
             _cachedEntities[entity.Id] = entity;
-            ProfilerPlugin.PopPerfScope();
         }
 
         /// <summary>

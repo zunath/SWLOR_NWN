@@ -309,12 +309,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         TableStoneSmall = 58,
-        [Structure("Altar, Hand", 
-            "plc_altrod", 
+        [Structure("Hand Chair",
+            "zep_chair004",
             "", 
             true, 
             1)]
-        AltarHand = 59,
+        HandChair = 59,
         [Structure("Window", 
             "x0_window", 
             "", 

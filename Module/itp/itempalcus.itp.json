@@ -7560,17 +7560,6 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Altar, Hand"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "structure_0059"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
                 "value": "Altar, Stone"
               },
               "RESREF": {
@@ -8588,6 +8577,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0013"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Hand Chair"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0059"
               }
             },
             {

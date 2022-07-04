@@ -58,9 +58,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
                     var recovery = baseRecovery + moduleBonus * 2;
-                    targetShipStatus.Shield += recovery;
-                    if (targetShipStatus.Shield > targetShipStatus.MaxShield)
-                        targetShipStatus.Shield = targetShipStatus.MaxShield;
+                    Space.RestoreShield(target, targetShipStatus, recovery);
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {baseRecovery} shield HP to {GetName(target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);

@@ -342,6 +342,10 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_BEFORE", "heal_kit_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_AFTER", "heal_kit_aft");
 
+            // Healing events
+            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_BEFORE", "heal_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_AFTER", "heal_aft");
+
             // Party Action events
             EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_BEFORE", "pty_leave_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_AFTER", "pty_leave_aft");
@@ -571,29 +575,21 @@ namespace SWLOR.Game.Server.Feature
         private static readonly Dictionary<int, List<uint>> _intervalPlayers = new();
 
         /// <summary>
-        /// Schedules ten player processors which fire off at 0.1 second intervals.
+        /// Schedules five player processors which fire off at 0.2 second intervals.
         /// This is done to stagger out the processing overhead of scripts that run on player one-second events.
         /// </summary>
         [NWNEventHandler("mod_load")]
         public static void ScheduleProcessors()
         {
-            const int GroupCount = 10;
+            const int GroupCount = 5;
 
             for (var x = 1; x <= GroupCount; x++)
             {
+                var interval = x == 1 ? 0f : 0.2f * (x - 1);
+                var groupId = x;
                 _intervalPlayers[x] = new List<uint>();
+                Scheduler.ScheduleRepeating(() => ProcessIntervalGroup(groupId), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(interval));
             }
-            
-            DelayCommand(0.0f, () => ProcessIntervalGroup(1));
-            DelayCommand(0.1f, () => ProcessIntervalGroup(2));
-            DelayCommand(0.2f, () => ProcessIntervalGroup(3));
-            DelayCommand(0.3f, () => ProcessIntervalGroup(4));
-            DelayCommand(0.4f, () => ProcessIntervalGroup(5));
-            DelayCommand(0.5f, () => ProcessIntervalGroup(6));
-            DelayCommand(0.6f, () => ProcessIntervalGroup(7));
-            DelayCommand(0.7f, () => ProcessIntervalGroup(8));
-            DelayCommand(0.8f, () => ProcessIntervalGroup(9));
-            DelayCommand(0.9f, () => ProcessIntervalGroup(10));
         }
 
         /// <summary>
@@ -652,8 +648,6 @@ namespace SWLOR.Game.Server.Feature
                     _intervalPlayers[intervalGroup].Remove(player);
                 }
             }
-
-            DelayCommand(1f, () => ProcessIntervalGroup(intervalGroup));
         }
     }
 }

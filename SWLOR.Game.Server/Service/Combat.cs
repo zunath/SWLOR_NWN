@@ -302,13 +302,13 @@ namespace SWLOR.Game.Server.Service
 
             if (GetHasFeat(FeatType.Doublehand5, attacker))
                 dmg = 19;
-            if (GetHasFeat(FeatType.Doublehand4, attacker))
+            else if (GetHasFeat(FeatType.Doublehand4, attacker))
                 dmg = 14;
-            if (GetHasFeat(FeatType.Doublehand3, attacker))
+            else if (GetHasFeat(FeatType.Doublehand3, attacker))
                 dmg = 10;
-            if (GetHasFeat(FeatType.Doublehand2, attacker))
+            else if (GetHasFeat(FeatType.Doublehand2, attacker))
                 dmg = 6;
-            if (GetHasFeat(FeatType.Doublehand1, attacker))
+            else if (GetHasFeat(FeatType.Doublehand1, attacker))
                 dmg = 2;
 
             return dmg;
@@ -327,13 +327,13 @@ namespace SWLOR.Game.Server.Service
 
             if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand5) == 1)
                 dmg = 19;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
+            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
                 dmg = 14;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
+            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
                 dmg = 10;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
+            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
                 dmg = 6;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
+            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
                 dmg = 2;
 
             return dmg;

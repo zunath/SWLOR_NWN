@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SpellFailure = 92,
         CutsceneGhost = 93,
         CutsceneImmobile = 94,
-        DefensiveStance = 95
+        DefensiveStance = 95,
+        RunScript = 96,
     }
 }

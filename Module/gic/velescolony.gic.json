@@ -10455,13 +10455,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "DOA Shop Frontage 1.1 by Den of Assassins\r\n"
         }
       },

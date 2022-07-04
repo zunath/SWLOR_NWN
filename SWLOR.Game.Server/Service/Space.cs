@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -322,6 +323,9 @@ namespace SWLOR.Game.Server.Service
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, vfx);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
+
+            if(GetIsPC(creature) && !Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
+                Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
         }
 
         /// <summary>
@@ -350,6 +354,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             DeleteLocalObject(creature, "SPACE_TARGET");
+
+            if(GetIsPC(creature) && Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus))
+                Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
         }
 
         /// <summary>

@@ -420,6 +420,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Now handle property permissions
             var dbProperty = DB.Get<WorldProperty>(PropertyId);
+            if (dbProperty == null)
+                return;
+
             var propertyDetail = Property.GetPropertyDetail(dbProperty.PropertyType);
 
             if (propertyDetail.PublicSetting == PropertyPublicType.Adjustable &&

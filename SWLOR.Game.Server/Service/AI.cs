@@ -180,11 +180,18 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
+        /// Invisible creatures do not trigger this.
         /// </summary>
         [NWNEventHandler("crea_aggro_enter")]
         public static void CreatureAggroEnter()
         {
             var entering = GetEnteringObject();
+
+            if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
+            {
+                return;
+            }
+
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
             if (!GetIsEnemy(entering, self))
             {
@@ -259,7 +266,8 @@ namespace SWLOR.Game.Server.Service
             var self = OBJECT_SELF;
 
             // Petrified - do nothing else.
-            if (GetHasEffect(EffectTypeScript.Petrify, self)) return;
+            if (GetHasEffect(self, EffectTypeScript.Petrify)) 
+                return;
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
@@ -307,12 +315,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectType">The type of effect to look for.</param>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if creature has the effect, false otherwise</returns>
-        private static bool GetHasEffect(EffectTypeScript effectType, uint creature)
+        private static bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
         {
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
             {
-                if (GetEffectType(effect) == effectType)
+                var type = GetEffectType(effect);
+
+                if (type == effectType || otherEffectTypes.Contains(type))
                 {
                     return true;
                 }

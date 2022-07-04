@@ -1159,6 +1159,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     item =>
                 {
                     var itemTag = GetTag(item);
+                    if (!Space.IsRegisteredShipModule(itemTag))
+                    {
+                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
+                        return;
+                    }
+
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
 
                     if (!ValidateModuleEquip(dbShip, item))
@@ -1166,7 +1172,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (moduleDetails.PowerType != ShipModulePowerType.High)
                     {
-                        SendMessageToPC(Player, "Only high-powered modules may be installed to this slot.");
+                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
                         return;
                     }
 
@@ -1222,6 +1228,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     item =>
                 {
                     var itemTag = GetTag(item);
+                    if (!Space.IsRegisteredShipModule(itemTag))
+                    {
+                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        return;
+                    }
+
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
                     var moduleBonus = Space.GetModuleBonus(item);
 
@@ -1230,7 +1242,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (moduleDetails.PowerType != ShipModulePowerType.Low)
                     {
-                        SendMessageToPC(Player, "Only low-powered modules may be installed to this slot.");
+                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
                         return;
                     }
                     dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule

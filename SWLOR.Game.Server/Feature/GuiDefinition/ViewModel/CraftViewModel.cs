@@ -97,6 +97,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private bool _isInAutoCraftMode;
+
         public string ControlTotal
         {
             get => Get<string>();
@@ -906,6 +908,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsAutoCraftEnabled = false;
             IsClosable = false;
+            _isInAutoCraftMode = true;
 
             ApplyImmobility();
         }
@@ -954,10 +957,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (Random.NextFloat(1f, 100f) <= chance)
                     {
                         ProcessSuccess();
+                        _isInAutoCraftMode = false;
                     }
                     else
                     {
                         ProcessFailure();
+                        _isInAutoCraftMode = false;
                     }
                 }
                 else
@@ -1077,7 +1082,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessSuccess()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
-            if (!IsInCraftMode)
+            if (!IsInCraftMode && !_isInAutoCraftMode)
                 return;
 
             var playerId = GetObjectUUID(Player);

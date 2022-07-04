@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (_recipes.ContainsKey(recipeType))
                     {
-                        Console.WriteLine($"ERROR: Duplicate recipe detected: {recipeType}");
+                        Log.Write(LogGroup.Error, $"ERROR: Duplicate recipe detected: {recipeType}", true);
                         continue;
                     }
 

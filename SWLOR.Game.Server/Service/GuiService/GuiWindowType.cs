@@ -38,5 +38,6 @@
         BugReport = 33,
         DMTools = 34,
         PlayerStatus = 35,
+        TargetStatus = 36,
     }
 }

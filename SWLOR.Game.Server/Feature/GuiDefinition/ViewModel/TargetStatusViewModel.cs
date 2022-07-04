@@ -1,7 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -9,27 +6,29 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    internal class PlayerStatusViewModel: GuiViewModelBase<PlayerStatusViewModel, GuiPayloadBase>,
+    internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, GuiPayloadBase>,
         IGuiRefreshable<PlayerStatusRefreshEvent>
     {
         private int _screenHeight;
         private int _screenWidth;
         private int _screenScale;
 
-        private static readonly GuiColor _hpColor = new GuiColor(139, 0, 0);
-        private static readonly GuiColor _stmColor = new GuiColor(0, 104, 0);
-        private static readonly GuiColor _fpColor = new GuiColor(3, 87, 152);
-
         private static readonly GuiColor _shieldColor = new GuiColor(3, 87, 152);
         private static readonly GuiColor _hullColor = new GuiColor(139, 0, 0);
         private static readonly GuiColor _capacitorColor = new GuiColor(166, 111, 0);
+
+        public string TargetName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
         public GuiColor Bar1Color
         {
             get => Get<GuiColor>();
             set => Set(value);
         }
-        
+
         public GuiColor Bar2Color
         {
             get => Get<GuiColor>();
@@ -101,25 +100,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _screenHeight = -1;
             _screenScale = -1;
             _screenWidth = -1;
-            
+
             UpdateWidget();
             UpdateData();
-        }
-
-        private void ToggleLabels(bool isCharacter)
-        {
-            if (isCharacter)
-            {
-                Bar1Label = "HP:";
-                Bar2Label = "STM:";
-                Bar3Label = "FP:";
-            }
-            else
-            {
-                Bar1Label = "SH:";
-                Bar2Label = "HL:";
-                Bar3Label = "CAP:";
-            }
         }
 
         private void UpdateWidget()
@@ -133,9 +116,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _screenScale != screenScale)
             {
                 const float WidgetWidth = 200f;
-                const float WidgetHeight = 105f;
+                const float WidgetHeight = 155f;
                 const float XOffset = 255f;
-                const float YOffset = 165f;
+                const float YOffset = 320f;
 
                 var scale = screenScale / 100f;
                 var x = screenWidth - XOffset * scale;
@@ -158,59 +141,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateData()
         {
-            if (Space.IsPlayerInSpaceMode(Player))
-            {
-                ToggleLabels(false);
-                UpdateShipStats();
-            }
-            else
-            {
-                ToggleLabels(true);
-                UpdateCharacterStats();
-            }
-        }
+            var (target, targetStatus) = Space.GetCurrentTarget(Player);
 
-        private void UpdateCharacterStats()
-        {
-            Bar1Color = _hpColor;
-            Bar2Color = _stmColor;
-            Bar3Color = _fpColor;
+            if (!GetIsObjectValid(target) || targetStatus == null)
+                return;
 
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            TargetName = GetName(target);
 
-            var currentHP = GetCurrentHitPoints(Player);
-            var maxHP = GetMaxHitPoints(Player);
-            var currentFP = dbPlayer.FP;
-            var maxFP = Stat.GetMaxFP(Player, dbPlayer);
-            var currentSTM = dbPlayer.Stamina;
-            var maxSTM = Stat.GetMaxStamina(Player, dbPlayer);
-            var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
-
-            Bar1Value = $"{currentHP} / {maxHP}";
-            Bar2Value = $"{currentSTM} / {maxSTM}";
-            Bar3Value = isStandard ? "0 / 0" : $"{currentFP} / {maxFP}";
-
-            Bar1Progress = maxHP <= 0 ? 0 : (float)currentHP / (float)maxHP;
-            Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM;
-            Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP;
-
-        }
-
-        private void UpdateShipStats()
-        {
             Bar1Color = _shieldColor;
             Bar2Color = _hullColor;
             Bar3Color = _capacitorColor;
 
-            var shipStatus = Space.GetShipStatus(Player);
-
-            var currentShields = shipStatus.Shield;
-            var maxShields = shipStatus.MaxShield;
-            var currentHull = shipStatus.Hull;
-            var maxHull = shipStatus.MaxHull;
-            var currentCapacitor = shipStatus.Capacitor;
-            var maxCapacitor = shipStatus.MaxCapacitor;
+            var currentShields = targetStatus.Shield;
+            var maxShields = targetStatus.MaxShield;
+            var currentHull = targetStatus.Hull;
+            var maxHull = targetStatus.MaxHull;
+            var currentCapacitor = targetStatus.Capacitor;
+            var maxCapacitor = targetStatus.MaxCapacitor;
 
             Bar1Value = $"{currentShields} / {maxShields}";
             Bar2Value = $"{currentHull} / {maxHull}";
@@ -223,6 +170,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(PlayerStatusRefreshEvent payload)
         {
+            if (!Space.IsPlayerInSpaceMode(Player))
+                return;
+
             UpdateWidget();
             UpdateData();
         }

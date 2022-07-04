@@ -681,7 +681,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_duranium_1"
+                "value": "imp_electrum_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -700,7 +700,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_electrum_1"
+                "value": "imp_flex_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -719,7 +719,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_flex_1"
+                "value": "imp_kelsh_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -738,7 +738,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_kelsh_1"
+                "value": "imp_lommite_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -757,7 +757,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_lamina_1"
+                "value": "imp_melee_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -776,7 +776,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_lommite_1"
+                "value": "imp_molytex_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -795,7 +795,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_melee_1"
+                "value": "imp_neutro_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -814,7 +814,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_molytex_1"
+                "value": "imp_phrik_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -833,7 +833,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_neutro_1"
+                "value": "imp_plasteel_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -852,7 +852,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_phrik_1"
+                "value": "imp_steelfab_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -871,7 +871,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_plasteel_1"
+                "value": "imp_steelhide_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -890,7 +890,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "imp_quadran_1"
+                "value": "imp_zersium_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -899,82 +899,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 12
-              }
-            },
-            {
-              "__struct_id": 35,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "imp_steelfab_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
-              }
-            },
-            {
-              "__struct_id": 36,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "imp_steelhide_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
-              }
-            },
-            {
-              "__struct_id": 37,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "imp_ultrachr_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
-              }
-            },
-            {
-              "__struct_id": 38,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "imp_zersium_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 14
               }
             }
           ]

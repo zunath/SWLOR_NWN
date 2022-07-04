@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 {
                     var count = 1;
                     var nearest = GetNearestCreature(CreatureType.IsAlive, 1, activator, count);
-                    while (GetIsObjectValid(nearest))
+                    while (GetIsObjectValid(nearest) && GetDistanceBetween(activator, nearest) <= 30f)
                     {
                         if (GetIsEnemy(nearest, activator))
                         {
@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
+
+                            SendMessageToPC(nearest, "The earthquake knocks you down!");
                         }
 
                         count++;

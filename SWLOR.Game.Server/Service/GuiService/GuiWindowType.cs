@@ -36,6 +36,7 @@
         ManageStructures = 31,
         PropertyItemStorage = 32,
         BugReport = 33,
-        DMTools = 34
+        DMTools = 34,
+        PlayerStatus = 35,
     }
 }

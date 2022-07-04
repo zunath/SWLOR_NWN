@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, GuiPayloadBase>,
-        IGuiRefreshable<PlayerStatusRefreshEvent>
+        IGuiRefreshable<TargetStatusRefreshEvent>
     {
         private int _screenHeight;
         private int _screenWidth;
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Bar3Progress = maxCapacitor <= 0 ? 0 : (float)currentCapacitor / (float)maxCapacitor;
         }
 
-        public void Refresh(PlayerStatusRefreshEvent payload)
+        public void Refresh(TargetStatusRefreshEvent payload)
         {
             if (!Space.IsPlayerInSpaceMode(Player))
                 return;

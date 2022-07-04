@@ -234,6 +234,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
             
+            ExecuteScript("pc_fp_adjusted", creature);
         }
 
         /// <summary>
@@ -271,6 +272,8 @@ namespace SWLOR.Game.Server.Service
                 
                 SetLocalInt(creature, "FP", fp);
             }
+
+            ExecuteScript("pc_fp_adjusted", creature);
         }
 
         /// <summary>
@@ -312,6 +315,8 @@ namespace SWLOR.Game.Server.Service
 
                 SetLocalInt(creature, "STAMINA", fp);
             }
+
+            ExecuteScript("pc_stm_adjusted", creature);
         }
 
         /// <summary>
@@ -349,6 +354,8 @@ namespace SWLOR.Game.Server.Service
 
                 SetLocalInt(creature, "STAMINA", stamina);
             }
+
+            ExecuteScript("pc_stm_adjusted", creature);
         }
 
         /// <summary>

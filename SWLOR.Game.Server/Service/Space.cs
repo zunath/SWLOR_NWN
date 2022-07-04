@@ -1138,6 +1138,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
                 
                 DB.Set(dbShip);
+                ExecuteScript("pc_cap_adjusted", activator);
             }
 
             if (GetIsPC(target))
@@ -1151,7 +1152,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyAutoShipRecovery(ShipStatus shipStatus)
+        private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
             // Shield recovery
             shipStatus.ShieldCycle++;
@@ -1161,21 +1162,15 @@ namespace SWLOR.Game.Server.Service
 
             if (shipStatus.ShieldCycle >= rechargeRate)
             {
-                shipStatus.Shield++;
-
-                // Clamp shield to max.
-                if (shipStatus.Shield > shipStatus.MaxShield)
-                    shipStatus.Shield = shipStatus.MaxShield;
-
+                RestoreShield(player, shipStatus, 1);
                 shipStatus.ShieldCycle = 0;
             }
 
             // Capacitor recovery
-            shipStatus.Capacitor++;
+            RestoreCapacitor(player, shipStatus, 1);
 
-            // Clamp capacitor to max.
-            if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
-                shipStatus.Capacitor = shipStatus.MaxCapacitor;
+            if(GetIsPC(player))
+                ExecuteScript("pc_target_upd", player);
         }
 
         /// <summary>
@@ -1193,10 +1188,69 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            ApplyAutoShipRecovery(dbShip.Status);
+            ApplyAutoShipRecovery(player, dbShip.Status);
 
             // Update changes
             DB.Set(dbShip);
+        }
+
+        public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Shield += amount;
+            if (shipStatus.Shield > shipStatus.MaxShield)
+                shipStatus.Shield = shipStatus.MaxShield;
+
+            ExecuteScript("pc_shld_adjusted", creature);
+        }
+
+        public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Shield -= amount;
+            if (shipStatus.Shield < 0)
+                shipStatus.Shield = 0;
+
+            ExecuteScript("pc_shld_adjusted", creature);
+        }
+
+        public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Hull += amount;
+            if (shipStatus.Hull > shipStatus.MaxHull)
+                shipStatus.Hull = shipStatus.MaxHull;
+
+            ExecuteScript("pc_hull_adjusted", creature);
+        }
+
+        public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Hull -= amount;
+            if (shipStatus.Hull < 0)
+                shipStatus.Hull = 0;
+
+            if (shipStatus.Hull <= 0)
+            {
+                AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
+            }
+
+            ExecuteScript("pc_hull_adjusted", creature);
+        }
+
+        public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Capacitor += amount;
+            if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
+                shipStatus.Capacitor = shipStatus.MaxCapacitor;
+
+            ExecuteScript("pc_cap_adjusted", creature);
+        }
+
+        public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
+        {
+            shipStatus.Capacitor -= amount;
+            if (shipStatus.Capacitor < 0)
+                shipStatus.Capacitor = 0;
+
+            ExecuteScript("pc_cap_adjusted", creature);
         }
 
         /// <summary>
@@ -1412,6 +1466,8 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     DB.Set(dbPlayerShip);
+                    ExecuteScript("pc_shld_adjusted", target);
+                    ExecuteScript("pc_hull_adjusted", target);
                 }
                 else
                 {
@@ -1422,6 +1478,10 @@ namespace SWLOR.Game.Server.Service
 
             // Notify nearby players of damage taken by target.
             Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+            
+            if(GetIsPC(attacker))
+                ExecuteScript("pc_target_upd", attacker);
+
         }
 
         /// <summary>
@@ -1543,7 +1603,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
-                ApplyAutoShipRecovery(shipStatus);
+                ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);

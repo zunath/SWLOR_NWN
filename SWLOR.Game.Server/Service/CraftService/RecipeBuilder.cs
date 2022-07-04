@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 Skill = skill
             };
             _activeType = type;
-            _recipes[type] = _activeRecipe;
+            _recipes.Add(type, _activeRecipe);
 
             return this;
         }

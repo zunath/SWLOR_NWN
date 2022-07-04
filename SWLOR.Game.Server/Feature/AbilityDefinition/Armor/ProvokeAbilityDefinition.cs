@@ -36,9 +36,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasImpactAction((activator, target, level, location) => 
+                .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 30);
+                    var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
+                    Impact(activator, target, 800 + enmityBonus);
                 });
         }
 
@@ -64,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
                         if (!GetIsPC(nearest))
                         {
-                            Impact(activator, nearest, 40);
+                            var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
+                            Impact(activator, nearest, 830 * enmityBonus);
                         }
 
                         nth++;

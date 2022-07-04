@@ -220,9 +220,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("wood", 4)
 				.Component("ref_veldite", 2);
 
-			// Altar, Hand
-			_builder.Create(RecipeType.AltarHand, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Statues)
+			// Hand Chair
+			_builder.Create(RecipeType.HandChair, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Seating)
 				.Resref("structure_0059")
 				.Level(6)
 				.Quantity(1)

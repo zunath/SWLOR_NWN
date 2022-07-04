@@ -224,7 +224,7 @@
         TableWood = 1012,
         BenchWoodSmall = 1013,
         TableWoodWithFish = 1014,
-        AltarHand = 1015,
+        HandChair = 1015,
         Footstool = 1016,
         Pedestal = 1017,
         Tome = 1018,

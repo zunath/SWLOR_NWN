@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
                     if (resourceLevel > requiredLevel)
                     {
-                        return $"A level {requiredLevel} harvester or higher is required for this resource.";
+                        return $"A level {resourceLevel} harvester or higher is required for this resource.";
                     }
 
                     return string.Empty;

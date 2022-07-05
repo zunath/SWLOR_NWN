@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
         {
+
             /*
              * Custom attack logic for SWLOR. Most default NWN logic does not apply.
              * 
@@ -51,10 +53,15 @@ namespace SWLOR.Game.Server.Native
              * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
              */
 
+            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnResolveAttackRoll)}", "RunScript", "Script");
+
             Log.Write(LogGroup.Attack, "Running OnResolveAttackRoll");
             var targetObject = CNWSObject.FromPointer(pTarget);
             if (targetObject == null)
+            {
+                ProfilerPlugin.PopPerfScope();
                 return;
+            }
 
             var attacker = CNWSCreature.FromPointer(thisPtr);
             var attackerStats = attacker.m_pStats;
@@ -70,6 +77,7 @@ namespace SWLOR.Game.Server.Native
                 // Automatically hit non-creature targets.  Do not apply criticals.
                 Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                 pAttackData.m_nAttackResult = 7; // Automatic hit.
+                ProfilerPlugin.PopPerfScope();
                 return;
             }
 
@@ -331,6 +339,8 @@ namespace SWLOR.Game.Server.Native
             pAttackData.m_nToHitRoll = 1;
 
             Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
+
+            ProfilerPlugin.PopPerfScope();
         }
 
         private static int HasWeaponFocus(CNWSCreature attacker, CNWSItem weapon)

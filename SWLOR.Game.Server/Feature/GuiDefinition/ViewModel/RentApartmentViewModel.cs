@@ -154,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var playerId = GetObjectUUID(Player);
                     var query = new DBQuery<WorldProperty>()
                         .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                         .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
                     var apartments = DB.Search(query).ToList();
 

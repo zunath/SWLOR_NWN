@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -39,6 +40,8 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
+            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnGetDamageRoll)}", "RunScript", "Script");
+
             var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
             var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -48,7 +51,11 @@ namespace SWLOR.Game.Server.Native
 
             // On a critical hit, this method appears to be invoked multiple times, with an invalid target the second and
             // subsequent times.  Bail out early.
-            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID) return 0;
+            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID)
+            {
+                ProfilerPlugin.PopPerfScope();
+                return 0;
+            }
 
             var attackType = (uint) AttackType.Melee;
             var weapon = bOffHand == 1
@@ -307,6 +314,8 @@ namespace SWLOR.Game.Server.Native
                     pAttackData.AddDamage((ushort)DamageType.Cold, damage);
                 }
             }
+
+            ProfilerPlugin.PopPerfScope();
 
             return physicalDamage;
         }

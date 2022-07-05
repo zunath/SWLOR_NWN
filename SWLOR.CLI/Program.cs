@@ -12,6 +12,7 @@ namespace SWLOR.CLI
         private static readonly EnhancementItemBuilder _enhancementItemBuilder = new();
         private static readonly RecipeCodeBuilder _recipeCodeBuilder = new();
         private static readonly LegacyMigrator _legacyMigrator = new();
+        private static readonly AdHocTool _adHocTool = new();
 
         static void Main(string[] args)
         {
@@ -69,6 +70,11 @@ namespace SWLOR.CLI
                 "Migrates legacy data to new Redis structure.",
                 CommandOptionType.NoValue);
 
+            var adHocToolOption = app.Option(
+                "-$|-a |--adhoc",
+                "Ad-hoc code testing.",
+                CommandOptionType.NoValue);
+
             app.HelpOption("-? | -h | --help");
 
             app.OnExecute(() =>
@@ -116,6 +122,11 @@ namespace SWLOR.CLI
                 if (legacyMigratorOption.HasValue())
                 {
                     _legacyMigrator.Process();
+                }
+
+                if (adHocToolOption.HasValue())
+                {
+                    _adHocTool.Process();
                 }
 
                 return 0;

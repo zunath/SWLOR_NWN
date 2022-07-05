@@ -15,16 +15,6 @@ namespace SWLOR.CLI
     {
         public void Process()
         {
-            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", ConfigurationManager.AppSettings["RedisHost"]);
-            DB.Load();
-
-            var player = DB.Get<Player>("92283193-724e-4464-a815-fc73243c1145");
-
-            player.CraftedRecipes.Remove(RecipeType.AltarHand);
-
-            DB.Set(player);
-
-            Console.WriteLine("Finished updating Frith Ra");
         }
     }
 }

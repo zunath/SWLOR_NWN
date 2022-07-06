@@ -209,6 +209,17 @@
         SithShuriken = 195,
         SithElectroblade = 196,
 
+        TwinElectroblade1 = 197,
+        TwinElectroblade2 = 198,
+        TwinElectroblade3 = 199,
+        TwinElectroblade4 = 200,
+        TwinElectroblade5 = 201,
+        TrainingSaberstaff1 = 202,
+        TrainingSaberstaff2 = 203,
+        TrainingSaberstaff3 = 204,
+        TrainingSaberstaff4 = 205,
+        TrainingSaberstaff5 = 206,
+
         // Fabrication:  1001-2000
         BedRoll = 1001,
         Easel = 1002,

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             GreatSwords();
             Spears();
             TwinBlades();
+            Saberstaffs();
 
             return _builder.Build();
         }
@@ -224,6 +225,126 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
         }
+
+        private void Saberstaffs()
+        {
+            // Twin Electroblade I
+            _builder.Create(RecipeType.TwinElectroblade1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("twin_elec_1")
+                .Level(7)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // Twin Electroblade II
+            _builder.Create(RecipeType.TwinElectroblade2, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("twin_elec_2")
+                .Level(17)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // Twin Electroblade III
+            _builder.Create(RecipeType.TwinElectroblade3, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("twin_elec_3")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // Twin Electroblade IV
+            _builder.Create(RecipeType.TwinElectroblade4, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("twin_elec_4")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // Twin Electroblade V
+            _builder.Create(RecipeType.TwinElectroblade5, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("twin_elec_5")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // Training Saberstaff I
+            _builder.Create(RecipeType.TrainingSaberstaff1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("trn_saberstaff_1")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("jade", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 4);
+
+            // Training Saberstaff II
+            _builder.Create(RecipeType.TrainingSaberstaff2, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("trn_saberstaff_2")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("agate", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 4);
+
+            // Training Saberstaff III
+            _builder.Create(RecipeType.TrainingSaberstaff3, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("trn_saberstaff_3")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("citrine", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 4);
+
+            // Training Saberstaff IV
+            _builder.Create(RecipeType.TrainingSaberstaff4, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("trn_saberstaff_4")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ruby", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 4);
+
+            // Training Saberstaff V
+            _builder.Create(RecipeType.TrainingSaberstaff5, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("trn_saberstaff_5")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("emerald", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 4);
+
+        }
+
 
     }
 }

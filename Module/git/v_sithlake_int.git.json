@@ -93766,11 +93766,11 @@
         },
         "KeyRequired": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "SithLake_Out"
+          "value": "sithlake_to_interior"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -93782,11 +93782,11 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "LocName": {
           "type": "cexolocstring",
@@ -93856,7 +93856,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",

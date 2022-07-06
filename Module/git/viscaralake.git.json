@@ -134,7 +134,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -208,7 +208,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -220,7 +220,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "areatag_to_areanote"
+          "value": "sithlake_to_interior"
         },
         "TemplateResRef": {
           "type": "resref",

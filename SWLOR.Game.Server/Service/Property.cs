@@ -1017,19 +1017,22 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes);
             var instancePropertiesCount = DB.SearchCount(instanceQuery);
             var instanceProperties = DB.Search(instanceQuery
-                .AddPaging((int)instancePropertiesCount, 0));
+                .AddPaging((int)instancePropertiesCount, 0))
+                .ToList();
 
             var worldQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes);
             var worldPropertiesCount = DB.SearchCount(worldQuery);
             var worldProperties = DB.Search(worldQuery
-                .AddPaging((int)worldPropertiesCount, 0));
+                .AddPaging((int)worldPropertiesCount, 0))
+                .ToList();
 
             var areaQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes);
             var areaPropertiesCount = DB.SearchCount(areaQuery);
             var areaProperties = DB.Search(areaQuery
-                .AddPaging((int)areaPropertiesCount, 0));
+                .AddPaging((int)areaPropertiesCount, 0))
+                .ToList();
 
             foreach (var property in instanceProperties)
             {
@@ -1063,6 +1066,11 @@ namespace SWLOR.Game.Server.Service
                 var area = Area.GetAreaByResref(property.ParentPropertyId);
                 SpawnIntoWorld(property, area);
             }
+
+
+            Log.Write(LogGroup.Property, $"Loaded {instanceProperties.Count} instanced properties.", true);
+            Log.Write(LogGroup.Property, $"Loaded {worldProperties.Count} world properties.", true);
+            Log.Write(LogGroup.Property, $"Loaded {areaProperties.Count} area properties.", true);
         }
 
         /// <summary>

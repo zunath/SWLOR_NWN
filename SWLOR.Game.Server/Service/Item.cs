@@ -837,7 +837,11 @@ namespace SWLOR.Game.Server.Service
         private static void BuildSingleItemPropertyString(StringBuilder sb, ItemProperty ip)
         {
             var typeId = (int)GetItemPropertyType(ip);
-            var name = GetStringByStrRef(Convert.ToInt32(Get2DAString("itempropdef", "GameStrRef", typeId)));
+            var gameStringRef = Get2DAString("itempropdef", "GameStrRef", typeId);
+            if (string.IsNullOrWhiteSpace(gameStringRef))
+                return;
+
+            var name = GetStringByStrRef(Convert.ToInt32(gameStringRef));
             sb.Append(name);
 
             var subTypeId = GetItemPropertySubType(ip);

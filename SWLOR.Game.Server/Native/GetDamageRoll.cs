@@ -193,9 +193,14 @@ namespace SWLOR.Game.Server.Native
             {
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
-                    var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
-                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
-                    dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
+                    var weaponType = (BaseItem)weapon.m_nBaseItem;
+
+                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType))
+                    {
+                        var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
+                        Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
+                        dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
+                    }
                 }
             }
 

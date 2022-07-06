@@ -300,6 +300,10 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(rightHand) || GetIsObjectValid(leftHand))
                 return 0;
 
+            var rightHandType = GetBaseItemType(rightHand);
+            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType))
+                return 0;
+
             if (GetHasFeat(FeatType.Doublehand5, attacker))
                 dmg = 19;
             else if (GetHasFeat(FeatType.Doublehand4, attacker))

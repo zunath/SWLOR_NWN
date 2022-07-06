@@ -718,6 +718,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Saberstaff,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
+            BaseItem.Electroblade
         };
 
         /// <summary>

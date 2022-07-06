@@ -81,9 +81,13 @@ namespace SWLOR.Game.Server.Service
 
             for (var x = 1; x <= count; x++)
             {
-                var target = Convert.ToUInt32(EventsPlugin.GetEventData($"TARGET_{x}"));
-                ClearEnmityTables(target);
-                RemoveCreatureEnmity(target);
+                var targetData = EventsPlugin.GetEventData($"TARGET_{x}");
+
+                if (uint.TryParse(targetData, out var target))
+                {
+                    ClearEnmityTables(target);
+                    RemoveCreatureEnmity(target);
+                }
             }
         }
 

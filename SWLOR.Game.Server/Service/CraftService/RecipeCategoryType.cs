@@ -90,6 +90,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         Crafting = 40,
         [RecipeCategory("Enhancement", true)]
         Enhancement = 41,
+        [RecipeCategory("Saberstaff", true)]
+        Saberstaff = 42,
     }
 
     public class RecipeCategoryAttribute : Attribute

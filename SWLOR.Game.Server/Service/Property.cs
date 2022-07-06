@@ -1013,12 +1013,23 @@ namespace SWLOR.Game.Server.Service
                 .Select(s => (int)s.Key)
                 .ToList();
 
-            var instanceProperties = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes));
-            var worldProperties = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes));
-            var areaProperties = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes));
+            var instanceQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes);
+            var instancePropertiesCount = DB.SearchCount(instanceQuery);
+            var instanceProperties = DB.Search(instanceQuery
+                .AddPaging((int)instancePropertiesCount, 0));
+
+            var worldQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes);
+            var worldPropertiesCount = DB.SearchCount(worldQuery);
+            var worldProperties = DB.Search(worldQuery
+                .AddPaging((int)worldPropertiesCount, 0));
+
+            var areaQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes);
+            var areaPropertiesCount = DB.SearchCount(areaQuery);
+            var areaProperties = DB.Search(areaQuery
+                .AddPaging((int)areaPropertiesCount, 0));
 
             foreach (var property in instanceProperties)
             {

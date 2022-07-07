@@ -978,7 +978,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(moduleDetail.Description)) return;
 
             // Append the ship module's description to the item's description.
-            var description = GetDescription(item);
+            var description = GetDescription(item, true);
             description += moduleDetail.Description + "\n";
             SetDescription(item, description);
 

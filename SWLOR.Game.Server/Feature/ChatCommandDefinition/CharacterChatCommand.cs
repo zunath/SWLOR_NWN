@@ -345,7 +345,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor);
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, null, OBJECT_INVALID, uiTarget);
                 });
         }
     }

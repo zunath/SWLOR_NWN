@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
@@ -35,6 +36,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadRacialAppearances();
             LoadWeaponAppearances();
+        }
+
+        [NWNEventHandler("dm_poss_bef")]
+        [NWNEventHandler("dm_possfull_bef")]
+        public static void CloseAppearanceWindowOnPossessionBefore()
+        {
+            var dm = OBJECT_SELF;
+            var isUnpossess = StringToObject(EventsPlugin.GetEventData("TARGET")) == OBJECT_INVALID;
+
+            if (isUnpossess)
+            {
+                var uiTarget = GetMaster(dm);
+
+                Gui.CloseWindow(dm, GuiWindowType.AppearanceEditor, uiTarget);
+            }
+            else
+            {
+                if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
+                    Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
+            }
         }
 
         private static void LoadRacialAppearances()
@@ -338,6 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetIsPC(Player) && !GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
+                IsSettingsVisible = true;
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
             }

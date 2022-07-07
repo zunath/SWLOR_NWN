@@ -537,6 +537,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var appearanceType = GetAppearanceType(Player);
             var gender = GetGender(Player);
+
+            if (!_racialAppearances.ContainsKey(appearanceType))
+            {
+                Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);
+                return;
+            }
+
             var appearance = _racialAppearances[appearanceType];
             int[] partIds;
             int selectedPartId;

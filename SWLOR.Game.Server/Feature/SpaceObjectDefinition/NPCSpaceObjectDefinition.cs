@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_eleyna")
                 .ItemTag("NPC_Eleyna")
                 .ShipModule("ion_cann_4")
-                .ShipModule("ion_cann_4")A
+                .ShipModule("ion_cann_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")

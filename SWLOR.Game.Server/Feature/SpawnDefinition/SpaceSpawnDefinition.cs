@@ -23,17 +23,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_VISCARA_ORBIT", "Space - Viscara Orbit")
                 .AddSpawn(ObjectType.Creature, "pirate_sybil")
-                .WithFrequency(40)
+                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_terror")
-                .WithFrequency(5)
+                .WithFrequency(25)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_night")
-                .WithFrequency(1)
+                .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -42,17 +42,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_MONCALA_ORBIT", "Space - Mon Cala Orbit")
                 .AddSpawn(ObjectType.Creature, "pirate_night")
-                .WithFrequency(40)
+                .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_ferron")
-                .WithFrequency(5)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
-                .WithFrequency(1)
+                .WithFrequency(10)
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -61,17 +61,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_HUTLAR_ORBIT", "Space - Hutlar Orbit")
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
-                .WithFrequency(40)
+                .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_ranger")
-                .WithFrequency(5)
+                .WithFrequency(25)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_hammer")
-                .WithFrequency(1)
+                .WithFrequency(10)
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -80,22 +80,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_TATOOINE_ORBIT", "Space - Tatooine Orbit")
                 .AddSpawn(ObjectType.Creature, "pirate_hammer")
-                .WithFrequency(40)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_drake")
-                .WithFrequency(5)
+                .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_borealis")
-                .WithFrequency(1)
+                .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_eleyna")
-                .WithFrequency(1)
+                .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -104,19 +104,24 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_KORRIBAN_ORBIT", "Space - Korriban Orbit")
                 .AddSpawn(ObjectType.Creature, "pirate_night")
-                .WithFrequency(40)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_ferron")
-                .WithFrequency(5)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
-                .WithFrequency(1)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+                .AddSpawn(ObjectType.Creature, "pirate_hammer")
+                .WithFrequency(5)
+                .RandomlyWalks()
+                .ReturnsHome()
         }
 
         private void DathomirOrbit()
@@ -124,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("SPACE_DATHOMIR_ORBIT", "Space - Dathomir Orbit")
                 
                 .AddSpawn(ObjectType.Creature, "pirate_drake")
-                .WithFrequency(40)
+                .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -134,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_eleyna")
-                .WithFrequency(10)
+                .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

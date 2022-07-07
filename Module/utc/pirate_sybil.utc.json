@@ -10,7 +10,7 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
@@ -116,7 +116,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 12
   },
   "Interruptable": {
     "type": "byte",
@@ -451,7 +451,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 6
+    "value": 10
   },
   "Subrace": {
     "type": "cexostring",
@@ -507,6 +507,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 12
   }
 }

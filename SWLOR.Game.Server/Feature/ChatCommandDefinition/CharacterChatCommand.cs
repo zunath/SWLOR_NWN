@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ChangeItemName();
             ChangeItemDescription();
             ConcentrationAbility();
-            
+            Customize();
+
             return _builder.Build();
         }
 
@@ -336,6 +337,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        
+
+        private void Customize()
+        {
+            _builder.Create("customize", "customise")
+                .Description("Opens the appearance editor window.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor);
+                });
+        }
     }
 }

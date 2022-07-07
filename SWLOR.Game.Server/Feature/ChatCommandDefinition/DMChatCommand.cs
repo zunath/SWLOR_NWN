@@ -19,6 +19,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
+            CopyTargetItem();
+            Day();
+            Night();
+            GetPlot();
+            Kill();
+            Name();
+            Resurrect();
+            SpawnGold();
+            TeleportWaypoint();
+            GetLocalVariable();
+            SetLocalVariable();
+            SetPortrait();
+            SpawnItem();
+            GiveRPXP();
+            ResetPerkCooldown();
+            PlayVFX();
+            ResetAbilityRecastTimers();
+            AdjustFactionStanding();
+            GetFactionStanding();
+            RestartServer();
+            SetXPBonus();
+            GetXPBonus();
+            GetPlayerId();
+
+            return _builder.Build();
+        }
+
+        private void CopyTargetItem()
+        {
             _builder.Create("copyitem")
                 .Description("Copies the targeted item.")
                 .RequiresTarget()
@@ -34,7 +63,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     CopyItem(target, user, true);
                     SendMessageToPC(user, "Item copied successfully.");
                 });
+        }
 
+        private void Day()
+        {
             _builder.Create("day")
                 .Description("Sets the world time to 8 AM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -42,7 +74,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     SetTime(8, 0, 0, 0);
                 });
+        }
 
+        private void Night()
+        {
             _builder.Create("night")
                 .Description("Sets the world time to 8 PM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -50,7 +85,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     SetTime(20, 0, 0, 0);
                 });
+        }
 
+        private void GetPlot()
+        {
             _builder.Create("getplot")
                 .Description("Gets whether an object is marked plot.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -59,7 +97,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, GetPlotFlag(target) ? "Target is marked plot." : "Target is NOT marked plot.");
                 })
                 .RequiresTarget();
+        }
 
+        private void Kill()
+        {
             _builder.Create("kill")
                 .Description("Kills your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -70,7 +111,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                 })
                 .RequiresTarget();
+        }
 
+        private void Name()
+        {
             _builder.Create("name")
                 .Description("Renames your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -92,7 +136,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SetName(target, name);
                 })
                 .RequiresTarget();
+        }
 
+        private void Resurrect()
+        {
             _builder.Create("rez")
                 .Description("Revives you, heals you to full, and restores all FP/STM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -108,7 +155,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Stat.RestoreFP(target, Stat.GetMaxFP(target));
                     Stat.RestoreStamina(target, Stat.GetMaxStamina(target));
                 });
+        }
 
+        private void SpawnGold()
+        {
             _builder.Create("spawngold")
                 .Description("Spawns gold of a specific quantity on your character. Example: /spawngold 33")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -134,7 +184,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     GiveGoldToCreature(user, quantity);
                 });
+        }
 
+        private void TeleportWaypoint()
+        {
             _builder.Create("tpwp")
                 .Description("Teleports you to a waypoint with a specified tag.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -160,23 +213,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     AssignCommand(user, () => ActionJumpToLocation(GetLocation(wp)));
                 });
-
-            GetLocalVariable();
-            SetLocalVariable();
-            SetPortrait();
-            SpawnItem();
-            GiveRPXP();
-            ResetPerkCooldown();
-            PlayVFX();
-            ResetAbilityRecastTimers();
-            AdjustFactionStanding();
-            GetFactionStanding();
-            RestartServer();
-            SetXPBonus();
-            GetXPBonus();
-            GetPlayerId();
-
-            return _builder.Build();
         }
 
         private void GetLocalVariable()
@@ -762,16 +798,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsPC(target) || GetIsDM(target))
-                    {
-                        SendMessageToPC(user, "Only players may be targeted with this command.");
-                        return;
-                    }
-
                     var playerId = GetObjectUUID(target);
                     
                     SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
                 });
         }
+
     }
 }

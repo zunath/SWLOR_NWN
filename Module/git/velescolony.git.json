@@ -380526,7 +380526,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -380605,7 +380605,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 11
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 81
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -380633,7 +380665,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -380656,11 +380688,11 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 8000
+                      "value": 2
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 24
+                      "value": 39
                     },
                     "Charges": {
                       "type": "byte",
@@ -380668,24 +380700,21 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 8000
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 90753,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
+                      "value": {}
                     },
                     "Identified": {
                       "type": "byte",
@@ -380696,15 +380725,15 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 90756,
+                      "id": 13362,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Starchart Data Disk - Tatooine"
+                        "0": "Medical Supplies"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 223
+                      "value": 1
                     },
                     "Plot": {
                       "type": "byte",
@@ -380721,11 +380750,11 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 3
+                            "value": 10
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 13
+                            "value": 5
                           },
                           "Param1": {
                             "type": "byte",
@@ -380737,11 +380766,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 15
+                            "value": 11
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 329
+                            "value": 0
                           }
                         }
                       ]
@@ -380764,50 +380793,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "starcharts_tatooine"
+                      "value": "med_supplies"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "starcharts_2"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "StarchartDisk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "Starcharts"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 1
-                          },
-                          "Value": {
-                            "type": "int",
-                            "value": 2
-                          }
-                        }
-                      ]
+                      "value": "med_supplies"
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -380830,11 +380824,11 @@
                     "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
-                      "value": 2000
+                      "value": 2
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 24
+                      "value": 39
                     },
                     "Charges": {
                       "type": "byte",
@@ -380842,24 +380836,21 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 2000
+                      "value": 2
                     },
                     "Cursed": {
                       "type": "byte",
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 90753,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
+                      "value": {}
                     },
                     "Identified": {
                       "type": "byte",
@@ -380870,15 +380861,15 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 90756,
+                      "id": 13362,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Starchart Data Disk - Viscara"
+                        "0": "Medical Supplies"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 223
+                      "value": 1
                     },
                     "Plot": {
                       "type": "byte",
@@ -380895,11 +380886,11 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 3
+                            "value": 10
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 13
+                            "value": 5
                           },
                           "Param1": {
                             "type": "byte",
@@ -380911,185 +380902,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 15
+                            "value": 11
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 329
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 5
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "starcharts_viscara"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "starcharts_1"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "StarchartDisk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "Starcharts"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 1
-                          },
-                          "Value": {
-                            "type": "int",
-                            "value": 1
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.401298464324817e-045
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 4,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 4000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 24
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 4000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "id": 90753,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "id": 90756,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Starchart Data Disk - Mon Cala"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 223
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
                             "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 329
                           }
                         }
                       ]
@@ -381101,487 +380918,6 @@
                     "Repos_Posy": {
                       "type": "word",
                       "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "starcharts_moncala"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "starcharts_4"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "StarchartDisk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "Starcharts"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 1
-                          },
-                          "Value": {
-                            "type": "int",
-                            "value": 4
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.401298464324817e-045
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 5,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 6000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 24
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 6000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "id": 90753,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "id": 90756,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Starchart Data Disk - Hutlar"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 223
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 329
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 7
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "starcharts_hutlar"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "starcharts_hutla"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "StarchartDisk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "Starcharts"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 1
-                          },
-                          "Value": {
-                            "type": "int",
-                            "value": 8
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.401298464324817e-045
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 6,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 39
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Medical Supplies are required to use many of the First Aid perks."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "id": 13362,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Medical Supplies"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 10
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 5
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 11
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "med_supplies"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "med_supplies"
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.401298464324817e-045
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 7,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 39
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Medical Supplies are required to use many of the First Aid perks."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "id": 13362,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Medical Supplies"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 10
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 5
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 11
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 1
                     },
                     "StackSize": {
                       "type": "word",
@@ -381621,145 +380957,7 @@
                     }
                   },
                   {
-                    "__struct_id": 8,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 39
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 2
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Stim Packs are required for many of the First Aid perks."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "id": 13362,
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Stim Pack"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 10
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 5
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 11
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "stim_pack"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "stim_pack"
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.401298464324817e-045
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 9,
+                    "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
                       "value": 2
@@ -381854,6 +381052,144 @@
                     "Repos_PosX": {
                       "type": "word",
                       "value": 8
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "stim_pack"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "stim_pack"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 1.401298464324817e-045
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 5,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Packs are required for many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Pack"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 10
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 11
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -381897,7 +381233,7 @@
                     }
                   },
                   {
-                    "__struct_id": 10,
+                    "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
                       "value": 10
@@ -382019,11 +381355,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "StackSize": {
                       "type": "word",
@@ -382063,7 +381399,7 @@
                     }
                   },
                   {
-                    "__struct_id": 11,
+                    "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
                       "value": 2
@@ -382155,11 +381491,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "StackSize": {
                       "type": "word",
@@ -382199,7 +381535,7 @@
                     }
                   },
                   {
-                    "__struct_id": 12,
+                    "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
                       "value": 2
@@ -382291,7 +381627,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",

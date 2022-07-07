@@ -27111,7 +27111,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 13
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",

@@ -116,12 +116,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pirate_storm")
                 .WithFrequency(20)
                 .RandomlyWalks()
-                .ReturnsHome();
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "pirate_hammer")
                 .WithFrequency(5)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
         }
 
         private void DathomirOrbit()

@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyStats()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
         public static void RemoveStats()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
 
@@ -100,6 +100,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the HP, if false we're removing it</param>
         private static void ApplyHPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -125,6 +128,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
         private static void ApplyFPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -150,6 +156,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
         private static void ApplyFPRegenBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -175,6 +184,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
         private static void ApplySTMBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -200,6 +212,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
         private static void ApplySTMRegenBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -225,6 +240,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the reduction, if false we're removing it.</param>
         private static void ApplyAbilityRecastReduction(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -250,6 +268,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the attack, if false we're removing it.</param>
         private static void ApplyAttack(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -275,6 +296,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the force attack, if false we're removing it.</param>
         private static void ApplyForceAttack(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -300,6 +324,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the defense, if false we're removing it.</param>
         private static void ApplyDefense(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var damageType = (CombatDamageType)GetItemPropertySubType(ip);
             var playerId = GetObjectUUID(player);
@@ -326,6 +353,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the evasion, if false we're removing it.</param>
         private static void ApplyEvasion(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -351,6 +381,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding control, if false we're removing it.</param>
         private static void ApplyControl(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -400,6 +433,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding craftsmanship, if false we're removing it.</param>
         private static void ApplyCraftsmanship(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -442,6 +478,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the CP bonus, if false we're removing it.</param>
         private static void ApplyCPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);

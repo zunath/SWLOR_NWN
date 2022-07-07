@@ -116,7 +116,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -507,6 +507,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 20
   }
 }

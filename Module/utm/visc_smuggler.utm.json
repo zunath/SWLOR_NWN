@@ -120,7 +120,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "starcharts_2"
+                "value": "med_supplies"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -139,11 +139,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "starcharts_1"
+                "value": "med_supplies_50"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 5
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",
@@ -158,11 +158,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "starcharts_4"
+                "value": "stim_pack"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 6
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
@@ -177,15 +177,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "starcharts_hutla"
+                "value": "stim_pack_50"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 7
+                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 0
+                "value": 1
               }
             },
             {
@@ -196,15 +196,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "med_supplies"
+                "value": "bread"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 8
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 0
+                "value": 1
               }
             },
             {
@@ -215,11 +215,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "med_supplies_50"
+                "value": "explosives"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 4
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
@@ -234,87 +234,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "stim_pack"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 9,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "stim_pack_50"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 8
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 10,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "bread"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 11,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "explosives"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 12,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "explosives50"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 4
+                "value": 0
               },
               "Repos_Posy": {
                 "type": "word",

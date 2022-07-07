@@ -118,11 +118,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return ColorToken.Red("Please enter /language help for more information on how to use this command.");
                     }
 
-                    if (GetIsDM(user) || GetIsDMPossessed(user))
-                    {
-                        return "DM characters cannot use this chat command.";
-                    }
-
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>

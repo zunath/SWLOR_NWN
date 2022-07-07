@@ -92,6 +92,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsSettingsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ColorSheetResref
         {
             get => Get<string>();
@@ -329,8 +335,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
-            WatchOnClient(model => model.ShowHelmet);
-            WatchOnClient(model => model.ShowCloak);
+
+            if (GetIsPC(Player) && !GetIsDM(Player) && !GetIsDMPossessed(Player))
+            {
+                WatchOnClient(model => model.ShowHelmet);
+                WatchOnClient(model => model.ShowCloak);
+            }
         }
 
         private void LoadColorCategoryOptions()
@@ -616,8 +626,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
+            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+                return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
@@ -1343,6 +1358,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCloseWindow() => () =>
         {
+            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+                return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 

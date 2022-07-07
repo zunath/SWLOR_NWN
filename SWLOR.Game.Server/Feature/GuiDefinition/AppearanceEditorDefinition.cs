@@ -221,7 +221,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Settings")
                             .SetHeight(32f)
                             .BindIsToggled(model => model.IsSettingsSelected)
-                            .BindOnClicked(model => model.OnSelectSettings());
+                            .BindOnClicked(model => model.OnSelectSettings())
+                            .BindIsVisible(model => model.IsSettingsVisible);
 
                         row.AddSpacer();
                     });

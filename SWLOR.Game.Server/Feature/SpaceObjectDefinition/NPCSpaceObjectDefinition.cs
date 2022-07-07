@@ -35,12 +35,15 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_night")
                 .ItemTag("NPC_Nightmare")
                 .ShipModule("ion_cann_1")
-                .ShipModule("shld_boost_1")
-                .ShipModule("eva_boost_1");
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("shld_boost_1");
 
             _builder.Create("pirate_ferron")
                 .ItemTag("NPC_Ferron")
                 .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("msl_launch_1")
                 .ShipModule("msl_launch_1");
         }
 
@@ -49,13 +52,16 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("pirate_storm")
                 .ItemTag("NPC_Storm")
                 .ShipModule("msl_launch_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("msl_launch_2")
                 .ShipModule("msl_launch_2");
 
             _builder.Create("pirate_ranger")
                 .ItemTag("NPC_Ranger")
                 .ShipModule("ion_cann_2")
                 .ShipModule("ion_cann_2")
-                .ShipModule("ion_cann_2");
+                .ShipModule("ion_cann_2")
+                .ShipModule("msl_launch_2");
         }
 
         private void Tier4()
@@ -65,13 +71,20 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3")
-                .ShipModule("tgt_sys_3");
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("tgt_sys_3")
+                .ShipModule("shld_boost_3");
 
             _builder.Create("pirate_drake")
                 .ItemTag("NPC_Drake")
                 .ShipModule("ion_cann_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
                 .ShipModule("msl_launch_3")
-                .ShipModule("msl_launch_3");
+                .ShipModule("msl_launch_3")
+                .ShipModule("tgt_sys_3")
+                .ShipModule("shld_boost_3");
         }
 
         private void Tier5()
@@ -80,13 +93,22 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ItemTag("NPC_Borealis")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4")
-                .ShipModule("ion_cann_4");
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("tgt_sys_4")
+                .ShipModule("shld_boost_4");
 
             _builder.Create("pirate_eleyna")
                 .ItemTag("NPC_Eleyna")
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")A
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
-                .ShipModule("msl_launch_4");
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("tgt_sys_4")
+                .ShipModule("shld_boost_4");
         }
     }
 }

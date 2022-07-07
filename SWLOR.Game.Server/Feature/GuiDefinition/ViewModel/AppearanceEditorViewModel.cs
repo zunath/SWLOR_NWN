@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int ColorHeightCells = 11;
 
         private static readonly ArmorAppearanceDefinition _armorAppearances = new();
-        private static readonly Dictionary<RacialType, IRacialAppearanceDefinition> _racialAppearances = new();
+        private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
 
@@ -39,22 +39,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static void LoadRacialAppearances()
         {
-            _racialAppearances[RacialType.Human] = new HumanRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Bothan] = new BothanRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Chiss] = new ChissRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Zabrak] = new ZabrakRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Twilek] = new TwilekRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Mirialan] = new MirialanRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Echani] = new EchaniRacialAppearanceDefinition();
-            _racialAppearances[RacialType.KelDor] = new KelDorRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Cyborg] = new CyborgRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Cathar] = new CatharRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Rodian] = new RodianRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Trandoshan] = new TrandoshanRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Togruta] = new TogrutaRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Wookiee] = new WookieeRacialAppearanceDefinition();
-            _racialAppearances[RacialType.MonCalamari] = new MonCalamariRacialAppearanceDefinition();
-            _racialAppearances[RacialType.Ugnaught] = new UgnaughtRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Human] = new HumanRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Bothan] = new BothanRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Chiss] = new ChissRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Zabrak] = new ZabrakRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Twilek] = new TwilekRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Mirialan] = new MirialanRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Echani] = new EchaniRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.KelDor] = new KelDorRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Cyborg] = new CyborgRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Cathar] = new CatharRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Rodian] = new RodianRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Trandoshan] = new TrandoshanRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Togruta] = new TogrutaRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Wookiee] = new WookieeRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.MonCalamari] = new MonCalamariRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Ugnaught] = new UgnaughtRacialAppearanceDefinition();
         }
 
         private static void LoadWeaponAppearances()
@@ -535,9 +535,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyParts()
         {
-            var race = GetRacialType(Player);
+            var appearanceType = GetAppearanceType(Player);
             var gender = GetGender(Player);
-            var appearance = _racialAppearances[race];
+            var appearance = _racialAppearances[appearanceType];
             int[] partIds;
             int selectedPartId;
 
@@ -1120,9 +1120,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyPart()
         {
-            var race = GetRacialType(Player);
+            var appearanceType = GetAppearanceType(Player);
             var gender = GetGender(Player);
-            var appearance = _racialAppearances[race];
+            var appearance = _racialAppearances[appearanceType];
 
             switch (SelectedPartCategoryIndex)
             {

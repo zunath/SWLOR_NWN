@@ -184,9 +184,14 @@ namespace SWLOR.Game.Server.Service
         public static void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
+            var uiTarget = player;
+
+            if (GetIsDMPossessed(player))
+                player = GetMaster(player);
+
             var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
-            var windowId = NuiGetWindowId(player, windowToken);
+            var windowId = NuiGetWindowId(uiTarget, windowToken);
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);
@@ -215,10 +220,10 @@ namespace SWLOR.Game.Server.Service
             // Automatically close the window.
             if (GetIsObjectValid(viewModel.TetherObject))
             {
-                if (GetDistanceBetween(player, viewModel.TetherObject) > 5f)
+                if (GetDistanceBetween(uiTarget, viewModel.TetherObject) > 5f)
                 {
-                    TogglePlayerWindow(player, windowType);
-                    SendMessageToPC(player, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
+                    TogglePlayerWindow(uiTarget, windowType);
+                    SendMessageToPC(uiTarget, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
                     return;
                 }
             }
@@ -310,7 +315,13 @@ namespace SWLOR.Game.Server.Service
             GuiPayloadBase payload = null,
             uint tetherObject = OBJECT_INVALID)
         {
-            if (!GetIsPC(player))
+            var uiTarget = player;
+            if (GetIsDMPossessed(player))
+            {
+                uiTarget = player;
+                player = GetMaster(player);
+            }
+            else if (!GetIsPC(player))
                 return;
 
             var playerId = GetObjectUUID(player);
@@ -323,8 +334,8 @@ namespace SWLOR.Game.Server.Service
             {
                 //Console.WriteLine(JsonDump(template.Window));
 
-                playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
+                playerWindow.WindowToken = NuiCreate(uiTarget, template.Window, template.WindowId);
+                playerWindow.ViewModel.Bind(uiTarget, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
             }
             // Otherwise the window must already be open. Close it.
             else

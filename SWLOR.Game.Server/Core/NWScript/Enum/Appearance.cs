@@ -432,6 +432,20 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         StarDestroyer = 2169,
         MonCalaCruiser = 2170,
 
+        Bothan = 10000,
+        Chiss = 10001,
+        Zabrak = 10002,
+        Wookiee = 10003,
+        Twilek = 10004,
+        Cyborg = 10005,
+        Cathar = 10006,
+        Trandoshan = 10007,
+        Mirialan = 10008,
+        Echani = 10009,
+        MonCalamari = 10010,
+
+        Ugnaught = 10033,
+
         NeutralDropship = 10054,
         NeutralCondor = 10055,
         NeutralGunship = 10056,
@@ -473,5 +487,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SithFighter = 10092,
         SithLeviathan = 10093,
 
+        Rodian = 10095,
+        Togruta = 10096,
+        KelDor = 10097,
     }
 }

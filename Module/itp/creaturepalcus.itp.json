@@ -3432,6 +3432,25 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord-Inquisitor Koyee Isemio"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
                       "value": "Hostile"
                     },
                     "NAME": {

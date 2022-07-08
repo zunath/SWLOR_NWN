@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
-                            if(dbOldStarport.Id == dbStarport.Id)
+                            if(dbStarport != null && dbOldStarport.Id == dbStarport.Id)
                                 dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
                         }
 

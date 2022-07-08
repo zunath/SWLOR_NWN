@@ -118,77 +118,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 293
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 6
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 196
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 332
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 333
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 334
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 545
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 565
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 555
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 575
         }
       },
       {

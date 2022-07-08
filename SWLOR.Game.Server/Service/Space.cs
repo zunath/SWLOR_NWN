@@ -377,10 +377,11 @@ namespace SWLOR.Game.Server.Service
 
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
-            
+
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_UI_Cancel), player);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -388,6 +389,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_UI_Select), player);
             }
         }
 
@@ -1424,6 +1426,8 @@ namespace SWLOR.Game.Server.Service
                 // Shields have enough to cover the attack.
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target,1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
             }
             else
             {
@@ -1435,6 +1439,7 @@ namespace SWLOR.Game.Server.Service
             // If damage is remaining, deal it to the hull.
             if (remainingDamage > 0)
             {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
                 targetShipStatus.Hull -= remainingDamage;
             }
 
@@ -1447,6 +1452,7 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
+                
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
                 ClearCurrentTarget(attacker);
             }

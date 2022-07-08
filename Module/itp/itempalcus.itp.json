@@ -6124,6 +6124,17 @@
                       "type": "resref",
                       "value": "vnpcmbot5"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Koyee's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyeestaff"
+                    }
                   }
                 ]
               },
@@ -6337,6 +6348,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "k_hound_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Koyee Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyees"
                     }
                   },
                   {
@@ -7233,6 +7255,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nodamage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Koyee Isemio Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyeearmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Koyee's Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyeecloak"
                     }
                   },
                   {

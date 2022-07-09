@@ -366,6 +366,7 @@ namespace SWLOR.Game.Server.Service
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
+            var position = GetPositionFromLocation(GetLocation(player));
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
@@ -381,7 +382,7 @@ namespace SWLOR.Game.Server.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_UI_Cancel), player);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, position);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -389,7 +390,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_UI_Select), player);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, position);
             }
         }
 
@@ -1452,7 +1453,6 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
-                
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
                 ClearCurrentTarget(attacker);
             }

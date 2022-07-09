@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
     
                             DelayCommand(0.3f, () =>
                             {
+                                PlayShipHitSfx(target, damage);
                                 Space.ApplyShipDamage(activator, target, damage);
                             });
                         });
@@ -141,6 +142,32 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
             }
             return sound;
+        }
+        private static void PlayShipHitSfx(uint target, int amount)
+        {
+            if (amount < 0) return;
+
+            var targetShipStatus = Space.GetShipStatus(target);
+
+            var remainingDamage = amount;
+            // First deal damage to target's shields.
+            if (remainingDamage <= targetShipStatus.Shield)
+            {
+                // Shields have enough to cover the attack.
+                targetShipStatus.Shield -= remainingDamage;
+                remainingDamage = 0;
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
+            }
+            else
+            {
+                remainingDamage -= targetShipStatus.Shield;
+                targetShipStatus.Shield = 0;
+            }
+            if (remainingDamage > 0)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+            }
         }
     }
 }

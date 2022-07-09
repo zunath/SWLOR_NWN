@@ -47,46 +47,51 @@ namespace SWLOR.Game.Server.Service
             _defaultRaceAppearancesMale[RacialType.Human] = new RacialAppearance();
             _defaultRaceAppearancesMale[RacialType.Bothan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Bothan,
                 SkinColorId = 6,
                 HairColorId = 1,
-                AppearanceType = AppearanceType.Elf,
                 HeadId = 40
             };
             _defaultRaceAppearancesMale[RacialType.Chiss] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Chiss,
                 SkinColorId = 137,
                 HairColorId = 134,
                 HeadId = 33
             };
             _defaultRaceAppearancesMale[RacialType.Zabrak] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Zabrak,
                 SkinColorId = 88,
                 HairColorId = 0,
                 HeadId = 103
             };
             _defaultRaceAppearancesMale[RacialType.Twilek] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Twilek,
                 SkinColorId = 52,
                 HairColorId = 0,
                 HeadId = 115
             };
             _defaultRaceAppearancesMale[RacialType.Mirialan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Mirialan,
                 SkinColorId = 38,
                 HairColorId = 3,
                 HeadId = 20
             };
             _defaultRaceAppearancesMale[RacialType.Echani] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Echani,
                 SkinColorId = 164,
                 HairColorId = 16,
                 HeadId = 182
             };
             _defaultRaceAppearancesMale[RacialType.Cathar] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Cathar,
                 SkinColorId = 54,
                 HairColorId = 0,
-                AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 27,
                 NeckId = 201,
                 TorsoId = 201,
@@ -108,12 +113,14 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesMale[RacialType.Togruta] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Togruta,
                 SkinColorId = 72,
                 HairColorId = 21,
                 HeadId = 212
             };
             _defaultRaceAppearancesMale[RacialType.Trandoshan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Trandoshan,
                 SkinColorId = 39,
                 HairColorId = 4,
                 HeadId = 162,
@@ -137,7 +144,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesMale[RacialType.Wookiee] = new RacialAppearance
             {
-                AppearanceType = AppearanceType.Elf,
+                AppearanceType = AppearanceType.Wookiee,
                 SkinColorId = 0,
                 HairColorId = 0,
                 HeadId = 192,
@@ -163,6 +170,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesMale[RacialType.MonCalamari] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.MonCalamari,
                 SkinColorId = 6,
                 HairColorId = 7,
                 HeadId = 6,
@@ -187,7 +195,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesMale[RacialType.Ugnaught] = new RacialAppearance
             {
-                AppearanceType = AppearanceType.Dwarf,
+                AppearanceType = AppearanceType.Ugnaught,
 
                 SkinColorId = 0,
                 HairColorId = 0,
@@ -196,18 +204,18 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesMale[RacialType.Rodian] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Rodian,
                 SkinColorId = 81,
                 HairColorId = 79,
-                AppearanceType = AppearanceType.Elf,
                 HeadId = 54,
                 RightHandId = 44,
                 LeftHandId = 44
             };
             _defaultRaceAppearancesMale[RacialType.KelDor] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.KelDor,
                 SkinColorId = 2,
                 HairColorId = 22,
-                AppearanceType = AppearanceType.Human,
                 HeadId = 223,
                 RightHandId = 45,
                 LeftHandId = 45
@@ -217,46 +225,51 @@ namespace SWLOR.Game.Server.Service
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
             _defaultRaceAppearancesFemale[RacialType.Bothan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Bothan,
                 SkinColorId = 6,
                 HairColorId = 1,
-                AppearanceType = AppearanceType.Elf,
                 HeadId = 109
             };
             _defaultRaceAppearancesFemale[RacialType.Chiss] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Chiss,
                 SkinColorId = 137,
                 HairColorId = 134,
                 HeadId = 191
             };
             _defaultRaceAppearancesFemale[RacialType.Zabrak] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Zabrak,
                 SkinColorId = 88,
                 HairColorId = 0,
                 HeadId = 120
             };
             _defaultRaceAppearancesFemale[RacialType.Twilek] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Twilek,
                 SkinColorId = 52,
                 HairColorId = 0,
                 HeadId = 145
             };
             _defaultRaceAppearancesFemale[RacialType.Mirialan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Mirialan,
                 SkinColorId = 38,
                 HairColorId = 3,
                 HeadId = 20
             };
             _defaultRaceAppearancesFemale[RacialType.Echani] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Echani,
                 SkinColorId = 164,
                 HairColorId = 16,
                 HeadId = 45
             };
             _defaultRaceAppearancesFemale[RacialType.Cathar] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Cathar,
                 SkinColorId = 54,
                 HairColorId = 0,
-                AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 18,
                 NeckId = 201,
                 TorsoId = 201,
@@ -278,18 +291,14 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
             {
-                SkinColorId = 22,
-                HairColorId = 83,
-                HeadId = 200
-            };
-            _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
-            {
+                AppearanceType = AppearanceType.Togruta,
                 SkinColorId = 22,
                 HairColorId = 83,
                 HeadId = 200
             };
             _defaultRaceAppearancesFemale[RacialType.Trandoshan] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Trandoshan,
                 SkinColorId = 39,
                 HairColorId = 4,
                 HeadId = 135,
@@ -312,7 +321,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesFemale[RacialType.Wookiee] = new RacialAppearance
             {
-                AppearanceType = AppearanceType.Elf,
+                AppearanceType = AppearanceType.Wookiee,
                 SkinColorId = 0,
                 HairColorId = 0,
                 HeadId = 110,
@@ -338,6 +347,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesFemale[RacialType.MonCalamari] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.MonCalamari,
                 SkinColorId = 6,
                 HairColorId = 7,
                 HeadId = 6,
@@ -362,7 +372,7 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesFemale[RacialType.Ugnaught] = new RacialAppearance
             {
-                AppearanceType = AppearanceType.Dwarf,
+                AppearanceType = AppearanceType.Ugnaught,
 
                 SkinColorId = 0,
                 HairColorId = 0,
@@ -371,18 +381,18 @@ namespace SWLOR.Game.Server.Service
             };
             _defaultRaceAppearancesFemale[RacialType.Rodian] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.Rodian,
                 SkinColorId = 81,
                 HairColorId = 79,
-                AppearanceType = AppearanceType.Elf,
                 HeadId = 10,
                 RightHandId = 44,
                 LeftHandId = 44
             };
             _defaultRaceAppearancesFemale[RacialType.KelDor] = new RacialAppearance
             {
+                AppearanceType = AppearanceType.KelDor,
                 SkinColorId = 2,
                 HairColorId = 22,
-                AppearanceType = AppearanceType.Human,
                 HeadId = 228,
                 RightHandId = 45,
                 LeftHandId = 45

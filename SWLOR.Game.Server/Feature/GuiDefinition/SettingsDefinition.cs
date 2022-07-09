@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddCheckBox()
                             .SetText("Lightsaber XP Share")
-                            .SetTooltip("If enabled, Force XP will be shared with One-Handed while using a lightsaber in combat.")
+                            .SetTooltip("If enabled, you will gain Force XP when using lightsabers during combat. Skills must be within 5 skill levels for this to take effect.")
                             .BindIsChecked(model => model.ShareLightsaberForceXP);
 
                         row.AddSpacer();

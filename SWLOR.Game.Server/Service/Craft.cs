@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 4, amount);
                 case 45: // Module Bonus
                     return ItemPropertyCustom(ItemPropertyType.ModuleEnhancement, 4, amount);
-                case 46: // Starship Armor
+                case 46: // Starship Hull
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 46, amount);
                 case 47: // Starship Capacitor
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 47, amount);

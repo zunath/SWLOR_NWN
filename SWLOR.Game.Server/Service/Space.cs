@@ -1794,7 +1794,7 @@ namespace SWLOR.Game.Server.Service
 
                     switch (type)
                     {
-                        case 46: // Starship Armor
+                        case 46: // Starship Hull
                             bonuses.Hull += amount;
                             break;
                         case 47: // Starship Capacitor

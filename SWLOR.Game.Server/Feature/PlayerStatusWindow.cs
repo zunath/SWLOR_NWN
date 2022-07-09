@@ -8,6 +8,29 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class PlayerStatusWindow
     {
+
+        [NWNEventHandler("item_eqp_bef")]
+        public static void PlayerEquipItem()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+        }
+
+        [NWNEventHandler("item_uneqp_bef")]
+        public static void PlayerUnequipItem()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+        }
+
         [NWNEventHandler("pc_damaged")]
         public static void PlayerDamaged()
         {

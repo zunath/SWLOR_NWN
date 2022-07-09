@@ -20669,61 +20669,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Starship Enhancement - Armor I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sen_armor1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starship Enhancement - Armor II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sen_armor2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starship Enhancement - Armor III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sen_armor3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starship Enhancement - Armor IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sen_armor4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starship Enhancement - Armor V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sen_armor5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Starship Enhancement - Capacitor I"
                     },
                     "RESREF": {
@@ -21048,6 +20993,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sen_expdef5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Hull I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Hull II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Hull III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Hull IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Hull V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_armor5"
                     }
                   },
                   {

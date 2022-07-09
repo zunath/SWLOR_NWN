@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
 {
@@ -35,7 +36,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(4)
                 .HighPowerNodes(1)
                 .LowPowerNodes(2)
-                .InteriorLayout(PropertyLayoutType.LightFreighter1);
+                .InteriorLayout(PropertyLayoutType.LightFreighter1)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("ShipDeedLightEscort")
                 .Name("Light Escort")
@@ -48,7 +51,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(2)
                 .LowPowerNodes(1)
-                .InteriorLayout(PropertyLayoutType.LightEscort1);
+                .InteriorLayout(PropertyLayoutType.LightEscort1)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier1()
@@ -64,7 +69,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(2)
                 .HighPowerNodes(3)
                 .LowPowerNodes(2)
-                .InteriorLayout(PropertyLayoutType.Striker);
+                .InteriorLayout(PropertyLayoutType.Striker)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("sdeed_condor")
                 .ItemResref("sdeed_condor")
@@ -77,7 +84,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(3)
                 .LowPowerNodes(2)
-                .InteriorLayout(PropertyLayoutType.Condor);
+                .InteriorLayout(PropertyLayoutType.Condor)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier2()
@@ -93,7 +102,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(4)
                 .HighPowerNodes(4)
                 .LowPowerNodes(3)
-                .InteriorLayout(PropertyLayoutType.Hound);
+                .InteriorLayout(PropertyLayoutType.Hound)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("sdeed_panther")
                 .ItemResref("sdeed_panther")
@@ -106,7 +117,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(8)
                 .HighPowerNodes(3)
                 .LowPowerNodes(4)
-                .InteriorLayout(PropertyLayoutType.Panther);
+                .InteriorLayout(PropertyLayoutType.Panther)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast2)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
         }
 
         private void Tier3()
@@ -122,7 +135,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(5)
                 .LowPowerNodes(2)
-                .InteriorLayout(PropertyLayoutType.Saber);
+                .InteriorLayout(PropertyLayoutType.Saber)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("sdeed_falchion")
                 .ItemResref("sdeed_falchion")
@@ -135,7 +150,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(10)
                 .HighPowerNodes(4)
                 .LowPowerNodes(5)
-                .InteriorLayout(PropertyLayoutType.Falchion);
+                .InteriorLayout(PropertyLayoutType.Falchion)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast2)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
         }
 
         private void Tier4()
@@ -151,7 +168,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(3)
                 .HighPowerNodes(2)
                 .LowPowerNodes(6)
-                .InteriorLayout(PropertyLayoutType.Mule);
+                .InteriorLayout(PropertyLayoutType.Mule)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("sdeed_merchant")
                 .ItemResref("sdeed_merchant")
@@ -164,7 +183,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(8)
                 .HighPowerNodes(5)
                 .LowPowerNodes(4)
-                .InteriorLayout(PropertyLayoutType.Merchant);
+                .InteriorLayout(PropertyLayoutType.Merchant)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast2)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
         }
 
         private void Tier5()
@@ -180,7 +201,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(12)
                 .HighPowerNodes(6)
                 .LowPowerNodes(4)
-                .InteriorLayout(PropertyLayoutType.Throne);
+                .InteriorLayout(PropertyLayoutType.Throne)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast3)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
 
             _builder.Create("sdeed_consular")
                 .ItemResref("sdeed_consular")
@@ -193,7 +216,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(10)
                 .HighPowerNodes(6)
                 .LowPowerNodes(5)
-                .InteriorLayout(PropertyLayoutType.Consular);
+                .InteriorLayout(PropertyLayoutType.Consular)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast3)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
         }
     }
 }

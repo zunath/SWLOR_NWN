@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -31,6 +32,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ThermalDefense { get; set; }
         public int ExplosiveDefense { get; set; }
         public int EMDefense { get; set; }
+        public VisualEffect LaserSfx { get; set; }
+        public VisualEffect LaserVfx { get; set; }
 
         /// <summary>
         /// Equipped high-powered modules

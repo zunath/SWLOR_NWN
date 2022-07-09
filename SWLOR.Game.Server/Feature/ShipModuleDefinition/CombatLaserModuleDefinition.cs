@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Entity;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
@@ -68,9 +69,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    var targetLocation = GetLocation(target);
-                    var sound = GetMissileSfx(activator);
-                    var missile = GetMissileVfx(activator);
+
+                    var shipStatus = Space.GetShipStatus(activator);
+                    var sound = EffectVisualEffect(shipStatus.LaserSfx);
+                    var missile = EffectVisualEffect(shipStatus.LaserVfx);
 
                     if (isHit)
                     {
@@ -90,8 +92,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                            var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                             ApplyEffectToObject(DurationType.Instant, sound, target);
                             ApplyEffectToObject(DurationType.Instant, missile, target);
                         });
@@ -105,44 +105,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
-        private static Core.Effect GetMissileVfx(uint activator)
-        {
-            var appearance = GetAppearanceType(activator);
-            var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2); ;
 
-            if (appearance == AppearanceType.RepublicForay || appearance == AppearanceType.RepublicHammerhead)
-            {
-                missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt3);
-            }
-            else if (appearance == AppearanceType.SithScoutA || appearance == AppearanceType.SithScoutC || appearance == AppearanceType.SithGunshipC)
-            {
-                missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt3);
-            }
-            else
-            {
-                missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-            }
-            return missile;
-        }
-        private static Core.Effect GetMissileSfx(uint activator)
-        {
-            var appearance = GetAppearanceType(activator);
-            var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast3); ;
-
-            if (appearance == AppearanceType.RepublicForay || appearance == AppearanceType.RepublicHammerhead)
-            {
-                sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast3);
-            }
-            else if (appearance == AppearanceType.SithScoutA || appearance == AppearanceType.SithScoutC || appearance == AppearanceType.SithGunshipC)
-            {
-                sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast2);
-            }
-            else
-            {
-                sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-            }
-            return sound;
-        }
         private static void PlayShipHitSfx(uint target, int amount)
         {
             if (amount < 0) return;

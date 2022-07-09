@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -167,6 +168,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipBuilder InteriorLayout(PropertyLayoutType layout)
         {
             _activeShip.Layout = layout;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the sfx to be used when a ship uses a combat laser.
+        /// </summary>
+        /// <param name="itemResref">The sfx used by the combat laser.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder LaserSfx(VisualEffect laserSfx)
+        {
+            _activeShip.LaserSfx = laserSfx;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the vfx to be used when a ship uses a combat laser.
+        /// </summary>
+        /// <param name="itemResref">The vfx used by the combat laser.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder LaserVfx(VisualEffect laserVfx)
+        {
+            _activeShip.LaserVfx = laserVfx;
+
             return this;
         }
 

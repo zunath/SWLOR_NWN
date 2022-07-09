@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
 {
@@ -31,7 +32,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(3)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("NPC_Terror")
                 .ItemResref("npc_terror")
@@ -43,7 +46,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(16)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier2()
@@ -58,7 +63,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(25)
                 .ShieldRechargeRate(5)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("NPC_Ferron")
                 .ItemResref("pirate_ferron")
@@ -70,7 +77,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(15)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier3()
@@ -85,7 +94,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(28)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
 
             _builder.Create("NPC_Ranger")
                 .ItemResref("pirate_ranger")
@@ -97,7 +108,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(20)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier4()
@@ -112,7 +125,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(83)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast3)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
 
             _builder.Create("NPC_Drake")
                 .ItemResref("pirate_drake")
@@ -124,7 +139,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(44)
                 .ShieldRechargeRate(12)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private void Tier5()
@@ -139,7 +156,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(75)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast2)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
 
             _builder.Create("NPC_Eleyna")
                 .ItemResref("pirate_eleyna")
@@ -151,7 +170,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(45)
                 .ShieldRechargeRate(18)
                 .HighPowerNodes(8)
-                .LowPowerNodes(8);
+                .LowPowerNodes(8)
+                .LaserSfx(VisualEffect.Vfx_Ship_Blast2)
+                .LaserVfx(VisualEffect.Mirv_StarWars_Bolt3);
         }
     }
 }

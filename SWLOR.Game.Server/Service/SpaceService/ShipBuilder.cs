@@ -172,30 +172,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Sets the sfx to be used when a ship uses a combat laser.
-        /// </summary>
-        /// <param name="itemResref">The sfx used by the combat laser.</param>
-        /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder LaserSfx(VisualEffect laserSfx)
-        {
-            _activeShip.LaserSfx = laserSfx;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the vfx to be used when a ship uses a combat laser.
-        /// </summary>
-        /// <param name="itemResref">The vfx used by the combat laser.</param>
-        /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder LaserVfx(VisualEffect laserVfx)
-        {
-            _activeShip.LaserVfx = laserVfx;
-
-            return this;
-        }
-
-        /// <summary>
         /// Returns a built dictionary of ships.
         /// </summary>
         /// <returns>A dictionary of ship details.</returns>

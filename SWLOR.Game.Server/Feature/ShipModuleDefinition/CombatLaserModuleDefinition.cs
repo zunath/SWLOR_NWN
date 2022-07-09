@@ -69,10 +69,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-
-                    var shipStatus = Space.GetShipStatus(activator);
-                    var sound = EffectVisualEffect(shipStatus.LaserSfx);
-                    var missile = EffectVisualEffect(shipStatus.LaserVfx);
+                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
                     if (isHit)
                     {

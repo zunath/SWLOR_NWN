@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.Service
             if (!ignoreBonuses)
             {
                 // Bonus for positive Social modifier.
-                var social = GetAbilityModifier(AbilityType.Social, player);
+                var social = GetAbilityScore(player, AbilityType.Social);
                 if (social > 0)
-                    bonusPercentage += social * 0.05f;
+                    bonusPercentage += social * 0.025f;
 
                 // Food bonus
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);

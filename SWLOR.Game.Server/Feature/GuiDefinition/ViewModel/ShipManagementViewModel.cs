@@ -1007,7 +1007,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ThermalDefense = shipDetail.ThermalDefense + bonuses.ThermalDefense,
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
-                        ShieldRechargeRate = shipDetail.ShieldRechargeRate + bonuses.ShieldRechargeRate
+                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate
                     }
                 };
                 DB.Set(ship);

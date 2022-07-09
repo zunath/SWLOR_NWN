@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private void PerformAttack(uint activator, uint target, int dmg, int attackBonus, bool? hitOverride)
         {
             var targetShipStatus = Space.GetShipStatus(target);
+            if (targetShipStatus == null)
+                return;
 
             var chanceToHit = Space.CalculateChanceToHit(activator, target);
             var roll = Random.D100(1);

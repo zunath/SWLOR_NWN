@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             DelayCommand(Delay, () =>
             {
                 SetCommandable(true, activator);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
                 AssignCommand(activator, () =>
                 {

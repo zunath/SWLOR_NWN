@@ -3,9 +3,9 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class RenameDefinition : IGuiWindowDefinition
+    public class RenameTargetDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<RenameItemViewModel> _builder = new();
+        private readonly GuiWindowBuilder<RenameTargetViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -13,7 +13,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(200f, 200f, 500f, 300f)
-                .SetTitle("Rename Item")
+                .SetTitle("Rename Target")
+
+                .DefinePartialView(RenameTargetViewModel.ItemEditorPartialName, group =>
+                {
+                    group.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .SetIsMultiline(false)
+                                .SetMaxLength(63)
+                                .SetPlaceholder("New Name")
+                                .BindValue(model => model.NewName)
+                                .SetIsEnabled(true)
+                                .SetHeight(20f);
+                        });
+                    });
+                })
+
+                .DefinePartialView(RenameTargetViewModel.PlayerEditorPartialName, group =>
+                {
+                    group.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .SetIsMultiline(false)
+                                .SetMaxLength(63)
+                                .SetPlaceholder("First Name")
+                                .BindValue(model => model.NewFirstName)
+                                .SetIsEnabled(true)
+                                .SetHeight(20f);
+                        });
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .SetIsMultiline(false)
+                                .SetMaxLength(63)
+                                .SetPlaceholder("Last Name")
+                                .BindValue(model => model.NewLastName)
+                                .SetIsEnabled(true)
+                                .SetHeight(20f);
+                        });
+                    });
+                })
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -51,11 +96,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         });
 
-                        row.AddColumn(col =>
+                        row.AddColumn(col2 =>
                         {
-                            col.AddRow(row =>
+                            col2.AddRow(row2 =>
                             {
-                                row.AddLabel()
+                                row2.AddLabel()
                                     .BindText(model => model.OriginalName)
                                     .SetColor(0, 255, 0)
                                     .SetIsVisible(true)
@@ -63,9 +108,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(20f);
                             });
 
-                            col.AddRow(row =>
+                            col2.AddRow(row2 =>
                             {
-                                row.AddLabel()
+                                row2.AddLabel()
                                     .BindText(model => model.CurrentName)
                                     .SetColor(0, 255, 0)
                                     .SetIsVisible(true)
@@ -78,12 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddTextEdit()
-                            .SetIsMultiline(false)
-                            .SetMaxLength(63)
-                            .BindValue(model => model.NewName)
-                            .SetIsEnabled(true)
-                            .SetHeight(20f);
+                        row.AddPartialView(RenameTargetViewModel.EditorPartialId);
                     });
 
                     col.AddRow(row =>

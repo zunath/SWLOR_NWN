@@ -77,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("elec_high", 20)
                 .AddItem("ref_jasioclase", 2)
                 .AddItem("diamond", 1, 1, true)
-                .AddItem("hyphae_wood", 1, 1, true);
+                .AddItem("hyphae_wood", 1, 1, true)
+                .AddItem("p_flour", 1, 1, true);
         }
     }
 }

@@ -143,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cultured_butter", 1)
                 .AddItem("dried_bonito", 1)
                 .AddItem("ruby", 2, 1, true)
+                .AddItem("p_flour", 1, 1, true)
                 .AddGold(100,30);
 
         }

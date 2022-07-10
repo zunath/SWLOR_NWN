@@ -23,17 +23,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Name("Battle Insight I")
                 .EffectIcon(EffectIconType.Dazed)
                 .CannotReplace(StatusEffectType.BattleInsight2)
-                .GrantAction((source, target, length, effectData) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var effect = EffectAttackDecrease(5);
                     effect = EffectLinkEffects(effect, EffectACDecrease(5));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                    ApplyEffectToObject(DurationType.Permanent, effect, source);
+                    ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
-                })
-                .TickAction((source, target, effectData) =>
-                {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
@@ -41,15 +37,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        var effect = EffectAttackIncrease(3);
+                        effect = EffectAttackIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
-                })
-                .RemoveAction((target, effectData) =>
-                {
-                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight1);
+
+                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
         private void BattleInsight2(StatusEffectBuilder builder)
@@ -58,17 +52,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Name("Battle Insight II")
                 .EffectIcon(EffectIconType.Dazed)
                 .Replaces(StatusEffectType.BattleInsight1)
-                .GrantAction((source, target, length, effectData) =>
+                .TickAction((source, target, effectData) =>
                 {
                     var effect = EffectAttackDecrease(8);
                     effect = EffectLinkEffects(effect, EffectACDecrease(8));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                    ApplyEffectToObject(DurationType.Permanent, effect, source);
+                    ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
-                })
-                .TickAction((source, target, effectData) =>
-                {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
@@ -76,15 +66,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        var effect = EffectAttackIncrease(6);
+                        effect = EffectAttackIncrease(6);
                         effect = EffectLinkEffects(effect, EffectACIncrease(6));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
-                })
-                .RemoveAction((target, effectData) =>
-                {
-                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight2);
+
+                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
                 });
         }
     }

@@ -1701,15 +1701,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 24.53971290588379
+    "value": 24.0
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 27.19264793395996
+    "value": 27.0
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 9.5367431640625e-007
+    "value": 0.0
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1839,13 +1839,6 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "swlor2_txi"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
-          "value": "swlor2_utp"
         }
       },
       {

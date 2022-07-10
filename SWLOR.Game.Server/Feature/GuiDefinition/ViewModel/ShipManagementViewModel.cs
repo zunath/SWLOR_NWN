@@ -491,9 +491,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
+            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
+            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
+            if (socialBonus > 0.20f)
+                socialBonus = 0.20f;
+            else if (socialBonus < 0f)
+                socialBonus = 0f;
 
-            price -= (int)(price * (starportBonus * 0.05f));
+            var bonuses = starportBonus + socialBonus;
+
+            if (bonuses > 0.90f)
+                bonuses = 0.90f;
+
+            price -= (int)(price * bonuses);
 
             return price;
         }

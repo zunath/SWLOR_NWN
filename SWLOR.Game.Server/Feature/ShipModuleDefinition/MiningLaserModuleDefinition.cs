@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -111,6 +113,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             var item = lootTable.GetRandomItem();
                             CreateItemOnObject(item.Resref, activator);
+                        }
+
+                        if (GetIsPC(activator) && !GetIsDM(activator) && !GetIsDMPossessed(activator))
+                        {
+                            var playerId = GetObjectUUID(activator);
+                            var dbPlayer = DB.Get<Player>(playerId);
+                            var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
+                            var tierRequired = GetLocalInt(target, "ASTEROID_TIER") * 5;
+                            var delta = tierRequired - rank;
+                            var xp = Skill.GetDeltaXP(delta);
+
+                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                 });

@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Native
                 }
                 else if (damageType == CombatDamageType.Force && damage > 0)
                 {
-                    pAttackData.AddDamage((ushort)DamageType.Sonic, damage);
+                    pAttackData.AddDamage((ushort)DamageType.Magical, damage);
                 }
                 else if (damageType == CombatDamageType.Fire && damage > 0)
                 {

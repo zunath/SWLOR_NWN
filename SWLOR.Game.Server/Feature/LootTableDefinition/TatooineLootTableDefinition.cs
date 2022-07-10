@@ -125,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("r_flour", 3)
 
                 .AddItem("bread_flour", 2, 1, true)
-                .AddItem("ruby", 5, 1, true);
+                .AddItem("ruby", 5, 1, true)
+                .AddItem("hyphae_wood", 2, 1, true);
 
             _builder.Create("TATOOINE_TUSKEN_ELITE_RARES")
                 .AddItem("map_038", 20, 1, true)

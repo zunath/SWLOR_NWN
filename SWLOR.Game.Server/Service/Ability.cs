@@ -271,9 +271,18 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (creature, concentrationAbility) in pairs)
             {
-                // Creature is dead or invalid.
+                // Creature/target is dead or invalid.
                 if (!GetIsObjectValid(creature) ||
-                    GetIsDead(creature))
+                    GetIsDead(creature) ||
+                    !GetIsObjectValid(concentrationAbility.Target) ||
+                    GetIsDead(concentrationAbility.Target))
+                {
+                    EndConcentrationAbility(creature);
+                    continue;
+                }
+
+                // Creature and caster are not in the same area.
+                if (GetArea(creature) != GetArea(concentrationAbility.Target))
                 {
                     EndConcentrationAbility(creature);
                     continue;

@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("SPACE_ELEYNA")
                 .AddItem("elec_high", 20)
                 .AddItem("ref_jasioclase", 2)
-                .AddItem("diamond", 1, 1, true);
+                .AddItem("diamond", 1, 1, true)
+                .AddItem("hyphae_wood", 1, 1, true);
         }
     }
 }

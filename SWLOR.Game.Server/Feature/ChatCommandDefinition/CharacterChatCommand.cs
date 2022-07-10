@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ChangeItemName();
             ChangeItemDescription();
             ConcentrationAbility();
             Customize();
@@ -250,34 +249,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
                     Communication.SetEmoteStyle(user, newStyle);
                     SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
-                });
-        }
-
-        private void ChangeItemName()
-        {
-            _builder.Create("changeitemname", "itemname")
-                .Description("Changes the name of an item in your inventory. Example: /changeitemname New Name")
-                .Permissions(AuthorizationLevel.All)
-                .RequiresTarget()
-                .Action((user, target, location, args) =>
-                {
-                    if (!GetIsObjectValid(target) ||
-                        GetItemPossessor(target) != user ||
-                        GetObjectType(target) != ObjectType.Item)
-                    {
-                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
-                        return;
-                    }
-
-                    var sb = new StringBuilder();
-
-                    foreach (var arg in args)
-                    {
-                        sb.Append(' ').Append(arg);
-                    }
-
-                    SetName(target, sb.ToString());
-                    SendMessageToPC(user, "New name set!");
                 });
         }
 

@@ -24,7 +24,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Night();
             GetPlot();
             Kill();
-            Name();
             Resurrect();
             SpawnGold();
             TeleportWaypoint();
@@ -109,31 +108,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var amount = GetMaxHitPoints(target) + 11;
                     var damage = EffectDamage(amount);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
-                })
-                .RequiresTarget();
-        }
-
-        private void Name()
-        {
-            _builder.Create("name")
-                .Description("Renames your target.")
-                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Validate((user, args) => args.Length <= 0 ? "Please enter a name. Example: /name My Creature" : string.Empty)
-                .Action((user, target, location, args) =>
-                {
-                    if (GetIsPC(target) || GetIsDM(target))
-                    {
-                        SendMessageToPC(user, "PCs cannot be targeted with this command.");
-                        return;
-                    }
-
-                    var name = string.Empty;
-                    foreach (var arg in args)
-                    {
-                        name += " " + arg;
-                    }
-
-                    SetName(target, name);
                 })
                 .RequiresTarget();
         }

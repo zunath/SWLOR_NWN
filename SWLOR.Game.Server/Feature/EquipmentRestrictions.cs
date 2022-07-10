@@ -28,6 +28,25 @@ namespace SWLOR.Game.Server.Feature
             //EventsPlugin.SkipEvent();
         }
 
+        [NWNEventHandler("item_val_bef")]
+        public static void PreventItemSwapping()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player))
+                return;
+
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+            {
+                if (GetItemInSlot((InventorySlot)slot, player) == item)
+                {
+                    EventsPlugin.SkipEvent();
+                    return;
+                }
+            }
+        }
+
         /// <summary>
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
@@ -61,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
         /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
         /// </summary>
-        public static bool ValidateDualWield(uint item, InventorySlot slot)
+        private static bool ValidateDualWield(uint item, InventorySlot slot)
         {
             var creature = OBJECT_SELF;
 

@@ -473,32 +473,44 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void AdjustScripts(uint creature)
+        private static void AdjustScripts(uint spawn)
         {
-            if (GetIsPC(creature) || GetIsDM(creature) || GetObjectType(creature) != ObjectType.Creature)
+            if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))
                 return;
 
-            var originalSpawnScript = GetEventScript(creature, EventScript.Creature_OnSpawnIn);
+            var type = GetObjectType(spawn);
 
-            SetEventScript(creature, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
-            SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
-            //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
-            SetEventScript(creature, EventScript.Creature_OnDamaged, "x2_def_ondamage");
-            SetEventScript(creature, EventScript.Creature_OnDeath, "x2_def_ondeath");
-            SetEventScript(creature, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
-            SetEventScript(creature, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
-            SetEventScript(creature, EventScript.Creature_OnNotice, "x2_def_percept");
-            SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
-            SetEventScript(creature, EventScript.Creature_OnRested, "x2_def_rested");
-            SetEventScript(creature, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
-            SetEventScript(creature, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
-            SetEventScript(creature, EventScript.Creature_OnUserDefined, "x2_def_userdef");
-
-            // The spawn script will not fire because it has already executed. In the event there wasn't a script
-            // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
-            if (string.IsNullOrWhiteSpace(originalSpawnScript))
+            if (type == ObjectType.Creature)
             {
-                ExecuteScript("x2_def_spawn", creature);
+                var originalSpawnScript = GetEventScript(spawn, EventScript.Creature_OnSpawnIn);
+
+                SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
+                SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
+                //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
+                SetEventScript(spawn, EventScript.Creature_OnDamaged, "x2_def_ondamage");
+                SetEventScript(spawn, EventScript.Creature_OnDeath, "x2_def_ondeath");
+                SetEventScript(spawn, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
+                SetEventScript(spawn, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
+                SetEventScript(spawn, EventScript.Creature_OnNotice, "x2_def_percept");
+                SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
+                SetEventScript(spawn, EventScript.Creature_OnRested, "x2_def_rested");
+                SetEventScript(spawn, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
+                SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
+                SetEventScript(spawn, EventScript.Creature_OnUserDefined, "x2_def_userdef");
+
+                // The spawn script will not fire because it has already executed. In the event there wasn't a script
+                // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
+                if (string.IsNullOrWhiteSpace(originalSpawnScript))
+                {
+                    ExecuteScript("x2_def_spawn", spawn);
+                }
+            }
+            else if (type == ObjectType.Placeable)
+            {
+                if (string.IsNullOrWhiteSpace(GetEventScript(spawn, EventScript.Placeable_OnDeath)))
+                {
+                    SetEventScript(spawn, EventScript.Placeable_OnDeath, "plc_death");
+                }
             }
         }
 

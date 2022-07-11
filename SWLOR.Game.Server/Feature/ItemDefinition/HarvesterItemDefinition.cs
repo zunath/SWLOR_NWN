@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
                     var lootTable = Loot.GetLootTableByName(lootTableName);
                     var loot = lootTable.GetRandomItem();
+                    var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
 
                     var resourceCount = GetLocalInt(target, "RESOURCE_COUNT");
 
@@ -137,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var playerId = GetObjectUUID(user);
                         var dbPlayer = DB.Get<Player>(playerId);
                         var dbSkill = dbPlayer.Skills[SkillType.Gathering];
-                        var veinLevel = 10 * (requiredLevel - 1) + 5;
+                        var veinLevel = 10 * (resourceLevel - 1) + 5;
                         var delta = veinLevel - dbSkill.Rank;
                         var deltaXP = Skill.GetDeltaXP(delta);
 

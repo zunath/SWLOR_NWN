@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
                 return;
             }
-
+            
             var totalRanks = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                 }).Select(s => s.Key).ToList();
 
             // If player is at the skill cap and no skills are available for decay, exit early.
-            if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+            if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
                 return;
 
             SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Service
 
             while (pcSkill.XP >= requiredXP)
             {
-                if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+                if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
                     break;
 
                 receivedRankUp = true;
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
 
                 // If player is at the cap, pick a random skill out of the available decayable skills
                 // reduce its level by 1 and set XP to zero.
-                if (totalRanks >= SkillCap)
+                if (details.ContributesToSkillCap && totalRanks >= SkillCap)
                 {
                     // Edge case: Part of the number of levels granted cannot be given because
                     // there are no decayable skills to reduce. All excess XP is lost and we

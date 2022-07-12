@@ -1760,6 +1760,25 @@
                 "type": "word",
                 "value": 4
               }
+            },
+            {
+              "__struct_id": 14,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "power_core50"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 4
+              }
             }
           ]
         }

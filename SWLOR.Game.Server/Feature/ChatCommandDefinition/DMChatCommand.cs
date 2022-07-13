@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             SetXPBonus();
             GetXPBonus();
             GetPlayerId();
+            GetTag();
 
             return _builder.Build();
         }
@@ -775,6 +776,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var playerId = GetObjectUUID(target);
                     
                     SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
+                });
+        }
+
+        private void GetTag()
+        {
+            _builder.Create("gettag")
+                .Description("Gets a target's tag.")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    var tag = NWScript.GetTag(target);
+
+                    SendMessageToPC(user, $"Target's tag: {tag}");
                 });
         }
 

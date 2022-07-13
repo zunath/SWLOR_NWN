@@ -92,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

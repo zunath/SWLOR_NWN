@@ -92,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -103,7 +102,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -114,7 +112,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

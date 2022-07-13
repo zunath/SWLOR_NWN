@@ -30,8 +30,9 @@ namespace SWLOR.Game.Server.Service
         {
             var sw = new Stopwatch();
             var serverConfig = DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
+            var migrationVersion = serverConfig.MigrationVersion;
             var migrations = _serverMigrations
-                .Where(x => x.Key > serverConfig.MigrationVersion)
+                .Where(x => x.Key > migrationVersion)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
             var newVersion = 0;

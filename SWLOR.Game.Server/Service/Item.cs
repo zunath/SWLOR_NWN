@@ -909,6 +909,14 @@ namespace SWLOR.Game.Server.Service
                 return "That item cannot be stored.";
             }
 
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                if (GetItemInSlot((InventorySlot)index, player) == item)
+                {
+                    return "Unequip the item first.";
+                }
+            }
+
             return string.Empty;
         }
 

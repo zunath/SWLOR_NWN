@@ -320,13 +320,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature whose target will be set.</param>
         /// <param name="target">The target to set.</param>
         /// <param name="vfx">The visual effect to use on the target.</param>
-        private static void SetCurrentTarget(uint creature, uint target, VisualEffect vfx = VisualEffect.Vfx_Target_Marker)
+        private static void SetCurrentTarget(uint creature, uint target)
         {
             // Set the VFX to the new target if creature is a player.
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, vfx);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
@@ -1722,7 +1722,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 ClearCurrentTarget(creature);
-                SetCurrentTarget(creature, self, VisualEffect.Vfx_Dur_Aura_Red);
+                SetCurrentTarget(creature, self);
             }
         }
 

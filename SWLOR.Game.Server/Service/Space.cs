@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Service
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
-            var position = GetPositionFromLocation(GetLocation(player));
+            var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();

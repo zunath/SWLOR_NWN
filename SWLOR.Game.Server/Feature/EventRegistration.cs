@@ -540,6 +540,10 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_AFTER", "store_buy_aft");
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_BEFORE", "store_sell_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_AFTER", "store_sell_aft");
+
+            // Input Drop Item Events
+            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_BEFORE", "item_drop_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_AFTER", "item_drop_aft");
         }
 
         /// <summary>

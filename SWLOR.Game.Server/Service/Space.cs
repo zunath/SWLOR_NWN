@@ -1427,6 +1427,8 @@ namespace SWLOR.Game.Server.Service
                 // Shields have enough to cover the attack.
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
             }
             else
             {
@@ -1439,6 +1441,7 @@ namespace SWLOR.Game.Server.Service
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
             }
 
             // Safety clamping

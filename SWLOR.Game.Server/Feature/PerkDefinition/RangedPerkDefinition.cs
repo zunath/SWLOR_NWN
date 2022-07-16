@@ -69,14 +69,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Precision Aim")
 
                 .AddPerkLevel()
-                .Description("Improves critical chance by 2%.")
+                .Description("Improves critical chance by 2%. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PrecisionAim1)
 
                 .AddPerkLevel()
-                .Description("Improves critical chance by 4%.")
+                .Description("Improves critical chance by 4%. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)

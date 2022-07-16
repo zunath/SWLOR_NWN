@@ -68,13 +68,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    
+                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+
                     if (isHit)
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
+                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ApplyEffectToObject(DurationType.Instant, missile, target);
+    
                             DelayCommand(0.3f, () =>
                             {
                                 Space.ApplyShipDamage(activator, target, damage);
@@ -85,8 +88,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest, true);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
+                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ApplyEffectToObject(DurationType.Instant, missile, target);
                         });
                     }
 
@@ -98,6 +101,5 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
-
     }
 }

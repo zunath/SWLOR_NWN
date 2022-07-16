@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.Feature
         private static readonly Dictionary<string, OreDetail> _ores = new Dictionary<string, OreDetail>
         {
             {"power_core", new OreDetail(1, string.Empty, 10)},
+            {"power_core50", new OreDetail(1, string.Empty, 10)},
+
             {"raw_veldite", new OreDetail(1, "ref_veldite", 25)},
             {"ore_tilarium", new OreDetail(1, "ref_tilarium", 25)},
 
@@ -93,7 +95,8 @@ namespace SWLOR.Game.Server.Feature
                 // Refinery needs power.
                 var activeCharges = GetLocalInt(refinery, "REFINERY_CHARGES");
                 if (activeCharges <= 0 &&
-                   itemResref != "power_core")
+                   itemResref != "power_core" &&
+                   itemResref != "power_core50")
                 {
                     Item.ReturnItem(player, item);
                     SendMessageToPC(player, "This refinery needs power. Insert a Power Core to turn it on.");
@@ -110,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
 
                 var refinedItem = _ores[itemResref];
                 // Inserted a power core - give +18 seconds plus whatever Refinery Management gives as a bonus.
-                if (itemResref == "power_core")
+                if (itemResref == "power_core" || itemResref == "power_core50")
                 {
                     var refineryManagement = Perk.GetEffectivePerkLevel(player, PerkType.RefineryManagement);
                     var bonusCharges = 3 + CalculateBonusPowerCharges(refineryManagement);

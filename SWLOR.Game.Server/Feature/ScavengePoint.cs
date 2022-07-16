@@ -69,6 +69,9 @@ namespace SWLOR.Game.Server.Feature
             var scavLevel = 10 * requiredLevel;            
             var delta = scavLevel - dbSkill.Rank;
             var deltaXP = Skill.GetDeltaXP(delta);
+            var treasureHunterLevel = Perk.GetEffectivePerkLevel(user, PerkType.TreasureHunter);
+            var creditFinderLevel = Perk.GetEffectivePerkLevel(user, PerkType.CreditFinder);
+            var creditPercentIncrease = creditFinderLevel * 0.2f;
 
             for (var attempt = 1; attempt <= attempts; attempt++)
             {
@@ -78,8 +81,14 @@ namespace SWLOR.Game.Server.Feature
                 {
                     FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})"), user, false);
 
-                    var item = lootTable.GetRandomItem();
+                    var item = lootTable.GetRandomItem(treasureHunterLevel);
                     var quantity = Random.Next(item.MaxQuantity) + 1;
+
+                    if (item.Resref == "nw_it_gold001")
+                    {
+                        quantity += (int)(quantity * creditPercentIncrease);
+                    }
+
                     CreateItemOnObject(item.Resref, placeable, quantity);
                     xp = deltaXP;
                 }

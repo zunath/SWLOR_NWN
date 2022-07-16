@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            Harvester("harvest_r_old", 1);
+            Harvester("harvest_r_old", 0);
             Harvester("harvest_r_b", 1);
             Harvester("harvest_r_1", 2);
             Harvester("harvest_r_2", 3);

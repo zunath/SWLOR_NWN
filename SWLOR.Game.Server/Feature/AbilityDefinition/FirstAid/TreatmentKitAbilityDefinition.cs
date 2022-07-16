@@ -53,6 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
                     StatusEffect.Remove(target, StatusEffectType.Bleed);
                     StatusEffect.Remove(target, StatusEffectType.Poison);
+
+                    TakeMedicalSupplies(activator);
                 });
         }
         private void TreatmentKit2()
@@ -92,6 +94,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     StatusEffect.Remove(target, StatusEffectType.Poison);
                     StatusEffect.Remove(target, StatusEffectType.Shock);
                     StatusEffect.Remove(target, StatusEffectType.Burn);
+
+                    TakeMedicalSupplies(activator);
                 });
         }
     }

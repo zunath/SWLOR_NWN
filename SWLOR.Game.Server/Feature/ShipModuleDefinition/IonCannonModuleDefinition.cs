@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals light EM damage to your target.", 1, 3f, 6, 8);
-            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals light EM damage to your target.", 2, 4f, 9, 12);
-            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals light EM damage to your target.", 3, 5f, 12, 17);
-            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals light EM damage to your target.", 4, 6f, 15, 21);
-            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals light EM damage to your target.", 5, 7f, 18, 26);
+            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals 8 EM DMG to your target.", 1, 3f, 6, 8);
+            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals 12 EM DMG to your target.", 2, 4f, 9, 12);
+            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 17 EM DMG to your target.", 3, 5f, 12, 17);
+            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 21 EM DMG to your target.", 4, 6f, 15, 21);
+            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 26 EM DMG to your target.", 5, 7f, 18, 26);
 
             return _builder.Build();
         }

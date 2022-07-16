@@ -319,7 +319,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature whose target will be set.</param>
         /// <param name="target">The target to set.</param>
-        /// <param name="vfx">The visual effect to use on the target.</param>
         private static void SetCurrentTarget(uint creature, uint target)
         {
             // Set the VFX to the new target if creature is a player.

@@ -47,30 +47,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Doublehand")
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by 2 when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 2 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
                 .GrantsFeat(FeatType.Doublehand1)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by 6 when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 6 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Doublehand2)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by 10 when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 10 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.Doublehand3)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by 14 when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 14 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .GrantsFeat(FeatType.Doublehand4)
 
                 .AddPerkLevel()
-                .Description("Increases DMG of one-handed weapons by 19 when no off-hand item is equipped.")
+                .Description("Increases DMG of one-handed weapons by 19 when no off-hand item is equipped. [Cross Skill]")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .GrantsFeat(FeatType.Doublehand5);
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
-                .Description("Enables the use of two one-handed weapons at the same time at -20%/-20% to hit.")
+                .Description("Enables the use of two one-handed weapons at the same time at -20%/-20% to hit. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.DualWield);
@@ -644,7 +644,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Two Weapon Fighting (One-Handed)")
 
                 .AddPerkLevel()
-                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon.")
+                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingTwoHanded)

@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Knockdown")
 
                 .AddPerkLevel()
-                .Description("Your next attack has a 60% chance to inflict knockdown on your target for 12 seconds.")
+                .Description("Your next attack has a 60% chance to inflict knockdown on your target for 12 seconds. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.Knockdown);
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Furor")
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack to the user for one minute.")
+                .Description("Grants an additional attack to the user for one minute. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -66,14 +66,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Inner Strength")
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 1.")
+                .Description("Improves critical range by 1. [Cross Skill]")
                 .Price(5)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength1)
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 2.")
+                .Description("Improves critical range by 2. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -95,20 +95,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Chi")
 
                 .AddPerkLevel()
-                .Description("Restores your HP by a base amount of 45 points.")
+                .Description("Restores your HP by a base amount of 45 points. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.Chi1)
 
                 .AddPerkLevel()
-                .Description("Restores your HP by a base amount of 115 points.")
+                .Description("Restores your HP by a base amount of 115 points. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Chi2)
 
                 .AddPerkLevel()
-                .Description("Restores your HP by a base amount of 170 points.")
+                .Description("Restores your HP by a base amount of 170 points. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 40)
                 .RequirementCharacterType(CharacterType.Standard)

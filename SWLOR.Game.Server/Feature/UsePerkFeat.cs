@@ -395,6 +395,15 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Whenever a player equips an item, clear any queued abilities.
+        /// </summary>
+        [NWNEventHandler("item_val_bef")]
+        public static void ClearTemporaryQueuedVariablesOnEquip()
+        {
+            ClearQueuedAbility(OBJECT_SELF);
+        }
+
+        /// <summary>
         /// Clears the queued ability of a player.
         /// </summary>
         /// <param name="player">The player to clear</param>

@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public AppearanceType Appearance { get; set; }
         public PropertyLayoutType Layout { get; set; }
         public string ItemResref { get; set; }
-
         public int MaxShield { get; set; }
         public int MaxHull { get; set; }
         public int MaxCapacitor { get; set; }

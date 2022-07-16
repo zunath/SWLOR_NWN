@@ -75,13 +75,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
                             ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
                         });
 
                         DelayCommand(0.1f, () =>
                         {
                             AssignCommand(activator, () =>
                             {
-                                var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion);
+                                var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion,false, 0.5f);
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
                                 Space.ApplyShipDamage(activator, target, damage);
                             });

@@ -372,6 +372,7 @@ namespace SWLOR.Game.Server.Service
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
+            var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
@@ -383,10 +384,11 @@ namespace SWLOR.Game.Server.Service
 
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
-            
+
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, position);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -394,6 +396,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, position);
             }
         }
 
@@ -1438,6 +1441,8 @@ namespace SWLOR.Game.Server.Service
                 // Shields have enough to cover the attack.
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
             }
             else
             {
@@ -1450,6 +1455,7 @@ namespace SWLOR.Game.Server.Service
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
             }
 
             // Safety clamping

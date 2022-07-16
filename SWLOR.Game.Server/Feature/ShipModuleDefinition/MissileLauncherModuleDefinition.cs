@@ -99,14 +99,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv, !isHit), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
                     });
                     
                     // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
                     // Then apply damage on target and those nearby.
                     DelayCommand(delay, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
                         PerformAttack(activator, target, dmg, attackBonus, isHit);
 
                         // Iterate over nearby targets, rolling to apply damage to each.

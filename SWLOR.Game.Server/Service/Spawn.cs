@@ -515,6 +515,51 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Make plot/immortal NPCs incredibly strong to dissuade players from attacking them and messing with spawns.
+        /// </summary>
+        /// <param name="spawn"></param>
+        private static void AdjustStats(uint spawn)
+        {
+            if (!GetIsObjectValid(spawn) || GetObjectType(spawn) != ObjectType.Creature)
+                return;
+
+            if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))
+                return;
+
+            if (!GetPlotFlag(spawn) && !GetImmortal(spawn))
+                return;
+
+            CreaturePlugin.SetBaseAC(spawn, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Might, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Perception, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Vitality, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Agility, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Willpower, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Social, 100);
+            CreaturePlugin.SetBaseAttackBonus(spawn, 254);
+            CreaturePlugin.AddFeatByLevel(spawn, FeatType.WeaponProficiencyCreature, 1);
+
+            AssignCommand(spawn, () => ClearAllActions());
+
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, spawn)))
+            {
+                var claw = CreateItemOnObject("npc_claw", spawn);
+                AssignCommand(spawn, () =>
+                {
+                    ActionEquipItem(claw, InventorySlot.CreatureRight);
+                });
+            }
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, spawn)))
+            {
+                var claw = CreateItemOnObject("npc_claw", spawn);
+                AssignCommand(spawn, () =>
+                {
+                    ActionEquipItem(claw, InventorySlot.CreatureLeft);
+                });
+            }
+        }
+
+        /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
         [NWNEventHandler("dm_spwnobj_aft")]
@@ -528,6 +573,7 @@ namespace SWLOR.Game.Server.Service
             var objectData = EventsPlugin.GetEventData("OBJECT");
             var spawn = Convert.ToUInt32(objectData, 16); // Not sure why this is in hex.
             AdjustScripts(spawn);
+            AdjustStats(spawn);
         }
 
         /// <summary>
@@ -554,6 +600,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
                 AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
+                AdjustStats(deserialized);
 
                 return deserialized;
             }
@@ -583,6 +630,7 @@ namespace SWLOR.Game.Server.Service
 
                 AI.SetAIFlag(spawn, aiFlag);
                 AdjustScripts(spawn);
+                AdjustStats(spawn);
 
                 foreach (var animator in animators)
                 {

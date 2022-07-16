@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
+        private static readonly HashSet<uint> _playersInSpace = new();
+
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
@@ -57,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
+            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1));
         }
 
         [NWNEventHandler("mod_enter")]
@@ -75,6 +78,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             CloneShip(player);
+
+            if (_playersInSpace.Contains(player))
+                _playersInSpace.Remove(player);
         }
 
         /// <summary>
@@ -716,6 +722,9 @@ namespace SWLOR.Game.Server.Service
                 _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
             }
 
+            if(!_playersInSpace.Contains(player))
+                _playersInSpace.Add(player);
+
             ExecuteScript("space_enter", player);
         }
 
@@ -841,6 +850,10 @@ namespace SWLOR.Game.Server.Service
 
             // Destroy the NPC clone.
             DestroyPilotClone(player);
+
+            if (_playersInSpace.Contains(player))
+                _playersInSpace.Remove(player);
+
             ExecuteScript("space_exit", player);
         }
 
@@ -1174,24 +1187,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When the player's heartbeat fires, recover capacitor and shield.
+        /// Recover player ships every second.
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
-        public static void PlayerShipRecovery()
+        private static void PlayerShipRecovery()
         {
-            var player = OBJECT_SELF;
+            foreach (var player in _playersInSpace)
+            {
+                // Not in space mode, skip.
+                if (!IsPlayerInSpaceMode(player)) 
+                    continue;
 
-            // Not in space mode, exit early.
-            if (!IsPlayerInSpaceMode(player)) return;
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                ApplyAutoShipRecovery(player, dbShip.Status);
 
-            ApplyAutoShipRecovery(player, dbShip.Status);
-
-            // Update changes
-            DB.Set(dbShip);
+                // Update changes
+                DB.Set(dbShip);
+            }
         }
 
         public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)

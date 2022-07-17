@@ -77,8 +77,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return $"ERROR: Harvesting loot table misconfigured. Please use /bug to report this issue.";
                     }
 
+                    var harvesterLevel = requiredLevel < 1 ? 1 : requiredLevel;
                     var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
-                    if (resourceLevel > requiredLevel)
+                    if (resourceLevel > harvesterLevel)
                     {
                         return $"A level {resourceLevel} harvester or higher is required for this resource.";
                     }

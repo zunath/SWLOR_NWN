@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), target);
             });
             
-            Enmity.ModifyEnmity(activator, target, damage);
+            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

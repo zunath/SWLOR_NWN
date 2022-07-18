@@ -87,11 +87,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             
             if (inflict) 
                 ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
-
-            Enmity.ModifyEnmity(activator, target, damage);
+            
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void SaberStrike1(AbilityBuilder builder)

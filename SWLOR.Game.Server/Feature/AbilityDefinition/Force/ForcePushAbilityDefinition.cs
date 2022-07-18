@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
             else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
 
-            Enmity.ModifyEnmityOnAll(activator, 12);
+            Enmity.ModifyEnmityOnAll(activator, level * 150);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }

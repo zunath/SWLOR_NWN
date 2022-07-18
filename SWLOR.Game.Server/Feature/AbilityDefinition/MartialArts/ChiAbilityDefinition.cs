@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             ApplyEffectToObject(DurationType.Instant, EffectHeal(recovery), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
 
-            Enmity.ModifyEnmityOnAll(activator, recovery + 10);
+            Enmity.ModifyEnmityOnAll(activator, 300 + recovery + 10);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 

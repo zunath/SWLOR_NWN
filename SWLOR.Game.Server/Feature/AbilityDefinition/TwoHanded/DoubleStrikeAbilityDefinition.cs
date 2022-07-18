@@ -65,9 +65,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 stat = AbilityType.Might;
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-
             var attackerStat = GetAbilityScore(activator, stat);
             var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -82,6 +79,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void DoubleStrike1(AbilityBuilder builder)

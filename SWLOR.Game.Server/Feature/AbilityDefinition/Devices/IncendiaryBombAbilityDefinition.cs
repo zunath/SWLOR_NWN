@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc1_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 30);
+                    Enmity.ModifyEnmityOnAll(activator, 250);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -149,6 +149,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc2_en",
                         "grenade_inc2_hb",
                         40f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -173,6 +176,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc3_en",
                         "grenade_inc3_hb",
                         60f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 450);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

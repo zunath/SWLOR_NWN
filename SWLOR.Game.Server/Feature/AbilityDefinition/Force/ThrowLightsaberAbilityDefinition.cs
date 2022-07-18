@@ -79,7 +79,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // apply to target
             DelayCommand(delay, () =>
             {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                 var damage = Combat.CalculateDamage(
@@ -90,6 +89,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     defenderStat, 
                     0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+                Enmity.ModifyEnmity(activator, target, damage + 200 * level);
             });
                         
             // apply to next nearest creature in the spellcylinder
@@ -102,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        CombatPoint.AddCombatPoint(activator, nearby, SkillType.Force, 3);
                         var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(
@@ -113,6 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                             defenderStat, 
                             0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
+                        CombatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
+                        Enmity.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });
 
                     count++;
@@ -120,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 nearby = GetNextObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)

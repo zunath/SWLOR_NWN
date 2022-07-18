@@ -67,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
 
                     var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
@@ -79,6 +78,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                         defenderStat, 
                         0);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), creature);
+
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
+                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
 
                     count++;
                 }

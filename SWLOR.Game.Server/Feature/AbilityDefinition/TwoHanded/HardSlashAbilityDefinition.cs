@@ -59,10 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             }
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 25);
-
+            
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -77,6 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void HardSlash1(AbilityBuilder builder)

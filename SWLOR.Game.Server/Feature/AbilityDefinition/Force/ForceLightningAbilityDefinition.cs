@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
             });
 
-            Enmity.ModifyEnmityOnAll(activator, damage);
+            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

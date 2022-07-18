@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectParalyze(), target, immobilizeLength);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
 
-                    Enmity.ModifyEnmity(source, target, 15);
+                    Enmity.ModifyEnmity(source, target, 350);
                 })
                 .TickAction((source, target, effectData) =>
                 {
@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
 
-                    Enmity.ModifyEnmity(source, target, damage + 6);
+                    var enmity = level * 120 + damage + 6;
+                    Enmity.ModifyEnmity(source, target, enmity);
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }

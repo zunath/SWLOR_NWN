@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * (multiplier + willpowerBonus)));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
             
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            Enmity.ModifyEnmityOnAll(activator, 2000);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);       
         }

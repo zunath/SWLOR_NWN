@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(abReduce), target, 20f);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 20);
+            Enmity.ModifyEnmity(activator, target, 250);
         }
 
         private void FlashbangGrenade1()

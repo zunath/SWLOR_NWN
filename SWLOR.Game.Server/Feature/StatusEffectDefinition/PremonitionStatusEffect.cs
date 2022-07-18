@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ApplyEffectToObject(DurationType.Temporary, effect, member, 6.1f);
             }
 
-            Enmity.ModifyEnmityOnAll(source, 12);
+            Enmity.ModifyEnmityOnAll(source, 50 * amount);
             CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force);
         }
 

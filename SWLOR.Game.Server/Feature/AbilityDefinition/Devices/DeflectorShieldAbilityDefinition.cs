@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 }
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 45);
+            Enmity.ModifyEnmityOnAll(activator, 220);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
         }
 

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(evaDecrease), target, 60f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
 
-            Enmity.ModifyEnmity(activator, target, damage + 10);
+            Enmity.ModifyEnmity(activator, target, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

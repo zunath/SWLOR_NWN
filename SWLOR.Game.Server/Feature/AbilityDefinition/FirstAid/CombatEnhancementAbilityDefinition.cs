@@ -2,8 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -73,6 +75,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 1);
+
+                    Enmity.ModifyEnmity(activator, target, 250);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
         private void CombatEnhancement2()
@@ -89,6 +94,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 2);
+
+                    Enmity.ModifyEnmity(activator, target, 350);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
         private void CombatEnhancement3()
@@ -105,6 +113,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 3);
+
+                    Enmity.ModifyEnmity(activator, target, 450);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
     }

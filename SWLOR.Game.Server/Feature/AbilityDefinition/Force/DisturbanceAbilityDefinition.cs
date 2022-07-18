@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(accDecrease), target, 60f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
 
-            Enmity.ModifyEnmity(activator, target, damage + 10);
+            Enmity.ModifyEnmityOnAll(activator, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

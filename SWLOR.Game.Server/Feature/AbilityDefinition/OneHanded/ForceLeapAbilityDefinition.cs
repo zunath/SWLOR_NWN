@@ -71,8 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
                 SetCommandable(false, activator);
             });
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var stat = AbilityType.Perception;
@@ -113,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void ForceLeap1(AbilityBuilder builder)

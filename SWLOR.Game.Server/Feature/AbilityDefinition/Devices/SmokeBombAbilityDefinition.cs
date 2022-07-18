@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 30);
+                    Enmity.ModifyEnmityOnAll(activator, 90);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -102,6 +102,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_en",
                         "grenade_smoke_hb",
                         40f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 180);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -126,6 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_en",
                         "grenade_smoke_hb",
                         60f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 360);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

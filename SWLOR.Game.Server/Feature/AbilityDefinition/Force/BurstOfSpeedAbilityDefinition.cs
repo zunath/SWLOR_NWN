@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
             
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            Enmity.ModifyEnmityOnAll(activator, 10);
+            Enmity.ModifyEnmityOnAll(activator, 250);
         }
 
         private static void BurstOfSpeed1(AbilityBuilder builder)

@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void RiotBlade1(AbilityBuilder builder)

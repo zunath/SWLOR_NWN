@@ -54,9 +54,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
                 }
             });
-
-            Enmity.ModifyEnmity(activator, target, 15);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
         }
 
         private void WristRocket1()
@@ -73,6 +70,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
                     Impact(activator, target, 8, 0);
+
+                    Enmity.ModifyEnmity(activator, target, 180);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -90,6 +90,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
                     Impact(activator, target, 12, 30);
+
+                    Enmity.ModifyEnmity(activator, target, 280);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -107,6 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
                     Impact(activator, target, 20, 50);
+
+                    Enmity.ModifyEnmity(activator, target, 380);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
     }

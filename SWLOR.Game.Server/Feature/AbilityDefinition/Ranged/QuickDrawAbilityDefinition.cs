@@ -60,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
@@ -75,6 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             AssignCommand(activator, () => ActionPlayAnimation(Animation.QuickDraw));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void QuickDraw1(AbilityBuilder builder)

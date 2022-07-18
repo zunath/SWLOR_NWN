@@ -83,6 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             if (inflict) 
                 ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(99), target, duration);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void CripplingShot1(AbilityBuilder builder)

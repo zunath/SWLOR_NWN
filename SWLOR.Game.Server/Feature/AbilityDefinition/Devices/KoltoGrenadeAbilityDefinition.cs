@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
-            Enmity.ModifyEnmityOnAll(activator, 20);
+            Enmity.ModifyEnmityOnAll(activator, 180);
         }
 
         private void KoltoGrenade1()

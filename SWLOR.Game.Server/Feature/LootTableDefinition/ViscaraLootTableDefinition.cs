@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_WAROCAS")
                 .AddItem("warocas_beak", 20)
-                .AddItem("waro_feathers", 5)
+                .AddItem("waro_feathers", 15)
                 .AddItem("lth_ruined", 20)
                 .AddItem("warocas_meat", 10)
                 .AddItem("waro_leg", 2, 1, true);

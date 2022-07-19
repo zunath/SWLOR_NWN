@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -13,6 +14,8 @@ namespace SWLOR.Game.Server.Service
     public static class AI
     {
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new Dictionary<uint, HashSet<uint>>();
+
+        private const string StickyTargetRounds = "AI_STICKY_TARGET_ROUNDS";
 
         /// <summary>
         /// Entry point for creature heartbeat logic.
@@ -284,12 +287,23 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions();
             }
 
-            // Switch targets if necessary
-            if (target != GetAttackTarget(self) ||
-                GetCurrentAction(self) == ActionType.Invalid)
+            // Not currently fighting - attack target
+            if (GetCurrentAction(self) == ActionType.Invalid)
             {
+                DeleteLocalInt(self, StickyTargetRounds);
                 ClearAllActions();
                 ActionAttack(target);
+            }
+            // The AI should stick to their same target for 3 rounds before shifting to the next highest enmity target.
+            else if (target != GetAttackTarget(self))
+            {
+                var rounds = GetLocalInt(self, StickyTargetRounds) + 1;
+                if (rounds > 3)
+                {
+                    DeleteLocalInt(self, StickyTargetRounds);
+                    ClearAllActions();
+                    ActionAttack(target);
+                }
             }
             // Perk ability usage
             else
@@ -307,6 +321,26 @@ namespace SWLOR.Game.Server.Service
                     ActionUseFeat(feat, featTarget);
                 }
             }
+        }
+
+        /// <summary>
+        /// Forces a creature to start attacking a different target, regardless of enmity level.
+        /// This also resets their sticky targeting.
+        /// If either the creature or the target is invalid, nothing will happen.
+        /// </summary>
+        /// <param name="creature">The creature to force a target swap upon.</param>
+        /// <param name="target">The new target.</param>
+        public static void ForceTargetSwap(uint creature, uint target)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(target))
+                return;
+
+            DeleteLocalInt(creature, StickyTargetRounds);
+            AssignCommand(creature, () =>
+            {
+                ClearAllActions();
+                ActionAttack(target);
+            });
         }
 
         /// <summary>

@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
         {
             Enmity.ModifyEnmity(activator, target, enmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
+
+            AI.ForceTargetSwap(target, activator);
         }
 
         private void Provoke()

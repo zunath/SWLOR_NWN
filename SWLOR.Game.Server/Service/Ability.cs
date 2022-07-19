@@ -61,24 +61,24 @@ namespace SWLOR.Game.Server.Service
                 switch (level)
                 {
                     case 1:
-                        rate = 0.10f; // 10%
+                        rate = 1.10f; // 10%
                         break;
                     case 2:
-                        rate = 0.25f; // 25%
+                        rate = 1.25f; // 25%
                         break;
                     default:
-                        rate = 0f; // 0%
+                        rate = 1.0f; // 0%
                         break;
                 }
 
                 if (isEnabled)
                 {
-                    Stat.AdjustPlayerMovementRate(dbPlayer, player, rate);
+                    Stat.SetPlayerMovementRate(dbPlayer, player, rate);
                     message = ColorToken.Green("Dash enabled");
                 }
                 else
                 {
-                    Stat.AdjustPlayerMovementRate(dbPlayer, player, -rate);
+                    Stat.SetPlayerMovementRate(dbPlayer, player, 1.0f);
                     message = ColorToken.Red("Dash disabled");
                 }
 

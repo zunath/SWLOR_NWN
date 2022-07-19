@@ -486,10 +486,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="player">The player object</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerMovementRate(Player entity, uint player, float adjustBy)
+        /// <param name="rate">The amount to set</param>
+        public static void SetPlayerMovementRate(Player entity, uint player, float rate)
         {
-            entity.MovementRate += adjustBy;
+            entity.MovementRate = rate;
             CreaturePlugin.SetMovementRateFactor(player, entity.MovementRate);
         }
         

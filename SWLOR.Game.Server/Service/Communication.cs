@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service
     public static class Communication
     {
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
+        private const int HolonetDelayMinutes = 5;
 
         private class CommunicationComponent
         {
@@ -130,6 +132,21 @@ namespace SWLOR.Game.Server.Service
                     SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
                     return;
                 }
+
+                // 5 minute wait in between Holonet messages.
+                var lastHolonet = GetLocalString(sender, "HOLONET_LAST_SEND");
+                var now = DateTime.UtcNow;
+                if (!string.IsNullOrWhiteSpace(lastHolonet))
+                {
+                    var dateTime = DateTime.ParseExact(lastHolonet, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    if (now <= dateTime.AddMinutes(HolonetDelayMinutes))
+                    {
+                        SendMessageToPC(sender, $"Holonet messages may only be sent once per {HolonetDelayMinutes} minutes.");
+                        return;
+                    }
+                }
+
+                SetLocalString(sender, "HOLONET_LAST_SEND", now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             }
 
             var chatComponents = new List<CommunicationComponent>();

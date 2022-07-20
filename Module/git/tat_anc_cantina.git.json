@@ -32283,7 +32283,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 79
+                      "value": 538
                     },
                     "Charges": {
                       "type": "byte",
@@ -32361,7 +32361,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.10842708528093e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -32388,7 +32388,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -32489,7 +32489,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -32731,7 +32731,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.10842708528093e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",

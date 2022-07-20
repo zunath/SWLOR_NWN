@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This Mon Calamari stands before you dressed in a long burgundy overcoat. On her hips are two beautiful silver blaster pistols. In her webbed hands is a data pad in which she seems rather invested in, only presenting it to those in the Guild."
+    }
   },
   "Dex": {
     "type": "byte",

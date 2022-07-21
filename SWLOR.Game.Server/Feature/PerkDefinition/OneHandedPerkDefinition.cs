@@ -665,6 +665,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
                 
                 .AddPerkLevel()
+                .RequirementCharacterType(CharacterType.ForceSensitive)
                 .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleLightsaber);

@@ -128,11 +128,11 @@
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 6566450
+    "value": 64
   },
   "SunDiffuseColor": {
     "type": "dword",
-    "value": 16777215
+    "value": 16512
   },
   "SunFogAmount": {
     "type": "byte",
@@ -140,7 +140,7 @@
   },
   "SunFogColor": {
     "type": "dword",
-    "value": 9535080
+    "value": 0
   },
   "SunShadows": {
     "type": "byte",
@@ -263,11 +263,11 @@
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 3
+          "value": 29
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 3
+          "value": 1
         },
         "Tile_Orientation": {
           "type": "int",
@@ -349,7 +349,7 @@
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 1
+          "value": 3
         },
         "Tile_MainLight2": {
           "type": "byte",
@@ -806,7 +806,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 22
+    "value": 24
   },
   "Width": {
     "type": "int",

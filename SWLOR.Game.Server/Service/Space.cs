@@ -1543,6 +1543,10 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+
                 }
 
                 foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
@@ -1553,6 +1557,9 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
                 // Player always loses all modules regardless if they actually dropped.

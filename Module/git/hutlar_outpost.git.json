@@ -7572,7 +7572,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 4284
+          "value": 3557
         },
         "Race": {
           "type": "byte",
@@ -7837,7 +7837,7 @@
         },
         "SoundSetFile": {
           "type": "word",
-          "value": 351
+          "value": 394
         },
         "SpecAbilityList": {
           "type": "list",

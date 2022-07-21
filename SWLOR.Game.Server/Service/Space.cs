@@ -1863,5 +1863,25 @@ namespace SWLOR.Game.Server.Service
             return bonuses;
         }
 
+        /// <summary>
+        /// When a player attempts to stealth while in space mode,
+        /// exit the stealth mode and send an error message.
+        /// </summary>
+        [NWNEventHandler("stlent_add_bef")]
+        public static void PreventSpaceStealth()
+        {
+            var creature = OBJECT_SELF;
+
+            if (!IsPlayerInSpaceMode(creature))
+                return;
+
+            AssignCommand(creature, () =>
+            {
+                SetActionMode(creature, ActionMode.Stealth, false);
+            });
+
+            SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));
+        }
+
     }
 }

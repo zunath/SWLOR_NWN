@@ -75,14 +75,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Burst of Speed")
 
                 .AddPerkLevel()
-                .Description("Increases the speed of your target by 15% and increases evasion by 2 for ten minutes.")
+                .Description("Increases the speed of your target by 15% and increases evasion by 5 for ten minutes.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BurstOfSpeed1)                
 
                 .AddPerkLevel()
-                .Description("Increases the speed of your target by 25% and increases evasion by 4 for ten minutes.")
+                .Description("Increases the speed of your target by 25% and increases evasion by 10 for ten minutes.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.BankStyle1)
                 .PropertyType(PropertyType.Bank)
                 .Name("Bank")
-                .StructureLimit(30)
+                .StructureLimit(50)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

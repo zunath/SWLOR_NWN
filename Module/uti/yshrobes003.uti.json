@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 50
+    "value": 16
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 0
+    "value": 236
   },
   "ArmorPart_RShin": {
     "type": "byte",
@@ -74,7 +74,7 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 50
+    "value": 16
   },
   "ArmorPart_Torso": {
     "type": "byte",
@@ -122,7 +122,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 117
+    "value": 24
   },
   "Leather2Color": {
     "type": "byte",
@@ -131,7 +131,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Yshren's Robes (No Cloak)"
+      "0": "Yshren's Robes (Cloak)"
     }
   },
   "Metal1Color": {
@@ -537,10 +537,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "yshrobes"
+    "value": "yshrobescloak"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "yshrobes002"
+    "value": "yshrobes003"
   }
 }

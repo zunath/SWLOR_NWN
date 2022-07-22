@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 142
+    "value": 108
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10008
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -26,11 +26,11 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 75.0
+    "value": 70.0
   },
   "ClassList": {
     "type": "list",
@@ -99,52 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 44
+          "value": 43
         },
         "ClassLevel": {
           "type": "short",
-          "value": 15
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Class": {
-          "type": "int",
-          "value": 52
-        },
-        "ClassLevel": {
-          "type": "short",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Class": {
-          "type": "int",
-          "value": 42
-        },
-        "ClassLevel": {
-          "type": "short",
-          "value": 5
+          "value": 40
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 50
+    "value": 16
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 34
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 4
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 20
+    "value": 24
   },
   "Comment": {
     "type": "cexostring",
@@ -152,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 51
+    "value": 70
   },
   "Conversation": {
     "type": "resref",
@@ -160,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -4
+    "value": 21
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1400
+    "value": 260
   },
   "DecayTime": {
     "type": "dword",
@@ -180,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 69
+    "value": 70
   },
   "Disarmable": {
     "type": "byte",
@@ -193,14 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "yshrobes003"
-        }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "yshrensaber001"
+          "value": "atris_robes"
         }
       }
     ]
@@ -212,6 +183,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -237,6 +215,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 490
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 408
         }
       },
@@ -244,7 +229,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 5
+          "value": 491
         }
       },
       {
@@ -258,6 +243,48 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 196
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 332
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 333
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 334
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 513
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 512
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 10
         }
       },
@@ -265,7 +292,63 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1241
+          "value": 563
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 564
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 565
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 566
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 567
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 573
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 574
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 492
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 966
         }
       },
       {
@@ -273,6 +356,76 @@
         "Feat": {
           "type": "word",
           "value": 584
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 754
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 755
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 756
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 757
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 762
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 758
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 759
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 760
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 761
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 763
         }
       },
       {
@@ -293,6 +446,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 655
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 675
         }
       },
@@ -307,7 +467,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1170
+          "value": 693
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1145
         }
       },
       {
@@ -315,6 +482,27 @@
         "Feat": {
           "type": "word",
           "value": 391
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1134
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1135
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1125
         }
       },
       {
@@ -335,6 +523,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 89
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 19
         }
       },
@@ -342,35 +537,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1243
+          "value": 20
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1244
+          "value": 885
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1242
+          "value": 1162
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 23
+          "value": 1163
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1245
+          "value": 1164
         }
       },
       {
@@ -391,6 +586,27 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 727
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 726
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 720
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 27
         }
       },
@@ -405,13 +621,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 209
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 258
         }
       },
@@ -419,42 +628,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 30
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1171
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1172
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1173
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 32
+          "value": 1137
         }
       },
       {
@@ -468,14 +642,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 41
+          "value": 40
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 195
+          "value": 41
         }
       },
       {
@@ -489,14 +663,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1174
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1246
+          "value": 1140
         }
       },
       {
@@ -524,7 +691,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 44
+          "value": 943
         }
       },
       {
@@ -561,20 +728,13 @@
           "type": "word",
           "value": 867
         }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 211
-        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Yshren"
+      "0": "Jedi Master Atris"
     }
   },
   "fortbonus": {
@@ -583,7 +743,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -591,15 +751,15 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1400
+    "value": 260
   },
   "Int": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
@@ -616,41 +776,11 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "item005"
+          "value": "ranz_saber"
         },
         "Repos_PosX": {
           "type": "word",
           "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "yshrobes002"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 1
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 2,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "hastejedi2"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 3
         },
         "Repos_Posy": {
           "type": "word",
@@ -662,7 +792,7 @@
   "LastName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Koll"
+      "0": ""
     }
   },
   "LawfulChaotic": {
@@ -671,11 +801,11 @@
   },
   "Lootable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2000
+    "value": 1500
   },
   "NaturalAC": {
     "type": "byte",
@@ -687,7 +817,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 0
+    "value": 4
   },
   "PerceptionRange": {
     "type": "byte",
@@ -703,11 +833,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3867
+    "value": 280
   },
   "Race": {
     "type": "byte",
-    "value": 160
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -968,7 +1098,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 129
+    "value": 417
   },
   "SpecAbilityList": {
     "type": "list",
@@ -976,11 +1106,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 135
+    "value": 134
   },
   "Str": {
     "type": "byte",
-    "value": 61
+    "value": 70
   },
   "Subrace": {
     "type": "cexostring",
@@ -988,7 +1118,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Yshren"
+    "value": "Atris"
   },
   "Tail_New": {
     "type": "dword",
@@ -1000,11 +1130,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "yshren"
+    "value": "atris_jedi"
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -1016,6 +1146,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 99
+    "value": 70
   }
 }

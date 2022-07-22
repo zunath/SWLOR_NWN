@@ -59164,11 +59164,11 @@
         },
         "KeyName": {
           "type": "cexostring",
-          "value": ""
+          "value": "Key_KM_1"
         },
         "KeyRequired": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LinkedTo": {
           "type": "cexostring",
@@ -59188,7 +59188,7 @@
         },
         "Locked": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LocName": {
           "type": "cexolocstring",
@@ -172010,7 +172010,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 75.00676727294922
+          "value": 75.00961303710938
         },
         "YOrientation": {
           "type": "float",
@@ -172018,11 +172018,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 0.8576061725616455
+          "value": 2.485557317733765
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.02500000037252903
+          "value": -5.7220458984375e-006
         }
       }
     ]

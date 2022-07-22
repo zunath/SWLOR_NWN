@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3486
+    "value": 3370
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 30.0
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 12
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 40
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -125
+    "value": -6
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 1100
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Native to the planet Neroth, these fierce predators thrive wherever they happen to be brought. This Dathomiran turtle has evolved over the millennia to be somewhat slimmer and lightly armored compared to its cousins on the homeworld, with sharper claws, teeth and more powerful musculature, so as to keep up in this hostile environment."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 24
   },
   "Disarmable": {
     "type": "byte",
@@ -76,10 +78,17 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vdathbiteturtle"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "dragonturtleshel"
+          "value": "vdathskinturtle"
         }
       }
     ]
@@ -95,49 +104,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 196
+          "value": 1747
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 332
+          "value": 1746
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 333
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 334
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 492
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 493
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 494
+          "value": 289
         }
       }
     ]
@@ -162,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 1100
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -196,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 1500
   },
   "NaturalAC": {
     "type": "byte",
@@ -212,7 +193,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 9
   },
   "Phenotype": {
     "type": "int",
@@ -224,7 +205,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 625
+    "value": 196
   },
   "Race": {
     "type": "byte",
@@ -489,7 +470,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 65535
+    "value": 385
   },
   "SpecAbilityList": {
     "type": "list",
@@ -3468,11 +3449,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 74
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 80
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -3492,11 +3473,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "dragonturtle"
+    "value": "vdathturtle"
   },
   "WalkRate": {
     "type": "int",
-    "value": 2
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -3508,6 +3489,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 26
   }
 }

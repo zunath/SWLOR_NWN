@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 458
+    "value": 1933
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 50.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 18
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 40
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 23
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 6
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 360
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Small, diminutive creatures. Only marginally more intelligent than the average beast, these creatures hunt in packs and are known to use basic tools. Perhaps in time they might form a new civilization, but for now they struggle for survival on the planet Dathoimir.\n\nThey're known to on occasion scavenge tech from fallen explorers, and their warriors often wield sparking pieces of broken equipment."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 70
+    "value": 27
   },
   "Disarmable": {
     "type": "byte",
@@ -76,10 +78,17 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vdathbitepurbole"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitemdra"
+          "value": "vdathskinpurbole"
         }
       }
     ]
@@ -90,12 +99,20 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 289
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Chirodactyl"
+      "0": "Purbole"
     }
   },
   "fortbonus": {
@@ -112,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 360
   },
   "Int": {
     "type": "byte",
-    "value": 70
+    "value": 27
   },
   "Interruptable": {
     "type": "byte",
@@ -146,7 +163,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 315
+    "value": 600
   },
   "NaturalAC": {
     "type": "byte",
@@ -162,7 +179,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 9
   },
   "Phenotype": {
     "type": "int",
@@ -174,7 +191,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 191
+    "value": 315
   },
   "Race": {
     "type": "byte",
@@ -439,7 +456,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 0
+    "value": 250
   },
   "SpecAbilityList": {
     "type": "list",
@@ -447,11 +464,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 80
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 27
   },
   "Subrace": {
     "type": "cexostring",
@@ -459,7 +476,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Chirodactyl"
+    "value": "Ssurian"
   },
   "Tail_New": {
     "type": "dword",
@@ -471,11 +488,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "chirodactyl"
+    "value": "vdathpurbole"
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 5
   },
   "willbonus": {
     "type": "short",
@@ -487,6 +504,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 20
   }
 }

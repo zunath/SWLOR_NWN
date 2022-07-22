@@ -14825,7 +14825,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "This rather strong looking Trandoshan has all sorts of metal cutting, and shaping tools on him. He carries with him a data pad with all sorts of weapon and armor blueprints. "
+          }
         },
         "Dex": {
           "type": "byte",
@@ -14842,7 +14844,7 @@
               "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
-                "value": 0
+                "value": 124
               },
               "ArmorPart_Belt": {
                 "type": "byte",
@@ -14938,7 +14940,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 125
               },
               "Cursed": {
                 "type": "byte",
@@ -15060,6 +15062,37 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 37
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 90
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 36
                     },
                     "CostValue": {
@@ -15077,6 +15110,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 92
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 120
                     },
                     "Subtype": {
                       "type": "word",
@@ -15917,7 +15981,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The Rodian before you is dressed in beautiful blue attire. In her hand is a holo puck, with imagery of star ships. She casually flips through them as he idly waits in the Hall."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -16093,127 +16159,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "shipcaptaingrf"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 7.118596198770071e-043
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 128,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 52
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 0
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "[NPC] Glow - Yellow"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 8
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 18
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 9
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 44
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "NPCGlowYellow"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "item007"
               },
               "XOrientation": {
                 "type": "float",
@@ -17000,7 +16945,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "This ugnaught seems constantly working on something. Dressed in a sleek black flame retardant suit, and a stunning dusters hat, she is just about ready to build anything. \n\nOn her data pad are blueprints of all different kinds of structures, and furniture alike."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -18924,7 +18871,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "This Mon Calamari stands before you dressed in a long burgundy overcoat. On her hips are two beautiful silver blaster pistols. In her webbed hands is a data pad in which she seems rather invested in, only presenting it to those in the Guild."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -19103,127 +19052,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "bountyhuntdred"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 1.008934894313868e-042
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 128,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 52
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 0
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "[NPC] Glow - Yellow"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 8
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 18
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 9
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 44
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "NPCGlowYellow"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "item007"
               },
               "XOrientation": {
                 "type": "float",

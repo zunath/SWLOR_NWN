@@ -8821,6 +8821,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Master Atris"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "atris_jedi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 42.0
                     },
                     "FACTION": {

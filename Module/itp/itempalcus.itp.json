@@ -4958,6 +4958,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yshren's Robes (Cloak)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yshrobes003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yshren's Robes (No Cloak)"
                     },
                     "RESREF": {
@@ -27832,6 +27843,154 @@
               "ID": {
                 "type": "byte",
                 "value": 1
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Basic Access Keycard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_czerka_01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka ID Codes - Level 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_czerka_02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka ID Codes - Level 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_czerka_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight ID Codes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_jedi_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Master ID Codes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_jedi_04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Padawan ID Codes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_jedi_02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_jedi_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Base Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_rep_01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic ID Codes - Level 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_rep_02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic ID Codes - Level 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_rep_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Revanite Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_sith_01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Revanite ID Codes - Level 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_sith_02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Revanite ID Codes - Level 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_sith_03"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

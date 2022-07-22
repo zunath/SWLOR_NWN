@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Service.PropertyService;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
@@ -135,6 +136,10 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.TwinBlade;
             if (Item.KatarBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Katar;
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Lightsaber;
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Saberstaff;
 
             // Universal armor classes
             switch (baseItemType)
@@ -202,6 +207,10 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.Starship;
             if (Space.IsItemShipModule(item))
                 return MarketCategoryType.StarshipParts;
+
+            // Structures
+            if (Property.GetStructureTypeFromItem(item) != StructureType.Invalid)
+                return MarketCategoryType.Structure;
 
             return MarketCategoryType.Miscellaneous;
         }

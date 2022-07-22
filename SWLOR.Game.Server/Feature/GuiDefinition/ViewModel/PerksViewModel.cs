@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRefund() => () =>
         {
-            ShowModal($"You may only refund one perk per 24 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
+            ShowModal($"You may only refund one perk per 12 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .Where(x => x.Key <= pcPerkLevel)
                         .Sum(x => x.Value.Price);
                     // Update player's DB record.
-                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(12);
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(selectedPerk);
                     dbPlayer.NumberPerkResetsAvailable--;

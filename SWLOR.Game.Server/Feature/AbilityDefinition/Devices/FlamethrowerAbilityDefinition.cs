@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         StatusEffect.Apply(activator, target, StatusEffectType.Burn, 30f);
                     }
 
-                    Enmity.ModifyEnmity(activator, target, 20);
+                    Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
 
                 }

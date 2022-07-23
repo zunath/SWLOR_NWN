@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals light thermal damage to your target.", 1, 3f, 6, 8);
-            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals light thermal damage to your target.", 2, 4f, 9, 12);
-            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals light thermal damage to your target.", 3, 5f, 12, 17);
-            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals light thermal damage to your target.", 4, 6f, 15, 21);
-            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals light thermal damage to your target.", 5, 7f, 18, 26);
+            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals 8 thermal DMG to your target.", 1, 3f, 6, 8);
+            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals 12 thermal DMG to your target.", 2, 4f, 9, 12);
+            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals 17 thermal DMG to your target.", 3, 5f, 12, 17);
+            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals 21 thermal DMG to your target.", 4, 6f, 15, 21);
+            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals 26 thermal DMG to your target.", 5, 7f, 18, 26);
 
             return _builder.Build();
         }
@@ -68,13 +68,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    
+                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+
                     if (isHit)
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
+                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ApplyEffectToObject(DurationType.Instant, missile, target);
+    
                             DelayCommand(0.3f, () =>
                             {
                                 Space.ApplyShipDamage(activator, target, damage);
@@ -85,8 +88,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest, true);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
+                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ApplyEffectToObject(DurationType.Instant, missile, target);
                         });
                     }
 
@@ -98,6 +101,5 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
-
     }
 }

@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
+        private static readonly HashSet<uint> _playersInSpace = new();
+
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
@@ -57,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
+            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1));
         }
 
         [NWNEventHandler("mod_enter")]
@@ -75,6 +78,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             CloneShip(player);
+
+            if (_playersInSpace.Contains(player))
+                _playersInSpace.Remove(player);
         }
 
         /// <summary>
@@ -313,14 +319,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature whose target will be set.</param>
         /// <param name="target">The target to set.</param>
-        /// <param name="vfx">The visual effect to use on the target.</param>
-        private static void SetCurrentTarget(uint creature, uint target, VisualEffect vfx = VisualEffect.Vfx_Target_Marker)
+        private static void SetCurrentTarget(uint creature, uint target)
         {
             // Set the VFX to the new target if creature is a player.
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, vfx);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
@@ -366,6 +371,7 @@ namespace SWLOR.Game.Server.Service
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
+            var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
@@ -377,10 +383,11 @@ namespace SWLOR.Game.Server.Service
 
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
-            
+
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, position);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -388,6 +395,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, position);
             }
         }
 
@@ -716,6 +724,9 @@ namespace SWLOR.Game.Server.Service
                 _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
             }
 
+            if(!_playersInSpace.Contains(player))
+                _playersInSpace.Add(player);
+
             ExecuteScript("space_enter", player);
         }
 
@@ -841,6 +852,10 @@ namespace SWLOR.Game.Server.Service
 
             // Destroy the NPC clone.
             DestroyPilotClone(player);
+
+            if (_playersInSpace.Contains(player))
+                _playersInSpace.Remove(player);
+
             ExecuteScript("space_exit", player);
         }
 
@@ -1174,24 +1189,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When the player's heartbeat fires, recover capacitor and shield.
+        /// Recover player ships every second.
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
-        public static void PlayerShipRecovery()
+        private static void PlayerShipRecovery()
         {
-            var player = OBJECT_SELF;
+            foreach (var player in _playersInSpace)
+            {
+                // Not in space mode, skip.
+                if (!IsPlayerInSpaceMode(player)) 
+                    continue;
 
-            // Not in space mode, exit early.
-            if (!IsPlayerInSpaceMode(player)) return;
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                ApplyAutoShipRecovery(player, dbShip.Status);
 
-            ApplyAutoShipRecovery(player, dbShip.Status);
-
-            // Update changes
-            DB.Set(dbShip);
+                // Update changes
+                DB.Set(dbShip);
+            }
         }
 
         public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
@@ -1424,6 +1440,8 @@ namespace SWLOR.Game.Server.Service
                 // Shields have enough to cover the attack.
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
             }
             else
             {
@@ -1436,6 +1454,7 @@ namespace SWLOR.Game.Server.Service
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
             }
 
             // Safety clamping
@@ -1524,6 +1543,10 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+
                 }
 
                 foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
@@ -1534,6 +1557,9 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
                 // Player always loses all modules regardless if they actually dropped.
@@ -1708,7 +1734,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 ClearCurrentTarget(creature);
-                SetCurrentTarget(creature, self, VisualEffect.Vfx_Dur_Aura_Red);
+                SetCurrentTarget(creature, self);
             }
         }
 
@@ -1835,6 +1861,26 @@ namespace SWLOR.Game.Server.Service
             }
 
             return bonuses;
+        }
+
+        /// <summary>
+        /// When a player attempts to stealth while in space mode,
+        /// exit the stealth mode and send an error message.
+        /// </summary>
+        [NWNEventHandler("stlent_add_bef")]
+        public static void PreventSpaceStealth()
+        {
+            var creature = OBJECT_SELF;
+
+            if (!IsPlayerInSpaceMode(creature))
+                return;
+
+            AssignCommand(creature, () =>
+            {
+                SetActionMode(creature, ActionMode.Stealth, false);
+            });
+
+            SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));
         }
 
     }

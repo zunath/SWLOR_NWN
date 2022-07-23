@@ -78,7 +78,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBleed) StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
+            if (inflictBleed) 
+                StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void HackingBlade1(AbilityBuilder builder)

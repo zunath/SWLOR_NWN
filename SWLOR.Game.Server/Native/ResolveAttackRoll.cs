@@ -241,14 +241,7 @@ namespace SWLOR.Game.Server.Native
                 var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
                 // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
                 // in to the proficiency perks rather than granting them separately. 
-
-                if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
-                {
-                    // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
-                    percentageModifier -= 10;
-                    logMessage += "- offhand weapon is unwieldy -";
-                }
-
+                
                 // Apply the base two weapon fighting penalty. 
                 percentageModifier -= 20;
                 Log.Write(LogGroup.Attack, logMessage);

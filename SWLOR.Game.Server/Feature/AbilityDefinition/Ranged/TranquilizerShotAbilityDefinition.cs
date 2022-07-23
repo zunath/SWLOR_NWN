@@ -41,15 +41,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            var enmity = level * 300;
             switch (level)
             {
                 case 1:
-                    Enmity.ModifyEnmity(activator, target, 30);
+                    Enmity.ModifyEnmity(activator, target, enmity);
                     StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 12f);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
                 case 2:
-                    Enmity.ModifyEnmity(activator, target, 60);
+                    Enmity.ModifyEnmity(activator, target, enmity);
                     StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 24f);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
@@ -58,8 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     var creature = GetFirstObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     while (GetIsObjectValid(creature) && count < 3)
                     {
-
-                        Enmity.ModifyEnmity(activator, creature, 30);
+                        Enmity.ModifyEnmity(activator, creature, enmity);
                         StatusEffect.Apply(activator, creature, StatusEffectType.Tranquilize, 12f);
                         CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
                         count++;

@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Deals explosive damage to your target and nearby ships.", 1, 8f, 10, 6);
-            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Deals explosive damage to your target and nearby ships.", 2, 11f, 14, 10);
-            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Deals explosive damage to your target and nearby ships.", 3, 14f, 18, 15);
-            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Deals explosive damage to your target and nearby ships.", 4, 17f, 22, 19);
-            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Deals explosive damage to your target and nearby ships.", 5, 20f, 26, 24);
+            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Deals 6 explosive DMG to your target and nearby ships.", 1, 8f, 10, 6);
+            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Deals 10 explosive DMG to your target and nearby ships.", 2, 11f, 14, 10);
+            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Deals 15 explosive DMG to your target and nearby ships.", 3, 14f, 18, 15);
+            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Deals 19 explosive DMG  to your target and nearby ships.", 4, 17f, 22, 19);
+            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Deals 24 explosive DMG to your target and nearby ships.", 5, 20f, 26, 24);
 
             return _builder.Build();
         }
@@ -99,14 +99,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv, !isHit), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
                     });
                     
                     // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
                     // Then apply damage on target and those nearby.
                     DelayCommand(delay, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
                         PerformAttack(activator, target, dmg, attackBonus, isHit);
 
                         // Iterate over nearby targets, rolling to apply damage to each.

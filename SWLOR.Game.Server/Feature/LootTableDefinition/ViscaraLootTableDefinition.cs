@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("k_hound_fur", 20)
                 .AddItem("k_hound_tooth", 20)
                 .AddItem("lth_ruined", 20)
-                .AddItem("kath_meat_1", 10)
+                .AddItem("kath_meat_1", 15)
                 .AddItem("kath_blood", 5);
 
             _builder.Create("VISCARA_KATH_HOUND_RARES")
@@ -261,9 +261,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_WAROCAS")
                 .AddItem("warocas_beak", 20)
-                .AddItem("waro_feathers", 5)
+                .AddItem("waro_feathers", 15)
                 .AddItem("lth_ruined", 20)
-                .AddItem("warocas_meat", 10)
+                .AddItem("warocas_meat", 15)
                 .AddItem("waro_leg", 2, 1, true);
 
             _builder.Create("VISCARA_WAROCAS_RARES")

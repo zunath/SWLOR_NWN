@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
 
-            Enmity.ModifyEnmityOnAll(source, amount);
+            Enmity.ModifyEnmityOnAll(source, 120 + amount);
             CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
         }
 

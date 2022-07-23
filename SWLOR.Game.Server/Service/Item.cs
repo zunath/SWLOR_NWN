@@ -959,20 +959,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the weapon size of a given item type.
-        /// The value returned is based on the baseitems.2da file.
-        /// </summary>
-        /// <param name="type">The item type to check</param>
-        /// <returns>The weapon size value.</returns>
-        public static int GetWeaponSize(BaseItem type)
-        {
-            var size = _2daCache[(int)type][2];
-            Log.Write(LogGroup.Attack, "Size of item type " + type + " is " + size);
-
-            return size;
-        }
-
-        /// <summary>
         /// Reduces an item stack by a specific amount.
         /// If there are not enough items in the stack to reduce, false will be returned.
         /// If the stack size of the item will reach 0, the item is destroyed and true will be returned.

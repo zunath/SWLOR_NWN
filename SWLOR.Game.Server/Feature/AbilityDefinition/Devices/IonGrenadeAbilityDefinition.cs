@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 10);
+            Enmity.ModifyEnmity(activator, target, 350);
         }
 
         private void IonGrenade1()

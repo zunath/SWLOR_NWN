@@ -159,6 +159,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);
 
+            if (Item.IsLegacyItem(item))
+            {
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    RemoveItemProperty(item, ip);
+                }
+            }
+
             RefreshItemCount();
         };
 

@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     ApplyEffectToObject(DurationType.Temporary, EffectModifyAttacks(1), activator, 60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), activator);
 
-                    Enmity.ModifyEnmityOnAll(activator, 140);
+                    Enmity.ModifyEnmityOnAll(activator, 450);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
                 });
         }

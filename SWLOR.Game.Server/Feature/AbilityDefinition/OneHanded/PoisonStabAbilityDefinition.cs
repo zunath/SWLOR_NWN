@@ -78,7 +78,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictPoison) StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
+            if (inflictPoison) 
+                StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void PoisonStab1(AbilityBuilder builder)

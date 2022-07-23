@@ -63,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
             {
-
                 var attackerStat = GetAbilityScore(activator, AbilityType.Might);
                 var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -75,8 +74,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     defense, 
                     defenderStat, 
                     0);
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 2);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
 
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
                 count++;

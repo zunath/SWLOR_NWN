@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
 
+                    Enmity.ModifyEnmityOnAll(source, 80);
                     CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
 
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+                    Enmity.ModifyEnmityOnAll(source, 120);
+                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
     }

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    Enmity.ModifyEnmityOnAll(activator, 20);
+                    Enmity.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    Enmity.ModifyEnmityOnAll(activator, 20);
+                    Enmity.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
     }

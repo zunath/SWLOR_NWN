@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
@@ -53,6 +54,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
                     StatusEffect.Remove(target, StatusEffectType.Bleed);
                     StatusEffect.Remove(target, StatusEffectType.Poison);
+
+                    TakeMedicalSupplies(activator);
+
+                    Enmity.ModifyEnmityOnAll(activator, 200);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void TreatmentKit2()
@@ -92,6 +98,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     StatusEffect.Remove(target, StatusEffectType.Poison);
                     StatusEffect.Remove(target, StatusEffectType.Shock);
                     StatusEffect.Remove(target, StatusEffectType.Burn);
+
+                    TakeMedicalSupplies(activator);
+
+                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

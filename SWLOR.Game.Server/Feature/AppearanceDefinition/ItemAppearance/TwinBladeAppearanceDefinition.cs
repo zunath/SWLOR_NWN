@@ -10,7 +10,7 @@
             201, 202, 203, // Color #2
             301, 302, 303, // Color #3
             401, 402, 403, // Color #4
-            // Color #5
+            501, // Color #5
             // Color #6
             // Color #7
             // Color #8
@@ -22,7 +22,7 @@
             201, 202, 203, // Color #2
             301, 302, 303, // Color #3
             401, 402, 403, // Color #4
-            // Color #5
+            501, // Color #5
             // Color #6
             // Color #7
             // Color #8
@@ -34,7 +34,7 @@
             201, 202, 203, // Color #2
             301, 302, 303, // Color #3
             401, 402, 403, // Color #4
-            // Color #5
+            501, // Color #5
             // Color #6
             // Color #7
             // Color #8

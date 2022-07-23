@@ -35,16 +35,13 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player))
                 return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var item = GetItemInSlot(slot, player);
 
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            {
-                if (GetItemInSlot((InventorySlot)slot, player) == item)
-                {
-                    EventsPlugin.SkipEvent();
-                    return;
-                }
-            }
+            if (!GetIsObjectValid(item))
+                return;
+
+            EventsPlugin.SkipEvent();
         }
 
         /// <summary>

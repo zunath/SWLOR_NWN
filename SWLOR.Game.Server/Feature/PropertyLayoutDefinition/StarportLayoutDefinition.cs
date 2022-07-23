@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.StarportStyle1)
                 .PropertyType(PropertyType.Starport)
                 .Name("Starport")
-                .StructureLimit(50)
+                .StructureLimit(80)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

@@ -503,6 +503,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col2.AddRow(row2 =>
                                 {
                                     row2.AddButton()
+                                        .SetText("HoloCom")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickHoloCom());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
                                         .SetText("Key Items")
                                         .SetHeight(32f)
                                         .SetWidth(100f)

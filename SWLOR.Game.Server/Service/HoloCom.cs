@@ -8,10 +8,11 @@ namespace SWLOR.Game.Server.Service
     public static class HoloCom
     {
         [NWNEventHandler("mod_death")]
-        private static void OnModuleDeath()
+        public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
-            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
+            if (IsInCall(player)) 
+                SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
         
@@ -19,7 +20,8 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleLeave()
         {
             var player = GetExitingObject();
-            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
+            if (IsInCall(player)) 
+                SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
 

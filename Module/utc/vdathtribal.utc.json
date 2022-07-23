@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3430
+    "value": 67
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 50.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 13
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 4
+          "value": 40
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 23
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 22
+    "value": 460
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Devolved from the more sophisticated Kwa culture, the planet Dathomir took its toll on their civilization and even species. They are a shadow of their former selves, not even truly sentient anymore. They as yet still use tools, mostly old blades of greater times, and a rare few of them possess a certain cunning and even force sensitivity."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -74,7 +76,22 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vdathbitetribal"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vdathskintribal"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -82,12 +99,27 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Squellbug"
+      "0": "Kwi Tribal"
     }
   },
   "fortbonus": {
@@ -96,7 +128,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 4
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -104,15 +136,15 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 22
+    "value": 460
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 23
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
@@ -138,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 26
+    "value": 700
   },
   "NaturalAC": {
     "type": "byte",
@@ -146,7 +178,7 @@
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",
@@ -154,7 +186,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 9
   },
   "Phenotype": {
     "type": "int",
@@ -166,11 +198,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 154
+    "value": 734
   },
   "Race": {
     "type": "byte",
-    "value": 25
+    "value": 11
   },
   "refbonus": {
     "type": "short",
@@ -305,7 +337,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 7
+          "value": 4
         }
       },
       {
@@ -431,7 +463,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 54
+    "value": 60
   },
   "SpecAbilityList": {
     "type": "list",
@@ -439,11 +471,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 75
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 23
   },
   "Subrace": {
     "type": "cexostring",
@@ -451,7 +483,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Squellbug"
+    "value": "KwiTribal"
   },
   "Tail_New": {
     "type": "dword",
@@ -463,11 +495,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "squellbug"
+    "value": "vdathtribal"
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -479,6 +511,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 20
   }
 }

@@ -93,7 +93,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "You lose your target.");
                         return;
                     }
-                    
+                 
+                    RemoveEffect(target, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
                     var lootTable = Loot.GetLootTableByName(lootTableName);
                     var loot = lootTable.GetRandomItem();

@@ -83,11 +83,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .TriggerPurchase((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true);
                 });
         }
 

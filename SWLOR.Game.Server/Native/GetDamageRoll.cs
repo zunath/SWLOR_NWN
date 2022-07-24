@@ -442,7 +442,8 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            if (Item.StaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
 

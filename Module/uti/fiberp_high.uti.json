@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 44
   },
   "BaseItem": {
     "type": "int",
@@ -10,7 +10,7 @@
   },
   "Charges": {
     "type": "byte",
-    "value": 44
+    "value": 0
   },
   "Comment": {
     "type": "cexostring",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 44
   },
   "Cursed": {
     "type": "byte",
@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",

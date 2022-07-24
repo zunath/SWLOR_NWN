@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Item = SWLOR.Game.Server.Service.Item;
@@ -10,50 +11,79 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class RangedPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            RapidShot(builder);
-            RapidReload(builder);
-            PrecisionAim(builder);
-            PointBlankShot(builder);
-            WeaponFocusPistols(builder);
-            ImprovedCriticalPistols(builder);
-            PistolProficiency(builder);
-            PistolMastery(builder);
-            QuickDraw(builder);
-            DoubleShot(builder);
-            WeaponFocusThrowingWeapons(builder);
-            ImprovedCriticalThrowingWeapons(builder);
-            ThrowingWeaponProficiency(builder);
-            ThrowingWeaponMastery(builder);
-            ExplosiveToss(builder);
-            PiercingToss(builder);
-            WeaponFocusRifles(builder);
-            ImprovedCriticalRifles(builder);
-            RifleProficiency(builder);
-            RifleMastery(builder);
-            TranquilizerShot(builder);
-            CripplingShot(builder);
+            RapidShot();
+            RapidReload();
+            PrecisionAim();
+            PointBlankShot();
+            WeaponFocusPistols();
+            ImprovedCriticalPistols();
+            PistolProficiency();
+            PistolMastery();
+            QuickDraw();
+            DoubleShot();
+            WeaponFocusThrowingWeapons();
+            ImprovedCriticalThrowingWeapons();
+            ThrowingWeaponProficiency();
+            ThrowingWeaponMastery();
+            ExplosiveToss();
+            PiercingToss();
+            WeaponFocusRifles();
+            ImprovedCriticalRifles();
+            RifleProficiency();
+            RifleMastery();
+            TranquilizerShot();
+            CripplingShot();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void RapidShot(PerkBuilder builder)
+        private void RapidShot()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidShot)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidShot)
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Gain an extra attack per round when a ranged weapon (except rifles) is equipped. All attacks within the round suffer a -2 penalty.")
+                .Description("Grants 1 additional attack with ranged weapons.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .GrantsFeat(FeatType.RapidShot);
+                .GrantsFeat(FeatType.RapidShot)
+
+                .AddPerkLevel()
+                .Description("Grants 2 additional attacks with ranged weapons.")
+                .Price(5)
+                .RequirementSkill(SkillType.Ranged, 35)
+                .GrantsFeat(FeatType.RapidShot)
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                });
         }
 
-        private void RapidReload(PerkBuilder builder)
+        private void RapidReload()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidReload)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidReload)
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
@@ -63,9 +93,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RapidReload);
         }
 
-        private void PrecisionAim(PerkBuilder builder)
+        private void PrecisionAim()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
                 .Name("Precision Aim")
 
                 .AddPerkLevel()
@@ -83,9 +113,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PrecisionAim2);
         }
 
-        private void PointBlankShot(PerkBuilder builder)
+        private void PointBlankShot()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
                 .Name("Point Blank Shot")
 
                 .AddPerkLevel()
@@ -95,9 +125,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PointBlankShot);
         }
 
-        private void WeaponFocusPistols(PerkBuilder builder)
+        private void WeaponFocusPistols()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
                 .Name("Weapon Focus - Pistols")
 
                 .AddPerkLevel()
@@ -113,9 +143,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
         }
 
-        private void ImprovedCriticalPistols(PerkBuilder builder)
+        private void ImprovedCriticalPistols()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
                 .Name("Improved Critical - Pistols")
 
                 .AddPerkLevel()
@@ -125,9 +155,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalPistol);
         }
 
-        private void PistolProficiency(PerkBuilder builder)
+        private void PistolProficiency()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
                 .Name("Pistol Proficiency")
 
                 .AddPerkLevel()
@@ -160,52 +190,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolProficiency5);
         }
 
-        private void PistolMastery(PerkBuilder builder)
+        private void PistolMastery()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
                 .Name("Pistol Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -221,9 +230,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolMastery2);
         }
 
-        private void QuickDraw(PerkBuilder builder)
+        private void QuickDraw()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
                 .Name("Quick Draw")
 
                 .AddPerkLevel()
@@ -248,9 +257,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.QuickDraw3);
         }
 
-        private void DoubleShot(PerkBuilder builder)
+        private void DoubleShot()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
                 .Name("Double Shot")
 
                 .AddPerkLevel()
@@ -275,9 +284,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DoubleShot3);
         }
 
-        private void WeaponFocusThrowingWeapons(PerkBuilder builder)
+        private void WeaponFocusThrowingWeapons()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
                 .Name("Weapon Focus - Throwing Weapons")
 
                 .AddPerkLevel()
@@ -293,9 +302,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
         }
 
-        private void ImprovedCriticalThrowingWeapons(PerkBuilder builder)
+        private void ImprovedCriticalThrowingWeapons()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
                 .Name("Improved Critical - Throwing Weapons")
 
                 .AddPerkLevel()
@@ -305,9 +314,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalThrowingWeapons);
         }
 
-        private void ThrowingWeaponProficiency(PerkBuilder builder)
+        private void ThrowingWeaponProficiency()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
                 .Name("Throwing Weapon Proficiency")
 
                 .AddPerkLevel()
@@ -340,52 +349,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponProficiency5);
         }
 
-        private void ThrowingWeaponMastery(PerkBuilder builder)
+        private void ThrowingWeaponMastery()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
                 .Name("Throwing Weapon Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -401,9 +389,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponMastery2);
         }
 
-        private void ExplosiveToss(PerkBuilder builder)
+        private void ExplosiveToss()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
                 .Name("Explosive Toss")
 
                 .AddPerkLevel()
@@ -428,9 +416,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ExplosiveToss3);
         }
 
-        private void PiercingToss(PerkBuilder builder)
+        private void PiercingToss()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
                 .Name("Piercing Toss")
 
                 .AddPerkLevel()
@@ -455,9 +443,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PiercingToss3);
         }
         
-        private void WeaponFocusRifles(PerkBuilder builder)
+        private void WeaponFocusRifles()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
                 .Name("Weapon Focus - Rifles")
 
                 .AddPerkLevel()
@@ -473,9 +461,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);
         }
 
-        private void ImprovedCriticalRifles(PerkBuilder builder)
+        private void ImprovedCriticalRifles()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
                 .Name("Improved Critical - Rifles")
 
                 .AddPerkLevel()
@@ -485,9 +473,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
         }
 
-        private void RifleProficiency(PerkBuilder builder)
+        private void RifleProficiency()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
                 .Name("Rifle Proficiency")
 
                 .AddPerkLevel()
@@ -520,52 +508,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RifleProficiency5);
         }
 
-        private void RifleMastery(PerkBuilder builder)
+        private void RifleMastery()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
                 .Name("Rifle Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -581,9 +548,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RifleMastery2);
         }
 
-        private void TranquilizerShot(PerkBuilder builder)
+        private void TranquilizerShot()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot")
 
                 .AddPerkLevel()
@@ -608,9 +575,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TranquilizerShot3);
         }
 
-        private void CripplingShot(PerkBuilder builder)
+        private void CripplingShot()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()

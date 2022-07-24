@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Sith Pistol
             _builder.Create(RecipeType.SithPistol, SkillType.Smithery)
                 .Category(RecipeCategoryType.Pistol)
-                .Resref("sith_rifle")
+                .Resref("sith_pistol")
                 .Level(19)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)

@@ -1780,6 +1780,11 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbShip);
             }
 
+            if (_shipClones.ContainsKey(dbShip.Id))
+            {
+                _shipClones.Remove(dbShip.Id);
+            }
+
             DestroyObject(shipClone);
         }
 

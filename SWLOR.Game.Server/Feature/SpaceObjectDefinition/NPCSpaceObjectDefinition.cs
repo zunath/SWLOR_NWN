@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
         private void Tier2()
         {
-            _builder.Create("pirate_night")
+            _builder.Create("pirate_nightmare")
                 .ItemTag("NPC_Nightmare")
                 .ShipModule("ion_cann_1")
                 .ShipModule("com_laser_1")

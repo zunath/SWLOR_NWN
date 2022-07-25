@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "pirate_night")
+                .AddSpawn(ObjectType.Creature, "pirate_nightmare")
                 .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MonCalaOrbit()
         {
             _builder.Create("SPACE_MONCALA_ORBIT", "Space - Mon Cala Orbit")
-                .AddSpawn(ObjectType.Creature, "pirate_night")
+                .AddSpawn(ObjectType.Creature, "pirate_nightmare")
                 .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void KorribanOrbit()
         {
             _builder.Create("SPACE_KORRIBAN_ORBIT", "Space - Korriban Orbit")
-                .AddSpawn(ObjectType.Creature, "pirate_night")
+                .AddSpawn(ObjectType.Creature, "pirate_nightmare")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()

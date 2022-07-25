@@ -414,7 +414,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("dualwieldingstance2")
               .Description("Take a combat stance with two weapons.")
               .Permissions(AuthorizationLevel.All)
-              .AnimationLoopingAction(Animation.DualWieldingStance2);
+              .AnimationLoopingAction(Animation.DualWieldingStance2)
+              .IsEmote();
 
             return builder.Build();
         }

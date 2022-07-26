@@ -185467,11 +185467,11 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 10
+                            "value": 15
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 3
+                            "value": 2
                           },
                           "Param1": {
                             "type": "byte",
@@ -185483,7 +185483,7 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 11
+                            "value": 32
                           },
                           "Subtype": {
                             "type": "word",
@@ -185498,15 +185498,15 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 15
+                            "value": 0
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 3
+                            "value": 0
                           },
                           "Param1": {
                             "type": "byte",
-                            "value": 255
+                            "value": 11
                           },
                           "Param1Value": {
                             "type": "byte",
@@ -185514,7 +185514,7 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 32
+                            "value": 81
                           },
                           "Subtype": {
                             "type": "word",
@@ -205153,11 +205153,11 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 10
+                            "value": 15
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 3
+                            "value": 2
                           },
                           "Param1": {
                             "type": "byte",
@@ -205169,7 +205169,7 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 11
+                            "value": 32
                           },
                           "Subtype": {
                             "type": "word",
@@ -205184,15 +205184,15 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 15
+                            "value": 0
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 3
+                            "value": 0
                           },
                           "Param1": {
                             "type": "byte",
-                            "value": 255
+                            "value": 11
                           },
                           "Param1Value": {
                             "type": "byte",
@@ -205200,7 +205200,7 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 32
+                            "value": 81
                           },
                           "Subtype": {
                             "type": "word",
@@ -239878,7 +239878,7 @@
                           },
                           "Param1Value": {
                             "type": "byte",
-                            "value": 1
+                            "value": 0
                           },
                           "PropertyName": {
                             "type": "word",

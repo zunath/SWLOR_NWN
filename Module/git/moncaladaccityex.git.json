@@ -518990,15 +518990,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 232
+                      "value": 43
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 101
+                      "value": 13
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 55
+                      "value": 43
                     },
                     "Plot": {
                       "type": "byte",
@@ -523348,15 +523348,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 91
+                      "value": 24
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 51
+                      "value": 34
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 15
+                      "value": 14
                     },
                     "Plot": {
                       "type": "byte",
@@ -544589,7 +544589,7 @@
                           },
                           "Param1Value": {
                             "type": "byte",
-                            "value": 1
+                            "value": 0
                           },
                           "PropertyName": {
                             "type": "word",
@@ -562873,7 +562873,7 @@
                           },
                           "Param1Value": {
                             "type": "byte",
-                            "value": 1
+                            "value": 0
                           },
                           "PropertyName": {
                             "type": "word",
@@ -630766,7 +630766,7 @@
                           },
                           "Param1Value": {
                             "type": "byte",
-                            "value": 1
+                            "value": 0
                           },
                           "PropertyName": {
                             "type": "word",

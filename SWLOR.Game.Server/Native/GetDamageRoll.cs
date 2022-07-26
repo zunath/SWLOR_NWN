@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Doublehand perk
-            if (attackType == (uint)AttackType.Melee && weapon != null)
+            if (weapon != null)
             {
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {

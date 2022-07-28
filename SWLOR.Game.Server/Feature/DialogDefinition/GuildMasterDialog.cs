@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var status = ColorToken.Green("{ACCEPTED}");
                 // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
                 if (!dbPlayer.Quests.ContainsKey(task.QuestId) ||
-                    (dbPlayer.Quests[task.QuestId].DateLastCompleted == null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0))
+                    (dbPlayer.Quests[task.QuestId].DateLastCompleted != null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0))
                 {
                     status = ColorToken.Yellow("{Available}");
                 }

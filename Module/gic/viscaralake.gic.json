@@ -445,13 +445,6 @@
         "__struct_id": 1,
         "Comment": {
           "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -488,6 +481,13 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random resource spawns from spawning within the trigger."
         }
       }
     ]

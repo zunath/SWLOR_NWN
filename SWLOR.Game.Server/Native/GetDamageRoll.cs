@@ -195,7 +195,8 @@ namespace SWLOR.Game.Server.Native
                 {
                     var weaponType = (BaseItem)weapon.m_nBaseItem;
 
-                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType))
+                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType) ||
+                        Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
                     {
                         var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
                         Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature
             ApplyHeight(player);
             RemoveImmobility(player);
             ReapplyBAB(player);
+            ReapplySpeed(player);
         }
 
         private static void ApplyCutsceneGhostToPlayer(uint player)
@@ -49,6 +50,11 @@ namespace SWLOR.Game.Server.Feature
         private static void ReapplyBAB(uint player)
         {
             CreaturePlugin.SetBaseAttackBonus(player, GetBaseAttackBonus(player));
+        }
+
+        private static void ReapplySpeed(uint player)
+        {
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }
     }
 }

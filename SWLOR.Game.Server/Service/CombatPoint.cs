@@ -109,37 +109,56 @@ namespace SWLOR.Game.Server.Service
                         .Where(x => cpList.ContainsKey(x.Key))
                         .ToDictionary(x => x.Key, y => y.Value);
 
-                    var highestRank = skillsWithCP
-                        .Where(x => x.Key != SkillType.Armor)
-                        .OrderByDescending(o => o.Value.Rank)
-                        .Select(s => s.Value.Rank)
-                        .First();
-
-                    // Base amount of XP is determined by the player's highest-leveled skill rank versus the creature's level.
-                    var delta = npcLevel - highestRank;
-                    var baseXP = Skill.GetDeltaXP(delta);
-                    var totalPoints = (float)cpList.Sum(s => s.Value);
                     var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
 
-                    // Each skill used during combat receives a percentage of the baseXP amount depending on the number of combat points earned.
-                    foreach (var (skillType, cp) in cpList)
+                    foreach (CombatPointCategory cpCategory in Enum.GetValues(typeof(CombatPointCategory)))
                     {
-                        var percentage = cp / totalPoints;
-                        var adjustedXP = baseXP * percentage;
-                        adjustedXP += areaBonus * adjustedXP;
+                        var validSkills = skillsWithCP
+                            .Where(x => Skill.GetSkillDetails(x.Key).XPType == cpCategory)
+                            .ToDictionary(x => x.Key, y => y.Value);
 
-                        Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
-                    }
+                        // Base amount of XP is determined by the player's highest-leveled skill rank in each XP category versus the creature's level.
+                        if (cpCategory != CombatPointCategory.Exempt)
+                        {
+                            var validCPs = cpList
+                                .Where(x => Skill.GetSkillDetails(x.Key).XPType == cpCategory);
+                            if (!validCPs.Any()) continue;
+                            if (!validSkills.Any()) continue;
 
-                    // Armor XP is calculated the same way but is separate from other skills used during combat.
-                    if (!Space.IsPlayerInSpaceMode(player))
-                    {
-                        var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
-                        delta = npcLevel - armorRank;
-                        baseXP = Skill.GetDeltaXP(delta);
-                        var adjustedXP = baseXP + areaBonus * baseXP;
+                            var highestRank = validSkills
+                                .OrderByDescending(o => o.Value.Rank)
+                                .Select(s => s.Value.Rank)
+                                .First();
 
-                        Skill.GiveSkillXP(player, SkillType.Armor, (int)adjustedXP);
+                            var xpDelta = npcLevel - highestRank;
+                            var baseXP = Skill.GetDeltaXP(xpDelta);
+                            var totalCatCP = (float)validCPs
+                                .Sum(s => s.Value);
+
+                            // Each skill used during combat receives a percentage of the baseXP amount depending on the number of combat points earned.
+                            // The percentage is based on XP category, see CombatPointCategory
+
+                            foreach (var (skillType, cp) in validCPs)
+                            {
+                                var adjXP = baseXP * (cp / totalCatCP);
+                                adjXP += adjXP * areaBonus;
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                            }
+                        }
+                        else
+                        {
+                            // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
+                            // As long as the player is on the ground, we always try to give them Armor XP
+                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            if (!validSkills.Any()) continue;
+
+                            foreach (var (skillType, ps) in validSkills)
+                            {
+                                float adjXP = Skill.GetDeltaXP(npcLevel - ps.Rank);
+                                adjXP += adjXP * areaBonus;
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                            }
+                        }
                     }
                 }
 
@@ -276,16 +295,18 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to receiving the point.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        /// <returns>True if at least one creature is tagged, false otherwise.</returns>
-        public static void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        /// <returns>Number of creatures tagged by the player, -1 if the tracker has expired or is unavailable.</returns>
+        public static int AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
             if (!_playerToCreatureTracker.ContainsKey(player)) 
-                return;
+                return -1;
 
             foreach (var creature in _playerToCreatureTracker[player])
             {
                 AddCombatPoint(player, creature, skill, amount);
             }
+
+            return _playerToCreatureTracker[player].Count;
         }
 
         /// <summary>
@@ -293,7 +314,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose reference we're attaching.</param>
         /// <param name="creature">The creature we're referencing</param>
-        private static void AddPlayerToNPCReferenceToCache(uint player, uint creature)
+        public static void AddPlayerToNPCReferenceToCache(uint player, uint creature)
         {
             if (!_playerToCreatureTracker.ContainsKey(player))
             {

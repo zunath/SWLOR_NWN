@@ -16,6 +16,13 @@ namespace SWLOR.Game.Server.Service.SkillService
         Languages = 4,
     }
 
+    public enum CombatPointCategory
+    {
+        Exempt = 0,
+        Utility = 1,
+        Weapons = 2
+    }
+
     public class SkillCategoryAttribute : Attribute
     {
         public string Name { get; set; }

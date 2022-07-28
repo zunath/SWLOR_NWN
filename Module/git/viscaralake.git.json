@@ -12672,209 +12672,6 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -150.1197509765625
-              },
-              "PointY": {
-                "type": "float",
-                "value": -90.58078002929688
-              },
-              "PointZ": {
-                "type": "float",
-                "value": -4.474999904632568
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -0.52471923828125
-              },
-              "PointY": {
-                "type": "float",
-                "value": -81.57054138183594
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 1.253720879554749
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": 0.0
-              },
-              "PointY": {
-                "type": "float",
-                "value": 0.0
-              },
-              "PointZ": {
-                "type": "float",
-                "value": -4.474999904632568
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -147.7521057128906
-              },
-              "PointY": {
-                "type": "float",
-                "value": -18.6351318359375
-              },
-              "PointZ": {
-                "type": "float",
-                "value": -4.474999904632568
-              }
-            }
-          ]
-        },
-        "HighlightHeight": {
-          "type": "float",
-          "value": 0.0
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LinkedToFlags": {
-          "type": "byte",
-          "value": 0
-        },
-        "LoadScreenID": {
-          "type": "word",
-          "value": 0
-        },
-        "LocalizedName": {
-          "id": 14759,
-          "type": "cexolocstring",
-          "value": {
-            "0": "No Spawn Zone"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "ScriptHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnEnter": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnExit": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptUserDefine": {
-          "type": "resref",
-          "value": ""
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "anti_spawn_trigg"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "anti_spawn_trigg"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "int",
-          "value": 0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 236.1770629882813
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 312.8671875
-        },
-        "ZOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Cursor": {
-          "type": "byte",
-          "value": 0
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Geometry": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
                 "value": 0.0
               },
               "PointY": {
@@ -13798,7 +13595,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.01507564820349217
+                "value": -0.01819167099893093
               }
             },
             {
@@ -13813,7 +13610,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.1225453838706017
+                "value": 0.08414753526449204
               }
             },
             {
@@ -13828,7 +13625,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": -0.4109462201595306
+                "value": 0.01973637379705906
               }
             },
             {
@@ -13843,7 +13640,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": -0.03796545416116715
+                "value": 0.006910526659339666
               }
             },
             {
@@ -13858,7 +13655,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.1970662176609039
+                "value": -2.791281223297119
               }
             },
             {
@@ -13994,7 +13791,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 318.4596557617188
+          "value": 318.095703125
         },
         "YOrientation": {
           "type": "float",
@@ -14002,7 +13799,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 161.7835693359375
+          "value": 165.0855712890625
         },
         "ZOrientation": {
           "type": "float",
@@ -14437,6 +14234,209 @@
         "YPosition": {
           "type": "float",
           "value": 157.3904724121094
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 0
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -135.8619842529297
+              },
+              "PointY": {
+                "type": "float",
+                "value": 4.789962768554688
+              },
+              "PointZ": {
+                "type": "float",
+                "value": -4.474999904632568
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 1.689273476600647
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 1.7578125
+              },
+              "PointY": {
+                "type": "float",
+                "value": 96.08009338378906
+              },
+              "PointZ": {
+                "type": "float",
+                "value": -4.474999904632568
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -135.5204467773438
+              },
+              "PointY": {
+                "type": "float",
+                "value": 96.46147155761719
+              },
+              "PointZ": {
+                "type": "float",
+                "value": -4.474999904632568
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 0
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "id": 14759,
+          "type": "cexolocstring",
+          "value": {
+            "0": "No Spawn Zone"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "anti_spawn_trigg"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "anti_spawn_trigg"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 235.6551818847656
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 223.0090484619141
         },
         "ZOrientation": {
           "type": "float",

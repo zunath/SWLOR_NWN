@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature
             GiveStartingItems(player);
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
+            ApplyMovementRate(player);
 
             DB.Set(dbPlayer);
 
@@ -363,6 +364,11 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.RespawnLocationY = position.Y;
             dbPlayer.RespawnLocationZ = position.Z;
             dbPlayer.RespawnLocationOrientation = orientation;
+        }
+
+        private static void ApplyMovementRate(uint player)
+        {
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }
 
     }

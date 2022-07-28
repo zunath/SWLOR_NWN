@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeMedicalSupplies(activator);
 
             Enmity.ModifyEnmityOnAll(activator, 250 + amount);
-            if(CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3) == 0)
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+            if (CombatPoint.GetTaggedCreatureCount(activator) == 0)
             {
                 // Scale XP to the thing we just fought -- only give XP if we're not in combat.
                 // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 

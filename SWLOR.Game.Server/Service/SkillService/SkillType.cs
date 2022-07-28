@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use one-handed weapons like vibroblades, finesse vibroblades, and lightsabers.",
             true,
             false,
-            CombatPointCategory.Weapons)]
+            CombatPointCategoryType.Weapon)]
         OneHanded = 1,
 
         [Skill(SkillCategoryType.Combat,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use heavy weapons like heavy vibroblades, polearms, and saberstaffs in combat.",
             true,
             false,
-            CombatPointCategory.Weapons)]
+            CombatPointCategoryType.Weapon)]
         TwoHanded = 2,
 
         [Skill(SkillCategoryType.Combat,
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to fight using katars and staves in combat.",
             true,
             false,
-            CombatPointCategory.Weapons)]
+            CombatPointCategoryType.Weapon)]
         MartialArts = 3,
 
         [Skill(SkillCategoryType.Combat,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use ranged weapons like pistols, cannons, and rifles in combat.",
             true,
             false,
-            CombatPointCategory.Weapons)]
+            CombatPointCategoryType.Weapon)]
         Ranged = 4,
 
         [Skill(SkillCategoryType.Combat,
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use Force abilities.",
             true,
             false,
-            CombatPointCategory.Utility,
+            CombatPointCategoryType.Utility,
             CharacterType.ForceSensitive)]
         Force = 5,
 
@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use grenades, bombs, and other electronics.",
             true,
             false,
-            CombatPointCategory.Utility,
+            CombatPointCategoryType.Utility,
             CharacterType.Standard)]
         Devices = 33,
     }
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInCraftMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
-        public CombatPointCategory XPType { get; set; } 
+        public CombatPointCategoryType CombatPointCategory { get; set; } 
 
         public SkillAttribute(
             SkillCategoryType category,
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             string description,
             bool contributesToSkillCap,
             bool isShownInCraftMenu,
-            CombatPointCategory xpType = CombatPointCategory.Exempt,
+            CombatPointCategoryType combatPointCategory = CombatPointCategoryType.Exempt,
             CharacterType characterTypeRestriction = CharacterType.Invalid)
         {
             Category = category;
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             ContributesToSkillCap = contributesToSkillCap;
             IsShownInCraftMenu = isShownInCraftMenu;
             CharacterTypeRestriction = characterTypeRestriction;
-            XPType = xpType;
+            CombatPointCategory = combatPointCategory;
         }
     }
 }

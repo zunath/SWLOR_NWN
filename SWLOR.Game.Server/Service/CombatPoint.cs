@@ -111,17 +111,17 @@ namespace SWLOR.Game.Server.Service
 
                     var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
 
-                    foreach (CombatPointCategory cpCategory in Enum.GetValues(typeof(CombatPointCategory)))
+                    foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
                         var validSkills = skillsWithCP
-                            .Where(x => Skill.GetSkillDetails(x.Key).XPType == cpCategory)
+                            .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
                             .ToDictionary(x => x.Key, y => y.Value);
 
                         // Base amount of XP is determined by the player's highest-leveled skill rank in each XP category versus the creature's level.
-                        if (cpCategory != CombatPointCategory.Exempt)
+                        if (cpCategory != CombatPointCategoryType.Exempt)
                         {
                             var validCPs = cpList
-                                .Where(x => Skill.GetSkillDetails(x.Key).XPType == cpCategory);
+                                .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory);
                             if (!validCPs.Any()) continue;
                             if (!validSkills.Any()) continue;
 
@@ -290,23 +290,37 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the count of creatures tagged by a given player.
+        /// </summary>
+        /// <param name="player">The player to check for tagged NPCs.</param>
+        /// <returns>
+        /// Number of creatures tagged by the player. 
+        /// 0 is none, -1 if the player is not initialized in the playerToCreatureTracker.
+        /// </returns>
+        public static int GetTaggedCreatureCount(uint player)
+        {
+            if (!_playerToCreatureTracker.ContainsKey(player))
+                return -1;
+
+            return _playerToCreatureTracker[player].Count;
+        }
+
+        /// <summary>
         /// Adds a combat point for a player to all NPCs s/he is currently tagged on.
         /// </summary>
         /// <param name="player">The player to receiving the point.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
         /// <returns>Number of creatures tagged by the player, -1 if the tracker has expired or is unavailable.</returns>
-        public static int AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        public static void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
-            if (!_playerToCreatureTracker.ContainsKey(player)) 
-                return -1;
+            if (!_playerToCreatureTracker.ContainsKey(player))
+                return;
 
             foreach (var creature in _playerToCreatureTracker[player])
             {
                 AddCombatPoint(player, creature, skill, amount);
             }
-
-            return _playerToCreatureTracker[player].Count;
         }
 
         /// <summary>

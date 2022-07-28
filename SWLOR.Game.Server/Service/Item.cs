@@ -397,7 +397,16 @@ namespace SWLOR.Game.Server.Service
                     var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
                     if (reducesItemCharge)
                     {
-                        SetItemCharges(item, GetItemCharges(item) - 1);
+                        var charges = GetItemCharges(item) - 1;
+
+                        if (charges <= 0)
+                        {
+                            DestroyObject(item);
+                        }
+                        else 
+                        {
+                            SetItemCharges(item, charges);
+                        }
                     }
                 });
             }

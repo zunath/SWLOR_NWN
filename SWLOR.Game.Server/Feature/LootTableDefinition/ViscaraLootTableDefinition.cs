@@ -33,13 +33,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void KathHound()
         {
             _builder.Create("VISCARA_KATH_HOUND")
-                .AddItem("k_hound_fur", 20)
-                .AddItem("k_hound_tooth", 20)
-                .AddItem("lth_ruined", 20)
-                .AddItem("kath_meat_1", 15)
-                .AddItem("kath_blood", 5);
+                .AddItem("k_hound_fur", 25)
+                .AddItem("k_hound_tooth", 25)
+                .AddItem("lth_ruined", 15)
+                .AddItem("kath_meat_1", 15);
 
             _builder.Create("VISCARA_KATH_HOUND_RARES")
+                .AddItem("kath_blood", 2, 1, true)
                 .AddItem("k_hound_claw", 1, 1, true);
         }
 
@@ -260,10 +260,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Warocas()
         {
             _builder.Create("VISCARA_WAROCAS")
-                .AddItem("warocas_beak", 20)
+                .AddItem("warocas_beak", 10)
                 .AddItem("waro_feathers", 15)
                 .AddItem("lth_ruined", 20)
-                .AddItem("warocas_meat", 15)
+                .AddItem("warocas_meat", 20)
                 .AddItem("waro_leg", 10, 1, true);
 
             _builder.Create("VISCARA_WAROCAS_RARES")

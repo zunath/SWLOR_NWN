@@ -543,7 +543,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_WAROCAS,40,2"
+          "value": "VISCARA_WAROCAS,75,2"
         }
       },
       {
@@ -558,7 +558,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_WAROCAS_RARES,5,1"
+          "value": "VISCARA_WAROCAS_RARES,10,1"
         }
       }
     ]

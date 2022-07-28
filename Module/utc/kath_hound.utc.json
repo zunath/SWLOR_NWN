@@ -527,7 +527,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_KATH_HOUND,40,2"
+          "value": "VISCARA_KATH_HOUND,75,2"
         }
       },
       {
@@ -542,7 +542,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_KATH_HOUND_RARES,5,1"
+          "value": "VISCARA_KATH_HOUND_RARES,20,1"
         }
       }
     ]

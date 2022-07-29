@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using CombatPoint = SWLOR.Game.Server.Service.CombatPoint;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -166,6 +167,10 @@ namespace SWLOR.Game.Server.Service
 
             // Update this creature's list of enemies.
             _creatureToEnemies[creature] = enemyList;
+
+            // If one creature is a player, add the NPC to the Combat Point tracker.
+            if (GetIsPC(creature)) { CombatPoint.AddPlayerToNPCReferenceToCache(creature, enemy); }
+            else if (GetIsPC(enemy)) { CombatPoint.AddPlayerToNPCReferenceToCache(enemy, creature); }
 
             // In the event that this enemy does not have a target, immediately start attacking this creature.
             if (GetAttackTarget(enemy) == OBJECT_INVALID)

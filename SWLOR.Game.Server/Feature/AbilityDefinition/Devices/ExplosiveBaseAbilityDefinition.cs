@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -96,6 +97,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var activatorLocation = GetLocation(activator);
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var dmgBonus = Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+
             DelayCommand(delay, () =>
             {
                 ApplyEffectAtLocation(
@@ -103,6 +108,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     EffectAreaOfEffect(aoe, enterScript, heartbeatScript), 
                     targetLocation, 
                     duration);
+
+                var AOEObject = GetNearestObjectToLocation(targetLocation, ObjectType.AreaOfEffect);
+                if(AOEObject != OBJECT_INVALID)
+                {
+                    SetLocalInt(AOEObject, "DEVICE_ACC", attackerStat);
+                    SetLocalInt(AOEObject, "DEVICE_ATK", attack);
+                    SetLocalInt(AOEObject, "DEVICE_DMG", dmgBonus);
+                }
 
             });
 

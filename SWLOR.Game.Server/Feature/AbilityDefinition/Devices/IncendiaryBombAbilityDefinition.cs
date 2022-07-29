@@ -15,12 +15,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int dmg)
         {
+            var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
+            var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
+            dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
+
             var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
-                0,
+                attack,
                 dmg, 
-                0, 
+                attackerStat, 
                 defense, 
                 defenderStat, 
                 0);

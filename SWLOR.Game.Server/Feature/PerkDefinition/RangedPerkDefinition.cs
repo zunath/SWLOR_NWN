@@ -50,13 +50,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants 1 additional attack with ranged weapons.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .GrantsFeat(FeatType.RapidShot)
 
                 .AddPerkLevel()
                 .Description("Grants 2 additional attacks with ranged weapons.")
                 .Price(5)
                 .RequirementSkill(SkillType.Ranged, 35)
-                .GrantsFeat(FeatType.RapidShot)
+                
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;

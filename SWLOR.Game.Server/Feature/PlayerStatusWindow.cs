@@ -13,45 +13,63 @@ namespace SWLOR.Game.Server.Feature
         public static void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+                return;
 
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [NWNEventHandler("item_uneqp_bef")]
         public static void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+                return;
 
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [NWNEventHandler("pc_damaged")]
         public static void PlayerDamaged()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
         [NWNEventHandler("pc_fp_adjusted")]
         public static void PlayerFPAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
 
         [NWNEventHandler("pc_stm_adjusted")]
         public static void PlayerSTMAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [NWNEventHandler("heal_aft")]
         public static void PlayerHealed()
         {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
@@ -59,25 +77,41 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("pc_shld_adjusted")]
         public static void PlayerShieldAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
 
         [NWNEventHandler("pc_hull_adjusted")]
         public static void PlayerHullAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
 
         [NWNEventHandler("pc_cap_adjusted")]
         public static void PlayerCapacitorAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
 
         [NWNEventHandler("pc_target_upd")]
         public static void PlayerSpaceTargetAdjusted()
         {
-            Gui.PublishRefreshEvent(OBJECT_SELF, new TargetStatusRefreshEvent());
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
         [NWNEventHandler("mod_enter")]

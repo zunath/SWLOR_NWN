@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
-    public class _4_UpdatePerks: IPlayerMigration
+    public class _5_UpdatePerks: IPlayerMigration
     {
-        public int Version => 4;
+        public int Version => 5;
         public void Migrate(uint player)
         {
             var rightHandWeapon = GetItemInSlot(InventorySlot.RightHand, player);

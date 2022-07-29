@@ -16,16 +16,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int dmg)
         {
-            var activator = GetAreaOfEffectCreator(OBJECT_SELF);
-            var attackerStat = 0;
-            var attack = 0;
-
-            if(activator != OBJECT_INVALID)
-            {
-                attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-                attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-                dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
-            }
+            var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
+            var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
+            dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
             var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);

@@ -119,6 +119,13 @@ namespace SWLOR.Game.Server.Service
 
             ChatPlugin.SkipMessage();
 
+            if (GetIsDead(sender) && !message.StartsWith("/"))
+            {
+                SendMessageToPC(sender, ColorToken.Red("You cannot speak while dead."));
+                return;
+            }
+
+
             if (channel == ChatChannel.PlayerShout &&
                 GetIsPC(sender) &&
                 !GetIsDM(sender) &&

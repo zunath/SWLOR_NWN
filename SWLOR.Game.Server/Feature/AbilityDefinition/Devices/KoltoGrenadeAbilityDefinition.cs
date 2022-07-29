@@ -37,14 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (!GetFactionEqual(activator, target))
                 return;
 
-            // Check if target already has a regen effect; if so, remove it
-            Effect eff = GetFirstEffect(activator);
-            while(GetIsEffectValid(eff))
-            {
-                if (GetEffectTag(eff) == "kolto_regen")
-                    RemoveEffect(activator, eff);
-                eff = GetNextEffect(activator);
-            }
+            RemoveEffectByTag(target, "kolto_regen"); // Get rid of any regen effects to prevent stacking
 
             Effect eKolto = EffectRegenerate(regenAmount, 6f);
             eKolto = TagEffect(eKolto, "kolto_regen");

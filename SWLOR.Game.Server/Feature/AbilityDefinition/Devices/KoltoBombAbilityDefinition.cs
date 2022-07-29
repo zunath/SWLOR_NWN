@@ -15,13 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyEffect(uint creature, int hpRegen)
         {
 
-            Effect eff = GetFirstEffect(creature);
-            while (GetIsEffectValid(eff))
-            {
-                if (GetEffectTag(eff) == "kolto_regen")
-                    RemoveEffect(creature, eff);
-                eff = GetNextEffect(creature);
-            }
+            RemoveEffectByTag(creature, "kolto_regen"); // Get rid of any regen effects to prevent stacking
 
             Effect eKolto = EffectRegenerate(hpRegen, 6f);
             eKolto = TagEffect(eKolto, "kolto_regen");

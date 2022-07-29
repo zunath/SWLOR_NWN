@@ -1262,6 +1262,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(10);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1280,6 +1282,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(30);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1298,6 +1302,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(80);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1311,6 +1317,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var quality = CalculateQuality(10);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };
@@ -1323,6 +1331,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var quality = CalculateQuality(30);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };
@@ -1335,6 +1345,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var quality = CalculateQuality(80);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };

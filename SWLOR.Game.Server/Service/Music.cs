@@ -65,10 +65,14 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+                return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Entity.Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             if (dbPlayer.Settings.BattleThemeId == null) return;
             var area = OBJECT_SELF;
             var battleThemeId = dbPlayer.Settings.BattleThemeId ?? MusicBackgroundGetBattleTrack(area);

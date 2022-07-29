@@ -320,6 +320,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the DMG bonus granted by Power Attack.
+        /// </summary>
+        /// <param name="attacker">The attacker to check.</param>
+        /// <returns>The DMG bonus, or 0 if Power Attack is not enabled.</returns>
+        public static int GetPowerAttackDMGBonus(uint attacker)
+        {
+            if (GetActionMode(attacker, ActionMode.PowerAttack))
+                return 3;
+            else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
+                return 6;
+            return 0;
+        }
+
+        /// <summary>
         /// Retrieves the DMG bonus granted by doublehand.
         /// If attacker does not meet the requirements of Doublehand, 0 will be returned.
         /// Must be called from within a native context.

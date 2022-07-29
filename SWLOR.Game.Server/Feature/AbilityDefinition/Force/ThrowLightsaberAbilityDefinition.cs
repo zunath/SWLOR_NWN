@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
@@ -89,7 +90,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     defenderStat, 
                     0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
                 Enmity.ModifyEnmity(activator, target, damage + 200 * level);
             });
                         

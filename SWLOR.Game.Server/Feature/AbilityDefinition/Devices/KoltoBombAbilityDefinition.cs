@@ -14,7 +14,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int hpRegen)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(hpRegen, 6f), creature, 6f);
+
+            RemoveEffectByTag(creature, "kolto_regen"); // Get rid of any regen effects to prevent stacking
+
+            Effect eKolto = EffectRegenerate(hpRegen, 6f);
+            eKolto = TagEffect(eKolto, "kolto_regen");
+
+            ApplyEffectToObject(DurationType.Temporary, eKolto, creature, 6f);
         }
 
         [NWNEventHandler("grenade_kolt1_en")]

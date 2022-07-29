@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDM(pc) || pc == player) continue;
+                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc)) 
+                    continue;
 
                 var message = $"Call {GetName(pc)}";
                 if (HoloCom.IsInCall(pc))

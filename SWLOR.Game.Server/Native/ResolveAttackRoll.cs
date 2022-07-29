@@ -247,6 +247,19 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, logMessage);
             }
 
+            // Combat Mode - Power Attack (-5 TH)
+            if (attacker.m_nCombatMode == 2)
+            {
+                accuracyModifiers -= 5;
+                Log.Write(LogGroup.Attack, "Applying Power Attack penalty: -5");
+            }
+            // Combat Mode - Improved Power Attack (-10 TH)
+            else if (attacker.m_nCombatMode == 3)
+            {
+                accuracyModifiers -= 10;
+                Log.Write(LogGroup.Attack, "Applying Imp. Power Attack penalty: -10");
+            }
+
             // End modifiers
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------

@@ -2,7 +2,9 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature
@@ -48,12 +50,26 @@ namespace SWLOR.Game.Server.Feature
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
             ConfigureServerSettings();
+            ApplyBans();
         }
 
         private static void ConfigureServerSettings()
         {
             AdministrationPlugin.SetPlayOption(AdministrationOption.ExamineChallengeRating, false);
             AdministrationPlugin.SetPlayOption(AdministrationOption.UseMaxHitpoints, true);
+        }
+
+        private static void ApplyBans()
+        {
+            var query = new DBQuery<PlayerBan>();
+
+            var dbBanCount = (int)DB.SearchCount(query);
+            var dbBans = DB.Search(query.AddPaging(dbBanCount, 0));
+
+            foreach (var ban in dbBans)
+            {
+                AdministrationPlugin.AddBannedCDKey(ban.CDKey);
+            }
         }
     }
 }

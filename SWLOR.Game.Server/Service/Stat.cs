@@ -21,7 +21,11 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new();
-        
+
+        public const int BaseHP = 70;
+        public const int BaseFP = 10;
+        public const int BaseSTM = 10;
+
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>

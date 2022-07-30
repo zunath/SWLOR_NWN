@@ -55,13 +55,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Power Attack")
 
                 .AddPerkLevel()
-                .Description("Grants the Power Attack feat which grants a +3 DMG bonus at the cost of -5 to attack roll. [Cross Skill]")
+                .Description("Grants the Power Attack feat which grants a +3 DMG bonus at the cost of -5 to accuracy. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.PowerAttack)
 
                 .AddPerkLevel()
-                .Description("Grants the Improved Power Attack feat which grants a +6 DMG bonus at the cost of -10 to attack roll. [Cross Skill]")
+                .Description("Grants the Improved Power Attack feat which grants a +6 DMG bonus at the cost of -10 to accuracy. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)

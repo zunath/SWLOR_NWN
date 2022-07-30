@@ -37,7 +37,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (!GetFactionEqual(activator, target))
                 return;
 
-            ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(regenAmount, 6f), target, 45f);
+            RemoveEffectByTag(target, "kolto_regen"); // Get rid of any regen effects to prevent stacking
+
+            Effect eKolto = EffectRegenerate(regenAmount, 6f);
+            eKolto = TagEffect(eKolto, "kolto_regen");
+
+            ApplyEffectToObject(DurationType.Temporary, eKolto, target, 45f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);

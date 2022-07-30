@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Byysk();
             QionAnimals();
             Valley();
+            Wastes();
+            FrozenCave();
 
             return _builder.Build();
         }
@@ -54,6 +56,34 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "qion_tiger")
                 .WithFrequency(8)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void Wastes()
+        {
+            _builder.Create("HUTLAR_WASTES", "Hutlar Wastes")
+                .AddSpawn(ObjectType.Creature, "qion_tiger")
+                .WithFrequency(8)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void FrozenCave()
+        {
+            _builder.Create("HUTLAR_FROZEN_CAVE", "Hutlar Frozen Cave")
+                .AddSpawn(ObjectType.Creature, "byysk_warrior")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "byysk_warrior2")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "qion_tiger")
+                .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

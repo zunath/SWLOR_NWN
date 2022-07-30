@@ -1034,6 +1034,12 @@ namespace SWLOR.Game.Server.Service
             // Accuracy increases granted by effects
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
 
+            // Power Attack to-hit penalty
+            if (GetActionMode(creature, ActionMode.PowerAttack))
+                accuracyBonus -= 5;
+            else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
+                accuracyBonus -= 10;
+
             return stat * 3 + skillLevel + accuracyBonus;
         }
 

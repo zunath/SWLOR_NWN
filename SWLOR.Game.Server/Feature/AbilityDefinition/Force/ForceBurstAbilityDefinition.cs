@@ -125,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);

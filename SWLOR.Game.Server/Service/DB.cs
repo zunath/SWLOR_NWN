@@ -269,7 +269,9 @@ namespace SWLOR.Game.Server.Service
                 .Replace("|", "\\|")
                 .Replace("-", "\\-")
                 .Replace("=", "\\=")
-                .Replace(">", "\\>");
+                .Replace(">", "\\>")
+                .Replace("'", "\\'")
+                .Replace("\"", "\\\"");
         }
 
         /// <summary>

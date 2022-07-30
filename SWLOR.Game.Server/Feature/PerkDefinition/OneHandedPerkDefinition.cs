@@ -161,44 +161,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -341,44 +320,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -529,44 +487,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -665,6 +602,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
                 
                 .AddPerkLevel()
+                .RequirementCharacterType(CharacterType.ForceSensitive)
                 .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleLightsaber);

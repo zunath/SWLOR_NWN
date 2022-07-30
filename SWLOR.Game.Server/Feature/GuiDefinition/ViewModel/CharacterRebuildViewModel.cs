@@ -354,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
+                CreaturePlugin.SetBaseAttackBonus(Player, 1);
 
                 dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
                 dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);

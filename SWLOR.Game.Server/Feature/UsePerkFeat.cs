@@ -293,9 +293,10 @@ namespace SWLOR.Game.Server.Feature
             // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
             if (GetCurrentAction(activator) == ActionType.AttackObject)
             {
+                var attackTarget = GetAttackTarget(activator);
                 DelayCommand(activationDelay + 0.1f, () =>
                 {
-                    AssignCommand(activator, () => ActionAttack(target));
+                    AssignCommand(activator, () => ActionAttack(attackTarget));
                 });
             }
         }

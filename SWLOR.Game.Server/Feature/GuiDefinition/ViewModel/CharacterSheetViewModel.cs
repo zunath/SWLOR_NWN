@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -244,6 +245,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes);
         };
 
+        public Action OnClickHoloCom() => () =>
+        {
+            Dialog.StartConversation(Player, Player, nameof(HoloComDialog));
+        };
+
         public Action OnClickKeyItems() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
@@ -398,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
                 var damageStat = GetAbilityScore(Player, damageAbility);
                 var skillRank = dbPlayer.Skills[skill].Rank;
-                var dmg = Item.GetDMG(item) + Combat.GetDoublehandDMGBonus(Player);
+                var dmg = Item.GetDMG(item) + Combat.GetDoublehandDMGBonus(Player) + Combat.GetPowerAttackDMGBonus(Player);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(Player, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);

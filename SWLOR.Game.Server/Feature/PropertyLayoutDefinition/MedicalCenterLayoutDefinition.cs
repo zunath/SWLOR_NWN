@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.MedicalCenterStyle1)
                 .PropertyType(PropertyType.MedicalCenter)
                 .Name("Medical Center")
-                .StructureLimit(30)
+                .StructureLimit(80)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

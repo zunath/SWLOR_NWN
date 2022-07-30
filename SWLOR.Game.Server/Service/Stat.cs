@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -20,7 +21,11 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new();
-        
+
+        public const int BaseHP = 70;
+        public const int BaseFP = 10;
+        public const int BaseSTM = 10;
+
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
@@ -393,7 +398,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="adjustBy">The amount to adjust by.</param>
         public static void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
-            const int MaxHPPerLevel = 255;
+            const int MaxHPPerLevel = 254;
             entity.MaxHP += adjustBy;
             var nwnLevelCount = GetLevelByPosition(1, player) +
                                 GetLevelByPosition(2, player) +
@@ -1029,6 +1034,12 @@ namespace SWLOR.Game.Server.Service
             // Accuracy increases granted by effects
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
 
+            // Power Attack to-hit penalty
+            if (GetActionMode(creature, ActionMode.PowerAttack))
+                accuracyBonus -= 5;
+            else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
+                accuracyBonus -= 10;
+
             return stat * 3 + skillLevel + accuracyBonus;
         }
 
@@ -1261,6 +1272,116 @@ namespace SWLOR.Game.Server.Service
             }
 
             return npcStats;
+        }
+
+        /// <summary>
+        /// Applies the total number of attacks per round to a player.
+        /// If a valid weapon is passed in the associated mastery perk will also be checked.
+        /// </summary>
+        /// <param name="player">The player to apply attacks to</param>
+        /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
+        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon)
+        {
+            static int GetBABForAttacks(int attacks)
+            {
+                switch (attacks)
+                {
+                    case 1:
+                        return 1;
+                    case 2:
+                        return 6;
+                    case 3:
+                        return 11;
+                    case 4:
+                        return 16;
+                    case 5:
+                        return 21;
+                    case 6:
+                        return 26;
+                    case 7:
+                        return 31;
+                    case 8:
+                        return 36;
+                    case 9:
+                        return 41;
+                }
+
+                return 1;
+            }
+
+            static int GetRapidShotBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.RapidShot);
+            }
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var itemType = GetBaseItemType(rightHandWeapon);
+            var numberOfAttacks = 1;
+            var perkType = PerkType.Invalid;
+
+            // Martial Arts
+            if (Item.KatarBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.KatarMastery;
+            }
+            else if (Item.StaffBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.StaffMastery;
+            }
+            // Ranged
+            else if (Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.PistolMastery;
+                numberOfAttacks += GetRapidShotBonus(player);
+            }
+            else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.ThrowingWeaponMastery;
+                numberOfAttacks += GetRapidShotBonus(player);
+            }
+            else if (Item.RifleBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.RifleMastery;
+                numberOfAttacks += GetRapidShotBonus(player);
+            }
+            // One-Handed
+            else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.VibrobladeMastery;
+            }
+            else if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.FinesseVibrobladeMastery;
+            }
+            else if (Item.LightsaberBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.LightsaberMastery;
+            }
+            // Two-Handed
+            else if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.HeavyVibrobladeMastery;
+            }
+            else if (Item.PolearmBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.PolearmMastery;
+            }
+            else if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.TwinBladeMastery;
+            }
+            else if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.SaberstaffMastery;
+            }
+
+            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
+            numberOfAttacks += effectiveMasteryLevel;
+
+            var bab = GetBABForAttacks(numberOfAttacks);
+            CreaturePlugin.SetBaseAttackBonus(player, bab);
         }
 
     }

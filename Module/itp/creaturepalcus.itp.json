@@ -8821,6 +8821,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Master Atris"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "atris_jedi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 42.0
                     },
                     "FACTION": {
@@ -9242,7 +9261,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 18.0
+                      "value": 66.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9254,14 +9273,14 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "chirodactyl"
+                      "value": "vdathchirodac"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 30.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9273,14 +9292,109 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "dragonturtle"
+                      "value": "vdathturtle"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 17.0
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathguard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Shaman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathshaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Tribal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathtribal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Purbole"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathpurbole"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shear Mite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathshear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9292,14 +9406,14 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "sprantal"
+                      "value": "vdathsprantal"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 50.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9311,14 +9425,33 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "squellbug"
+                      "value": "vdathsquell"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 11.0
+                      "value": 95.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ssurian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathssurian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9330,7 +9463,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "swamplandbug"
+                      "value": "vdathswampland"
                     }
                   }
                 ]

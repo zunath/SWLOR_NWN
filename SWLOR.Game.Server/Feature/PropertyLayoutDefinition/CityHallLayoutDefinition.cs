@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.CityHallStyle1)
                 .PropertyType(PropertyType.CityHall)
                 .Name("City Hall")
-                .StructureLimit(30) 
+                .StructureLimit(80) 
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

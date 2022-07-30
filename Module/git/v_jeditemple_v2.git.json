@@ -11733,7 +11733,7 @@
         },
         "KeyName": {
           "type": "cexostring",
-          "value": ""
+          "value": "Key_J_1"
         },
         "KeyRequired": {
           "type": "byte",
@@ -11753,11 +11753,11 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LocName": {
           "id": 5349,
@@ -12016,7 +12016,7 @@
         },
         "KeyName": {
           "type": "cexostring",
-          "value": ""
+          "value": "Key_J_1"
         },
         "KeyRequired": {
           "type": "byte",
@@ -12036,11 +12036,11 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LocName": {
           "id": 5349,

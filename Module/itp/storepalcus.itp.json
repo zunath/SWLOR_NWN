@@ -104,6 +104,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Street Food"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "street_food"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Tatooine General Store"
               },
               "RESREF": {

@@ -301,7 +301,8 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var rightHandType = GetBaseItemType(rightHand);
-            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType))
+            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) && 
+                !Item.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
                 return 0;
 
             if (GetHasFeat(FeatType.Doublehand5, attacker))
@@ -316,6 +317,20 @@ namespace SWLOR.Game.Server.Service
                 dmg = 2;
 
             return dmg;
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by Power Attack.
+        /// </summary>
+        /// <param name="attacker">The attacker to check.</param>
+        /// <returns>The DMG bonus, or 0 if Power Attack is not enabled.</returns>
+        public static int GetPowerAttackDMGBonus(uint attacker)
+        {
+            if (GetActionMode(attacker, ActionMode.PowerAttack))
+                return 3;
+            else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
+                return 6;
+            return 0;
         }
 
         /// <summary>

@@ -8,10 +8,11 @@ namespace SWLOR.Game.Server.Service
     public static class HoloCom
     {
         [NWNEventHandler("mod_death")]
-        private static void OnModuleDeath()
+        public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
-            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
+            if (IsInCall(player)) 
+                SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
         
@@ -19,7 +20,8 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleLeave()
         {
             var player = GetExitingObject();
-            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
+            if (IsInCall(player)) 
+                SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
 
@@ -92,6 +94,9 @@ namespace SWLOR.Game.Server.Service
                 var senderLocation = GetLocation(sender);
                 var holoSender = CopyObject(sender, BiowareVector.MoveLocation(receiverLocation, GetFacing(receiver), 2.0f, 180));
                 var holoReceiver = CopyObject(receiver, BiowareVector.MoveLocation(senderLocation, GetFacing(sender), 2.0f, 180));
+
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);
 
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoSender);
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);

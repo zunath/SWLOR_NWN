@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "You lose your target.");
                         return;
                     }
-                    
+
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
                     var lootTable = Loot.GetLootTableByName(lootTableName);
                     var loot = lootTable.GetRandomItem();
@@ -145,6 +145,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP);
                     }
+
+                    ExecuteScript("harvester_used", user);
                 });
         }
     }

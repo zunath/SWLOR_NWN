@@ -28,25 +28,6 @@ namespace SWLOR.Game.Server.Feature
             //EventsPlugin.SkipEvent();
         }
 
-        [NWNEventHandler("item_val_bef")]
-        public static void PreventItemSwapping()
-        {
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player))
-                return;
-
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
-
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            {
-                if (GetItemInSlot((InventorySlot)slot, player) == item)
-                {
-                    EventsPlugin.SkipEvent();
-                    return;
-                }
-            }
-        }
-
         /// <summary>
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
@@ -58,11 +39,13 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
+            var isSwapping = IsItemSwapping(creature, slot);
             var canUseItem = CanItemBeUsed(creature, item);
             var canDualWield = ValidateDualWield(item, slot);
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
-                canDualWield)
+                canDualWield && 
+                !isSwapping)
             {
                 EventsPlugin.PushEventData("ITEM", ObjectToString(item));
                 EventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
@@ -74,6 +57,13 @@ namespace SWLOR.Game.Server.Feature
                 SendMessageToPC(creature, ColorToken.Red(canUseItem));
 
             EventsPlugin.SkipEvent();
+        }
+
+        private static bool IsItemSwapping(uint creature, InventorySlot slot)
+        {
+            var item = GetItemInSlot(slot, creature);
+
+            return GetIsObjectValid(item);
         }
 
         /// <summary>

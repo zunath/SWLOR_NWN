@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3216
+    "value": 19
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 6
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 11.0
+    "value": 52.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 12
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 40
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 23
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 19
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 125
+    "value": 360
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Shear mites are a hellish abomination. They burrow deep into the mountains of Dathomir, and swarms of them emerge irregularly to consume vast swathes of plant and animal matter. They slice apart their prey with razor sharp claws and pincers, and what they don't consume on the spot is reduced to a paste by their acidic saliva, stored in pouches and transported back to their hives."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 27
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "swamplandbugstin"
+          "value": "vdathbiteshear"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "swamplandbugskin"
+          "value": "vdathskinshear"
         }
       }
     ]
@@ -102,35 +104,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 656
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 630
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 749
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 291
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 100
+          "value": 1750
         }
       },
       {
@@ -145,7 +119,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Swampland Bug"
+      "0": "Shear Mite"
     }
   },
   "fortbonus": {
@@ -154,7 +128,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 4
   },
   "GoodEvil": {
     "type": "byte",
@@ -162,11 +136,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 125
+    "value": 360
   },
   "Int": {
     "type": "byte",
-    "value": 3
+    "value": 27
   },
   "Interruptable": {
     "type": "byte",
@@ -196,15 +170,15 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 155
+    "value": 600
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 12
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
@@ -212,7 +186,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 9
   },
   "Phenotype": {
     "type": "int",
@@ -224,11 +198,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 2094
+    "value": 156
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 25
   },
   "refbonus": {
     "type": "short",
@@ -363,7 +337,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 23
+          "value": 7
         }
       },
       {
@@ -489,7 +463,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 6
+    "value": 9
   },
   "SpecAbilityList": {
     "type": "list",
@@ -497,11 +471,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 74
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 27
   },
   "Subrace": {
     "type": "cexostring",
@@ -509,7 +483,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SwamplandBug"
+    "value": "ShearMite"
   },
   "Tail_New": {
     "type": "dword",
@@ -521,11 +495,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "swamplandbug"
+    "value": "vdathshear"
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -537,6 +511,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 12
+    "value": 20
   }
 }

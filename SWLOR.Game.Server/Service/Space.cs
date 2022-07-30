@@ -631,6 +631,7 @@ namespace SWLOR.Game.Server.Service
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
 
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -822,6 +823,7 @@ namespace SWLOR.Game.Server.Service
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
@@ -1543,6 +1545,10 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+
                 }
 
                 foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
@@ -1553,6 +1559,9 @@ namespace SWLOR.Game.Server.Service
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
                 // Player always loses all modules regardless if they actually dropped.
@@ -1565,6 +1574,7 @@ namespace SWLOR.Game.Server.Service
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
+                CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
                 Enmity.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.
@@ -1773,6 +1783,11 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbShip);
             }
 
+            if (_shipClones.ContainsKey(dbShip.Id))
+            {
+                _shipClones.Remove(dbShip.Id);
+            }
+
             DestroyObject(shipClone);
         }
 
@@ -1854,6 +1869,26 @@ namespace SWLOR.Game.Server.Service
             }
 
             return bonuses;
+        }
+
+        /// <summary>
+        /// When a player attempts to stealth while in space mode,
+        /// exit the stealth mode and send an error message.
+        /// </summary>
+        [NWNEventHandler("stlent_add_bef")]
+        public static void PreventSpaceStealth()
+        {
+            var creature = OBJECT_SELF;
+
+            if (!IsPlayerInSpaceMode(creature))
+                return;
+
+            AssignCommand(creature, () =>
+            {
+                SetActionMode(creature, ActionMode.Stealth, false);
+            });
+
+            SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));
         }
 
     }

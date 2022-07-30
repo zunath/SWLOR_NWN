@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="adjustBy">The amount to adjust by.</param>
         public static void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
-            const int MaxHPPerLevel = 255;
+            const int MaxHPPerLevel = 254;
             entity.MaxHP += adjustBy;
             var nwnLevelCount = GetLevelByPosition(1, player) +
                                 GetLevelByPosition(2, player) +

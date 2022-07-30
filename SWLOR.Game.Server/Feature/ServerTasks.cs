@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ConfigureServerSettings()
         {
             AdministrationPlugin.SetPlayOption(AdministrationOption.ExamineChallengeRating, false);
+            AdministrationPlugin.SetPlayOption(AdministrationOption.UseMaxHitpoints, true);
         }
     }
 }

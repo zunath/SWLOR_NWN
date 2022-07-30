@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
-    public class LegacyMigrationBase
+    public abstract class LegacyMigrationBase
     {
         protected void CleanItemName(uint item)
         {

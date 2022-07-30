@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             ManageStaffCommand();
+            ManageBansCommand();
 
             return _builder.Build();
         }
@@ -25,6 +26,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
+                });
+        }
+
+        private void ManageBansCommand()
+        {
+            _builder.Create("managebans")
+                .Description("Toggles the manage bans window to add/remove banned players.")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.ManageBans);
                 });
         }
 

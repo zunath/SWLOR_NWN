@@ -6684,6 +6684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Scout Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_scout_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian War Hero Skin"
                     },
                     "RESREF": {

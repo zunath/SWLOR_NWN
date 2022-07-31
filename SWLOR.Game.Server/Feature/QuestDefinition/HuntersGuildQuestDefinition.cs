@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Tier 2 (Rank 1)
             BuildItemTask("hun_tsk_200", "herb_m", 6, 1);
             BuildItemTask("hun_tsk_201", "m_blast_parts", 6, 1);
-            BuildItemTask("hun_tsk_202", "man_tags", 6, 1);
+            BuildItemTask("hun_tsk_202", "man_tags", 10, 1);
             BuildItemTask("hun_tsk_203", "m_lvibro_parts", 6, 1);
             BuildKillTask("hun_tsk_204", NPCGroupType.Viscara_MandalorianLeader, 1, 1);
             BuildItemTask("hun_tsk_205", "m_ls_parts", 6, 1);

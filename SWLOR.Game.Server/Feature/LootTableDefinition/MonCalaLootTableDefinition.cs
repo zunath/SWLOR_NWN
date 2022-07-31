@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddGold(20, 20);
 
             _builder.Create("MONCALA_AMPHIHYDRUS_RARES")
+                .IsRare()
                 .AddItem("map_028", 4, 1, true)
                 .AddItem("map_029", 4, 1, true)
                 .AddItem("agate", 1, 1, true);
@@ -79,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddGold(40, 20);
 
             _builder.Create("MONCALA_ECOTERRORIST_RARES")
+                .IsRare()
                 .AddItem("map_027", 3, 1, true)
                 .AddItem("map_59", 1, 1, true)
                 .AddItem("map_60", 1, 1, true)
@@ -140,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddGold(80, 10);
 
             _builder.Create("MONCALA_ECOTERRORIST_LEADER_RARES")
+                .IsRare()
                 .AddItem("map_027", 1, 1, true)
                 .AddItem("citrine", 1, 1, true)
                 .AddItem("rruchi", 1, 1, true)

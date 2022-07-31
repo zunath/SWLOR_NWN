@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Wildlands();
             MandalorianRaiders();
             MandalorianLeader();
+            MandalorianHunter();
+            MandalorianScout();
             WildwoodsLooters();
             WildwoodsKinrath();
             WildwoodsGimpassa();
@@ -69,6 +71,24 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("VISCARA_MANDALORIAN_LEADER", "Mandalorian Leader")
                 .AddSpawn(ObjectType.Creature, "man_leader")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void MandalorianHunter()
+        {
+            _builder.Create("VISCARA_WILDWOODS_MANDO_HUNTER", "Mandalorian Hunter")
+                .AddSpawn(ObjectType.Creature, "man_hunter")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void MandalorianScout()
+        {
+            _builder.Create("VISCARA_WILDWOODS_MANDO_SCOUT", "Mandalorian Scout")
+                .AddSpawn(ObjectType.Creature, "man_scout")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome();

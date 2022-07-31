@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 248
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -39,27 +39,18 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 166,
     "type": "cexolocstring",
     "value": {
-      "0": "Captain Longsword"
+      "0": "Mandalorian Scout Skin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 19
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 91
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 11
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -76,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -92,7 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 56
+          "value": 99
         },
         "Subtype": {
           "type": "word",
@@ -107,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -123,42 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 98
         },
         "Subtype": {
           "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
           "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 6
         }
       }
     ]
@@ -173,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "cap_longsword"
+    "value": "mando_scout_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "cap_longsword"
+    "value": "mando_scout_skin"
   }
 }

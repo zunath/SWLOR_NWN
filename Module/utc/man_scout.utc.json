@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 1
+    "value": 134
   },
   "Appearance_Type": {
     "type": "word",
@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 5
         }
       }
     ]
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 19
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -2
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 60
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "\"Here's why you can't exterminate us, aruetii. We're not huddled in one place- we span the galaxy. We need no lords or leaders, so you can't destroy our command. We can live without technology, so we can fight with our bare hands. We have no species or bloodline, so we can rebuild our ranks with others who want to join us. We're more than just a people or an army, aruetii. We're a culture. We're an idea. And you can't kill ideas, but we can certainly kill you.\" - Mandalore the Destroyer"
+      "0": "\"There's always a war going on somewhere, always has been, always will be. It's why Mandalorians have never gone out of business.\"\\nClad in distinctive Neo-Crusader light armor, this disparate group of breakaway Mandalorians have entrenched themselves in the eastern Wildwoods, routinely sending out hunting parties to harass Veles."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 15
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -187,7 +187,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_mando_blade"
+          "value": "npc_mando_knife"
         }
       },
       {
@@ -238,6 +238,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1143
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1144
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1089
         }
       },
@@ -259,35 +273,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1137
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 32
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1126
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1127
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 106
         }
       },
       {
@@ -309,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Warrior"
+      "0": "Mandalorian Scout"
     }
   },
   "fortbonus": {
@@ -318,7 +304,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -326,7 +312,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 60
   },
   "Int": {
     "type": "byte",
@@ -360,7 +346,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 124
+    "value": 70
   },
   "NaturalAC": {
     "type": "byte",
@@ -653,27 +639,11 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 930
+    "value": 922
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 299
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
@@ -681,7 +651,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 12
   },
   "Subrace": {
     "type": "cexostring",
@@ -689,7 +659,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "man_warrior_2"
+    "value": "man_scout"
   },
   "Tail_New": {
     "type": "dword",
@@ -701,7 +671,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "man_warrior_2"
+    "value": "man_scout"
   },
   "VarTable": {
     "type": "list",
@@ -718,22 +688,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_WARRIOR,75,2"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 6
+          "value": "VISCARA_MANDALORIAN_SCOUT,75,2"
         }
       },
       {
@@ -748,7 +703,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_WARRIOR_RARES,10,1"
+          "value": "VISCARA_MANDALORIAN_SCOUT_RARES,10,1"
         }
       },
       {
@@ -763,7 +718,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_WARRIOR_TAGS,50,1"
+          "value": "VISCARA_MANDALORIAN_SCOUT_TAGS,25,1"
         }
       }
     ]

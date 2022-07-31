@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 248
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 22
   },
   "Charges": {
     "type": "byte",
@@ -18,11 +18,11 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -39,27 +39,27 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 166,
+    "id": 191,
     "type": "cexolocstring",
     "value": {
-      "0": "Captain Longsword"
+      "0": "[NPC] Mandalorian Knife"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 19
+    "value": 41
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 91
+    "value": 61
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 34
   },
   "Plot": {
     "type": "byte",
@@ -76,42 +76,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 56
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -128,6 +97,37 @@
         "Subtype": {
           "type": "word",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 34
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 4
         }
       },
       {
@@ -158,7 +158,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 6
+          "value": 12
         }
       }
     ]
@@ -173,10 +173,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "cap_longsword"
+    "value": "npc_mando_knife"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "cap_longsword"
+    "value": "npc_mando_knife"
   }
 }

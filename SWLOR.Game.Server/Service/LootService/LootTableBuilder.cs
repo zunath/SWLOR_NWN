@@ -23,6 +23,17 @@ namespace SWLOR.Game.Server.Service.LootService
         }
 
         /// <summary>
+        /// Marks the loot table as rare which will increase the chance the table is used if a player has tagged a creature with Treasure Hunter during combat.
+        /// </summary>
+        /// <returns>A loot table builder with the configured settings.</returns>
+        public LootTableBuilder IsRare()
+        {
+            ActiveTable.IsRare = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds an item to this loot table.
         /// </summary>
         /// <param name="resref">The resref of the item</param>

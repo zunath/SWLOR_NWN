@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 
             _builder.Create("HUTLAR_BYYSK_RARES")
+                .IsRare()
                 .AddItem("map_025", 20, 1, true)
                 .AddItem("map_026", 20, 1, true)
                 .AddItem("citrine", 5, 1, true);

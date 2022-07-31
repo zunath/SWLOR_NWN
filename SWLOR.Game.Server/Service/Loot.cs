@@ -120,6 +120,10 @@ namespace SWLOR.Game.Server.Service
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
+            if (treasureHunterLevel > 0 && table.IsRare)
+            {
+                chance += treasureHunterLevel * 10;
+            }
             for (int x = 1; x <= attempts; x++)
             {
                 if (Random.D100(1) > chance) continue;

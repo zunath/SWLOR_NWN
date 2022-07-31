@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ruby", 2, 1, true);
 
             _builder.Create("TATOOINE_TUSKEN_RAIDER_RARES")
+                .IsRare()
                 .AddItem("map_038", 20, 1, true)
                 .AddItem("map_036", 1, 1, true);
         }
@@ -129,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("hyphae_wood", 2, 1, true);
 
             _builder.Create("TATOOINE_TUSKEN_ELITE_RARES")
+                .IsRare()
                 .AddItem("map_038", 20, 1, true)
                 .AddItem("map_036", 1, 1, true);
         }

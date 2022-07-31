@@ -424,6 +424,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddItemReward("cap_shuriken", 1)
                 .AddItemReward("cap_twinblade", 1)
                 .AddItemReward("cap_rifle", 1)
+                .AddItemReward("cap_sabstaff", 1)
+                .AddItemReward("cap_eblade", 1)
 
                 .OnAcceptAction((player, sourceObject) =>
                 {

@@ -56,15 +56,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
                 case 3:
                     var count = 0;
-                    var creature = GetFirstObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                    var creature = GetFirstObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     while (GetIsObjectValid(creature) && count < 3)
                     {
+                        if(creature == activator) {
+                            creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                            continue;
+                        }
                         Enmity.ModifyEnmity(activator, creature, enmity);
                         StatusEffect.Apply(activator, creature, StatusEffectType.Tranquilize, 12f);
                         CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
                         count++;
 
-                        creature = GetNextObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                        creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     }
                     break;
                 default:

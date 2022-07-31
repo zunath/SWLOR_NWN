@@ -814,6 +814,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower1Resref = detail.Texture;
                     LowPower1Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower1Resref = _blank;
+                    LowPower1Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(2)
                     ? ship.Status.LowPowerModules[2]
@@ -823,6 +828,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower2Resref = detail.Texture;
                     LowPower2Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower2Resref = _blank;
+                    LowPower2Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(3)
@@ -834,6 +844,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower3Resref = detail.Texture;
                     LowPower3Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower3Resref = _blank;
+                    LowPower3Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(4)
                     ? ship.Status.LowPowerModules[4]
@@ -843,6 +858,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower4Resref = detail.Texture;
                     LowPower4Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower4Resref = _blank;
+                    LowPower4Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(5)
@@ -854,6 +874,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower5Resref = detail.Texture;
                     LowPower5Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower5Resref = _blank;
+                    LowPower5Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(6)
                     ? ship.Status.LowPowerModules[6]
@@ -863,6 +888,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower6Resref = detail.Texture;
                     LowPower6Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower6Resref = _blank;
+                    LowPower6Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(7)
@@ -874,6 +904,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower7Resref = detail.Texture;
                     LowPower7Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower7Resref = _blank;
+                    LowPower7Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(8)
                     ? ship.Status.LowPowerModules[8]
@@ -883,6 +918,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower8Resref = detail.Texture;
                     LowPower8Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower8Resref = _blank;
+                    LowPower8Tooltip = string.Empty;
                 }
 
                 IsBoardShipEnabled = isAtCurrentLocation;

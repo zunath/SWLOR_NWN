@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -43,10 +44,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-
-            CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
+            ApplyPlayerMovementRate(player);
         }
 
         /// <summary>
@@ -484,20 +482,43 @@ namespace SWLOR.Game.Server.Service
             if (entity.Stamina < 0)
                 entity.Stamina = 0;
         }
-
-        /// <summary>
-        /// Modifies the movement rate of a player by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The player entity</param>
-        /// <param name="player">The player object</param>
-        /// <param name="rate">The amount to set</param>
-        public static void SetPlayerMovementRate(Player entity, uint player, float rate)
-        {
-            entity.MovementRate = rate;
-            CreaturePlugin.SetMovementRateFactor(player, entity.MovementRate);
-        }
         
+        public static void ApplyPlayerMovementRate(uint player)
+        {
+            var movementRate = 1.0f;
+            if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
+            {
+                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
+                switch (level)
+                {
+                    case 1:
+                        movementRate += 0.1f; // 10%
+                        break;
+                    case 2:
+                        movementRate += 0.25f; // 25%
+                        break;
+                }
+            }
+
+            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
+            {
+                var type = GetEffectType(effect);
+                float amount;
+                if (type == EffectTypeScript.MovementSpeedIncrease)
+                {
+                    amount = GetEffectInteger(effect, 0) - 100;
+                    movementRate += amount * 0.01f;
+                }
+                else if (type == EffectTypeScript.MovementSpeedDecrease)
+                {
+                    amount = GetEffectInteger(effect, 0);
+                    movementRate -= amount * 0.01f;
+                }
+            }
+
+            CreaturePlugin.SetMovementRateFactor(player, movementRate);
+        }
+
         /// <summary>
         /// Calculates a player's stat based on their skill bonuses, upgrades, etc. and applies the changes to one ability score.
         /// </summary>

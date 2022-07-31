@@ -48,7 +48,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 25
+    "value": 23
   },
   "Leather2Color": {
     "type": "byte",
@@ -58,12 +58,12 @@
     "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Mandalorian Helmet"
+      "0": "[NPC] Mandalorian War Hero Helm"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 138
+    "value": 95
   },
   "Metal2Color": {
     "type": "byte",
@@ -71,7 +71,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 113
+    "value": 110
   },
   "PaletteID": {
     "type": "byte",
@@ -99,6 +99,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "man_helm_npc"
+    "value": "man_helm_npc001"
   }
 }

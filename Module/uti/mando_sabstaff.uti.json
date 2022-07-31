@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 248
+    "value": 148
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 537
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 150
   },
   "Cursed": {
     "type": "byte",
@@ -39,27 +39,27 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 166,
+    "id": 172,
     "type": "cexolocstring",
     "value": {
-      "0": "Captain Longsword"
+      "0": "Mandalorian Twin Electroblade"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 19
+    "value": 11
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 91
+    "value": 11
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 21
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 46
   },
   "Plot": {
     "type": "byte",
@@ -76,11 +76,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -92,11 +92,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 56
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 5
         }
       },
       {
@@ -111,7 +111,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -158,7 +158,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 6
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 83
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       }
     ]
@@ -173,10 +204,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "cap_longsword"
+    "value": "mando_sabstaff"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "cap_longsword"
+    "value": "mando_sabstaff"
   }
 }

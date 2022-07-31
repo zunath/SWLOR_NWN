@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 525
   },
   "Charges": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
@@ -39,23 +39,22 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 166,
     "type": "cexolocstring",
     "value": {
-      "0": "Captain Longsword"
+      "0": "Captain Electroblade"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 19
+    "value": 52
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 91
+    "value": 172
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 251
   },
   "PaletteID": {
     "type": "byte",
@@ -158,7 +157,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 6
+          "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 83
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       }
     ]
@@ -173,10 +203,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "cap_longsword"
+    "value": "cap_eblade"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "cap_longsword"
+    "value": "cap_eblade"
   }
 }

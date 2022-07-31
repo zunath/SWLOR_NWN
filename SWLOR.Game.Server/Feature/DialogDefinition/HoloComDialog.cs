@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var receiver = pc;
                 page.AddResponse(message, () =>
                 {
-                    if (!HoloCom.IsInCall(receiver))
+                    if (!HoloCom.IsInCall(receiver) && !Space.IsPlayerInSpaceMode(player) && !Space.IsPlayerInSpaceMode(receiver))
                     {
                         HoloCom.SetIsCallSender(player);
                         DelayCommand(1.0f, () =>

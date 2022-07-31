@@ -15,7 +15,14 @@ namespace SWLOR.Game.Server.Service
                 SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
-        
+
+        [NWNEventHandler("mod_enter")]
+        public static void OnModuleEnter()
+        {
+            var player = GetEnteringObject();
+            RemoveEffectByTag(player, "HOLOCOM_CALL_IMMOBILIZE");
+        }
+
         [NWNEventHandler("mod_exit")]
         public static void OnModuleLeave()
         {

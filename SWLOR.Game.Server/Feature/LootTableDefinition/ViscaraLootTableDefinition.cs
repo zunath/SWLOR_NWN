@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("kath_meat_1", 15);
 
             _builder.Create("VISCARA_KATH_HOUND_RARES")
+                .IsRare()
                 .AddItem("kath_blood", 2, 1, true)
                 .AddItem("k_hound_claw", 1, 1, true);
         }
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_ls_parts", 10);
 
             _builder.Create("VISCARA_MANDALORIAN_LEADER_RARES")
+                .IsRare()
                 .AddItem("map_048", 10)
                 .AddItem("m_ls_parts", 20);
         }
@@ -99,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_polearm_parts", 10);
 
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR_RARES")
+                .IsRare()
                 .AddItem("m_plexiplate", 20, 1, true)
                 .AddItem("map_048", 10, 1, true)
                 .AddItem("jade", 5, 1, true)
@@ -126,6 +129,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_vibro_parts", 5);
 
             _builder.Create("VISCARA_MANDALORIAN_RANGER_RARES")
+                .IsRare()
                 .AddItem("m_plexiplate", 20, 1, true)
                 .AddItem("map_048", 10, 1, true)
                 .AddItem("jade", 5, 1, true)
@@ -156,6 +160,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_vibro_parts", 5);
 
             _builder.Create("VISCARA_MANDALORIAN_HUNTER_RARES")
+                .IsRare()
                 .AddItem("m_plexiplate", 20, 1, true)
                 .AddItem("map_053", 10, 1, true)
                 .AddItem("jade", 5, 1, true)
@@ -182,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_polearm_parts", 10);
 
             _builder.Create("VISCARA_MANDALORIAN_SCOUT_RARES")
+                .IsRare()
                 .AddItem("m_plexiplate", 10, 1, true)
                 .AddItem("map_053", 10, 1, true);
         }
@@ -226,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddGold(20, 10);
 
             _builder.Create("VISCARA_OUTLAW_RARES")
+                .IsRare()
                 .AddItem("map_053", 20, 1, true);
         }
 
@@ -280,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("flesh_boots", 5);
 
             _builder.Create("VISCARA_VELLEN_FLESHLEADER_RARES")
+                .IsRare()
                 .AddItem("map_041", 20, 1, true)
                 .AddItem("map_045", 5, 1, true);
         }
@@ -299,6 +307,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 
             _builder.Create("VISCARA_VELLEN_FLESHEATER_RARES")
+                .IsRare()
                 .AddItem("map_041", 20, 1, true)
                 .AddItem("map_045", 5, 1, true)
                 .AddItem("babonsch", 5, 1, true);
@@ -344,6 +353,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("waro_leg", 10, 1, true);
 
             _builder.Create("VISCARA_WAROCAS_RARES")
+                .IsRare()
                 .AddItem("waro_leg", 1, 1, true);
         }
 
@@ -370,6 +380,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("agate", 1, 1, true);
 
             _builder.Create("VISCARA_CRYSTAL_SPIDER_RARES")
+                .IsRare()
                 .AddItem("map_039", 20, 1, true);
         }
     }

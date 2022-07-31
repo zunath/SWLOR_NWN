@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
-            if (treasureHunterLevel > 0 && Regex.Match(lootTableName, "_RARES").Success)
+            if (treasureHunterLevel > 0 && table.IsRare)
             {
                 chance += treasureHunterLevel * 10;
             }

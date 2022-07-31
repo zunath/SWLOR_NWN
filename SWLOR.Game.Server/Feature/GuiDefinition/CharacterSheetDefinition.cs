@@ -506,7 +506,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("HoloCom")
                                         .SetHeight(32f)
                                         .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickHoloCom());
+                                        .BindOnClicked(model => model.OnClickHoloCom())
+                                        .BindIsEnabled(model => model.IsHolocomEnabled);
                                 });
                                 col2.AddRow(row2 =>
                                 {

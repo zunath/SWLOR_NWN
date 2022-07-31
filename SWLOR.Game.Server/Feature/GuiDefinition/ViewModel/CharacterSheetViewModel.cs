@@ -220,6 +220,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsHolocomEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public Action OnClickSkills() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
@@ -247,6 +253,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickHoloCom() => () =>
         {
+            if (Space.IsPlayerInSpaceMode(Player))
+            {
+                SendMessageToPC(Player, ColorToken.Red("Holocom cannot be used in space."));
+                return;
+            }
+
             Dialog.StartConversation(Player, Player, nameof(HoloComDialog));
         };
 
@@ -520,6 +532,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
+            IsHolocomEnabled = !Space.IsPlayerInSpaceMode(Player);
 
             RefreshPortrait();
             RefreshStats(dbPlayer);

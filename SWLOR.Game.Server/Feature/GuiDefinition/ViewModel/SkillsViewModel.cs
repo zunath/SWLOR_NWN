@@ -23,6 +23,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string XPDebt
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> SkillNames
         {
             get => Get<GuiBindingList<string>>();
@@ -159,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+            XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
             SkillNames = skillNames;
             Levels = levels;
             Titles = titles;
@@ -298,6 +305,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+            XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
 
             var distributeTooltips = new GuiBindingList<string>();
             var distributeToggles = new GuiBindingList<bool>();

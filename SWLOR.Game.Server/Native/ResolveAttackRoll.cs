@@ -332,9 +332,9 @@ namespace SWLOR.Game.Server.Native
             attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
             Log.Write(LogGroup.Attack, $"Building combat log message");
-            var message = Combat.BuildCombatLogMessage(
-                (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim(),
-                (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
+            var message = Combat.BuildCombatLogMessageNative(
+                attacker,
+                defender,
                 pAttackData.m_nAttackResult,
                 hitRate);
             attacker.SendFeedbackString(new CExoString(message));

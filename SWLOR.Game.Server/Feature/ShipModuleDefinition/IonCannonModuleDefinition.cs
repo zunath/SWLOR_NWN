@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     var attackId = isHit ? 1 : 4;
-                    var combatLogMessage = Combat.BuildCombatLogMessage(GetName(activator), GetName(target), attackId, chanceToHit);
+                    var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
                     Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
 
                     Enmity.ModifyEnmity(activator, target, damage);

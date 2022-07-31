@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 199
+    "value": 148
   },
   "BaseItem": {
     "type": "int",
-    "value": 52
+    "value": 525
   },
   "Charges": {
     "type": "byte",
@@ -14,22 +14,19 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 200
+    "value": 150
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 48931,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -42,19 +39,26 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48930,
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Ring"
+      "0": "Mandalorian Electroblade"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 25
+    "value": 141
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 131
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 183
   },
   "PaletteID": {
     "type": "byte",
-    "value": 22
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -71,11 +75,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -87,11 +91,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 5
         }
       },
       {
@@ -102,11 +106,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -118,42 +122,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 37
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 15
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 90
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
         }
       },
       {
@@ -184,7 +157,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 104
+          "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 83
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       }
     ]
@@ -199,10 +203,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "mando_ring"
+    "value": "mando_eblade"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "mando_ring"
+    "value": "mando_eblade"
   }
 }

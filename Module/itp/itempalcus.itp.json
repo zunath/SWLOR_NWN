@@ -3803,6 +3803,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_armor_npc_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Mandalorian Helmet"
                     },
                     "RESREF": {
@@ -3825,11 +3836,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Mandalorian Helmet Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Mandalorian War Hero Armor"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "man_larmor_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian War Hero Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc001"
                     }
                   },
                   {
@@ -6623,6 +6656,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyees"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Hunter Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_htr_skin"
                     }
                   },
                   {
@@ -29246,6 +29290,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Mandalorian Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Archetype Knife"
                           },
                           "RESREF": {
@@ -29905,6 +29960,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Captain Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_eblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Captain Longsword"
                           },
                           "RESREF": {
@@ -30174,6 +30240,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_blade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_eblade"
                           }
                         },
                         {
@@ -30945,6 +31022,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Captain Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_sabstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carbide Staff"
                     },
                     "RESREF": {
@@ -31214,6 +31302,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_sabstaff"
                     }
                   },
                   {
@@ -32230,6 +32329,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_spear"
                     }
                   },
                   {

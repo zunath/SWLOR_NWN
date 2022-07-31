@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             MandalorianLeader();
             MandalorianRanger();
             MandalorianWarrior();
+            MandalorianHunter();
+            MandalorianScout();
             Outlaw();
             Gimpassa();
             Kinrath();
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("damaryllia", 10)
                 .AddItem("jade", 20)
                 .AddItem("agate", 20)
+                .AddItem("mando_twinblade", 5)
                 .AddItem("mando_shield", 5)
                 .AddItem("mando_cloak", 5)
                 .AddItem("mando_belt", 5)
@@ -60,17 +63,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mando_bracer", 5)
                 .AddItem("mando_leggings", 5);
 
+            _builder.Create("VISCARA_MANDALORIAN_LEADER_TAGS")
+                .AddItem("man_tags", 50)
+                .AddItem("m_polearm_parts", 10)
+                .AddItem("m_ls_parts", 10);
+
             _builder.Create("VISCARA_MANDALORIAN_LEADER_RARES")
-                .AddItem("map_048", 20, 1, true);
+                .AddItem("map_048", 10)
+                .AddItem("m_ls_parts", 20);
         }
 
         private void MandalorianWarrior()
         {
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR")
                 .AddItem("elec_flawed", 20)
-                .AddItem("fiberp_flawed", 20)
                 .AddItem("herb_m", 20)
-                .AddItem("man_tags", 10)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("mando_blade", 5)
@@ -79,38 +86,104 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mando_spear", 5)
                 .AddItem("mando_katar", 5)
                 .AddItem("mando_staff", 5)
+                .AddItem("mando_sabstaff", 5)
+                .AddItem("mando_eblade", 5)
                 .AddItem("mando_twinblade", 5)
                 .AddItem("bubble_choc", 8)
                 .AddGold(30, 10);
 
+            _builder.Create("VISCARA_MANDALORIAN_WARRIOR_TAGS")
+                .AddItem("man_tags", 50)
+                .AddItem("m_lvibro_parts", 10)
+                .AddItem("m_vibro_parts", 10)
+                .AddItem("m_polearm_parts", 10);
+
             _builder.Create("VISCARA_MANDALORIAN_WARRIOR_RARES")
-                .AddItem("map_048", 20, 1, true)
-                .AddItem("jade", 4, 1, true)
-                .AddItem("agate", 4, 1, true)
-                .AddItem("m_plexiplate", 4, 1, true);
+                .AddItem("m_plexiplate", 20, 1, true)
+                .AddItem("map_048", 10, 1, true)
+                .AddItem("jade", 5, 1, true)
+                .AddItem("agate", 5, 1, true);
         }
 
         private void MandalorianRanger()
         {
             _builder.Create("VISCARA_MANDALORIAN_RANGER")
                 .AddItem("elec_flawed", 20)
-                .AddItem("fiberp_flawed", 20)
                 .AddItem("herb_m", 20)
-                .AddItem("man_tags", 10)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("mando_shuriken", 5)
                 .AddItem("mando_pistol", 5)
                 .AddItem("mando_rifle", 5)
+                .AddItem("mando_knife", 5)
                 .AddItem("b_flour", 8)
                 .AddItem("sweet_butter", 2, 1, true)
                 .AddGold(30, 10);
 
+            _builder.Create("VISCARA_MANDALORIAN_RANGER_TAGS")
+                .AddItem("man_tags", 50)
+                .AddItem("m_blast_parts", 15)
+                .AddItem("m_vibro_parts", 5);
+
             _builder.Create("VISCARA_MANDALORIAN_RANGER_RARES")
-                .AddItem("map_048", 20, 1, true)
-                .AddItem("jade", 4, 1, true)
-                .AddItem("agate", 4, 1, true)
-                .AddItem("m_plexiplate", 4, 1, true);
+                .AddItem("m_plexiplate", 20, 1, true)
+                .AddItem("map_048", 10, 1, true)
+                .AddItem("jade", 5, 1, true)
+                .AddItem("agate", 5, 1, true);
+        }
+
+        private void MandalorianHunter()
+        {
+            _builder.Create("VISCARA_MANDALORIAN_HUNTER")
+                .AddItem("elec_flawed", 20)
+                .AddItem("herb_m", 20)
+                .AddItem("med_supplies", 3, 3)
+                .AddItem("stim_pack", 3, 3)
+                .AddItem("mando_shuriken", 5)
+                .AddItem("mando_pistol", 5)
+                .AddItem("mando_rifle", 5)
+                .AddItem("lth_ruined", 5)
+                .AddItem("lth_flawed", 5)
+                .AddItem("gimp_shell", 1, 1)
+                .AddItem("gimp_tooth", 1)
+                .AddItem("gimp_blood", 1)
+                .AddItem("gimp_meat", 1)
+                .AddGold(30, 10);
+
+            _builder.Create("VISCARA_MANDALORIAN_HUNTER_TAGS")
+                .AddItem("man_tags", 50)
+                .AddItem("m_blast_parts", 15)
+                .AddItem("m_vibro_parts", 5);
+
+            _builder.Create("VISCARA_MANDALORIAN_HUNTER_RARES")
+                .AddItem("m_plexiplate", 20, 1, true)
+                .AddItem("map_053", 10, 1, true)
+                .AddItem("jade", 5, 1, true)
+                .AddItem("agate", 5, 1, true);
+        }
+
+        private void MandalorianScout()
+        {
+            _builder.Create("VISCARA_MANDALORIAN_SCOUT")
+                .AddItem("elec_flawed", 20)
+                .AddItem("herb_m", 20)
+                .AddItem("fiberp_flawed", 15)
+                .AddItem("mando_knife", 5)
+                .AddItem("med_supplies", 3, 3)
+                .AddItem("stim_pack", 3, 3)
+                .AddItem("kinrath_limb", 5)
+                .AddItem("kinrath_meat", 5)
+                .AddGold(30, 10);
+
+            _builder.Create("VISCARA_MANDALORIAN_SCOUT_TAGS")
+                .AddItem("man_tags", 50)
+                .AddItem("m_lvibro_parts", 10)
+                .AddItem("m_vibro_parts", 10)
+                .AddItem("m_polearm_parts", 10);
+
+            _builder.Create("VISCARA_MANDALORIAN_SCOUT_RARES")
+                .AddItem("m_plexiplate", 10, 1, true)
+                .AddItem("map_053", 10, 1, true);
         }
 
         private void MandalorianCrate()
@@ -118,15 +191,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_MANDALORIAN_CRATE")
                 .AddItem("herb_m", 30)
                 .AddItem("elec_flawed", 20)
-                .AddItem("fiberp_flawed", 20)
-                .AddItem("man_tags", 5)
                 .AddItem("med_supplies", 3, 3)
                 .AddItem("stim_pack", 3, 3)
                 .AddItem("jade", 1, 1, true)
                 .AddItem("agate", 1, 1, true)
-                .AddItem("m_plexiplate", 1, 1, true)
+                .AddItem("m_plexiplate", 10, 1, true)
+                .AddItem("m_ls_parts", 5, 1, true)
+                .AddItem("m_lvibro_parts", 10)
+                .AddItem("m_vibro_parts", 10)
+                .AddItem("m_polearm_parts", 10)
+                .AddItem("m_blast_parts", 10)
                 .AddItem("v_honey", 5)
-                .AddItem("sweet_butter", 2, 1, true)
+                .AddItem("sweet_butter", 10)
+                .AddItem("b_flour", 10)
                 .AddGold(30, 10);
 
         }

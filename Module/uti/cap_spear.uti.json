@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 199
+    "value": 248
   },
   "BaseItem": {
     "type": "int",
-    "value": 52
+    "value": 58
   },
   "Charges": {
     "type": "byte",
@@ -18,43 +18,46 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 200
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 48931,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
   "LocalizedName": {
-    "id": 48930,
+    "id": 1552,
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Ring"
+      "0": "Captain Spear"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 25
+    "value": 41
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 21
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 41
   },
   "PaletteID": {
     "type": "byte",
-    "value": 22
+    "value": 51
   },
   "Plot": {
     "type": "byte",
@@ -71,11 +74,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 2
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -87,11 +90,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 56
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 0
         }
       },
       {
@@ -102,11 +105,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 24
         },
         "Param1": {
           "type": "byte",
@@ -118,42 +121,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 37
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 15
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 90
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
         }
       },
       {
@@ -184,7 +156,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 104
+          "value": 34
         }
       }
     ]
@@ -199,10 +171,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "mando_ring"
+    "value": "cap_spear"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "mando_ring"
+    "value": "cap_spear"
   }
 }

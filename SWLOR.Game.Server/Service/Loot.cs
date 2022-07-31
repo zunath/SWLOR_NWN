@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.LogService;
@@ -120,6 +121,10 @@ namespace SWLOR.Game.Server.Service
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
+            if (treasureHunterLevel > 0 && Regex.Match(lootTableName, "_RARES").Success)
+            {
+                chance += treasureHunterLevel * 10;
+            }
             for (int x = 1; x <= attempts; x++)
             {
                 if (Random.D100(1) > chance) continue;

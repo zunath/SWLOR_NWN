@@ -66,10 +66,6 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("heal_aft")]
         public static void PlayerHealed()
         {
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }

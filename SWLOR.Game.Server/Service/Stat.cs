@@ -1209,11 +1209,16 @@ namespace SWLOR.Game.Server.Service
             // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
                      creature.m_pStats.m_nACNaturalBase +
-                     creature.m_pStats.m_nACArmorMod +
-                     creature.m_pStats.m_nACDeflectionMod +
-                     creature.m_pStats.m_nACDodgeMod +
-                     creature.m_pStats.m_nACNaturalMod +
-                     creature.m_pStats.m_nACShieldMod;
+                     creature.m_pStats.m_nACArmorMod -
+                     creature.m_pStats.m_nACArmorNeg +
+                     creature.m_pStats.m_nACDeflectionMod -
+                     creature.m_pStats.m_nACDeflectionNeg +
+                     creature.m_pStats.m_nACDodgeMod -
+                     creature.m_pStats.m_nACDodgeNeg +
+                     creature.m_pStats.m_nACNaturalMod -
+                     creature.m_pStats.m_nACNaturalNeg +
+                     creature.m_pStats.m_nACShieldMod -
+                     creature.m_pStats.m_nACShieldNeg;
 
             Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
 

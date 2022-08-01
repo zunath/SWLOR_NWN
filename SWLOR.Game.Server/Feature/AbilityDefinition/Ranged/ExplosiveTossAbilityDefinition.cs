@@ -77,7 +77,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                         defense, 
                         defenderStat, 
                         0);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), creature);
+
+                    var dTarget = creature;
+                    DelayCommand(0.1f, () =>
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget);
+                    });
 
                     CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
                     Enmity.ModifyEnmity(activator, creature, 250 * level + damage);

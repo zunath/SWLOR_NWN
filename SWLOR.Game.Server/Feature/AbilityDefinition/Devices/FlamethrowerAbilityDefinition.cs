@@ -36,33 +36,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
+
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        dmg, 
-                        attackerStat, 
-                        defense, 
-                        defenderStat, 
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
                         0);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), target);
-
-                    if (Random.D100(1) <= burningChance)
-                    {
-                        StatusEffect.Apply(activator, target, StatusEffectType.Burn, 30f);
-                    }
-
+                    var eDMG = EffectDamage(damage, DamageType.Fire);
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    var dTarget = target; // Without this, ApplyEffect doesn't actually work. Don't ask why.
 
+                    DelayCommand(0.1f, () =>
+                    {
+                        ApplyEffectToObject(DurationType.Instant, eDMG, dTarget);
+                        ApplyEffectToObject(DurationType.Instant, eVFX, dTarget);
+
+                        if (Random.D100(1) <= burningChance)
+                        {
+                            StatusEffect.Apply(activator, dTarget, StatusEffectType.Burn, 30f);
+                        }
+                    });
                 }
 
                 target = GetNextObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);

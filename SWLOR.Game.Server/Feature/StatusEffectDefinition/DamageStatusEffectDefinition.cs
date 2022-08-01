@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var decreasedAC = EffectACDecrease(2);
 
                     ApplyEffectToObject(DurationType.Instant, damage, target);
-                    ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 1.0f);
+                    ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 6.0f);
 
                 });
         }

@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
     {
-        private static GuiColor _green = new GuiColor(0, 255, 0);
-        private static GuiColor _red = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
 
         private class OreDetail
         {
@@ -60,8 +60,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private const int BaseItemsRefinedPerCore = 3;
         public const string PowerCoreIconResref = "iit_midmisc_008";
+        private const string PowerCoreTag = "power_core";
         private const float RefiningDelaySeconds = 6f;
         private bool _isRefining;
+        private int _powerCoresRequired;
 
         private List<string> _inputItems;
         private List<int> _inputStackSizes;
@@ -287,6 +289,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             InputItemToggles[index] = !InputItemToggles[index];
+        };
+
+        public Action OnWindowClosed() => () =>
+        {
+            foreach (var serialized in _inputItems)
+            {
+                var item = ObjectPlugin.Deserialize(serialized);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+
+            _inputItemResrefs.Clear();
+            _inputItems.Clear();
+            _inputStackSizes.Clear();
+            InputItemToggles.Clear();
+            InputItemNames.Clear();
+            OutputItemNames.Clear();
         };
 
     }

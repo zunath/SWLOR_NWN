@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .BindIsClosable(model => model.IsCloseEnabled)
+                .BindOnClosed(model => model.OnWindowClosed())
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ReapplyBAB(uint player)
         {
-            CreaturePlugin.SetBaseAttackBonus(player, GetBaseAttackBonus(player));
+            Stat.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
         }
 
         private static void ReapplySpeed(uint player)

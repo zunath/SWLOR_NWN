@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hutlar - Qion Canyon"
+      "0": "Hutlar - Qion Box Canyon"
     }
   },
   "NoRest": {
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 9
   },
   "Width": {
     "type": "int",

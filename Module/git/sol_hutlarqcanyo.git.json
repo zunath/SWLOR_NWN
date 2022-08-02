@@ -11240,7 +11240,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.0
+          "value": 1.0
         }
       },
       {
@@ -11467,7 +11467,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.0
+          "value": 1.0
         }
       },
       {
@@ -15411,15 +15411,15 @@
             "__struct_id": 6,
             "ScaleX": {
               "type": "float",
-              "value": 0.4401265382766724
+              "value": 0.4399999976158142
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.4401265382766724
+              "value": 0.4399999976158142
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.4401265382766724
+              "value": 0.4399999976158142
             }
           }
         },
@@ -15429,15 +15429,15 @@
         },
         "X": {
           "type": "float",
-          "value": 55.15478515625
+          "value": 55.15000152587891
         },
         "Y": {
           "type": "float",
-          "value": 29.94428253173828
+          "value": 29.94000053405762
         },
         "Z": {
           "type": "float",
-          "value": 9.999998092651367
+          "value": 9.0
         }
       },
       {
@@ -15655,15 +15655,15 @@
             "__struct_id": 6,
             "ScaleX": {
               "type": "float",
-              "value": 0.773780882358551
+              "value": 0.7699999809265137
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.773780882358551
+              "value": 0.7699999809265137
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.773780882358551
+              "value": 0.7699999809265137
             }
           }
         },
@@ -15681,7 +15681,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 10.80000019073486
+          "value": 9.800000190734863
         }
       },
       {
@@ -20094,6 +20094,207 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 1
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.11801290512085
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.01913356781005859
+              },
+              "PointY": {
+                "type": "float",
+                "value": -45.10197448730469
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.025000095367432
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 3.818609237670898
+              },
+              "PointY": {
+                "type": "float",
+                "value": -45.11044311523438
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.025000095367432
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 1.962101221084595
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.306915283203125
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.643633365631104
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": "WP_sol_qfoothillstoboscan"
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 2
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "id": 14760,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "sol_qboscantofoothills"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "newtransition"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 0.935999870300293
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.17169189453125
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   },
@@ -20157,6 +20358,65 @@
         "ZPosition": {
           "type": "float",
           "value": 15.02000045776367
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "WP_sol_qboscantofoothills"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.99969881772995
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 4.558149337768555
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.02454122342169285
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 32.10710525512695
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.999994277954102
         }
       }
     ]

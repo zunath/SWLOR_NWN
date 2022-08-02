@@ -263,6 +263,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Sharptooth Caverns", "Explore the Sharptooth Caverns on Mon Cala", true)]
         ExploreMonCalaSharptoothCaverns = 98,
+
+        [Achievement("Explore Qion Foothills", "Explore the Qion Foothills on Hutlar.", true)]
+        ExploreHutlarQionFoothills = 99,
     }
 
     public class AchievementAttribute: Attribute

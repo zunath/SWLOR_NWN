@@ -1679,6 +1679,13 @@
           "type": "resref",
           "value": "v_repubbase_hang"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "sol_hutlarqfooth"
+        }
       }
     ]
   },

@@ -131,12 +131,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var refineryManagement = Perk.GetEffectivePerkLevel(Player, PerkType.RefineryManagement);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
-            var quantity = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
+            _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
             
-            if(quantity == 1)
-                RequiredPowerCores = $"{quantity}x Power Core Required";
+            if(_powerCoresRequired == 1)
+                RequiredPowerCores = $"{_powerCoresRequired}x Power Core Required";
             else
-                RequiredPowerCores = $"{quantity}x Power Cores Required";
+                RequiredPowerCores = $"{_powerCoresRequired}x Power Cores Required";
+        }
+
+        private (List<uint>, List<int>) GetPowerCores()
+        {
+            var powerCoreItems = new List<uint>();
+            var powerCoreCounts = new List<int>();
+
+            for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
+            {
+                var tag = GetTag(item);
+                if (tag == PowerCoreTag)
+                {
+                    var stackSize = GetItemStackSize(item);
+                    powerCoreItems.Add(item);
+                    powerCoreCounts.Add(stackSize);
+                }
+            }
+
+            return (powerCoreItems, powerCoreCounts);
         }
 
         public Action OnClickAddItem() => () =>
@@ -236,8 +255,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var (powerCoreItems, powerCoreCounts) = GetPowerCores();
+            var totalPowerCores = powerCoreCounts.Sum();
+
+            if (totalPowerCores < _powerCoresRequired)
+            {
+                Instructions = "Insufficient power cores!";
+                InstructionsColor = _red;
+                return;
+            }
+
             Instructions = string.Empty;
             IsCloseEnabled = false;
+            _isRefining = true;
 
             // Flag player as refining so that they can't queue up another item at the same time.
             SetLocalBool(Player, "IS_REFINING", true);
@@ -254,6 +284,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PlayerPlugin.StartGuiTimingBar(Player, RefiningDelaySeconds);
             DelayCommand(RefiningDelaySeconds, () =>
             {
+                // Recheck power core counts in case someone got rid of them in between the delay.
+                (powerCoreItems, powerCoreCounts) = GetPowerCores();
+                totalPowerCores = powerCoreCounts.Sum();
+
+                if (totalPowerCores < _powerCoresRequired)
+                {
+                    Instructions = "Insufficient power cores!";
+                    InstructionsColor = _red;
+                    return;
+                }
+
+                var remainingCores = _powerCoresRequired;
+                for (var index = powerCoreItems.Count - 1; index >= 0; index--)
+                {
+                    var item = powerCoreItems[index];
+                    var count = powerCoreCounts[index];
+
+                    // Stack size is greater than amount required.
+                    if (count > remainingCores)
+                    {
+                        count -= remainingCores;
+                        SetItemStackSize(item, count);
+                        remainingCores = 0;
+                        break;
+                    }
+                    // Stack size is less than or equal to the amount required.
+                    else if (count <= remainingCores)
+                    {
+                        DestroyObject(item);
+                        remainingCores -= count;
+                    }
+                }
+
                 var xp = 0;
 
                 for (var index = _inputItems.Count - 1; index >= 0; index--)
@@ -280,6 +343,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 Instructions = "Success!";
                 InstructionsColor = _green;
+                _isRefining = false;
+                IsCloseEnabled = true;
 
                 CalculateCoresRequired();
             });

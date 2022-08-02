@@ -176,6 +176,8 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.XPDebt += newDebt;
             DB.Set(dbPlayer);
 
+            SendMessageToPC(player, $"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)");
+
             return dbPlayer.XPDebt;
         }
 

@@ -15,7 +15,14 @@ namespace SWLOR.Game.Server.Service
                 SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
-        
+
+        [NWNEventHandler("mod_enter")]
+        public static void OnModuleEnter()
+        {
+            var player = GetEnteringObject();
+            RemoveEffectByTag(player, "HOLOCOM_CALL_IMMOBILIZE");
+        }
+
         [NWNEventHandler("mod_exit")]
         public static void OnModuleLeave()
         {
@@ -94,6 +101,9 @@ namespace SWLOR.Game.Server.Service
                 var senderLocation = GetLocation(sender);
                 var holoSender = CopyObject(sender, BiowareVector.MoveLocation(receiverLocation, GetFacing(receiver), 2.0f, 180));
                 var holoReceiver = CopyObject(receiver, BiowareVector.MoveLocation(senderLocation, GetFacing(sender), 2.0f, 180));
+
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);
 
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoSender);
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);

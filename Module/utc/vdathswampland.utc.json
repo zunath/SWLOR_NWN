@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 50.0
+    "value": 52.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 26
+    "value": 32
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 70
   },
   "DecayTime": {
     "type": "dword",
@@ -116,13 +116,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 20
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1153
         }
       },
@@ -169,11 +162,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 100
+    "value": 70
   },
   "Int": {
     "type": "byte",
-    "value": 70
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -203,7 +196,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 150
   },
   "NaturalAC": {
     "type": "byte",
@@ -532,7 +525,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 5
   },
   "willbonus": {
     "type": "short",

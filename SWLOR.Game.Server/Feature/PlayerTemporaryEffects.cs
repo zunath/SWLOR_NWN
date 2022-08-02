@@ -12,10 +12,14 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyTemporaryEffects()
         {
             var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
             RemoveImmobility(player);
             ReapplyBAB(player);
+            ReapplySpeed(player);
         }
 
         private static void ApplyCutsceneGhostToPlayer(uint player)
@@ -26,9 +30,6 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ApplyHeight(uint player)
         {
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -51,24 +52,9 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.SetBaseAttackBonus(player, GetBaseAttackBonus(player));
         }
 
-        /// <summary>
-        /// Whenever a player unequips an item, if they have any action modes enabled, disable them.
-        /// This works around issues 
-        /// </summary>
-        [NWNEventHandler("mod_unequip")]
-        public static void RemoveEquipmentEffects()
+        private static void ReapplySpeed(uint player)
         {
-            DisableRapidShotMode();
-        }
-
-        private static void DisableRapidShotMode()
-        {
-            var player = GetPCItemLastUnequippedBy();
-            if (!GetIsPC(player))
-                return;
-
-            if(GetActionMode(player, ActionMode.RapidShot))
-                SetActionMode(player, ActionMode.RapidShot, false);
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }
     }
 }

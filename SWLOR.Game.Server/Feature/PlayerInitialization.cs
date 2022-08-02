@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature
             GiveStartingItems(player);
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
+            ApplyMovementRate(player);
 
             DB.Set(dbPlayer);
 
@@ -183,9 +184,9 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, 70);
-            Stat.AdjustPlayerMaxFP(dbPlayer, 10, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, 10, player);
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP);
+            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
@@ -363,6 +364,11 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.RespawnLocationY = position.Y;
             dbPlayer.RespawnLocationZ = position.Z;
             dbPlayer.RespawnLocationOrientation = orientation;
+        }
+
+        private static void ApplyMovementRate(uint player)
+        {
+            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }
 
     }

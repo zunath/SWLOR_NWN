@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.Player))
                 {
-                    if (definition.IsEmote == true)
+                    if (definition.IsEmote)
                     {
                         HelpTextEmote += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                     }
@@ -190,12 +190,14 @@ namespace SWLOR.Game.Server.Service
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.DM))
                 {
-                    HelpTextDM += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    if(!definition.IsEmote)
+                        HelpTextDM += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                 }
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.Admin))
                 {
-                    HelpTextAdmin += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    if (!definition.IsEmote)
+                        HelpTextAdmin += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                 }
             }
         }

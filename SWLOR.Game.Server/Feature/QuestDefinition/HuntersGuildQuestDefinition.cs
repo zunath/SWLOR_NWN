@@ -21,13 +21,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(23, 21)},
-            { 1, new RewardDetails(84, 81)},
-            { 2, new RewardDetails(122, 117)},
-            { 3, new RewardDetails(184, 156)},
-            { 4, new RewardDetails(245, 195)},
-            { 5, new RewardDetails(312, 246)},
+            { 0, new RewardDetails(138, 21)},
+            { 1, new RewardDetails(343, 81)},
+            { 2, new RewardDetails(532, 117)},
+            { 3, new RewardDetails(733, 156)},
+            { 4, new RewardDetails(874, 195)},
+            { 5, new RewardDetails(960, 246)},
         };
+
         private readonly QuestBuilder _builder = new();
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Tier 2 (Rank 1)
             BuildItemTask("hun_tsk_200", "herb_m", 6, 1);
             BuildItemTask("hun_tsk_201", "m_blast_parts", 6, 1);
-            BuildItemTask("hun_tsk_202", "man_tags", 6, 1);
+            BuildItemTask("hun_tsk_202", "man_tags", 10, 1);
             BuildItemTask("hun_tsk_203", "m_lvibro_parts", 6, 1);
             BuildKillTask("hun_tsk_204", NPCGroupType.Viscara_MandalorianLeader, 1, 1);
             BuildItemTask("hun_tsk_205", "m_ls_parts", 6, 1);

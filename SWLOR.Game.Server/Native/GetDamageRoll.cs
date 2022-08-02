@@ -189,13 +189,14 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Doublehand perk
-            if (attackType == (uint)AttackType.Melee && weapon != null)
+            if (weapon != null)
             {
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
                     var weaponType = (BaseItem)weapon.m_nBaseItem;
 
-                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType))
+                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType) ||
+                        Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
                     {
                         var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
                         Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
@@ -442,7 +443,8 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            if (Item.StaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
 

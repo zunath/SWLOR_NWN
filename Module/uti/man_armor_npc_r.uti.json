@@ -1,0 +1,176 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 75
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 218
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 247
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 244
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 200
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 198
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 227
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 249
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 231
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 100
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 232
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 247
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 244
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 200
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 198
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 227
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 249
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 231
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 247
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 91
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 91
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 76
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 99
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 99
+  },
+  "LocalizedName": {
+    "id": 12838,
+    "type": "cexolocstring",
+    "value": {
+      "0": "[NPC] Mandalorian Armor Red"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 91
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 91
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 58
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "man_armor_npc_r"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "man_armor_npc_r"
+  }
+}

@@ -251,7 +251,12 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var target = Enmity.GetHighestEnmityTarget(self);
-            if (GetCurrentAction(self) != ActionType.Invalid)
+            if (!GetIsObjectValid(target))
+                return;
+
+            var action = GetCurrentAction(self);
+            if (action != ActionType.RandomWalk && 
+                action != ActionType.Invalid)
                 return;
 
             AssignCommand(self, () =>

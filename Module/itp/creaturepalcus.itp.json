@@ -9451,7 +9451,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 52.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10280,6 +10280,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_hunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Ranger"
                     },
                     "RESREF": {
@@ -10304,6 +10323,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_ranger_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Scout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_scout"
                     }
                   },
                   {

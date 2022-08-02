@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 536
   },
   "Charges": {
     "type": "byte",
@@ -58,7 +58,7 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",

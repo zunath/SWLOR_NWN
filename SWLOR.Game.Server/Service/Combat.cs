@@ -254,14 +254,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Builds a combat log message based on the provided information.
         /// </summary>
-        /// <param name="attackerName">The name of the attacker</param>
-        /// <param name="defenderName">The name of the defender</param>
+        /// <param name="attacker">The id of the attacker</param>
+        /// <param name="defender">The id of the defender</param>
         /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
         public static string BuildCombatLogMessage(
-            string attackerName,
-            string defenderName,
+            uint attacker,
+            uint defender,
             int attackResultType,
             int chanceToHit)
         {
@@ -281,8 +281,49 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
-            var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
-            return ColorToken.Combat($"{coloredAttackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+
+            return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        /// <summary>
+        /// Builds a combat log message based on the provided information, for native contexts.
+        /// </summary>
+        /// <param name="attacker">The CNWSCreature of the attacker</param>
+        /// <param name="defender">The CNWSCreature of the defender</param>
+        /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
+        /// <param name="chanceToHit">The percent chance to hit</param>
+        /// <returns></returns>
+        public static string BuildCombatLogMessageNative(
+            CNWSCreature attacker,
+            CNWSCreature defender,
+            int attackResultType,
+            int chanceToHit)
+        {
+            var type = string.Empty;
+
+            switch (attackResultType)
+            {
+                case 1:
+                case 7:
+                    type = ": *hit*";
+                    break;
+                case 3:
+                    type = ": *critical*";
+                    break;
+                case 4:
+                    type = ": *miss*";
+                    break;
+            }
+
+            var attackerName = (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim();
+            var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
+
+            attackerName = Convert.ToBoolean(attacker.m_bPlayerCharacter) ? ColorToken.Custom(attackerName, 153, 255, 255) : ColorToken.Custom(attackerName, 204, 153, 204);
+            defenderName = Convert.ToBoolean(defender.m_bPlayerCharacter) ? ColorToken.Custom(defenderName, 153, 255, 255) : ColorToken.Custom(defenderName, 204, 153, 204);
+
+            return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
         /// <summary>
@@ -301,7 +342,8 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var rightHandType = GetBaseItemType(rightHand);
-            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType))
+            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) && 
+                !Item.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
                 return 0;
 
             if (GetHasFeat(FeatType.Doublehand5, attacker))
@@ -316,6 +358,20 @@ namespace SWLOR.Game.Server.Service
                 dmg = 2;
 
             return dmg;
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by Power Attack.
+        /// </summary>
+        /// <param name="attacker">The attacker to check.</param>
+        /// <returns>The DMG bonus, or 0 if Power Attack is not enabled.</returns>
+        public static int GetPowerAttackDMGBonus(uint attacker)
+        {
+            if (GetActionMode(attacker, ActionMode.PowerAttack))
+                return 3;
+            else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
+                return 6;
+            return 0;
         }
 
         /// <summary>

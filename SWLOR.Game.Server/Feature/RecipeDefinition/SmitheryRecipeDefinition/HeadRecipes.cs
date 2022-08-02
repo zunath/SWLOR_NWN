@@ -54,6 +54,55 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2);
+
+            // Advent Helmet
+            _builder.Create(RecipeType.AdventHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("advent_helmet")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 5)
+                .Component("lth_ruined", 5)
+                .Component("jade", 3);
+
+            // Amateur Helmet
+            _builder.Create(RecipeType.AmateurHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("engi_helmet_1")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 5)
+                .Component("lth_ruined", 5)
+                .Component("jade", 3);
+
+            // Cloth Helmet
+            _builder.Create(RecipeType.ClothHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fabr_helmet_1")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 5)
+                .Component("lth_ruined", 5)
+                .Component("jade", 3);
+
+            // Chef Helmet
+            _builder.Create(RecipeType.ChefHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("chef_helmet_1")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 5)
+                .Component("lth_ruined", 5)
+                .Component("jade", 3);
         }
 
         private void Tier2()
@@ -90,6 +139,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2);
+
+            // Frontier Helmet
+            _builder.Create(RecipeType.FrontierHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("frontier_helmet")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 5)
+                .Component("lth_flawed", 5)
+                .Component("agate", 3);
+
+            // Worker Helmet
+            _builder.Create(RecipeType.WorkerHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("engi_helmet_2")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 5)
+                .Component("lth_flawed", 5)
+                .Component("agate", 3);
+
+            // Linen Helmet
+            _builder.Create(RecipeType.LinenHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fabr_helmet_2")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 5)
+                .Component("lth_flawed", 5)
+                .Component("agate", 3);
+
+            // Velveteen Helmet
+            _builder.Create(RecipeType.VelveteenHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("chef_helmet_2")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 5)
+                .Component("lth_flawed", 5)
+                .Component("agate", 3);
         }
 
         private void Tier3()
@@ -126,6 +223,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 3)
                 .Component("fiberp_good", 2);
+
+            // Majestic Helmet
+            _builder.Create(RecipeType.MajesticHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("majestic_helmet")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 5)
+                .Component("lth_good", 5)
+                .Component("citrine", 3);
+
+            // Worker Helmet
+            _builder.Create(RecipeType.WorkerHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("engi_helmet_2")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 5)
+                .Component("lth_good", 5)
+                .Component("citrine", 3);
+
+            // Designer Helmet
+            _builder.Create(RecipeType.DesignerHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fabr_helmet_3")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 5)
+                .Component("lth_good", 5)
+                .Component("citrine", 3);
+
+            // Silk Helmet
+            _builder.Create(RecipeType.SilkHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("chef_helmet_3")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 5)
+                .Component("lth_good", 5)
+                .Component("citrine", 3);
         }
 
         private void Tier4()
@@ -162,6 +307,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 3)
                 .Component("fiberp_imperfect", 2);
+
+            // Dream Helmet
+            _builder.Create(RecipeType.DreamHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("dream_helmet")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 5)
+                .Component("lth_imperfect", 5)
+                .Component("ruby", 3);
+
+            // Devotion Helmet
+            _builder.Create(RecipeType.DevotionHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("engi_helmet_4")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 5)
+                .Component("lth_imperfect", 5)
+                .Component("ruby", 3);
+
+            // Oasis Helmet
+            _builder.Create(RecipeType.OasisHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fabr_helmet_4")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 5)
+                .Component("lth_imperfect", 5)
+                .Component("ruby", 3);
+
+            // Vintage Helmet
+            _builder.Create(RecipeType.VintageHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("chef_helmet_4")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 5)
+                .Component("lth_imperfect", 5)
+                .Component("ruby", 3);
         }
 
         private void Tier5()
@@ -198,6 +391,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 3)
                 .Component("fiberp_high", 2);
+
+            // Eternal Helmet
+            _builder.Create(RecipeType.EternalHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("eternal_helmet")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("lth_high", 5)
+                .Component("emerald", 3);
+
+            // Skysteel Helmet
+            _builder.Create(RecipeType.SkysteelHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("engi_helmet_5")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("lth_high", 5)
+                .Component("emerald", 3);
+
+            // Rose Helmet
+            _builder.Create(RecipeType.RoseHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fabr_helmet_5")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("lth_high", 5)
+                .Component("emerald", 3);
+
+            // Moonflame Helmet
+            _builder.Create(RecipeType.MoonflameHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("chef_helmet_5")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("lth_high", 5)
+                .Component("emerald", 3);
         }
     }
 }

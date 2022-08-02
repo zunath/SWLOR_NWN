@@ -464,5 +464,12 @@ namespace SWLOR.Game.Server.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
+        [NWNEventHandler("refinery_used")]
+        public static void UseRefinery()
+        {
+            var player = GetLastUsedBy();
+            Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
+        }
+
     }
 }

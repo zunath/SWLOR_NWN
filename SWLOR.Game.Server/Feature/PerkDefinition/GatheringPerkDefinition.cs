@@ -139,36 +139,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Refinery Management")
 
                 .AddPerkLevel()
-                .Description("Power sources last 12 seconds longer inside refineries.")
+                .Description("Power cores refine one additional item.")
                 .Price(1)
                 .GrantsFeat(FeatType.RefineryManagement1)
 
                 .AddPerkLevel()
-                .Description("Power sources last 18 seconds longer inside refineries.")
+                .Description("Power cores refine two additional items.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
                 .GrantsFeat(FeatType.RefineryManagement2)
 
                 .AddPerkLevel()
-                .Description("Power sources last 24 seconds longer inside refineries.")
+                .Description("Power cores refine three additional items.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
                 .GrantsFeat(FeatType.RefineryManagement3)
 
                 .AddPerkLevel()
-                .Description("Power sources last 36 seconds longer inside refineries.")
+                .Description("Power cores refine four additional items.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 30)
                 .GrantsFeat(FeatType.RefineryManagement4)
 
                 .AddPerkLevel()
-                .Description("Power sources last 48 seconds longer inside refineries.")
+                .Description("Power cores refine five additional items.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.RefineryManagement5)
 
                 .AddPerkLevel()
-                .Description("Power sources last 60 seconds longer inside refineries.")
+                .Description("Power cores refine six additional items.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 45)
                 .GrantsFeat(FeatType.RefineryManagement6);

@@ -92951,7 +92951,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -93005,11 +93005,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "refinery_hb"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "refinery_dist"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -93037,7 +93037,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "refinery_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -93178,7 +93178,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -93232,11 +93232,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "refinery_hb"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "refinery_dist"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -93264,7 +93264,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "refinery_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -93405,7 +93405,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -93459,11 +93459,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "refinery_hb"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "refinery_dist"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -93491,7 +93491,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "refinery_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -93632,7 +93632,7 @@
         },
         "HasInventory": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "HP": {
           "type": "short",
@@ -93686,11 +93686,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "refinery_hb"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "refinery_dist"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -93718,7 +93718,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "refinery_used"
         },
         "OnUserDefined": {
           "type": "resref",

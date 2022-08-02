@@ -40,5 +40,6 @@
         PlayerStatus = 35,
         TargetStatus = 36,
         ManageBans = 37,
+        Refinery = 38,
     }
 }

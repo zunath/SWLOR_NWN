@@ -174,6 +174,11 @@ namespace SWLOR.Game.Server.Service
             newDebt -= (int)(newDebt * (effectiveMedicalCenterLevel * 0.05f));
 
             dbPlayer.XPDebt += newDebt;
+
+            const int MaxDebt = 9999999;
+            if (dbPlayer.XPDebt > MaxDebt)
+                dbPlayer.XPDebt = MaxDebt;
+
             DB.Set(dbPlayer);
 
             SendMessageToPC(player, $"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)");

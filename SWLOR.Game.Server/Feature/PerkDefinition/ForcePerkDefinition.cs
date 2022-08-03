@@ -182,14 +182,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Battle Insight")
 
                 .AddPerkLevel()
-                .Description("The caster gets -5 AB & Evasion but nearby party members get +3 AB & Evasion.")
+                .Description("The caster gets -10 Accuracy & Evasion but nearby party members get +6 Accuracy & Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BattleInsight1)
 
                 .AddPerkLevel()
-                .Description("The caster gets -8 AB & Evasion but nearby party members get +6 AB & Evasion.")
+                .Description("The caster gets -16 Accuracy & Evasion but nearby party members get +12 Accuracy & Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

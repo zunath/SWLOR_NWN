@@ -1124,11 +1124,11 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 3 * GetEffectInteger(effect, 1);
+                    accuracy += 5 * GetEffectInteger(effect, 1);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 3 * GetEffectInteger(effect, 1);
+                    accuracy -= 5 * GetEffectInteger(effect, 1);
                 }
             }
 
@@ -1143,11 +1143,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 3 * effect.GetInteger(1);
+                    accuracy += 5 * effect.GetInteger(1);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 3 * effect.GetInteger(1);
+                    accuracy -= 5 * effect.GetInteger(1);
                 }
             }
 

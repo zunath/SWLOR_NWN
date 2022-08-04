@@ -169,9 +169,20 @@ namespace SWLOR.Game.Server.Service
             else
                 multiplier = 15;
 
+            var social = GetAbilityScore(player, AbilityType.Social);
             var newDebt = dbPlayer.TotalSPAcquired * multiplier;
-            var effectiveMedicalCenterLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel);
-            newDebt -= (int)(newDebt * (effectiveMedicalCenterLevel * 0.05f));
+            var reductionBonus = 0f;
+            reductionBonus += Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
+
+            if (social > 10)
+            {
+                reductionBonus += (social - 10) * 0.03f; // -3% per SOC
+            }
+
+            if (reductionBonus > 0.8f)
+                reductionBonus = 0.8f;
+
+            newDebt -= (int)(newDebt * reductionBonus);
 
             dbPlayer.XPDebt += newDebt;
 

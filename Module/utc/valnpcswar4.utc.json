@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 27
+    "value": 24
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 74.0
+    "value": 82.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 31
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 800
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 37
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -231,6 +231,34 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1835
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1733
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1736
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1170
         }
       },
@@ -246,13 +274,6 @@
         "Feat": {
           "type": "word",
           "value": 1353
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1837
         }
       },
       {
@@ -319,11 +340,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 400
+    "value": 800
   },
   "Int": {
     "type": "byte",
-    "value": 37
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -353,7 +374,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 800
+    "value": 1200
   },
   "NaturalAC": {
     "type": "byte",
@@ -658,7 +679,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 27
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -682,7 +703,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -694,6 +715,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 27
+    "value": 24
   }
 }

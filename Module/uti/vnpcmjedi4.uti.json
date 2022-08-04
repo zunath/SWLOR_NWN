@@ -39,12 +39,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sith Lightsaber"
+      "0": "(NPC 4) Jedi Lightsaber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
+    "value": 14
   },
   "ModelPart2": {
     "type": "byte",
@@ -52,7 +52,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 12
   },
   "PaletteID": {
     "type": "byte",
@@ -108,10 +108,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SithLightsaber"
+    "value": "NPC4JediLightsaber"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmwar4"
+    "value": "vnpcmjedi4"
   }
 }

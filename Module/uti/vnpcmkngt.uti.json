@@ -39,12 +39,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sorcerer's Saber"
+      "0": "(NPC 3) Jedi Lightsaber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 14
   },
   "ModelPart2": {
     "type": "byte",
@@ -52,7 +52,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 12
   },
   "PaletteID": {
     "type": "byte",
@@ -73,42 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 50
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 118
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -124,7 +93,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 5
+          "value": 2
         }
       },
       {
@@ -139,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 80
         },
         "Param1": {
           "type": "byte",
@@ -157,37 +126,6 @@
           "type": "word",
           "value": 1
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 100
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 112
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
       }
     ]
   },
@@ -201,10 +139,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SorcerersSaber"
+    "value": "NPC3SithLNPC3JediLightsaber"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmsorc4"
+    "value": "vnpcmkngt"
   }
 }

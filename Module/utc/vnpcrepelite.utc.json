@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "Appearance_Type": {
     "type": "word",
@@ -50,7 +50,7 @@
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_Pelvis": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 22
+    "value": 28
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 55.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 67
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 86
+    "value": 1
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 22
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 29
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 260
+    "value": 120
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Sith Assassins, Intelligencia, Inquisitors, or whatever name they adopt on that given day, have a host of responsibilities within the Sith Order. From exploratory missions to uncover more of their lost heritage, to rooting out dissent and spies among the ranks of the Sith, to discovering and exploiting weaknesses in their enemies, the Assassins are highly prized agents of the Empire."
+      "0": "Republic Special Forces, such as the legendary Havoc Squad, are elite military units tasked with undertaking missions above and beyond what is feasibly commanded of the rank and file troopers. Even with their intense and ongoing training, advanced weapons and armor tech, and significant support from fleet assets and otherwise, mortality rates are high for these troopers as they fight off the encroaching Sith Empire as the very tip of the spear."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 28
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -170,31 +170,38 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vrepnpcelitehelm"
+        }
+      },
+      {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcaass3"
+          "value": "vrepnpcelitearm"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmstaff3"
+          "value": "vnpcrelite3"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsass3"
+          "value": "vnpcselite3"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -224,35 +231,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1835
+          "value": 1593
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1844
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1726
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1353
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1366
+          "value": 1242
         }
       },
       {
@@ -282,13 +275,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Inquisitor"
+      "0": "Republic Special Forces"
     }
   },
   "fortbonus": {
@@ -305,7 +305,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 260
+    "value": 120
   },
   "Int": {
     "type": "byte",
@@ -323,6 +323,26 @@
     "type": "byte",
     "value": 0
   },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcmelite3"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
+  },
   "LastName": {
     "type": "cexolocstring",
     "value": {
@@ -339,7 +359,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 500
+    "value": 600
   },
   "NaturalAC": {
     "type": "byte",
@@ -351,7 +371,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
@@ -367,7 +387,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 3558
   },
   "Race": {
     "type": "byte",
@@ -632,7 +652,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 929
+    "value": 932
   },
   "SpecAbilityList": {
     "type": "list",
@@ -640,11 +660,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 158
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 28
   },
   "Subrace": {
     "type": "cexostring",
@@ -652,7 +672,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithInquisitor"
+    "value": "RepublicSpecialForces"
   },
   "Tail_New": {
     "type": "dword",
@@ -664,7 +684,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcsi3"
+    "value": "vnpcrepelite"
   },
   "WalkRate": {
     "type": "int",
@@ -680,6 +700,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 28
   }
 }

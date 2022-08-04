@@ -3466,7 +3466,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 74.0
+                      "value": 82.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3485,7 +3485,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3542,7 +3542,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 51.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3561,7 +3561,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3713,7 +3713,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3827,7 +3827,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3865,7 +3865,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3949,6 +3949,163 @@
               "ID": {
                 "type": "byte",
                 "value": 39
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Consular"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedicons3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediknight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight-Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcjwar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Sage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedisage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguard1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Special Forces"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrepelite"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

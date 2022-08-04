@@ -2,15 +2,23 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 29
   },
   "BaseItem": {
     "type": "int",
-    "value": 512
+    "value": 17
   },
   "Charges": {
     "type": "byte",
     "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 164
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 60
   },
   "Comment": {
     "type": "cexostring",
@@ -18,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 30
   },
   "Cursed": {
     "type": "byte",
@@ -30,33 +38,44 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 58
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 60
   },
   "LocalizedName": {
+    "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sorcerer's Saber"
+      "0": "Jedi Temple Guard Mask"
     }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 58
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 58
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 11
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 14
+    "value": 30
   },
   "PaletteID": {
     "type": "byte",
-    "value": 59
+    "value": 56
   },
   "Plot": {
     "type": "byte",
@@ -73,104 +92,42 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 49
         },
         "CostValue": {
           "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 116
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 50
         },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 118
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
         "CostValue": {
-          "type": "word",
-          "value": 20
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 5
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
           "type": "word",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -182,7 +139,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 112
+          "value": 117
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 15
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
         },
         "Subtype": {
           "type": "word",
@@ -201,10 +189,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SorcerersSaber"
+    "value": "JediTempleGuardMask"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmsorc4"
+    "value": "vnpcjediguardhel"
   }
 }

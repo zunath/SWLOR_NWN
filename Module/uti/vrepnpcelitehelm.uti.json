@@ -6,11 +6,19 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 512
+    "value": 17
   },
   "Charges": {
     "type": "byte",
     "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 58
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 91
   },
   "Comment": {
     "type": "cexostring",
@@ -18,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -34,29 +42,37 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 91
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sith Lightsaber"
+      "0": "Republic Elite Helmet"
     }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 90
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 58
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 11
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 14
+    "value": 50
   },
   "PaletteID": {
     "type": "byte",
-    "value": 59
+    "value": 56
   },
   "Plot": {
     "type": "byte",
@@ -64,39 +80,7 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 80
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StackSize": {
     "type": "word",
@@ -108,10 +92,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SithLightsaber"
+    "value": "RepublicEliteHelmet"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmwar4"
+    "value": "vrepnpcelitehelm"
   }
 }

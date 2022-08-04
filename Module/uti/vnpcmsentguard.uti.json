@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 512
+    "value": 511
   },
   "Charges": {
     "type": "byte",
@@ -39,12 +39,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sith Lightsaber"
+      "0": "(NPC 3) Sentinel Saberstaff"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 24
+    "value": 41
   },
   "ModelPart2": {
     "type": "byte",
@@ -52,7 +52,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 21
   },
   "PaletteID": {
     "type": "byte",
@@ -77,7 +77,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 80
+          "value": 55
         },
         "Param1": {
           "type": "byte",
@@ -108,10 +108,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SithLightsaber"
+    "value": "NPC3SentinelSaberstaff"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmwar4"
+    "value": "vnpcmsentguard"
   }
 }

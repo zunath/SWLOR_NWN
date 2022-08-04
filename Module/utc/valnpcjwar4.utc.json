@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 160
+    "value": 53
   },
   "Appearance_Type": {
     "type": "word",
@@ -50,7 +50,7 @@
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_Pelvis": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 22
+    "value": 24
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 70.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 67
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 127
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 86
+    "value": 1
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 46
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 60
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 22
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 260
+    "value": 800
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Sith Assassins, Intelligencia, Inquisitors, or whatever name they adopt on that given day, have a host of responsibilities within the Sith Order. From exploratory missions to uncover more of their lost heritage, to rooting out dissent and spies among the ranks of the Sith, to discovering and exploiting weaknesses in their enemies, the Assassins are highly prized agents of the Empire."
+      "0": "Jedi Guardians are legendary warrior-monks of the Republic, and are the living instruments of the Force's will. Sworn defenders of the people, these men and women devote their lives to training in all matters relating to combat, that they may be ready to defend the people of this galaxy when called upon."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 28
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -173,28 +173,28 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcaass3"
+          "value": "vnpcjediweapmasa"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmstaff3"
+          "value": "vnpcmjedi4"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsass3"
+          "value": "vnpcswar4"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -224,21 +224,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1835
+          "value": 6
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1824
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1726
+          "value": 1738
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1170
         }
       },
       {
@@ -252,7 +259,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1366
+          "value": 1365
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1173
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1363
         }
       },
       {
@@ -288,7 +309,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Inquisitor"
+      "0": "Jedi Knight-Captain"
     }
   },
   "fortbonus": {
@@ -305,11 +326,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 260
+    "value": 800
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -339,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 500
+    "value": 1200
   },
   "NaturalAC": {
     "type": "byte",
@@ -351,7 +372,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
@@ -367,7 +388,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 579
   },
   "Race": {
     "type": "byte",
@@ -632,7 +653,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 929
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -640,11 +661,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 158
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -652,7 +673,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithInquisitor"
+    "value": "JediKnightCaptain"
   },
   "Tail_New": {
     "type": "dword",
@@ -664,7 +685,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcsi3"
+    "value": "valnpcjwar4"
   },
   "WalkRate": {
     "type": "int",
@@ -680,6 +701,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 24
   }
 }

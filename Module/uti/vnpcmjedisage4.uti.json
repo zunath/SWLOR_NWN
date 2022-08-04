@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sorcerer's Saber"
+      "0": "(NPC 4) Sage's Saber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 121
   },
   "ModelPart2": {
     "type": "byte",
@@ -52,7 +54,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 13
   },
   "PaletteID": {
     "type": "byte",
@@ -124,7 +126,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 5
+          "value": 2
         }
       },
       {
@@ -201,10 +203,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SorcerersSaber"
+    "value": "NPC4SagesSaber"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmsorc4"
+    "value": "vnpcmjedisage4"
   }
 }

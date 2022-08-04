@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 160
+    "value": 54
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 22
+    "value": 26
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 70.0
   },
   "ClassList": {
     "type": "list",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 127
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 86
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 46
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 60
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 22
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 26
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 260
+    "value": 700
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Sith Assassins, Intelligencia, Inquisitors, or whatever name they adopt on that given day, have a host of responsibilities within the Sith Order. From exploratory missions to uncover more of their lost heritage, to rooting out dissent and spies among the ranks of the Sith, to discovering and exploiting weaknesses in their enemies, the Assassins are highly prized agents of the Empire."
+      "0": "The Jedi Temple Guards are a special sect of Jedi sworn to guardianship over not only the Order but over locales deemed sacred or integral to the balance of the Force. The sect is shrouded deep in mystery, its members leaving behind their past names and identities entirely to serve its cause as faceless defenders.\n\nBeyond temple grounds, the activities of the Temple Guards are highly classified, but what few rumors the Jedi indulge in speak of everything from routine scouting, to spying and infiltration of potential enemies."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 28
+    "value": 24
   },
   "Disarmable": {
     "type": "byte",
@@ -170,35 +170,49 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcjediguardhel"
+        }
+      },
+      {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcaass3"
+          "value": "vnpcjediguardarm"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmstaff3"
+          "value": "vnpcmsentmast"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsass3"
+          "value": "vnpcsass4"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -224,21 +238,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1835
+          "value": 1827
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1722
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1726
+          "value": 1738
         }
       },
       {
@@ -252,7 +266,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1366
+          "value": 1365
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1242
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 41
         }
       },
       {
@@ -288,7 +316,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Inquisitor"
+      "0": "Jedi Temple Guard"
     }
   },
   "fortbonus": {
@@ -305,11 +333,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 260
+    "value": 700
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -339,7 +367,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 500
+    "value": 1100
   },
   "NaturalAC": {
     "type": "byte",
@@ -351,7 +379,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
@@ -367,7 +395,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 3565
   },
   "Race": {
     "type": "byte",
@@ -644,7 +672,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -652,7 +680,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithInquisitor"
+    "value": "JediTempleGuard2"
   },
   "Tail_New": {
     "type": "dword",
@@ -664,7 +692,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcsi3"
+    "value": "valnpjguard2"
   },
   "WalkRate": {
     "type": "int",
@@ -680,6 +708,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 28
   }
 }

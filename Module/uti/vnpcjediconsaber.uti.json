@@ -39,12 +39,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sorcerer's Saber"
+      "0": "(NPC 3) Consular's Saber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 121
   },
   "ModelPart2": {
     "type": "byte",
@@ -52,7 +52,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 14
+    "value": 13
   },
   "PaletteID": {
     "type": "byte",
@@ -108,38 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 5
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
+          "value": 55
         },
         "Param1": {
           "type": "byte",
@@ -201,10 +170,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC4SorcerersSaber"
+    "value": "NPC3ConsularsSaber"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcmsorc4"
+    "value": "vnpcjediconsaber"
   }
 }

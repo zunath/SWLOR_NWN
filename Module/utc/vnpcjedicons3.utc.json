@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 160
+    "value": 224
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 22
+    "value": 28
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 55.0
   },
   "ClassList": {
     "type": "list",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 86
+    "value": 3
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 60
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 60
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 22
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 33
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 260
+    "value": 20
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Sith Assassins, Intelligencia, Inquisitors, or whatever name they adopt on that given day, have a host of responsibilities within the Sith Order. From exploratory missions to uncover more of their lost heritage, to rooting out dissent and spies among the ranks of the Sith, to discovering and exploiting weaknesses in their enemies, the Assassins are highly prized agents of the Empire."
+      "0": "The Jedi Consulars are scholars and advisors, healers and seers, mystics of great power. While the Jedi Guardians focus in martial skills, the Consulars delve deep into ancient lore and the inner workings of the Force, hoping to divine some hint of its will for the Order."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 28
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -173,28 +173,28 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcaass3"
+          "value": "vnpcjedisagearm"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmstaff3"
+          "value": "vnpcjediconsaber"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsass3"
+          "value": "vnpcssorc3"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -224,21 +224,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1835
+          "value": 1827
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1824
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1726
+          "value": 1722
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1738
         }
       },
       {
@@ -288,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Inquisitor"
+      "0": "Jedi Consular"
     }
   },
   "fortbonus": {
@@ -305,11 +312,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 260
+    "value": 20
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -351,7 +358,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
@@ -367,7 +374,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 4396
   },
   "Race": {
     "type": "byte",
@@ -632,7 +639,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 929
+    "value": 931
   },
   "SpecAbilityList": {
     "type": "list",
@@ -652,7 +659,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithInquisitor"
+    "value": "JediConsular"
   },
   "Tail_New": {
     "type": "dword",
@@ -664,7 +671,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcsi3"
+    "value": "vnpcjedicons3"
   },
   "WalkRate": {
     "type": "int",
@@ -680,6 +687,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 34
   }
 }

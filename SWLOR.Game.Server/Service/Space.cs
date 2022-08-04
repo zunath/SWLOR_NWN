@@ -728,7 +728,7 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
-            ExecuteScript("space_enter", player);
+            ExecuteScriptCS("space_enter", player);
         }
 
         /// <summary>
@@ -858,7 +858,7 @@ namespace SWLOR.Game.Server.Service
             if (_playersInSpace.Contains(player))
                 _playersInSpace.Remove(player);
 
-            ExecuteScript("space_exit", player);
+            ExecuteScriptCS("space_exit", player);
         }
 
         private static void CloneShip(uint player)
@@ -1155,7 +1155,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
                 
                 DB.Set(dbShip);
-                ExecuteScript("pc_cap_adjusted", activator);
+                ExecuteScriptCS("pc_cap_adjusted", activator);
             }
 
             if (GetIsPC(target))
@@ -1187,7 +1187,7 @@ namespace SWLOR.Game.Server.Service
             RestoreCapacitor(player, shipStatus, 1);
 
             if(GetIsPC(player))
-                ExecuteScript("pc_target_upd", player);
+                ExecuteScriptCS("pc_target_upd", player);
         }
 
         /// <summary>
@@ -1218,7 +1218,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Shield > shipStatus.MaxShield)
                 shipStatus.Shield = shipStatus.MaxShield;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            ExecuteScriptCS("pc_shld_adjusted", creature);
         }
 
         public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Shield < 0)
                 shipStatus.Shield = 0;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            ExecuteScriptCS("pc_shld_adjusted", creature);
         }
 
         public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1236,7 +1236,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Hull > shipStatus.MaxHull)
                 shipStatus.Hull = shipStatus.MaxHull;
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            ExecuteScriptCS("pc_hull_adjusted", creature);
         }
 
         public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1250,7 +1250,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
             }
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            ExecuteScriptCS("pc_hull_adjusted", creature);
         }
 
         public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1259,7 +1259,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
                 shipStatus.Capacitor = shipStatus.MaxCapacitor;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            ExecuteScriptCS("pc_cap_adjusted", creature);
         }
 
         public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1268,7 +1268,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Capacitor < 0)
                 shipStatus.Capacitor = 0;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            ExecuteScriptCS("pc_cap_adjusted", creature);
         }
 
         /// <summary>
@@ -1487,8 +1487,8 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     DB.Set(dbPlayerShip);
-                    ExecuteScript("pc_shld_adjusted", target);
-                    ExecuteScript("pc_hull_adjusted", target);
+                    ExecuteScriptCS("pc_shld_adjusted", target);
+                    ExecuteScriptCS("pc_hull_adjusted", target);
                 }
                 else
                 {
@@ -1501,7 +1501,7 @@ namespace SWLOR.Game.Server.Service
             Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
             
             if(GetIsPC(attacker))
-                ExecuteScript("pc_target_upd", attacker);
+                ExecuteScriptCS("pc_target_upd", attacker);
 
         }
 

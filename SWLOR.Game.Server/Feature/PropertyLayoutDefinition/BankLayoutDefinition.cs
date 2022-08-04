@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             }
 
             // Execute the normal bank procedure if all these additional checks are met.
-            ExecuteScript("open_bank", bank);
+            ExecuteScriptCS("open_bank", bank);
         }
 
         private void ProcessBank(uint area, uint waypoint, int storageCap, string bankId)

@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             if (!CanAccess(player))
                 return;
 
-            ExecuteScript("generic_convo", terminal);
+            ExecuteScriptCS("generic_convo", terminal);
         }
 
         private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)

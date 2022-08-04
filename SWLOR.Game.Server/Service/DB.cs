@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
             var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
             if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
-                ExecuteScript("db_loaded", OBJECT_SELF);
+                ExecuteScriptCS("db_loaded", OBJECT_SELF);
         }
 
         /// <summary>

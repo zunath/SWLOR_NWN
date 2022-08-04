@@ -76,7 +76,13 @@ namespace SWLOR.Game.Server.Service
             
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
-        
+
+        // Register DMFI Voice Command Handler which lives in nwscript land.
+       [NWNEventHandler("mod_chat")]
+        public static void ProcessNativeChatMessage()
+        {
+            ExecuteScript("dmfi_onplychat", OBJECT_SELF);
+        }
 
         [NWNEventHandler("on_nwnx_chat")]
         public static void ProcessChatMessage()
@@ -97,12 +103,18 @@ namespace SWLOR.Game.Server.Service
                 channel == ChatChannel.PlayerShout;
             
             var messageToDm = channel == ChatChannel.PlayerDM;
-            
-            // Ignore messages on other channels.
-            if (!inCharacterChat && !messageToDm) return;
 
             var sender = ChatPlugin.GetSender();
             var message = ChatPlugin.GetMessage().Trim();
+
+            // if this is a DMFI chat command, exit as ProcessNativeChatMessage has already handled via mod_chat event.
+            if (GetIsDM(sender) && message.Length >= 1 && message.Substring(0, 1) == ".")
+            {                
+                return;
+            }
+
+            // Ignore messages on other channels.
+            if (!inCharacterChat && !messageToDm) return;
 
             if (string.IsNullOrWhiteSpace(message))
             {

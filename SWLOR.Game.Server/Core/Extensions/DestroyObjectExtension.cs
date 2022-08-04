@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(oDestroy);
             VM.Call(241);
 
-            ExecuteScript("object_destroyed", oDestroy);
+            ExecuteScriptCS("object_destroyed", oDestroy);
         }
     }
 }

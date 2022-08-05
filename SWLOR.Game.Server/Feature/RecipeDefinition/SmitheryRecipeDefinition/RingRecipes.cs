@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Dream Ring
             _builder.Create(RecipeType.DreamRing, SkillType.Smithery)
                 .Category(RecipeCategoryType.Ring)
-                .Resref("dream_ring")
+                .Resref("majestic_ring001")
                 .Level(40)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)

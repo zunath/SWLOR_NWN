@@ -189,13 +189,18 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureAggroEnter()
         {
             var entering = GetEnteringObject();
+            var self = GetAreaOfEffectCreator(OBJECT_SELF);
 
+            // Target is invisible
             if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
             {
                 return;
             }
 
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
+            // Must have line of sight to AOE creator
+            if (!LineOfSightObject(entering, self))
+                return;
+
             if (!GetIsEnemy(entering, self))
             {
                 var attackTarget = Enmity.GetHighestEnmityTarget(entering);

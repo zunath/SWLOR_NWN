@@ -769,6 +769,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DLAR-Proto"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlarproto"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dream Tunic"
                     },
                     "RESREF": {
@@ -29286,6 +29297,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_jedi_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Fort Ka'ra Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_man_001"
                     }
                   },
                   {

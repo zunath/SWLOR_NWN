@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyTemporaryEffects()
         {
             var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
             RemoveImmobility(player);
@@ -27,9 +30,6 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ApplyHeight(uint player)
         {
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ReapplyBAB(uint player)
         {
-            CreaturePlugin.SetBaseAttackBonus(player, GetBaseAttackBonus(player));
+            Stat.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
         }
 
         private static void ReapplySpeed(uint player)

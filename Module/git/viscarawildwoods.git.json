@@ -7153,69 +7153,6 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Outlaw"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "VISCARA_WILDWOODS_LOOTERS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "v_wildwd_looter"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.9329947829246521
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 169.5370025634766
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.3598898351192474
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 117.398078918457
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.09792518615722656
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
             "0": "Viscara - Wildwoods Gimpassa"
           }
         },
@@ -7254,69 +7191,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1606540679931641
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Viscara - Wildwoods Outlaw"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "VISCARA_WILDWOODS_LOOTERS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "v_wildwd_looter"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.9238795042037964
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 168.8549194335938
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.3826834261417389
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 112.8411636352539
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.2293534278869629
         }
       },
       {
@@ -9014,6 +8888,636 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1417824923992157
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9238795042037964
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 169.5746765136719
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.3826834261417389
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 112.4407577514648
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.009147167205810547
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.8700871467590332
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 169.2222137451172
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.4928979575634003
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 116.7128753662109
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1006717681884766
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Hunter"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_HUNTER"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_h"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9972904324531555
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 292.2688293457031
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.07356461137533188
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 165.2815704345703
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0374075248837471
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9415440559387207
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 287.8318176269531
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.3368898332118988
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 167.0232238769531
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1388818621635437
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.903989315032959
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 288.2724304199219
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.4275550842285156
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 163.252685546875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1562887579202652
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Hunter"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_HUNTER"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_h"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 189.2857208251953
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 210.8301696777344
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.960464477539063e-008
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.290284663438797
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 190.9592590332031
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.9569403529167175
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 208.6573486328125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.06044310331344605
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 191.2754058837891
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 212.5604705810547
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1179957836866379
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Hunter"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_HUNTER"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_h"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9807853102684021
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 134.8077850341797
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.1950902044773102
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 269.5105590820313
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.01804447174072266
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Wildwoods Mandalorian Scout"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_wildwd_mando_s"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.8032076358795166
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 135.3408355712891
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.5956991910934448
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 265.8529052734375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.2671293020248413
         }
       }
     ]

@@ -52,37 +52,12 @@ namespace SWLOR.Game.Server.Service
             // Until then, it can live here.
             _toggleActions[AbilityToggleType.Dash] = (player, isEnabled) =>
             {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
-
-                float rate;
                 string message;
-                switch (level)
-                {
-                    case 1:
-                        rate = 1.10f; // 10%
-                        break;
-                    case 2:
-                        rate = 1.25f; // 25%
-                        break;
-                    default:
-                        rate = 1.0f; // 0%
-                        break;
-                }
+                message = isEnabled 
+                    ? ColorToken.Green("Dash enabled") 
+                    : ColorToken.Red("Dash disabled");
 
-                if (isEnabled)
-                {
-                    Stat.SetPlayerMovementRate(dbPlayer, player, rate);
-                    message = ColorToken.Green("Dash enabled");
-                }
-                else
-                {
-                    Stat.SetPlayerMovementRate(dbPlayer, player, 1.0f);
-                    message = ColorToken.Red("Dash disabled");
-                }
-
-                DB.Set(dbPlayer);
+                Stat.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
         }

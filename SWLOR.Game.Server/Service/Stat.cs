@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -21,7 +22,11 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new();
-        
+
+        public const int BaseHP = 70;
+        public const int BaseFP = 10;
+        public const int BaseSTM = 10;
+
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
@@ -39,10 +44,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-
-            CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
+            ApplyPlayerMovementRate(player);
         }
 
         /// <summary>
@@ -394,7 +396,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="adjustBy">The amount to adjust by.</param>
         public static void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
-            const int MaxHPPerLevel = 255;
+            const int MaxHPPerLevel = 254;
             entity.MaxHP += adjustBy;
             var nwnLevelCount = GetLevelByPosition(1, player) +
                                 GetLevelByPosition(2, player) +
@@ -480,20 +482,43 @@ namespace SWLOR.Game.Server.Service
             if (entity.Stamina < 0)
                 entity.Stamina = 0;
         }
-
-        /// <summary>
-        /// Modifies the movement rate of a player by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The player entity</param>
-        /// <param name="player">The player object</param>
-        /// <param name="rate">The amount to set</param>
-        public static void SetPlayerMovementRate(Player entity, uint player, float rate)
-        {
-            entity.MovementRate = rate;
-            CreaturePlugin.SetMovementRateFactor(player, entity.MovementRate);
-        }
         
+        public static void ApplyPlayerMovementRate(uint player)
+        {
+            var movementRate = 1.0f;
+            if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
+            {
+                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
+                switch (level)
+                {
+                    case 1:
+                        movementRate += 0.1f; // 10%
+                        break;
+                    case 2:
+                        movementRate += 0.25f; // 25%
+                        break;
+                }
+            }
+
+            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
+            {
+                var type = GetEffectType(effect);
+                float amount;
+                if (type == EffectTypeScript.MovementSpeedIncrease)
+                {
+                    amount = GetEffectInteger(effect, 0) - 100;
+                    movementRate += amount * 0.01f;
+                }
+                else if (type == EffectTypeScript.MovementSpeedDecrease)
+                {
+                    amount = GetEffectInteger(effect, 0);
+                    movementRate -= amount * 0.01f;
+                }
+            }
+
+            CreaturePlugin.SetMovementRateFactor(player, movementRate);
+        }
+
         /// <summary>
         /// Calculates a player's stat based on their skill bonuses, upgrades, etc. and applies the changes to one ability score.
         /// </summary>
@@ -1099,11 +1124,11 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 3 * GetEffectInteger(effect, 1);
+                    accuracy += 5 * GetEffectInteger(effect, 1);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 3 * GetEffectInteger(effect, 1);
+                    accuracy -= 5 * GetEffectInteger(effect, 1);
                 }
             }
 
@@ -1118,11 +1143,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 3 * effect.GetInteger(1);
+                    accuracy += 5 * effect.GetInteger(1);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 3 * effect.GetInteger(1);
+                    accuracy -= 5 * effect.GetInteger(1);
                 }
             }
 
@@ -1184,11 +1209,16 @@ namespace SWLOR.Game.Server.Service
             // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
                      creature.m_pStats.m_nACNaturalBase +
-                     creature.m_pStats.m_nACArmorMod +
-                     creature.m_pStats.m_nACDeflectionMod +
-                     creature.m_pStats.m_nACDodgeMod +
-                     creature.m_pStats.m_nACNaturalMod +
-                     creature.m_pStats.m_nACShieldMod;
+                     creature.m_pStats.m_nACArmorMod -
+                     creature.m_pStats.m_nACArmorNeg +
+                     creature.m_pStats.m_nACDeflectionMod -
+                     creature.m_pStats.m_nACDeflectionNeg +
+                     creature.m_pStats.m_nACDodgeMod -
+                     creature.m_pStats.m_nACDodgeNeg +
+                     creature.m_pStats.m_nACNaturalMod -
+                     creature.m_pStats.m_nACNaturalNeg +
+                     creature.m_pStats.m_nACShieldMod -
+                     creature.m_pStats.m_nACShieldNeg;
 
             Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
 
@@ -1326,15 +1356,10 @@ namespace SWLOR.Game.Server.Service
             {
                 perkType = PerkType.StaffMastery;
             }
-            // Ranged
+            // Ranged (Pistol & Rifle only. Throwing is intentionally excluded because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
-            }
-            else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-            {
-                perkType = PerkType.ThrowingWeaponMastery;
                 numberOfAttacks += GetRapidShotBonus(player);
             }
             else if (Item.RifleBaseItemTypes.Contains(itemType))

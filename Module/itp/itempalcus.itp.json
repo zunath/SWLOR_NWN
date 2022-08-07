@@ -3803,6 +3803,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Mandalorian Armor Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_armor_npc_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Mandalorian Helmet"
                     },
                     "RESREF": {
@@ -3825,11 +3836,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Mandalorian Helmet Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Mandalorian War Hero Armor"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "man_larmor_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Mandalorian War Hero Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_helm_npc001"
                     }
                   },
                   {
@@ -6239,6 +6272,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 3) Consular's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediconsaber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 3) Droid Rifle"
                     },
                     "RESREF": {
@@ -6272,11 +6316,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 3) Jedi Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmkngt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 3) Marksman Rifle"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcrmark3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Sentinel Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsentguard"
                     }
                   },
                   {
@@ -6343,6 +6409,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcrbot4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Jedi Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmjedi4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Sage's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmjedisage4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 4) Sentinel Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsentmast"
                     }
                   },
                   {
@@ -6629,11 +6728,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Hunter Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_htr_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Ranger Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_rgr_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Scout Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_scout_skin"
                     }
                   },
                   {
@@ -7525,6 +7646,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jedi Initiate Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediinitarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedikngtarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Sage Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedisagearm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguardarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguardhel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Weapon Master Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediweapmasa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Koyee Isemio Armor"
                     },
                     "RESREF": {
@@ -7552,6 +7739,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qionbeastslam"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Elite Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpcelitearm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Elite Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpcelitehelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Soldier Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctrooparm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Soldier Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctroophelm"
                     }
                   },
                   {
@@ -25974,6 +26205,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Training Saberstaffs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_trnsabstf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "CZ-220 - Maintenance Level Map"
                     },
                     "RESREF": {
@@ -29246,6 +29488,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Mandalorian Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_mando_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Archetype Knife"
                           },
                           "RESREF": {
@@ -29905,6 +30158,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Captain Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_eblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Captain Longsword"
                           },
                           "RESREF": {
@@ -30174,6 +30438,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_blade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_eblade"
                           }
                         },
                         {
@@ -30945,6 +31220,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Captain Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_sabstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carbide Staff"
                     },
                     "RESREF": {
@@ -31214,6 +31500,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_sabstaff"
                     }
                   },
                   {
@@ -32230,6 +32527,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_spear"
                     }
                   },
                   {

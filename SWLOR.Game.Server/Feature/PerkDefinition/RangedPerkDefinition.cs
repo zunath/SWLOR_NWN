@@ -47,12 +47,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Grants 1 additional attack with ranged weapons.")
+                .Description("Grants 1 additional attack with pistols and rifles.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
 
                 .AddPerkLevel()
-                .Description("Grants 2 additional attacks with ranged weapons.")
+                .Description("Grants 2 additional attacks with pistols and rifles.")
                 .Price(5)
                 .RequirementSkill(SkillType.Ranged, 35)
                 
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
-                .Description("You receive the same number of attacks with a rifle as you would if you were using a pistol.")
+                .Description("Allows Rifles to gain attacks per round via the Rapid Shot and Rifle Mastery perks.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidReload);
@@ -394,21 +394,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Explosive Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 8 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 8 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 16 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 16 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 26 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 26 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Rifles")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a rifles.")
+                .Description("Improves the critical hit chance when using rifles.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TranquilizerShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack will tranquilize all creatures within 5 meters of your target for up to 12 seconds. Damage will break the effect prematurely.")
+                .Description("Your next attack will tranquilize up to three creatures in a cone for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)

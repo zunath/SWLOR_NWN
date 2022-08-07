@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var player  = GetPC();
 
+            if (Space.IsPlayerInSpaceMode(player))
+            {
+                return;
+            }
+
             if (HoloCom.IsInCall(player))
             {
                 var activeCallTarget = HoloCom.GetTargetForActiveCall(player);
@@ -47,11 +52,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
 
-            if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player)) return;
+            if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player)) 
+                return;
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc)) 
+                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc)) 
                     continue;
 
                 var message = $"Call {GetName(pc)}";
@@ -63,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var receiver = pc;
                 page.AddResponse(message, () =>
                 {
-                    if (!HoloCom.IsInCall(receiver))
+                    if (!HoloCom.IsInCall(receiver) && !Space.IsPlayerInSpaceMode(player) && !Space.IsPlayerInSpaceMode(receiver))
                     {
                         HoloCom.SetIsCallSender(player);
                         DelayCommand(1.0f, () =>

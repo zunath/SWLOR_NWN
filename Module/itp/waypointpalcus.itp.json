@@ -296,6 +296,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscara - Wildwoods Mandalorian Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_wildwd_mando_h"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildwoods Mandalorian Scout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_wildwd_mando_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Wildwoods Outlaw"
                     },
                     "RESREF": {

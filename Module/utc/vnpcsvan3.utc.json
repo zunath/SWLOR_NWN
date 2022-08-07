@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 50.0
+    "value": 51.0
   },
   "ClassList": {
     "type": "list",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 24
   },
   "Disarmable": {
     "type": "byte",
@@ -210,6 +210,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1605
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 2
         }
       },
@@ -225,6 +232,20 @@
         "Feat": {
           "type": "word",
           "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1788
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1242
         }
       },
       {
@@ -281,7 +302,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 24
   },
   "Interruptable": {
     "type": "byte",
@@ -636,7 +657,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 26
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",

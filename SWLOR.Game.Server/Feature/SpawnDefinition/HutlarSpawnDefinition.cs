@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Valley();
             Wastes();
             FrozenCave();
+            QionFoothills();
 
             return _builder.Build();
         }
@@ -79,6 +80,30 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "byysk_warrior2")
                 .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "qion_tiger")
+                .WithFrequency(5)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void QionFoothills()
+        {
+            _builder.Create("HUTLAR_QION_FOOTHILLS", "Hutlar Qion Foothills")
+                .AddSpawn(ObjectType.Creature, "byysk_warrior")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "byysk_warrior2")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "qion_slug")
+                .WithFrequency(15)
                 .RandomlyWalks()
                 .ReturnsHome()
 

@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
             NWNCore.NativeFunctions.nwnxPushObject(creature);
             NWNCore.NativeFunctions.nwnxCallFunction();
-            if (!string.IsNullOrWhiteSpace(script)) ExecuteScriptCS(script, creature);
+            if (!string.IsNullOrWhiteSpace(script)) ExecuteScript(script, creature);
         }
 
         // Stops displaying a timing bar.

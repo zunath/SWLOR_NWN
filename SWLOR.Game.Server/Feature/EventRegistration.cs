@@ -44,11 +44,11 @@ namespace SWLOR.Game.Server.Feature
                 serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
                 DB.Set(serverConfig);
 
-                ExecuteScriptCS("mod_content_chg", GetModule());
+                ExecuteScript("mod_content_chg", GetModule());
             }
 
             // Fire off the mod_cache event which is used for caching data, before mod_load runs.
-            ExecuteScriptCS("mod_cache", GetModule());
+            ExecuteScript("mod_cache", GetModule());
         }
 
         [NWNEventHandler("mod_heartbeat")]
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                ExecuteScriptCS("interval_pc_6s", player);
+                ExecuteScript("interval_pc_6s", player);
             }
         }
 
@@ -640,7 +640,7 @@ namespace SWLOR.Game.Server.Feature
                     // It's imperative a script doesn't cause this processor to exit upon error.
                     try
                     {
-                        ExecuteScriptCS("interval_pc_1s", player);
+                        ExecuteScript("interval_pc_1s", player);
                     }
                     catch (Exception ex)
                     {

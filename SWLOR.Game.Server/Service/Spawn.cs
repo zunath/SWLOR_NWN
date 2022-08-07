@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         foreach (var activeSpawn in _activeSpawnsByArea[area])
                         {
-                            ExecuteScriptCS("spawn_despawn", activeSpawn.SpawnObject);
+                            ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
                             DestroyObject(activeSpawn.SpawnObject);
                         }
                     }
@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Service
                 // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
                 if (string.IsNullOrWhiteSpace(originalSpawnScript))
                 {
-                    ExecuteScriptCS("x2_def_spawn", spawn);
+                    ExecuteScript("x2_def_spawn", spawn);
                 }
             }
             else if (type == ObjectType.Placeable)

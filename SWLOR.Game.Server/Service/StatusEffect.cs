@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
                 _loggedOutPlayersWithEffects.Remove(player);
             }
 
-            ExecuteScriptCS("assoc_stateffect", player);
+            ExecuteScript("assoc_stateffect", player);
         }
 
         /// <summary>

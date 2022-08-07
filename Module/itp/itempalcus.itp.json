@@ -28412,6 +28412,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Fort Ka'ra Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_man_001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Republic Base Access Keycode"
                     },
                     "RESREF": {

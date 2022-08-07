@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceSpark();
             CreepingTerror();
             ForceRage();
+            ThrowRock();
 
             return _builder.Build();
         }
@@ -67,6 +68,52 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush4);
+        }
+
+        private void ThrowRock()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowRock)
+                .Name("Throw Rock")
+
+                .AddPerkLevel()
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10 physical DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                //.RequirementCannotHavePerk(PerkType.ForceLightning)
+                .GrantsFeat(FeatType.ThrowRock1)
+
+                .AddPerkLevel()
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 15 physical DMG to a single target.")
+                .Price(5)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                //.RequirementCannotHavePerk(PerkType.ForceLightning)
+                .GrantsFeat(FeatType.ThrowRock2)
+
+                .AddPerkLevel()
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 25 physical DMG to a single target.")
+                .Price(5)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                //.RequirementCannotHavePerk(PerkType.ForceLightning)
+                .GrantsFeat(FeatType.ThrowRock3)
+
+                .AddPerkLevel()
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 34 physical DMG to a single target.")
+                .Price(6)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                //.RequirementCannotHavePerk(PerkType.ForceLightning)
+                .GrantsFeat(FeatType.ThrowRock4)
+
+                .AddPerkLevel()
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 43 physical DMG to a single target.")
+                .Price(8)
+                .RequirementSkill(SkillType.Force, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                //.RequirementCannotHavePerk(PerkType.ForceLightning)
+                .GrantsFeat(FeatType.ThrowRock5);
         }
 
         private void BurstOfSpeed()

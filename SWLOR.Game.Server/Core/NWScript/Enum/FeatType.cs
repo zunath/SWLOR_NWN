@@ -1804,12 +1804,16 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceRage2 = 1837,
         StrongStyleLightsaber = 1838,
         StrongStyleSaberstaff = 1839,
-
         Doublehand2 = 1840,
         Doublehand3 = 1841,
         Doublehand4 = 1842,
         Doublehand5 = 1843,
         Furor = 1844,
+        ThrowRock1 = 1845,
+        ThrowRock2 = 1846,
+        ThrowRock3 = 1847,
+        ThrowRock4 = 1848,
+        ThrowRock5 = 1849,
 
     }
 }

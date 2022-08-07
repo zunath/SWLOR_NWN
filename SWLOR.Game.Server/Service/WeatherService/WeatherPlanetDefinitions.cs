@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
                 },
                 [PlanetType.Hutlar] = new WeatherClimate
                 {
-                    HeatModifier = -5,
+                    HeatModifier = -8,
                     HumidityModifier = -8,
                     HasSnowStorms = true,
                     FreezingText = "A wave of cold air rolls in, stinging exposed flesh.",

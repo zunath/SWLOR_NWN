@@ -23,17 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void Impact(uint activator, uint target, int dmg, int knockdownChance, float knockdownLength)
         {
             if (GetFactionEqual(activator, target))
@@ -78,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
@@ -101,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
@@ -124,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);

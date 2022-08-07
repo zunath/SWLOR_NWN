@@ -124,8 +124,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var playerId = GetObjectUUID(activator);
                             var dbPlayer = DB.Get<Player>(playerId);
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
-                            var tierRequired = GetLocalInt(target, "ASTEROID_TIER") * 5;
-                            var delta = tierRequired - rank;
+                            var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
+                            var delta = asteroidLevel - rank;
                             var xp = Skill.GetDeltaXP(delta);
 
                             Skill.GiveSkillXP(activator, SkillType.Piloting, xp);

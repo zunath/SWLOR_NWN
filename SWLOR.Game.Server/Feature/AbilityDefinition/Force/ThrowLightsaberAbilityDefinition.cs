@@ -133,7 +133,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -147,7 +146,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -161,7 +159,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

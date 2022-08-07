@@ -1356,11 +1356,15 @@ namespace SWLOR.Game.Server.Service
             {
                 perkType = PerkType.StaffMastery;
             }
-            // Ranged (Pistol & Rifle only. Throwing is intentionally excluded because they get Doublehand)
+            // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
                 numberOfAttacks += GetRapidShotBonus(player);
+            }
+            else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                perkType = PerkType.ThrowingWeaponMastery;
             }
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {

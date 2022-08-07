@@ -29334,7 +29334,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Blaster Bullets"
+                            "value": "Blaster Ammo"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -29361,7 +29361,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Rifle Bullets"
+                            "value": "Blaster Ammo"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -29380,6 +29380,22 @@
                     "ID": {
                       "type": "byte",
                       "value": 29
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blaster Ammo"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blaster_bullets2"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",

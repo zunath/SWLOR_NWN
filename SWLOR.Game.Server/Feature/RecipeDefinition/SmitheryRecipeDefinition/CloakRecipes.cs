@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Forza Cloak
             _builder.Create(RecipeType.ForzaCloak, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
-                .Resref("for_belt")
+                .Resref("for_cloak")
                 .Level(28)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)

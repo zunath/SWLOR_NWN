@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 25
+    "value": 27
   },
   "Charges": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
@@ -30,15 +30,14 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
   "LocalizedName": {
+    "id": 1521,
     "type": "cexolocstring",
     "value": {
       "0": "Blaster Ammo"
@@ -48,17 +47,9 @@
     "type": "byte",
     "value": 11
   },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 13
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 11
-  },
   "PaletteID": {
     "type": "byte",
-    "value": 28
+    "value": 29
   },
   "Plot": {
     "type": "byte",
@@ -110,10 +101,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "rifle_bullets"
+    "value": "blaster_bullets2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "rifle_bullets"
+    "value": "blaster_bullets2"
   }
 }

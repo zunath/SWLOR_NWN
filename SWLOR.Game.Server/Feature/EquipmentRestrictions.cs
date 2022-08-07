@@ -125,6 +125,15 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
                 return string.Empty;
 
+            var itemType = GetBaseItemType(item);
+
+            // Droids may only equip items in specific slots if the item has the Use Limitation Race: Droid item property.
+            // They are unable to equip any items in these slots if this item property is missing.
+            // Non-Droids may not equip any items which have this item property.
+            var race = GetRacialType(creature);
+            var needsDroidLimitation = race == RacialType.Droid && Item.DroidBaseItemTypes.Contains(itemType);
+            var itemHasDroidIP = false;
+
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -132,20 +141,43 @@ namespace SWLOR.Game.Server.Feature
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
-                if (type != ItemPropertyType.UseLimitationPerk) continue;
 
-                var perkType = (PerkType)GetItemPropertySubType(ip);
-                if (perkType == PerkType.Invalid) continue;
-
-                var requiredLevel = GetItemPropertyCostTableValue(ip);
-                var perkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
-
-                if (perkLevel < requiredLevel)
+                // Check perk requirements
+                if (type == ItemPropertyType.UseLimitationPerk)
                 {
-                    var perkName = Perk.GetPerkDetails(perkType).Name;
-                    return $"This item requires '{perkName}' level {requiredLevel} to use.";
+                    var perkType = (PerkType)GetItemPropertySubType(ip);
+                    if (perkType == PerkType.Invalid) continue;
+
+                    var requiredLevel = GetItemPropertyCostTableValue(ip);
+                    var perkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
+
+                    if (perkLevel < requiredLevel)
+                    {
+                        var perkName = Perk.GetPerkDetails(perkType).Name;
+                        return $"This item requires '{perkName}' level {requiredLevel} to use.";
+                    }
+                }
+                else if (type == ItemPropertyType.UseLimitationRacialType)
+                {
+                    var limitationRace = (RacialType)GetItemPropertySubType(ip);
+
+                    if (limitationRace == RacialType.Droid)
+                    {
+                        // Has the use limitation but is not a droid, return error.
+                        if (race != RacialType.Droid)
+                            return $"This item may only be equipped by Droids.";
+
+                        // Has the use limitation but item does not have droid limitation
+                        if (!needsDroidLimitation)
+                            continue;
+
+                        itemHasDroidIP = true;
+                    }
                 }
             }
+
+            if (needsDroidLimitation && !itemHasDroidIP)
+                return "Droids may not equip that item.";
 
             return string.Empty;
         }

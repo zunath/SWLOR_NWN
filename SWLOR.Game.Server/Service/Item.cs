@@ -742,6 +742,23 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
+        /// Retrieves the list of Droid base item types.
+        /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
+        /// </summary>
+        public static List<BaseItem> DroidBaseItemTypes { get; } = new List<BaseItem>()
+        {
+            BaseItem.Armor,
+            BaseItem.Helmet,
+            BaseItem.Cloak,
+            BaseItem.Belt,
+            BaseItem.Amulet,
+            BaseItem.Boots,
+            BaseItem.Gloves,
+            BaseItem.Bracer,
+            BaseItem.Ring
+        };
+
+        /// <summary>
         /// Retrieves the icon used on the UIs. 
         /// </summary>
         /// <param name="item">The item to retrieve the icon for.</param>

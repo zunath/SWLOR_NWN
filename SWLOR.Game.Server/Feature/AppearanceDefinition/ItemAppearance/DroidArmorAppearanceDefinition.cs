@@ -2,22 +2,22 @@
 {
     public class DroidArmorAppearanceDefinition: IArmorAppearanceDefinition
     {
-        public int[] Helmet { get; } = { };
-        public int[] Cloak { get; } = { };
-        public int[] Neck { get; } = { };
-        public int[] Torso { get; } = {};
-        public int[] Belt { get; } = { };
-        public int[] Pelvis { get; } = {};
+        public int[] Helmet { get; } = {0 };
+        public int[] Cloak { get; } = {0 };
+        public int[] Neck { get; } = {0, };
+        public int[] Torso { get; } = {1 };
+        public int[] Belt { get; } = { 0 };
+        public int[] Pelvis { get; } = {1,};
 
-        public int[] Shoulder { get; } = { };
-        public int[] Bicep { get; } = { };
-        public int[] Forearm { get; } = { };
-        public int[] Hand { get; } = { };
+        public int[] Shoulder { get; } = {0, };
+        public int[] Bicep { get; } = {1, };
+        public int[] Forearm { get; } = {1, };
+        public int[] Hand { get; } = {1, };
 
-        public int[] Thigh { get; } = {};
-        public int[] Shin { get; } = { };
-        public int[] Foot { get; } = { };
-        public int[] Robe { get; } = { };
+        public int[] Thigh { get; } = {1, };
+        public int[] Shin { get; } = {0, };
+        public int[] Foot { get; } = {1, };
+        public int[] Robe { get; } = {0, };
 
     }
 }

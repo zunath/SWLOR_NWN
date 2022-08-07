@@ -247,6 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var category = DB.Get<WorldPropertyCategory>(PropertyId);
                 PropertyName = category.Name;
                 CanChangePublicSetting = false;
+                IsPublic = false;
             }
             else
             {

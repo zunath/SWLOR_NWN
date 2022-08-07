@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
         private void Impact(uint activator, uint target, int enmity)
         {
+            if (!LineOfSightObject(activator, target))
+                return;
+
             Enmity.ModifyEnmity(activator, target, enmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
 

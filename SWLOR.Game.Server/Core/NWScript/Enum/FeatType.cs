@@ -1810,6 +1810,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Doublehand4 = 1842,
         Doublehand5 = 1843,
         Furor = 1844,
+        DroidEquipmentBlueprints1 = 1845,
+        DroidEquipmentBlueprints2 = 1846,
+        DroidEquipmentBlueprints3 = 1847,
+        DroidEquipmentBlueprints4 = 1848,
+        DroidEquipmentBlueprints5 = 1849,
 
     }
 }

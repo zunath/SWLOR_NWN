@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col1.AddRow(row1 =>
                                 {
                                     row1.AddLabel()
-                                        .BindText(model => model.Name);
+                                        .BindText(model => model.Name)
+                                        .SetHeight(20f);
                                 });
                             });
 
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col2.AddRow(row2 =>
                                 {
                                     row2.AddLabel()
-                                        .BindText(model => model.CharacterType);
+                                        .BindText(model => model.CharacterType)
+                                        .SetHeight(20f);
                                 });
                             });
                         });
@@ -90,8 +92,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 })
                 .DefinePartialView(DMPlayerExamineViewModel.NotesView, group =>
                 {
-                    group.AddLabel()
-                        .SetText("notes");
+                    group.AddColumn(mainCol =>
+                    {
+                        mainCol.AddRow(mainRow =>
+                        {
+                            mainRow.AddColumn(col =>
+                            {
+                                col.AddRow(row =>
+                                {
+                                    row.AddList(template =>
+                                        {
+                                            template.AddCell(cell =>
+                                            {
+                                                cell.AddToggleButton()
+                                                    .BindText(model => model.NoteNames)
+                                                    .BindIsToggled(model => model.NoteToggles)
+                                                    .BindOnClicked(model => model.OnClickNote());
+                                            });
+                                        })
+                                        .BindRowCount(model => model.NoteNames);
+                                });
+                            });
+
+                            mainRow.AddColumn(col =>
+                            {
+                                col.AddRow(row =>
+                                {
+                                    row.AddTextEdit()
+                                        .BindValue(model => model.ActiveNoteName)
+                                        .SetPlaceholder("Note Name");
+                                });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .BindText(model => model.ActiveNoteCreator);
+                                });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddTextEdit()
+                                        .SetIsMultiline(true)
+                                        .BindValue(model => model.ActiveNoteDetail)
+                                        .SetHeight(350f);
+                                });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddButton()
+                                        .SetText("Save Changes")
+                                        .SetHeight(32f)
+                                        .BindOnClicked(model => model.OnClickSaveChanges());
+                                });
+                            });
+                        });
+                    });
                 })
 
                 .AddColumn(col =>

@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DMPlayerExamineViewModel: GuiViewModelBase<DMPlayerExamineViewModel, DMPlayerExaminePayload>
     {
+        private const int MaxNotes = 50;
+
         [NWNEventHandler("examine_bef")]
         public static void ExaminePlayer()
         {
@@ -99,9 +103,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private readonly List<string> _noteIds = new();
+        private int _selectedIndex;
+
+        public GuiBindingList<string> NoteNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> NoteToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public string ActiveNoteName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ActiveNoteCreator
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ActiveNoteDetail
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(DMPlayerExaminePayload initialPayload)
         {
+            _selectedIndex = -1;
             _target = initialPayload.Target;
+
+            ActiveNoteName = string.Empty;
+            ActiveNoteCreator = string.Empty;
+            ActiveNoteDetail = string.Empty;
 
             IsDetailsToggled = true;
             IsSkillsToggled = false;
@@ -112,6 +154,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadTargetDetails();
 
             WatchOnClient(model => model.Description);
+            WatchOnClient(model => model.ActiveNoteName);
+            WatchOnClient(model => model.ActiveNoteDetail);
         }
 
         private void LoadTargetDetails()
@@ -127,6 +171,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return;
 
             var skillNames = new GuiBindingList<string>();
             var skillLevels = new GuiBindingList<int>();
@@ -145,6 +192,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            if (dbPlayer == null)
+                return;
+
             var perkNames = new GuiBindingList<string>();
             var perkLevels = new GuiBindingList<int>();
             foreach (var (type, level) in dbPlayer.Perks)
@@ -160,7 +210,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetNotes()
         {
+            var playerId = GetObjectUUID(_target);
+            var dbPlayer = DB.Get<Player>(playerId);
 
+            if (dbPlayer == null)
+                return;
+
+            var query = new DBQuery<PlayerNote>()
+                .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerNote.IsDMNote), true);
+            var dbNotes = DB.Search(query);
+
+            _noteIds.Clear();
+            var noteNames = new GuiBindingList<string>();
+            var noteToggles = new GuiBindingList<bool>();
+
+            foreach (var note in dbNotes)
+            {
+                _noteIds.Add(note.Id);
+                noteNames.Add(note.Name);
+                noteToggles.Add(false);
+            }
+
+            NoteNames = noteNames;
+            NoteToggles = noteToggles;
         }
 
         public Action OnClickDetails() => () =>
@@ -205,6 +278,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ChangePartialView(PartialView, NotesView);
             LoadTargetNotes();
+        };
+
+        public Action OnClickNote() => () =>
+        {
+            if(_selectedIndex > -1)
+                NoteToggles[_selectedIndex] = false;
+
+            var index = NuiGetEventArrayIndex();
+            var noteId = _noteIds[index];
+            var dbNote = DB.Get<PlayerNote>(noteId);
+
+            ActiveNoteName = dbNote.Name;
+            ActiveNoteCreator = $"{dbNote.DMCreatorName} [{dbNote.DMCreatorCDKey}]";
+            ActiveNoteDetail = dbNote.Text;
+        };
+
+        public Action OnClickNewNote() => () =>
+        {
+            var dbNote = new PlayerNote
+            {
+                Name = "New Note",
+                Text = string.Empty,
+                IsDMNote = true,
+                DMCreatorCDKey = GetPCPublicCDKey(Player),
+                DMCreatorName = GetName(Player)
+            };
+
+            DB.Set(dbNote);
+
+            _noteIds.Add(dbNote.Id);
+            NoteNames.Add(dbNote.Name);
+            NoteToggles.Add(false);
+        };
+
+        public Action OnClickDeleteNote() => () =>
+        {
+            if (_selectedIndex <= -1)
+                return;
+
+            ShowModal("Are you sure you want to delete this note?", () =>
+            {
+                var noteId = _noteIds[_selectedIndex];
+                DB.Delete<PlayerNote>(noteId);
+
+                NoteToggles[_selectedIndex] = false;
+
+                NoteNames.RemoveAt(_selectedIndex);
+                NoteToggles.RemoveAt(_selectedIndex);
+                _noteIds.RemoveAt(_selectedIndex);
+
+                _selectedIndex = -1;
+            });
+        };
+
+        public Action OnClickSaveChanges() => () =>
+        {
+            var noteId = _noteIds[_selectedIndex];
+            var dbNote = DB.Get<PlayerNote>(noteId);
+
+            dbNote.Name = Name;
+            dbNote.Text = ActiveNoteDetail;
+
+            DB.Set(dbNote);
         };
     }
 }

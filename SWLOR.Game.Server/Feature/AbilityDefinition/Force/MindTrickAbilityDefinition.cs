@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
                 .Name("Mind Trick I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.MindTrick2, PerkType.MindTrick)
                 .Name("Mind Trick II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)

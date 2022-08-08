@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.HardSlash1, PerkType.HardSlash)
                 .Name("Hard Slash I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.HardSlash2, PerkType.HardSlash)
                 .Name("Hard Slash II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.HardSlash3, PerkType.HardSlash)
                 .Name("Hard Slash III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoBomb1, PerkType.KoltoBomb)
                 .Name("Kolto Bomb I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
@@ -117,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoBomb2, PerkType.KoltoBomb)
                 .Name("Kolto Bomb II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(7)
@@ -144,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoBomb3, PerkType.KoltoBomb)
                 .Name("Kolto Bomb III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(9)

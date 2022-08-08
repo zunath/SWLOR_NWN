@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                 .Name("Double Strike I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                 .Name("Double Strike II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -122,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                 .Name("Double Strike III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

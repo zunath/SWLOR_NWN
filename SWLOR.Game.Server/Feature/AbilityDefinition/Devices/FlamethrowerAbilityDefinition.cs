@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower1, PerkType.Flamethrower)
                 .Name("Flamethrower I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -94,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower2, PerkType.Flamethrower)
                 .Name("Flamethrower II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower3, PerkType.Flamethrower)
                 .Name("Flamethrower III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)

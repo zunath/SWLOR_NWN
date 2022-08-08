@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -91,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -101,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot3, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 300f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

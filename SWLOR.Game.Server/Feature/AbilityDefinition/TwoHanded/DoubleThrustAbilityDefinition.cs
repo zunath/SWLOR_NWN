@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleThrust1, PerkType.DoubleThrust)
                 .Name("Double Thrust I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleThrust2, PerkType.DoubleThrust)
                 .Name("Double Thrust II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -117,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleThrust3, PerkType.DoubleThrust)
                 .Name("Double Thrust III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

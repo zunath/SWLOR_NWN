@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceRage1, PerkType.ForceRage)
                 .Name("Force Rage I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceRage2, PerkType.ForceRage)
                 .Name("Force Rage II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)
                 .RequirementFP(6)
                 .IsCastedAbility()

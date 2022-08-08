@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                 .Name("Cross Cut I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -108,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                 .Name("Cross Cut II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -125,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                 .Name("Cross Cut III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

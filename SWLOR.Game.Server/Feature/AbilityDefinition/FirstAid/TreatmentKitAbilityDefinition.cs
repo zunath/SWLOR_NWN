@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
                 .Name("Treatment Kit I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
                 .Name("Treatment Kit II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)

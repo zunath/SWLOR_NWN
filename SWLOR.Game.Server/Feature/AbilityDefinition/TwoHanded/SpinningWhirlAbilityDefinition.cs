@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -108,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -120,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.MedKit1, PerkType.MedKit)
                 .Name("Med Kit I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -93,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.MedKit2, PerkType.MedKit)
                 .Name("Med Kit II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -111,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.MedKit3, PerkType.MedKit)
                 .Name("Med Kit III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -129,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.MedKit4, PerkType.MedKit)
                 .Name("Med Kit IV")
+                .IsLevel(4)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -146,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.MedKit5, PerkType.MedKit)
                 .Name("Med Kit V")
+                .IsLevel(5)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)

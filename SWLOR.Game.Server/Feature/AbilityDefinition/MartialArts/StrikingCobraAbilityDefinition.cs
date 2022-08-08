@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.StrikingCobra1, PerkType.StrikingCobra)
                 .Name("Striking Cobra I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.StrikingCobra2, PerkType.StrikingCobra)
                 .Name("Striking Cobra II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
@@ -112,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.StrikingCobra3, PerkType.StrikingCobra)
                 .Name("Striking Cobra III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()

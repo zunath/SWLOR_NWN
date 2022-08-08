@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
                 .Name("Ion Grenade I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
@@ -82,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
                 .Name("Ion Grenade II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -103,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
                 .Name("Ion Grenade III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)

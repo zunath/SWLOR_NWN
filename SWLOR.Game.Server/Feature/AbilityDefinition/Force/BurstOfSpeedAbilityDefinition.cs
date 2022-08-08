@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.BurstOfSpeed1, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .RequirementFP(2)
                 .HasActivationDelay(2f)
@@ -114,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.BurstOfSpeed2, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .RequirementFP(3)
                 .HasActivationDelay(2f)

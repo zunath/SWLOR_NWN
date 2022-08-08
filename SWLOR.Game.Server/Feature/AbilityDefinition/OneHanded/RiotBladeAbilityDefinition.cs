@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                 .Name("Riot Blade I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                 .Name("Riot Blade II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                 .Name("Riot Blade III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

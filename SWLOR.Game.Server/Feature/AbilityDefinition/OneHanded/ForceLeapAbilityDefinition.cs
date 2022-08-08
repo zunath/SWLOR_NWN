@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -133,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(4)
                 .HasActivationDelay(0.5f)
@@ -147,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(5)
                 .HasActivationDelay(0.5f)

@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceStun1, PerkType.ForceStun)
                 .Name("Force Stun I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceStun2, PerkType.ForceStun)
                 .Name("Force Stun II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
@@ -94,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceStun3, PerkType.ForceStun)
                 .Name("Force Stun III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(8)

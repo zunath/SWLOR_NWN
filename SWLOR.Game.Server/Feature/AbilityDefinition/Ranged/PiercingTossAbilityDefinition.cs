@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                 .Name("Piercing Toss I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                 .Name("Piercing Toss II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -121,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                 .Name("Piercing Toss III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)

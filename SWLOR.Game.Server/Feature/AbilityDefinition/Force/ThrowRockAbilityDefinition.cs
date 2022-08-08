@@ -62,10 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 25.0f;
 
-            AssignCommand(activator, () =>
-            {
-                DoThrowRock(target, level);
-            });
+            AssignCommand(activator, () => DoThrowRock(target, level));
 
             var eDMG = EffectDamage(damage, DamageType.Bludgeoning);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
@@ -84,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock1, PerkType.ThrowRock)
                 .Name("Throw Rock I")
+                .IsLevel(1)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(4)
@@ -98,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock2, PerkType.ThrowRock)
                 .Name("Throw Rock II")
+                .IsLevel(2)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
@@ -112,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock3, PerkType.ThrowRock)
                 .Name("Throw Rock III")
+                .IsLevel(3)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock4, PerkType.ThrowRock)
                 .Name("Throw Rock IV")
+                .IsLevel(4)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
@@ -138,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock5, PerkType.ThrowRock)
                 .Name("Throw Rock V")
+                .IsLevel(5)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(40.0f)
                 .RequirementFP(8)
@@ -148,8 +150,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void DoThrowRock(uint target, int level)
         {
-            var missile = EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Rock, false, 0.1f * level);
-            PlaySound("plr_force_throw");
+            VisualEffect rockType = VisualEffect.Vfx_Imp_Mirv_Rock;
+            if(level >= 3 && level < 5) { rockType = VisualEffect.Vfx_Imp_Mirv_Rock3; }
+            else if(level == 5) { rockType = VisualEffect.Vfx_Imp_Mirv_Rock2;  }
+
+            var missile = EffectVisualEffect(rockType);
             ApplyEffectToObject(DurationType.Instant, missile, target);
         }
     }

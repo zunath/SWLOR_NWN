@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10 physical DMG to a single target.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 //.RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 15 physical DMG to a single target.")
-                .Price(5)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 //.RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 34 physical DMG to a single target.")
-                .Price(6)
+                .Price(5)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 //.RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 43 physical DMG to a single target.")
-                .Price(8)
+                .Price(6)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 //.RequirementCannotHavePerk(PerkType.ForceLightning)

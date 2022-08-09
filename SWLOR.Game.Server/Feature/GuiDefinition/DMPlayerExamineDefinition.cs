@@ -57,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddTextEdit()
                                 .BindValue(model => model.Description)
                                 .SetIsMultiline(true)
-                                .SetHeight(350f);
+                                .SetHeight(350f)
+                                .SetMaxLength(5000);
                         });
                     });
 

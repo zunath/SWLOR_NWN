@@ -1812,7 +1812,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Furor = 1844,
 
         FlurryStyle = 1855,
-        CrushingStyle = 1856
+        CrushingStyle = 1856,
+        FlurryMastery = 1857,
+        CrushingMastery = 1858
 
     }
 }

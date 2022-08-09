@@ -471,6 +471,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
             }
+
+            // Crushing Style (Staff)
+            if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
+                GetHasFeat(FeatType.CrushingStyle, Player))
+            {
+                damageStat = AbilityType.Perception;
+                accuracyStatOverride = AbilityType.Agility;
+            } 
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);

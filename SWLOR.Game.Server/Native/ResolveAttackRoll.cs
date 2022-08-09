@@ -95,12 +95,12 @@ namespace SWLOR.Game.Server.Native
 
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
             
-            var strongStyleAbilityOverride = GetStrongStyleAbilityType(weapon, attacker);
+            var weaponStyleAbilityOverride = GetWeaponStyleAbilityType(weapon, attacker);
             var zenMarksmanshipAbilityOverride = GetZenMarksmanshipAbilityType(weapon, attacker);
             var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, 
-                strongStyleAbilityOverride == AbilityType.Invalid 
+                weaponStyleAbilityOverride == AbilityType.Invalid 
                     ? zenMarksmanshipAbilityOverride 
-                    : strongStyleAbilityOverride);
+                    : weaponStyleAbilityOverride);
             var defenderEvasion = Stat.GetEvasionNative(defender);
 
             //---------------------------------------------------------------------------------------------
@@ -253,7 +253,8 @@ namespace SWLOR.Game.Server.Native
             }
 
             if(Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
-                Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.FlurryStyle))
+                attackerStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
+                attackerStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
             {
                 percentageModifier -= 10;
                 Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10");
@@ -298,13 +299,13 @@ namespace SWLOR.Game.Server.Native
 
                 if(weapon != null && Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                 {
-                    if(Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.CrushingStyle))
+                    if(attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
                     {
                         criticalBonus += 15;
                     } 
-                    else if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.MasteredCrushing))
+                    if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
                     {
-                        criticalBonus += 30;
+                        criticalBonus += 15;
                     }
                 }
 
@@ -609,7 +610,7 @@ namespace SWLOR.Game.Server.Native
             return 0;
         }
 
-        private static AbilityType GetStrongStyleAbilityType(CNWSItem weapon, CNWSCreature attacker)
+        private static AbilityType GetWeaponStyleAbilityType(CNWSItem weapon, CNWSCreature attacker)
         {
             if (attacker.m_bPlayerCharacter == 0)
                 return AbilityType.Invalid;
@@ -627,6 +628,10 @@ namespace SWLOR.Game.Server.Native
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return AbilityType.Perception;
+            } else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
+                    return AbilityType.Agility;
             }
 
             return AbilityType.Invalid;

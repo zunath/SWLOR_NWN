@@ -155,9 +155,9 @@ namespace SWLOR.Game.Server.Native
                 : Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
             var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
-            // Strong Style Toggle (Saberstaff/Lightsaber)
-            // Uses MGT for damage if enabled.
-            var damageStat = GetStrongStyleStat(weapon, attacker);
+            // Weapon Style Toggle
+            // Swaps damage stat as appropriate.
+            var damageStat = GetWeaponStyleStat(weapon, attacker);
             if (damageStat > -1)
             {
                 attackerStat = damageStat;
@@ -191,10 +191,10 @@ namespace SWLOR.Game.Server.Native
             if (attackerStatType == AbilityType.Might) // 0.5x MGT mod bonus to DMG
             {
                 var mightMod = attacker.m_pStats.m_nStrengthModifier;
-                if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.CrushingStyle))
-                    dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves get 1.0x MGT
-                else if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.MasteredCrushing))
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
                     dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod * 1.5d); // Mastery gives 1.5x MGT
+                else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
+                            dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves get 1.0x MGT
                 else
                     dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2d); // 0.5x MGT for everything else
             }
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Native
             return false;
         }
 
-        private static int GetStrongStyleStat(CNWSItem weapon, CNWSCreature attacker)
+        private static int GetWeaponStyleStat(CNWSItem weapon, CNWSCreature attacker)
         {
             if (weapon == null)
                 return -1;
@@ -477,6 +477,10 @@ namespace SWLOR.Game.Server.Native
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return attacker.m_pStats.m_nStrengthBase;
+            } else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
+                    return attacker.m_pStats.m_nDexterityBase;
             }
 
             return -1;

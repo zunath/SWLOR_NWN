@@ -12021,11 +12021,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_anchor_qn_cantina"
+          "value": "door_anchor_cantina"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 2
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -12120,7 +12120,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "anchor_cantin_qn"
+          "value": "anchor_cantina_southdis"
         },
         "TemplateResRef": {
           "type": "resref",

@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             if (inflict)
             {
+                UsePerkFeat.DequeueWeaponAbility(target);
                 Ability.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");

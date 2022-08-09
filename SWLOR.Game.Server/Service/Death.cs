@@ -25,8 +25,6 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -39,15 +37,20 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            if (dbPlayer.Settings.IsSubdualModeEnabled &&
-                GetIsPC(hostile))
+            if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
-                SendMessageToPC(player, "You have been subdued.");
-                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
-                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
+                var hostilePlayerId = GetObjectUUID(hostile);
+                var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
+                if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
+                {
+                    SendMessageToPC(player, "You have been subdued.");
+                    Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
+                }
             }
             else
             {

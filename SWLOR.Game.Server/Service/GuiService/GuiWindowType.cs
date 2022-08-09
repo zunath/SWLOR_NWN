@@ -41,5 +41,6 @@
         TargetStatus = 36,
         ManageBans = 37,
         Refinery = 38,
+        DMPlayerExamine = 39,
     }
 }

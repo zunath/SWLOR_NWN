@@ -16,6 +16,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
 
+        protected string ExplosiveValidation(uint activator, uint target, int level, Location location)
+        {
+            var activatorPosition = GetPosition(activator);
+            var targetPosition = GetPositionFromLocation(location);
+
+            if (!HasExplosives(activator))
+            {
+                return "You have no explosives.";
+            }
+
+            if (!LineOfSightVector(activatorPosition, targetPosition))
+                return "You cannot see your target.";
+
+            return string.Empty;
+        }
+
         protected static void TakeExplosives(uint activator)
         {
             if (!GetIsPC(activator))

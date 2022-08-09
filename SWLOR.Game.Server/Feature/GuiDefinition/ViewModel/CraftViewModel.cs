@@ -1094,7 +1094,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var qualityPercent = (float)_quality / (float)_maxQuality; 
 
             // We override the additional gold price field so that players are encouraged to sell their goods to other players rather than selling to an NPC.
-            ItemPlugin.SetAddGoldPieceValue(item, 1);
+            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * (recipe.Level / 10) + 3.5f * recipe.Level));
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2);

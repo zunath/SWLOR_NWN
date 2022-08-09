@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.BattleInsight1, PerkType.BattleInsight)
                 .Name("Battle Insight I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight1)
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.BattleInsight2, PerkType.BattleInsight)
                 .Name("Battle Insight II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight2)

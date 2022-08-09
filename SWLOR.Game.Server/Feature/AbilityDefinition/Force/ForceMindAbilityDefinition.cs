@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceMind1, PerkType.ForceMind)
                 .Name("Force Mind I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceMind, 60f * 5f)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceMind2, PerkType.ForceMind)
                 .Name("Force Mind II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceMind, 60f * 5f)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()

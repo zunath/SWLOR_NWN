@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.StealthGenerator1, PerkType.StealthGenerator)
                 .Name("Stealth Generator I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.StealthGenerator2, PerkType.StealthGenerator)
                 .Name("Stealth Generator II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.StealthGenerator3, PerkType.StealthGenerator)
                 .Name("Stealth Generator III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)

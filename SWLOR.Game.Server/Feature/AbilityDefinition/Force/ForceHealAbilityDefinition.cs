@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal1, PerkType.ForceHeal)
                 .Name("Force Heal I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(1)
                 .HasMaxRange(15)
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal2, PerkType.ForceHeal)
                 .Name("Force Heal II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(2)
                 .HasMaxRange(15)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal3, PerkType.ForceHeal)
                 .Name("Force Heal III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(3)
                 .HasMaxRange(15)
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal4, PerkType.ForceHeal)
                 .Name("Force Heal IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(4)
                 .HasMaxRange(15)
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceHeal5, PerkType.ForceHeal)
                 .Name("Force Heal V")
-                .IsLevel(5)
+                .Level(5)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
                 .RequirementFP(5)
                 .HasMaxRange(15)

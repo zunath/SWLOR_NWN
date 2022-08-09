@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Shielding1, PerkType.Shielding)
                 .Name("Shielding I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Shielding2, PerkType.Shielding)
                 .Name("Shielding II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Shielding3, PerkType.Shielding)
                 .Name("Shielding III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Shielding4, PerkType.Shielding)
                 .Name("Shielding IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)

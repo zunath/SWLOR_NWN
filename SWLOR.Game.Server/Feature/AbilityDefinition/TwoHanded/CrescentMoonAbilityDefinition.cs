@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrescentMoon1, PerkType.CrescentMoon)
                 .Name("Crescent Moon I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrescentMoon2, PerkType.CrescentMoon)
                 .Name("Crescent Moon II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrescentMoon3, PerkType.CrescentMoon)
                 .Name("Crescent Moon III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

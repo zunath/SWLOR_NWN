@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade)
                 .Name("Hacking Blade I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade)
                 .Name("Hacking Blade II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade)
                 .Name("Hacking Blade III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

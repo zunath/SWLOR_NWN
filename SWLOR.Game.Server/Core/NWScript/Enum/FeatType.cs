@@ -1809,11 +1809,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Doublehand4 = 1842,
         Doublehand5 = 1843,
         Furor = 1844,
-        ThrowRock1 = 1845,
-        ThrowRock2 = 1846,
-        ThrowRock3 = 1847,
-        ThrowRock4 = 1848,
-        ThrowRock5 = 1849,
+        ThrowRock1 = 1850,
+        ThrowRock2 = 1851,
+        ThrowRock3 = 1852,
+        ThrowRock4 = 1853,
+        ThrowRock5 = 1854,
 
     }
 }

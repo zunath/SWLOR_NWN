@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.StasisField1, PerkType.StasisField)
                 .Name("Stasis Field I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.StasisField2, PerkType.StasisField)
                 .Name("Stasis Field II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.StasisField3, PerkType.StasisField)
                 .Name("Stasis Field III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)

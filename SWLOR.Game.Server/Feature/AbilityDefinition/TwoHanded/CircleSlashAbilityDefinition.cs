@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                 .Name("Circle Slash I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                 .Name("Circle Slash II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(4)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                 .Name("Circle Slash III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)

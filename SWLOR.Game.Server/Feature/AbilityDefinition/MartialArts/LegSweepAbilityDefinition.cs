@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                 .Name("Leg Sweep I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                 .Name("Leg Sweep II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                 .Name("Leg Sweep III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

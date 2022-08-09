@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceValor1, PerkType.ForceValor)
                 .Name("Force Valor I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceValor, 30f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceValor2, PerkType.ForceValor)
                 .Name("Force Valor II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceValor, 30f)
                 .RequirementFP(6)
                 .IsCastedAbility()

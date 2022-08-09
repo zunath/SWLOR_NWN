@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.SmokeBomb1, PerkType.SmokeBomb)
                 .Name("Smoke Bomb I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(3)
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.SmokeBomb2, PerkType.SmokeBomb)
                 .Name("Smoke Bomb II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.SmokeBomb3, PerkType.SmokeBomb)
                 .Name("Smoke Bomb III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)

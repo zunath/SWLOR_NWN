@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(4)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                 .Name("Crippling Shot I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                 .Name("Crippling Shot II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                 .Name("Crippling Shot III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()

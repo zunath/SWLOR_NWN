@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IncendiaryBomb1, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(3)
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IncendiaryBomb2, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IncendiaryBomb3, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)

@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.ExplosiveToss1, PerkType.ExplosiveToss)
                 .Name("Explosive Toss I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
                 .Name("Explosive Toss II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
                 .Name("Explosive Toss III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)

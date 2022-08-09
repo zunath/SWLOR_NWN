@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)

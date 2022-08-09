@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
                 .Name("Creeping Terror I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
                 .Name("Creeping Terror II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
                 .Name("Creeping Terror III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)
                 .RequirementFP(8)
                 .IsCastedAbility()

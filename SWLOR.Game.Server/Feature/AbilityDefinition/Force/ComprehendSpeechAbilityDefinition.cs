@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech1, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech3, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ComprehendSpeech4, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
         {
             _builder.Create(FeatType.Provoke, PerkType.Provoke)
                 .Name("Provoke")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 20f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
         {
             _builder.Create(FeatType.Provoke2, PerkType.Provoke)
                 .Name("Provoke II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Provoke2, 40f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)

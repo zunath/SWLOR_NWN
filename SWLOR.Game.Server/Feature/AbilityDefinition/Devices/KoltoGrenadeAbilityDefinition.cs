@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoGrenade1, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoGrenade2, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoGrenade3, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(7)

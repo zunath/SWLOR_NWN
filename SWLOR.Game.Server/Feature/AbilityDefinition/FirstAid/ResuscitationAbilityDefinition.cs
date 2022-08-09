@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation1, PerkType.Resuscitation)
                 .Name("Resuscitation I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation2, PerkType.Resuscitation)
                 .Name("Resuscitation II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
                 .Name("Resuscitation III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)

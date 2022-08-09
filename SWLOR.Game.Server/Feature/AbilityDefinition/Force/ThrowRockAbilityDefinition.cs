@@ -50,8 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var damage = Combat.CalculateDamage(
                 attack,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock1, PerkType.ThrowRock)
                 .Name("Throw Rock I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(4)
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock2, PerkType.ThrowRock)
                 .Name("Throw Rock II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock3, PerkType.ThrowRock)
                 .Name("Throw Rock III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock4, PerkType.ThrowRock)
                 .Name("Throw Rock IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowRock5, PerkType.ThrowRock)
                 .Name("Throw Rock V")
-                .IsLevel(5)
+                .Level(5)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(40.0f)
                 .RequirementFP(8)

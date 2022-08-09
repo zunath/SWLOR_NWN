@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.KoltoRecovery1, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.KoltoRecovery2, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.KoltoRecovery3, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)

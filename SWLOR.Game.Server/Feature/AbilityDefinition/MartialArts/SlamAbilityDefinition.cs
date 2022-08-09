@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam1, PerkType.Slam)
                 .Name("Slam I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam2, PerkType.Slam)
                 .Name("Slam II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam3, PerkType.Slam)
                 .Name("Slam III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

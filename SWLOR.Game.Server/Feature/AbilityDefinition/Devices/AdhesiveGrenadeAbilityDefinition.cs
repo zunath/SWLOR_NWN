@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.AdhesiveGrenade3, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(7)

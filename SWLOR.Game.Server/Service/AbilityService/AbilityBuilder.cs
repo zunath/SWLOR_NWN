@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// </summary>
         /// <param name="level">The level of the ability</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder IsLevel(int level)
+        public AbilityBuilder Level(int level)
         {
             _activeAbility.AbilityLevel = level;
 

@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
-                .IsLevel(1)
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
-                .IsLevel(2)
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
-                .IsLevel(3)
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
-                .IsLevel(4)
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)

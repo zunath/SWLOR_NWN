@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.AbilityService;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -33,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             StaffMastery();
             Slam();
             LegSweep();
+            FlurryStyle();
+            CrushingStyle();
 
             return _builder.Build();
         }
@@ -433,6 +436,77 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.LegSweep3);
+        }
+
+        private void FlurryStyle()
+        {
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.FlurryStyle)
+                .Name("Flurry Style")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                    Ability.ToggleAbility(player, AbilityToggleType.FlurryStyle, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.MasteredFlurry, false);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                    Ability.ToggleAbility(player, AbilityToggleType.FlurryStyle, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.MasteredFlurry, false);
+                })
+
+                .AddPerkLevel()
+                .Description("You learn to move with the wind, striking unpredictably quickly. This style confers an additional attack with staves, and a -10% penalty to hit with all attacks.")
+                .Price(2)
+                .RequirementSkill(SkillType.MartialArts, 5)
+                .GrantsFeat(FeatType.FlurryStyle)
+
+                .AddPerkLevel()
+                .Description("You master the art of striking quickly and often. This style confers an additional attack with staves, and removes the Flurry Style to-hit penalty.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 35)
+                .RequirementCharacterType(CharacterType.Standard);
+        }
+        private void CrushingStyle()
+        {
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.CrushingStyle)
+                .Name("Crushing Style")
+                .TriggerRefund((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.CrushingStyle, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.MasteredCrushing, false);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.CrushingStyle, false);
+                    Ability.ToggleAbility(player, AbilityToggleType.MasteredCrushing, false);
+                })
+
+                .AddPerkLevel()
+                .Description("You wait for the perfect moment to strike, unleashing powerful blows. This style increases DMG scaling on staves to 1x your MGT modifier, and increases critical chance by 15%.")
+                .Price(2)
+                .RequirementSkill(SkillType.MartialArts, 5)
+                .GrantsFeat(FeatType.CrushingStyle)
+
+                .AddPerkLevel()
+                .Description("You've mastered patient, overwhelming blows with a staff. MGT DMG scaling is increased to 1.5x your modifier, and further increases critical chance by 15%.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 35)
+                .RequirementCharacterType(CharacterType.Standard);
         }
 
     }

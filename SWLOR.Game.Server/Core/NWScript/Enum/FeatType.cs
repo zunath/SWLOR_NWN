@@ -1811,5 +1811,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Doublehand5 = 1843,
         Furor = 1844,
 
+        FlurryStyle = 1855,
+        CrushingStyle = 1856
+
     }
 }

@@ -237,6 +237,9 @@
         ForceValor = 230,
         ForceSpark = 231,
         CreepingTerror = 232,
-        ForceRage = 233
+        ForceRage = 233,
+
+        FlurryStyle = 235,
+        CrushingStyle = 236
     }
 }

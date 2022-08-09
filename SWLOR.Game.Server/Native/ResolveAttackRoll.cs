@@ -186,6 +186,10 @@ namespace SWLOR.Game.Server.Native
                     accuracyModifiers = -5;
                 }
                 
+            } else if (Item.GetWeaponAccuracyAbilityType((BaseItem)weapon.m_nBaseItem) == AbilityType.Agility)
+            { // Non-ranged PER to-hit weapons gain +1xPER mod as accuracy
+                var agiMod = Stat.GetStatValueNative(attacker, AbilityType.Agility) - 10;
+                if (agiMod > 0) { accuracyModifiers += agiMod; }
             }
 
             // Attacking from behind.  Does not apply to Force attacks.
@@ -230,21 +234,29 @@ namespace SWLOR.Game.Server.Native
                 weapon != null &&
                 (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
                  Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
+            int hasITWF = attackerStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting);
             var percentageModifier = 0;
 
-            if (bDoubleWeapon ||
+            if (hasITWF != 1 && (bDoubleWeapon ||
                 (offhand != null &&
                  offhand.m_nBaseItem != (uint)BaseItem.LargeShield &&
                  offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
-                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
+                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield)))
             {
                 var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
                 // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
                 // in to the proficiency perks rather than granting them separately. 
                 
                 // Apply the base two weapon fighting penalty. 
-                percentageModifier -= 20;
+                percentageModifier -= 10;
                 Log.Write(LogGroup.Attack, logMessage);
+            }
+
+            if(Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
+                Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.FlurryStyle))
+            {
+                percentageModifier -= 10;
+                Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10");
             }
 
             // Combat Mode - Power Attack (-5 TH)
@@ -283,6 +295,18 @@ namespace SWLOR.Game.Server.Native
                     criticalBonus += 4;
                 else if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim1) == 1)
                     criticalBonus += 2;
+
+                if(weapon != null && Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    if(Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.CrushingStyle))
+                    {
+                        criticalBonus += 15;
+                    } 
+                    else if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.MasteredCrushing))
+                    {
+                        criticalBonus += 30;
+                    }
+                }
 
                 var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.m_nIntelligenceBase, criticalBonus);
 

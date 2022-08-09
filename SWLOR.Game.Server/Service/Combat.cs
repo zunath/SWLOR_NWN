@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
+using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -324,6 +325,48 @@ namespace SWLOR.Game.Server.Service
             defenderName = Convert.ToBoolean(defender.m_bPlayerCharacter) ? ColorToken.Custom(defenderName, 153, 255, 255) : ColorToken.Custom(defenderName, 204, 153, 204);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by doublehand, Power Attack, and Might scaling.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <param name="weaponType">The BaseItem of the weapon held</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+
+        public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
+        {
+            var bonusDMG = 0;
+
+            bonusDMG += GetDoublehandDMGBonus(attacker) +
+                GetPowerAttackDMGBonus(attacker) +
+                GetMightDMGBonus(attacker, weaponType);
+
+            return bonusDMG;
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by Might scaling on Might-based weapons.
+        /// Returns 0 if an invalid weapon is held.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <param name="weaponType">The BaseItem of the weapon held</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+
+        public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
+        {
+            if (weaponType == BaseItem.Invalid ||
+                Item.GetWeaponDamageAbilityType(weaponType) != AbilityType.Might)
+                return 0;
+
+            int mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
+
+            if (!GetHasFeat(FeatType.CrushingStyle))
+                return mgtMod / 2;
+            else if (Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle) > 1)
+                return (int)(mgtMod * 1.5);
+            else
+                return mgtMod;
         }
 
         /// <summary>

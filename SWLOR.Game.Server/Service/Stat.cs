@@ -1143,11 +1143,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 5 * effect.GetInteger(1);
+                    accuracy += 5 * effect.GetInteger(0);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 5 * effect.GetInteger(1);
+                    accuracy -= 5 * effect.GetInteger(0);
                 }
             }
 
@@ -1340,6 +1340,11 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.RapidShot);
             }
 
+            static int GetFlurryBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.FlurryStyle);
+            }
+
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
@@ -1355,6 +1360,7 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
+                numberOfAttacks += GetFlurryBonus(player);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))

@@ -188,6 +188,17 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] += 6;
             }
 
+            if (attackerStatType == AbilityType.Might) // 0.5x MGT mod bonus to DMG
+            {
+                var mightMod = attacker.m_pStats.m_nStrengthModifier;
+                if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.CrushingStyle))
+                    dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves get 1.0x MGT
+                else if (Ability.IsAbilityToggled(attacker.m_idSelf, AbilityToggleType.MasteredCrushing))
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod * 1.5d); // Mastery gives 1.5x MGT
+                else
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2d); // 0.5x MGT for everything else
+            }
+
             // Doublehand perk
             if (weapon != null)
             {

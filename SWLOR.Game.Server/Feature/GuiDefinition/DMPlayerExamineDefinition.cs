@@ -40,6 +40,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetHeight(20f);
                                 });
                             });
+
+                            row.AddColumn(col3 =>
+                            {
+                                col3.AddRow(row3 =>
+                                {
+                                    row3.AddLabel()
+                                        .BindText(model => model.Credits)
+                                        .SetHeight(20f);
+                                });
+                            });
                         });
 
                         mainCol.AddRow(row =>
@@ -47,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddTextEdit()
                                 .BindValue(model => model.Description)
                                 .SetIsMultiline(true)
-                                .SetHeight(400f);
+                                .SetHeight(350f);
                         });
                     });
 
@@ -112,6 +122,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         })
                                         .BindRowCount(model => model.NoteNames);
                                 });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddButton()
+                                        .SetHeight(32f)
+                                        .SetText("New Note")
+                                        .BindOnClicked(model => model.OnClickNewNote());
+
+                                    row.AddButton()
+                                        .SetHeight(32f)
+                                        .SetText("Delete")
+                                        .BindOnClicked(model => model.OnClickDeleteNote());
+                                });
                             });
 
                             mainRow.AddColumn(col =>
@@ -120,7 +143,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     row.AddTextEdit()
                                         .BindValue(model => model.ActiveNoteName)
-                                        .SetPlaceholder("Note Name");
+                                        .SetPlaceholder("Note Name")
+                                        .SetMaxLength(50)
+                                        .BindIsEnabled(model => model.IsNoteSelected);
                                 });
 
                                 col.AddRow(row =>
@@ -134,15 +159,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     row.AddTextEdit()
                                         .SetIsMultiline(true)
                                         .BindValue(model => model.ActiveNoteDetail)
-                                        .SetHeight(350f);
+                                        .SetHeight(350f)
+                                        .SetMaxLength(3000)
+                                        .BindIsEnabled(model => model.IsNoteSelected);
                                 });
 
                                 col.AddRow(row =>
                                 {
+                                    row.AddSpacer();
                                     row.AddButton()
                                         .SetText("Save Changes")
                                         .SetHeight(32f)
-                                        .BindOnClicked(model => model.OnClickSaveChanges());
+                                        .BindOnClicked(model => model.OnClickSaveChanges())
+                                        .BindIsEnabled(model => model.IsNoteSelected);
+                                    row.AddSpacer();
                                 });
                             });
                         });
@@ -153,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
                         row.AddToggleButton()
                             .SetText("Details")
                             .SetHeight(32f)
@@ -176,6 +207,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(32f)
                             .BindIsToggled(model => model.IsNotesToggled)
                             .BindOnClicked(model => model.OnClickNotes());
+
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>

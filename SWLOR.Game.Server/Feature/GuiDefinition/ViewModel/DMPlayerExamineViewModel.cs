@@ -31,7 +31,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, false));
         }
 
-        private uint _target;
+        private string _playerId;
+        private string _targetName;
+        private string _targetDescription;
+        private string _characterType;
+        private string _credits;
 
         public const string PartialView = "PARTIAL";
 
@@ -61,6 +65,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsNoteSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string Name
         {
             get => Get<string>();
@@ -74,6 +84,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Description
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Credits
         {
             get => Get<string>();
             set => Set(value);
@@ -139,7 +155,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(DMPlayerExaminePayload initialPayload)
         {
             _selectedIndex = -1;
-            _target = initialPayload.Target;
+            _playerId = GetObjectUUID(initialPayload.Target);
+            _targetName = GetName(initialPayload.Target);
+            _targetDescription = GetDescription(initialPayload.Target);
+            _characterType = GetClassByPosition(1, initialPayload.Target) == ClassType.ForceSensitive
+                ? "Force Sensitive"
+                : "Standard";
+            _credits = $"{GetGold(initialPayload.Target)}cr";
 
             ActiveNoteName = string.Empty;
             ActiveNoteCreator = string.Empty;
@@ -160,17 +182,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetDetails()
         {
-            Name = GetName(_target);
-            Description = GetDescription(_target);
-            CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
-                ? "Force Sensitive"
-                : "Standard";
+            Name = _targetName;
+            Description = _targetDescription;
+            CharacterType = _characterType;
+            Credits = _credits;
         }
 
         private void LoadTargetSkills()
         {
-            var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
@@ -189,8 +209,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetPerks()
         {
-            var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
@@ -210,14 +229,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetNotes()
         {
-            var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
 
             var query = new DBQuery<PlayerNote>()
-                .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerNote.PlayerId), _playerId, false)
                 .AddFieldSearch(nameof(PlayerNote.IsDMNote), true);
             var dbNotes = DB.Search(query);
 
@@ -284,6 +302,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if(_selectedIndex > -1)
                 NoteToggles[_selectedIndex] = false;
+            _selectedIndex = NuiGetEventArrayIndex();
 
             var index = NuiGetEventArrayIndex();
             var noteId = _noteIds[index];
@@ -292,12 +311,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveNoteName = dbNote.Name;
             ActiveNoteCreator = $"{dbNote.DMCreatorName} [{dbNote.DMCreatorCDKey}]";
             ActiveNoteDetail = dbNote.Text;
+
+            NoteToggles[_selectedIndex] = true;
+            IsNoteSelected = true;
         };
 
         public Action OnClickNewNote() => () =>
         {
+            if (_noteIds.Count > MaxNotes)
+                return;
+            
             var dbNote = new PlayerNote
             {
+                PlayerId = _playerId,
                 Name = "New Note",
                 Text = string.Empty,
                 IsDMNote = true,
@@ -329,18 +355,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _noteIds.RemoveAt(_selectedIndex);
 
                 _selectedIndex = -1;
+
+                IsNoteSelected = false;
             });
         };
 
         public Action OnClickSaveChanges() => () =>
         {
+            if (_selectedIndex <= -1)
+                return;
+
             var noteId = _noteIds[_selectedIndex];
             var dbNote = DB.Get<PlayerNote>(noteId);
 
-            dbNote.Name = Name;
+            dbNote.Name = ActiveNoteName;
             dbNote.Text = ActiveNoteDetail;
 
             DB.Set(dbNote);
+
+            NoteNames[_selectedIndex] = ActiveNoteName;
+
         };
     }
 }

@@ -45087,7 +45087,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "anchor_cantin_qn"
+          "value": "anchor_cantina_southdis"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -45186,7 +45186,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "door_anchor_prime"
+          "value": "door_anchor_cantina"
         },
         "TemplateResRef": {
           "type": "resref",

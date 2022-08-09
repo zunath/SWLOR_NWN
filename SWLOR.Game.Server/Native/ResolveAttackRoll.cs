@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Native
                 
             } else if (Item.GetWeaponAccuracyAbilityType((BaseItem)weapon.m_nBaseItem) == AbilityType.Agility)
             { // Non-ranged PER to-hit weapons gain +1xPER mod as accuracy
-                var agiMod = Stat.GetStatValueNative(attacker, AbilityType.Agility) - 10;
+                var agiMod = Stat.GetStatValueNative(attacker, AbilityType.Perception) - 10;
                 if (agiMod > 0) { accuracyModifiers += agiMod; }
             }
 

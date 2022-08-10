@@ -124,8 +124,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isLoadingNote = true;
 
             var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResrefId), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResrefId));
+                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
+                .OrderBy(nameof(AreaNote.AreaResref));
             var notes = DB.Search(query)
                 .ToList();
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbNote = new AreaNote
                 {
-                    AreaResrefId = AreaResrefs[SelectedAreaIndex]
+                    AreaResref = AreaResrefs[SelectedAreaIndex]
                 };
                 DB.Set<AreaNote>(dbNote);
             }
@@ -155,8 +155,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResrefId), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResrefId));
+                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
+                .OrderBy(nameof(AreaNote.AreaResref));
             var notes = DB.Search(query)
                 .ToList();
 

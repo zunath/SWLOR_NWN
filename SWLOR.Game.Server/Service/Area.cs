@@ -105,8 +105,8 @@ namespace SWLOR.Game.Server.Service
 
             // Handle DM created Area Notes
             var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResrefId), GetResRef(area), false)
-                .OrderBy(nameof(AreaNote.AreaResrefId));
+                .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
+                .OrderBy(nameof(AreaNote.AreaResref));
             var notes = DB.Search(query)
                 .ToList();
 

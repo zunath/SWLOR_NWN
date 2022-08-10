@@ -798,7 +798,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void Notes()
         {
             _builder.Create("notes")
-                .Description("Toggles the notes menu.")
+                .Description("Toggles the area notes window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {

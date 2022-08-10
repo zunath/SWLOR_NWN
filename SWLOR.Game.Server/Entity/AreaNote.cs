@@ -3,7 +3,7 @@
     public class AreaNote: EntityBase
     {
         [Indexed]
-        public string AreaResrefId { get; set; }
+        public string AreaResref { get; set; }
         public string PublicText { get; set; }
         public string PrivateText { get; set; }
 

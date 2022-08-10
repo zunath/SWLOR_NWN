@@ -145,8 +145,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
 
                     dbPlayer.NumberRebuildsAvailable++;
+                    DB.Set(dbPlayer);
 
                     Item.ReduceItemStack(item, 1);
+                    SendMessageToPC(user, $"Total Rebuild Tokens: {dbPlayer.NumberRebuildsAvailable}");
                 });
         }
     }

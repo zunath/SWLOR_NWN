@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Using this item will add one rebuild to your character. Rebuilds may be performed by speaking to a training specialist. Each rebuild costs one token."
+      "0": "Using this item will add one rebuild to your character. Rebuilds may be performed by using a training device. Each rebuild costs one token."
     }
   },
   "Description": {

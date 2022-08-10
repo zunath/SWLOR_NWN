@@ -42,5 +42,6 @@
         ManageBans = 37,
         Refinery = 38,
         DMPlayerExamine = 39,
+        AreaNotes = 40,
     }
 }

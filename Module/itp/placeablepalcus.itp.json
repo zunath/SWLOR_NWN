@@ -74567,6 +74567,17 @@
                       "type": "resref",
                       "value": "smithery_bench"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "train_terminal"
+                    }
                   }
                 ]
               },

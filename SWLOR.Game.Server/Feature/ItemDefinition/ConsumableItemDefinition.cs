@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             SlugShake();
             Food();
+            RebuildToken();
 
             return _builder.Build();
         }
@@ -121,6 +123,30 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     StatusEffect.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                });
+        }
+
+        private void RebuildToken()
+        {
+            _builder.Create("rebuild_token")
+                .PlaysAnimation(Animation.LoopingGetMid)
+                .ValidationAction((user, item, target, location) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "Only players may use this item.";
+                    }
+
+                    return string.Empty;
+                })
+                .ApplyAction((user, item, target, location) =>
+                {
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+
+                    dbPlayer.NumberRebuildsAvailable++;
+
+                    Item.ReduceItemStack(item, 1);
                 });
         }
     }

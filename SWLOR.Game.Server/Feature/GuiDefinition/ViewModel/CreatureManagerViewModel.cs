@@ -61,24 +61,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
 
             WatchOnClient(model => model.SearchText);
-            Console.WriteLine("Initialization Complete.");
         }
 
         public Action OnClickAddNew() => () =>
         {
-            Console.WriteLine("Add New Create, Entering Targeting Mode...");
             Targeting.EnterTargetingMode(Player, ObjectType.Creature, "Please click on a creature to save.",
              creature =>
              {
                  if (!GetIsObjectValid(creature) || GetIsDM(creature) || GetIsPC(creature))
                  {
-                     Console.WriteLine("Invalid Creature, return.");
                      return;
                  }                     
 
                  if (GetObjectType(creature) != ObjectType.Creature)
                  {                     
-                     Console.WriteLine("ObjectType is not Creature, return.");
                      return;
                  }
 
@@ -86,7 +82,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                  var dbCreature = new Creature(GetName(creature), GetTag(creature), serialized);
                  DB.Set<Creature>(dbCreature);
 
-                 Console.WriteLine("Creature Added to DB: " + dbCreature.Name);
                  DeleteLocalObject(Player, "DMCM_CREATURE_TO_SPAWN");
              });
             
@@ -112,18 +107,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            Console.WriteLine("Create Creature at Location, Selected Index = " + SelectedCreatureIndex);
-
             var dbCreature = DB.Get<Creature>(_CreatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
 
-            Console.WriteLine("Entering Location Targeting Mode...");
             NWScript.EnterTargetingMode(Player, ObjectType.Tile);
             SendMessageToPC(Player, "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex]);
-
-            Console.WriteLine("OnCreateCreature complete.");
         };
 
         public Action OnDeleteCreature() => () =>
@@ -131,33 +121,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            Console.WriteLine("Deleting Creature at Index: " + SelectedCreatureIndex);
-
             DB.Delete<Creature>(_CreatureIds[SelectedCreatureIndex]);
             Search();
-
-            Console.WriteLine("Creature Deleted.");
         };
 
         [NWNEventHandler("mod_p_target")]
         public static void RunTargetedLocationAction()
         {
-            Console.WriteLine("Target Selected Event...");
             var player = GetLastPlayerToSelectTarget();
             var target = GetTargetingModeSelectedObject();
             var targetedLocation = GetTargetingModeSelectedPosition();
 
-            Console.WriteLine("Target Object Name: " + GetName(target));
-            Console.WriteLine("Stored Object Name: " + GetName(GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN")));
             if (!GetIsObjectValid(target) && targetedLocation == Vector3())
             {
-                Console.WriteLine("Targeting Mode Exited with no selection.");
                 return;
             }
             
             if (!GetIsObjectValid(GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN")))
             {
-                Console.WriteLine("Stored object to spawn is invalid. Return.");
                 return;
             }
 
@@ -165,7 +146,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var deserialized = GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN");
             CopyObject(deserialized, location);
             DeleteLocalObject(player, "DMCM_CREATURE_TO_SPAWN");
-            Console.WriteLine("Target Selected Event Complete.");
         }
 
         private void Search()

@@ -221,6 +221,32 @@ namespace SWLOR.Game.Server.Service
                 LeftHandId = 45
             };
 
+            _defaultRaceAppearancesMale[RacialType.Droid] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Droid,
+                SkinColorId = 0,
+                HairColorId = 0,
+                HeadId = 1,
+
+                NeckId = 1,
+                TorsoId = 1,
+                PelvisId = 1,
+
+                RightBicepId = 1,
+                RightForearmId = 1,
+                RightHandId = 1,
+                RightThighId = 1,
+                RightShinId = 1,
+                RightFootId = 1,
+
+                LeftBicepId = 1,
+                LeftForearmId = 1,
+                LeftHandId = 1,
+                LeftThighId = 1,
+                LeftShinId = 1,
+                LeftFootId = 1
+            };
+
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
             _defaultRaceAppearancesFemale[RacialType.Bothan] = new RacialAppearance
@@ -396,6 +422,31 @@ namespace SWLOR.Game.Server.Service
                 HeadId = 228,
                 RightHandId = 45,
                 LeftHandId = 45
+            };
+            _defaultRaceAppearancesFemale[RacialType.Droid] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Droid,
+                SkinColorId = 0,
+                HairColorId = 0,
+                HeadId = 1,
+
+                NeckId = 1,
+                TorsoId = 1,
+                PelvisId = 1,
+
+                RightBicepId = 1,
+                RightForearmId = 1,
+                RightHandId = 1,
+                RightThighId = 1,
+                RightShinId = 1,
+                RightFootId = 1,
+
+                LeftBicepId = 1,
+                LeftForearmId = 1,
+                LeftHandId = 1,
+                LeftThighId = 1,
+                LeftShinId = 1,
+                LeftFootId = 1
             };
 
         }

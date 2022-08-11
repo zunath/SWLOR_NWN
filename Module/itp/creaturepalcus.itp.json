@@ -5417,6 +5417,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Male Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "maledroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Male Gran Bounty Hunter"
                     },
                     "RESREF": {

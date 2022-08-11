@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             StarshipBlueprints();
             EngineeringEquipment();
             EnhancementBlueprints();
-
+            DroidEquipmentBlueprints();
+            
             return _builder.Build();
         }
 
@@ -217,6 +218,41 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.EnhancementBlueprints5);
+        }
+
+        private void DroidEquipmentBlueprints()
+        {
+            _builder.Create(PerkCategoryType.Engineering, PerkType.DroidEquipmentBlueprints)
+                .Name("Droid Equipment Blueprints")
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 1 Droid equipment blueprints.")
+                .Price(1)
+                .GrantsFeat(FeatType.DroidEquipmentBlueprints1)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 2 Droid equipment blueprints.")
+                .Price(1)
+                .RequirementSkill(SkillType.Engineering, 10)
+                .GrantsFeat(FeatType.DroidEquipmentBlueprints2)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 3 Droid equipment blueprints.")
+                .Price(2)
+                .RequirementSkill(SkillType.Engineering, 20)
+                .GrantsFeat(FeatType.DroidEquipmentBlueprints3)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 4 Droid equipment blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 30)
+                .GrantsFeat(FeatType.DroidEquipmentBlueprints4)
+
+                .AddPerkLevel()
+                .Description("Grants access to tier 5 Droid equipment blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 40)
+                .GrantsFeat(FeatType.DroidEquipmentBlueprints5);
         }
     }
 }

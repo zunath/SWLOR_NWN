@@ -1,6 +1,6 @@
 ﻿// %%RECIPENAME%%
 _builder.Create(RecipeType.%%RECIPEENUMNAME%%, SkillType.%%RECIPESKILL%%)
-	.Category(RecipeCategoryType.xxx)
+	.Category(RecipeCategoryType.%%RECIPECATEGORY%%)
 	.Resref("%%RESREF%%")
 	.Level(%%LEVEL%%)
 	.Quantity(1)

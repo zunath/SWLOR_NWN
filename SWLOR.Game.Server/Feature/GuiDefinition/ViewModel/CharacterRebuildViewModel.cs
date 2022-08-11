@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -9,6 +10,10 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using Ability = SWLOR.Game.Server.Service.Ability;
+using ClassType = SWLOR.Game.Server.Core.NWScript.Enum.ClassType;
+using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
+using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -207,6 +212,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Agility = $"AGI [{_agility}]";
             Social = $"SOC [{_social}]";
 
+            var racialStat = dbPlayer.RacialStat;
+            var might = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might) ;
+            var perception = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+            var agility = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+            var vitality = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+            var willpower = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+            var social = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+
             CanDistribute = dbPlayer.Perks.Count == 0
                             && dbPlayer.Skills
                                 .Where(x =>
@@ -215,12 +228,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                     return detail.ContributesToSkillCap;
                                 })
                                 .Sum(s => s.Value.Rank) == 0
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might) <= 10
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception) <= 10
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility) <= 10
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality) <= 10
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower) <= 10
-                            && CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social) <= 10;
+                            && might <= 10 + (racialStat == AbilityType.Might ? 1 : 0)
+                            && perception <= 10 + (racialStat == AbilityType.Perception ? 1 : 0)
+                            && agility <= 10 + (racialStat == AbilityType.Agility ? 1 : 0)
+                            && vitality <= 10 + (racialStat == AbilityType.Vitality ? 1 : 0)
+                            && willpower <= 10 + (racialStat == AbilityType.Willpower ? 1 : 0)
+                            && social <= 10 + (racialStat == AbilityType.Social ? 1 : 0);
 
             RecalculateAvailableSkillPoints();
         }
@@ -373,9 +386,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
                 dbPlayer.RebuildComplete = false;
                 DB.Set(dbPlayer);
+
+                // Reapply racial stat bonus
+                if (dbPlayer.RacialStat != AbilityType.Invalid)
+                {
+                    CreaturePlugin.ModifyRawAbilityScore(Player, dbPlayer.RacialStat, 1);
+                }
             }
 
-            ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses/penalties are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
+            ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
                 if (Ability.IsAnyAbilityToggled(Player))
                 {

@@ -447,7 +447,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Rebuild Tokens")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Rebuild Tokens - Can be used to send you to the rebuild area.");
+
+                        row.AddLabel()
+                            .BindText(model => model.RebuildTokens)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                 })

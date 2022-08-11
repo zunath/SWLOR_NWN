@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ranged",
             50,
             true,
-            "Ability to use ranged weapons like pistols, cannons, and rifles in combat.",
+            "Ability to use ranged weapons like pistols, shurikens, and rifles in combat.",
             true,
             false,
             CombatPointCategoryType.Weapon)]

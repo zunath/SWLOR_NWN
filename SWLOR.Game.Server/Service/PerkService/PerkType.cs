@@ -238,8 +238,8 @@
         ForceSpark = 231,
         CreepingTerror = 232,
         ForceRage = 233,
-
-        FlurryStyle = 235,
-        CrushingStyle = 236
+        DroidEquipmentBlueprints = 234
+        FlurryStyle = 236,
+        CrushingStyle = 237
     }
 }

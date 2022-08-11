@@ -769,6 +769,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DLAR-Proto"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlarproto"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dream Tunic"
                     },
                     "RESREF": {
@@ -2237,6 +2248,116 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Eclipse Armor"
                     },
                     "RESREF": {
@@ -2742,6 +2863,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ter_vectenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005"
                     }
                   },
                   {
@@ -10693,6 +10924,116 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Belt"
                           },
                           "RESREF": {
@@ -11017,6 +11358,116 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHLG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Leggings"
                           },
                           "RESREF": {
@@ -11319,6 +11770,61 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Bracer"
                           },
                           "RESREF": {
@@ -11494,6 +12000,116 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "com_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005"
                           }
                         },
                         {
@@ -11807,6 +12423,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "com_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005"
                           }
                         },
                         {
@@ -24138,6 +24809,116 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHNK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Necklace"
                           },
                           "RESREF": {
@@ -24489,6 +25270,116 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "com_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005"
                           }
                         },
                         {
@@ -27304,6 +28195,17 @@
         "LIST": {
           "type": "list",
           "value": [
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Rebuild Token"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "rebuild_token"
+              }
+            },
             {
               "__struct_id": 0,
               "NAME": {

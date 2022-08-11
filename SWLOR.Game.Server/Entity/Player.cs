@@ -127,6 +127,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public int DMXPBonus { get; set; }
         public int NumberPerkResetsAvailable { get; set; }
+        public int NumberRebuildsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }
         public bool IsUsingDualPistolMode { get; set; }

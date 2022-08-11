@@ -28199,6 +28199,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Rebuild Token"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "rebuild_token"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "RP Token"
               },
               "RESREF": {

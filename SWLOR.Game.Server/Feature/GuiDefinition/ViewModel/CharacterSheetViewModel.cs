@@ -184,6 +184,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string RebuildTokens
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -517,6 +523,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbPlayer.Craftsmanship[SkillType.Agriculture]
                 : 0;
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+            RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

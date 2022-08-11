@@ -49130,7 +49130,7 @@
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 2
+                      "value": 1
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -49170,7 +49170,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 2
+                      "value": 1
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",

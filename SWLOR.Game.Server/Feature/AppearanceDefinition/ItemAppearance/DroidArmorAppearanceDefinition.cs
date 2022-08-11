@@ -4,8 +4,8 @@
     {
         public int[] Helmet { get; } = {0 };
         public int[] Cloak { get; } = {0 };
-        public int[] Neck { get; } = {0, };
-        public int[] Torso { get; } = {1 };
+        public int[] Neck { get; } = {0, 1, 2, 200, 201, 202, 203, 204, 205, 206, };
+        public int[] Torso { get; } = {1, 2, 200, 201, 202, 203, 204, 205, 206 };
         public int[] Belt { get; } = { 0 };
         public int[] Pelvis { get; } = {1,};
 
@@ -15,7 +15,7 @@
         public int[] Hand { get; } = {1, };
 
         public int[] Thigh { get; } = {1, };
-        public int[] Shin { get; } = {0, };
+        public int[] Shin { get; } = {1, };
         public int[] Foot { get; } = {1, };
         public int[] Robe { get; } = {0, };
 

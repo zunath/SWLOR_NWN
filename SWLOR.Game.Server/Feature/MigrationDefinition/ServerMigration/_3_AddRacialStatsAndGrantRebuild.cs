@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _3_GrantRebuild: IServerMigration
+    public class _3_AddRacialStatsAndGrantRebuild: IServerMigration
     {
         public int Version => 3;
         public void Migrate()
@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var player in players)
             {
+                player.RacialStat = AbilityType.Invalid;
                 player.NumberRebuildsAvailable = 1;
 
                 DB.Set(player);

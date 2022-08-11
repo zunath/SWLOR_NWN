@@ -267,6 +267,9 @@ namespace SWLOR.Game.Server.Feature
                 case RacialType.KelDor:
                     languages.Add(SkillType.KelDor);
                     break;
+                case RacialType.Droid:
+                    languages.Add(SkillType.Droidspeak);
+                    break;
             }
 
             // Fair warning: We're short-circuiting the skill system here.
@@ -306,6 +309,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to receive the starting items.</param>
         private static void GiveStartingItems(uint player)
         {
+            var race = GetRacialType(player);
             var item = CreateItemOnObject("survival_knife", player);
             SetName(item, GetName(player) + "'s Survival Knife");
             SetItemCursedFlag(item, true);
@@ -313,7 +317,8 @@ namespace SWLOR.Game.Server.Feature
             item = CreateItemOnObject("fresh_bread", player);
             SetItemCursedFlag(item, true);
 
-            item = CreateItemOnObject("traveler_clothes", player);
+            var clothes = race == RacialType.Droid ? "dlarproto" : "travelers_clothes";
+            item = CreateItemOnObject(clothes, player);
             AssignCommand(player, () =>
             {
                 ClearAllActions();

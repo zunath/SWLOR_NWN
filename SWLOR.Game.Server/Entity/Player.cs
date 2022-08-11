@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Entity
         private void Init()
         {
             Settings = new PlayerSettings();
+            RacialStat = AbilityType.Invalid;
             BaseStats = new Dictionary<AbilityType, int>
             {
                 {AbilityType.Vitality, 0},
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public int DMXPBonus { get; set; }
         public int NumberPerkResetsAvailable { get; set; }
+        public int NumberRebuildsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }
         public bool IsUsingDualPistolMode { get; set; }
@@ -151,6 +153,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }
         public Dictionary<SkillType, int> CPBonus { get; set; }
+        public AbilityType RacialStat { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }

@@ -87,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<PlayerNote>()
                 .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
                 .OrderBy(nameof(PlayerNote.Name));
             var notes = DB.Search(query)
                 .ToList();
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _isLoadingNote = true;
             var noteId = _noteIds[SelectedNoteIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId.ToString());
+            var dbNote = DB.Get<PlayerNote>(noteId);
 
             ActiveNoteName = dbNote.Name;
             ActiveNoteText = dbNote.Text;
@@ -135,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var noteId = _noteIds[SelectedNoteIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId.ToString());
+            var dbNote = DB.Get<PlayerNote>(noteId);
 
             dbNote.Name = ActiveNoteName;
             dbNote.Text = ActiveNoteText;
@@ -158,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 PlayerId = playerId,
                 Name = "New Note",
-                Text = string.Empty
+                Text = string.Empty,
             };
 
             _noteIds.Add(note.Id);
@@ -193,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsSaveEnabled = false;
                 _isLoadingNote = false;
 
-                DB.Delete<PlayerNote>(noteId.ToString());
+                DB.Delete<PlayerNote>(noteId);
             });
         };
 

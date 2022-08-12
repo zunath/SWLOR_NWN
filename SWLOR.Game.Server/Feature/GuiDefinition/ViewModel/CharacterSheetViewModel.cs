@@ -184,6 +184,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string RebuildTokens
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -297,87 +303,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
-            if (GetResRef(GetArea(Player)) == "char_migration")
-            {
-                FloatingTextStringOnCreature($"AP cannot be spent in this area.", Player, false);
-                return;
-            }
-
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
+            var promptMessage = isRacial
+                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action CANNOT be undone, even with a character rebuild. Are you SURE you want to upgrade this stat?"
+                : "Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
 
-            if (dbPlayer.UnallocatedAP <= 0)
+            ShowModal(promptMessage, () =>
             {
-                FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", Player, false);
-                return;
-            }
+                if (GetResRef(GetArea(Player)) == "char_migration")
+                {
+                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", Player, false);
+                    return;
+                }
 
-            if (dbPlayer.UpgradedStats[ability] >= MaxUpgrades)
-            {
-                FloatingTextStringOnCreature("You cannot upgrade this attribute any further.", Player, false);
-                return;
-            }
+                playerId = GetObjectUUID(Player);
+                dbPlayer = DB.Get<Player>(playerId);
+                isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
 
-            dbPlayer.UnallocatedAP--;
-            dbPlayer.UpgradedStats[ability]++;
-            CreaturePlugin.ModifyRawAbilityScore(Player, ability, 1);
+                // Racial upgrades do not count toward the 10 cap and they don't reduce AP.
+                if (!isRacial)
+                {
+                    if (dbPlayer.UnallocatedAP <= 0)
+                    {
+                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", Player, false);
+                        return;
+                    }
 
-            DB.Set(dbPlayer);
+                    if (dbPlayer.UpgradedStats[ability] >= MaxUpgrades)
+                    {
+                        FloatingTextStringOnCreature("You cannot upgrade this attribute any further.", Player, false);
+                        return;
+                    }
 
-            FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", Player, false);
-            LoadData();
+                    dbPlayer.UnallocatedAP--;
+                    dbPlayer.UpgradedStats[ability]++;
+                }
+                else
+                {
+                    dbPlayer.RacialStat = ability;
+                }
+
+                CreaturePlugin.ModifyRawAbilityScore(Player, ability, 1);
+
+                DB.Set(dbPlayer);
+
+                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", Player, false);
+                LoadData();
+            });
         }
 
         public Action OnClickUpgradeMight() => () =>
         {
-            ShowModal($"Upgrading your Might attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Might, "Might");
-            });
+            UpgradeAttribute(AbilityType.Might, "Might");
         };
 
         public Action OnClickUpgradePerception() => () =>
         {
-            ShowModal($"Upgrading your Perception attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Perception, "Perception");
-            });
+            UpgradeAttribute(AbilityType.Perception, "Perception");
         };
 
         public Action OnClickUpgradeVitality() => () =>
         {
-            ShowModal($"Upgrading your Vitality attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Vitality, "Vitality");
-            });
+            UpgradeAttribute(AbilityType.Vitality, "Vitality");
         };
 
         public Action OnClickUpgradeWillpower() => () =>
         {
-            ShowModal($"Upgrading your Willpower attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Willpower, "Willpower");
-            });
+            UpgradeAttribute(AbilityType.Willpower, "Willpower");
         };
 
         public Action OnClickUpgradeAgility() => () =>
         {
-            ShowModal($"Upgrading your Agility attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Agility, "Agility");
-            });
+            UpgradeAttribute(AbilityType.Agility, "Agility");
         };
 
         public Action OnClickUpgradeSocial() => () =>
         {
-            ShowModal($"Upgrading your Social attribute will consume 1 AP. Are you sure you want to upgrade it?", () =>
-            {
-                UpgradeAttribute(AbilityType.Social, "Social");
-            });
+            UpgradeAttribute(AbilityType.Social, "Social");
         };
 
         private void RefreshStats(Player dbPlayer)
         {
+            var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
+
             HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
 
             if (dbPlayer.CharacterType == Enumeration.CharacterType.Standard)
@@ -398,12 +408,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Agility = GetAbilityScore(Player, AbilityType.Agility);
             Social = GetAbilityScore(Player, AbilityType.Social);
 
-            IsMightUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades;
-            IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades;
-            IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades;
-            IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades;
-            IsAgilityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades;
-            IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades;
+            IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
+            IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades || isRacialBonusAvailable;
+            IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades || isRacialBonusAvailable;
+            IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades || isRacialBonusAvailable;
+            IsAgilityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades || isRacialBonusAvailable;
+            IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades || isRacialBonusAvailable;
         }
 
         private void RefreshEquipmentStats(Player dbPlayer)
@@ -513,6 +523,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbPlayer.Craftsmanship[SkillType.Agriculture]
                 : 0;
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+            RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

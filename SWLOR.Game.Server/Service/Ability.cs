@@ -39,7 +39,6 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (feat, ability) in abilities)
                 {
-                    Console.WriteLine($"Loaded {feat} => {ability.Name}.");
                     _abilities[feat] = ability;
                 }
             }

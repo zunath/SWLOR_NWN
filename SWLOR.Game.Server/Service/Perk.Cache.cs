@@ -137,7 +137,6 @@ namespace SWLOR.Game.Server.Service
 
                     // Determine the max level for the perk.
                     _perkMaxLevels[perkType] = perkDetail.PerkLevels.Last().Key;
-                    Console.WriteLine($"Loaded {perkDetail.Category}: {perkDetail.Name}.");
                 }
             }
 

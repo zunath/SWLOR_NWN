@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi1, PerkType.Chi)
                 .Name("Chi I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(1.0f)
                 .RequirementStamina(4)
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi2, PerkType.Chi)
                 .Name("Chi II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(6)
@@ -65,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi3, PerkType.Chi)
                 .Name("Chi III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(3.0f)
                 .RequirementStamina(10)

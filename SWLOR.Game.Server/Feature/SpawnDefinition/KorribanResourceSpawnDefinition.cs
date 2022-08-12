@@ -72,6 +72,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_2")
                 .WithFrequency(10)
 
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
+                .WithFrequency(10)
+
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(2);
         }

@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(60)
 
-                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch2")
                 .WithFrequency(10)
 
-                .AddSpawn(ObjectType.Placeable, "patch_veggies")
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
@@ -75,10 +75,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(25)
 
-                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch2")
                 .WithFrequency(10)
 
-                .AddSpawn(ObjectType.Placeable, "patch_veggies")
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "tree")
@@ -141,10 +141,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(20)
 
-                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch2")
                 .WithFrequency(10)
 
-                .AddSpawn(ObjectType.Placeable, "patch_veggies")
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "oak_tree")

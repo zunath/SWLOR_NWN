@@ -164,8 +164,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_616", "ar_helmet", 1, 3);
             BuildItemTask(builder, "smth_tsk_617", "ar_bracer", 1, 3);
             BuildItemTask(builder, "smth_tsk_618", "ar_leggings", 1, 3);
-            BuildItemTask(builder, "smth_tsk_619", "gr_gloak", 1, 3);
-            BuildItemTask(builder, "smth_tsk_620", "gr_belt", 1, 3);
+            BuildItemTask(builder, "smth_tsk_619", "gre_cloak", 1, 3);
+            BuildItemTask(builder, "smth_tsk_620", "gre_belt", 1, 3);
             BuildItemTask(builder, "smth_tsk_621", "gr_ring", 1, 3);
             BuildItemTask(builder, "smth_tsk_622", "gr_necklace", 1, 3);
             BuildItemTask(builder, "smth_tsk_623", "gr_tunic", 1, 3);

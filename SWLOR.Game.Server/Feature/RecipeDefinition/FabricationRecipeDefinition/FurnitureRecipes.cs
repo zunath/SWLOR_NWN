@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("fine_wood", 4)
 				.Component("ref_scordspar", 2);
 
-			// Bed, Low
+			// Bed, Medical/Exam
 			_builder.Create(RecipeType.BedMedicalExam, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Beds)
 				.Resref("structure_0137")

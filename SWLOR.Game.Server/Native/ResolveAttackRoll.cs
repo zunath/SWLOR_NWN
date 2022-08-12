@@ -186,10 +186,6 @@ namespace SWLOR.Game.Server.Native
                     accuracyModifiers = -5;
                 }
                 
-            } else if (Item.GetWeaponAccuracyAbilityType((BaseItem)weapon.m_nBaseItem) == AbilityType.Agility)
-            { // Non-ranged PER to-hit weapons gain +1xPER mod as accuracy
-                var agiMod = Stat.GetStatValueNative(attacker, AbilityType.Perception) - 10;
-                if (agiMod > 0) { accuracyModifiers += agiMod; }
             }
 
             // Attacking from behind.  Does not apply to Force attacks.
@@ -237,18 +233,20 @@ namespace SWLOR.Game.Server.Native
             int hasITWF = attackerStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting);
             var percentageModifier = 0;
 
-            if (hasITWF != 1 && (bDoubleWeapon ||
+            if (bDoubleWeapon ||
                 (offhand != null &&
                  offhand.m_nBaseItem != (uint)BaseItem.LargeShield &&
                  offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
-                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield)))
+                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
             {
-                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
+                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + ": " + percentageModifier);
                 // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
                 // in to the proficiency perks rather than granting them separately. 
                 
-                // Apply the base two weapon fighting penalty. 
-                percentageModifier -= 10;
+                // Apply the base two weapon fighting penalty.
+                if(hasITWF == 0 || weapon == offhand) // Main-hand ITWF has no penalty.
+                    percentageModifier -= 10;
+
                 Log.Write(LogGroup.Attack, logMessage);
             }
 
@@ -291,7 +289,9 @@ namespace SWLOR.Game.Server.Native
                     ? attackerStats.m_nIntelligenceBase
                     : attackerStats.m_nDexterityBase;
                 var criticalRoll = Random.Next(1, 100);
-                var criticalBonus = HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
+                var criticalBonus = attacker.m_pStats.m_nCriticalHitRoll;
+                Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
+                criticalBonus += HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
                 if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)
                     criticalBonus += 4;
                 else if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim1) == 1)

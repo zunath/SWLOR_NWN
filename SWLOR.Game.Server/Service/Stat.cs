@@ -1306,7 +1306,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon)
+        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offhand = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1345,10 +1345,16 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.FlurryStyle);
             }
 
+            static int GetShieldBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
+            }
+
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
+            var offhandType = GetBaseItemType(offhand);
             var numberOfAttacks = 1;
             var perkType = PerkType.Invalid;
 
@@ -1356,6 +1362,7 @@ namespace SWLOR.Game.Server.Service
             if (Item.KatarBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.KatarMastery;
+                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
@@ -1371,6 +1378,7 @@ namespace SWLOR.Game.Server.Service
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.ThrowingWeaponMastery;
+                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {
@@ -1381,14 +1389,17 @@ namespace SWLOR.Game.Server.Service
             else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.VibrobladeMastery;
+                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.FinesseVibrobladeMastery;
+                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.LightsaberBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.LightsaberMastery;
+                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             // Two-Handed
             else if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
@@ -1413,6 +1424,36 @@ namespace SWLOR.Game.Server.Service
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(player, bab);
+        }
+
+        public static void ApplyCritModifier(uint player, uint rightHandWeapon)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var critMod = 0;
+            var itemType = GetBaseItemType(rightHandWeapon);
+            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
+            if (Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                critMod += Perk.GetEffectivePerkLevel(player, PerkType.RapidShot);
+            }
+            else if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.Duelist);
+            }
+
+            if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                critMod += Perk.GetEffectivePerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+            }
+
+            critMod += Perk.GetEffectivePerkLevel(player, PerkType.InnerStrength);
+
+            CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
 
     }

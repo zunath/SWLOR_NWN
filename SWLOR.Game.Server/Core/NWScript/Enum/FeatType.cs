@@ -1819,7 +1819,17 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         FlurryStyle = 1855,
         CrushingStyle = 1856,
         FlurryMastery = 1857,
-        CrushingMastery = 1858
+        CrushingMastery = 1858,
+        Duelist = 1859,
+        ShieldMaster = 1860,
+        WailingBlows = 1861,
+        DirtyBlow = 1862,
+        ShieldBash1 = 1863,
+        ShieldBash2 = 1864,
+        ShieldBash3 = 1865,
+        ForceInspiration1 = 1866,
+        ForceInspiration2 = 1867,
+        ForceInspiration3 = 1868
 
     }
 }

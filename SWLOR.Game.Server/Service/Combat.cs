@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderDefense">The defender's defense rating.</param>
         /// <param name="defenderStat">The defender's defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <param name="ignoreDelta">Ignores the flat stat delta. Used for elemental DMG on weapons.</param>
         /// <returns>A minimum and maximum damage range</returns>
         public static (int, int) CalculateDamageRange(
             int attackerAttack,
@@ -90,7 +91,8 @@ namespace SWLOR.Game.Server.Service
             int attackerStat,
             int defenderDefense,
             int defenderStat,
-            int critical)
+            int critical,
+            bool ignoreDelta = false)
         {
             const float RatioMax = 3.625f;
             const float RatioMin = 0.01f;
@@ -99,6 +101,7 @@ namespace SWLOR.Game.Server.Service
                 defenderDefense = 1;
 
             var statDelta = attackerStat - defenderStat;
+            if (ignoreDelta) statDelta = 0;
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
 
@@ -117,18 +120,7 @@ namespace SWLOR.Game.Server.Service
             if (critical > 0)
             {
                 minDamage = maxDamage;
-                switch (critical)
-                {
-                    case 2:
-                        maxDamage *= 1.25f;
-                        break;
-                    case 3:
-                        maxDamage *= 1.50f;
-                        break;
-                    case 4:
-                        maxDamage *= 1.75f;
-                        break;
-                }
+                maxDamage *= ((critical - 1) / 4) + 1;
             }
 
             return ((int)minDamage, (int)maxDamage);
@@ -195,6 +187,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderDefense">The defender's defense rating.</param>
         /// <param name="defenderStat">The defender's defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <param name="ignoreDelta">Whether the roll should ignore the flat stat delta. Used for elemental DMG on weapons.</param>
         /// <returns>A damage value to apply to the target.</returns>
         public static int CalculateDamage(
             int attackerAttack,
@@ -202,7 +195,8 @@ namespace SWLOR.Game.Server.Service
             int attackerStat,
             int defenderDefense,
             int defenderStat,
-            int critical)
+            int critical,
+            bool ignoreDelta = false)
         {
             var (minDamage, maxDamage) = CalculateDamageRange(
                 attackerAttack,
@@ -210,7 +204,8 @@ namespace SWLOR.Game.Server.Service
                 attackerStat,
                 defenderDefense,
                 defenderStat,
-                critical);
+                critical,
+                ignoreDelta);
 
             return (int)Random.NextFloat(minDamage, maxDamage);
         }
@@ -346,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the DMG bonus granted by Might scaling on Might-based weapons.
+        /// Retrieves the DMG bonus granted by Might scaling on Crushing Staves.
         /// Returns 0 if an invalid weapon is held.
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
@@ -355,16 +350,13 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
         {
-            if (weaponType == BaseItem.Invalid ||
-                Item.GetWeaponDamageAbilityType(weaponType) != AbilityType.Might)
+            if (!Item.StaffBaseItemTypes.Contains(weaponType) || !GetHasFeat(FeatType.CrushingStyle, attacker))
                 return 0;
 
             int mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
-            if (!GetHasFeat(FeatType.CrushingStyle))
-                return mgtMod / 2;
-            else if (Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle) > 1)
-                return (int)(mgtMod * 1.5);
+            if (Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle) > 1)
+                return mgtMod * 2;
             else
                 return mgtMod;
         }

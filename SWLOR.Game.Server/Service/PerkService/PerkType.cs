@@ -238,8 +238,14 @@
         ForceSpark = 231,
         CreepingTerror = 232,
         ForceRage = 233,
-        DroidEquipmentBlueprints = 234
+        DroidEquipmentBlueprints = 234,
         FlurryStyle = 236,
-        CrushingStyle = 237
+        CrushingStyle = 237,
+        Duelist = 238,
+        ShieldMaster = 239,
+        WailingBlows = 240,
+        DirtyBlow = 241,
+        ShieldBash = 242,
+        ForceInspiration = 243
     }
 }

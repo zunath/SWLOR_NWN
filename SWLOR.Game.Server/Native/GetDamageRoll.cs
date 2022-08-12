@@ -188,15 +188,13 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] += 6;
             }
 
-            if (attackerStatType == AbilityType.Might) // 0.5x MGT mod bonus to DMG
+            if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem)) // MGT mod bonus to Crushing Staves
             {
                 var mightMod = attacker.m_pStats.m_nStrengthModifier;
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
-                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod * 1.5d); // Mastery gives 1.5x MGT
+                    dmgValues[CombatDamageType.Physical] += mightMod * 2; // Mastery gives 2x MGT
                 else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
-                            dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves get 1.0x MGT
-                else
-                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2d); // 0.5x MGT for everything else
+                    dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves get 1x MGT
             }
 
             // Doublehand perk
@@ -223,6 +221,7 @@ namespace SWLOR.Game.Server.Native
                 // Look up the weapon's base crit multiplier and apply any bonus from the Improved Multiplier perk. 
                 critMultiplier = weapon != null ? Item.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
                 if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
+                if (HasRapidReload(attacker, weapon)) critMultiplier += 1;
             }
 
             var critical = bCritical == 1 ? critMultiplier : 0;
@@ -238,6 +237,7 @@ namespace SWLOR.Game.Server.Native
                     int defenderStat = target.m_pStats.m_nConstitutionBase;
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
+                    var ignoreDelta = (damageType != CombatDamageType.Physical && damageType != CombatDamageType.Force); // Ignore stat delta for elemental damage from weapons
 
                     Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_pStats.m_nRace);
                     damage = Combat.CalculateDamage(
@@ -246,7 +246,8 @@ namespace SWLOR.Game.Server.Native
                         attackerStat, 
                         defense,
                         defenderStat, 
-                        critical);
+                        critical,
+                        ignoreDelta);
 
                     // Apply droid bonus for electrical damage.
                     if (target.m_pStats.m_nRace == (ushort)RacialType.Robot && damageType == CombatDamageType.Electrical)
@@ -458,6 +459,18 @@ namespace SWLOR.Game.Server.Native
             if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
+
+            return false;
+        }
+
+        private static bool HasRapidReload(CNWSCreature attacker, CNWSItem weapon)
+        {
+            if (weapon == null) return false;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.RapidReload) == 0) return false;
+
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+
+            if (Item.RifleBaseItemTypes.Contains(baseItemType)) return true;
 
             return false;
         }

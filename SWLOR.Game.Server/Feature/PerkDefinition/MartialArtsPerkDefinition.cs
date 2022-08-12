@@ -71,26 +71,40 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Inner Strength")
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 1. [Cross Skill]")
+                .Description("Improves critical chance by +5%. [Cross Skill]")
                 .Price(5)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength1)
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 2. [Cross Skill]")
+                .Description("Improves critical chance by +5%. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength2)
 
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
                 .TriggerPurchase((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true);
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true);
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
                 });
         }
 
@@ -126,13 +140,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Katars")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with katars.")
+                .Description("Your accuracy with katars is increased by +5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusKatars)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with katars.")
+                .Description("Your base damage with katars is increased by +2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationKatars);
@@ -144,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Katars")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using katars.")
+                .Description("Improves the chance to critically hit with katars by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalKatars);
@@ -285,13 +299,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Staves")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with staves.")
+                .Description("Your accuracy with staves is increased by +5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusStaves)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with staves.")
+                .Description("Your base damage with staves is increased by +2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationStaves);
@@ -303,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Staves")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a staff.")
+                .Description("Improves the chance to critically hit with staves by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalStaff);

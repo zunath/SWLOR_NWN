@@ -566,6 +566,16 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
+        /// Retrieves the list of shield base item types.
+        /// </summary>
+        public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.LargeShield,
+            BaseItem.SmallShield,
+            BaseItem.TowerShield
+        };
+
+        /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
         public static List<BaseItem> VibrobladeBaseItemTypes { get; } = new List<BaseItem>

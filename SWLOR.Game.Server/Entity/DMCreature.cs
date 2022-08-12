@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Entity
 {
-    public class Creature : EntityBase
+    public class DMCreature : EntityBase
     {
         [Indexed]
         public string Name { get; set; }
@@ -8,13 +8,13 @@
         public string Tag { get; set; }
         public string Data { get; set; }
 
-        public Creature(string name, string tag, string data)
+        public DMCreature(string name, string tag, string data)
         {
             Name = name;
             Tag = tag;
             Data = data;
         }
-        public Creature()
+        public DMCreature()
         {
             Name = string.Empty;
             Tag = string.Empty;

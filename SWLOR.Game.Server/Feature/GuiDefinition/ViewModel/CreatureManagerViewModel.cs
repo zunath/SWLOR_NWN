@@ -79,8 +79,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                  }
 
                  var serialized = ObjectPlugin.Serialize(creature);
-                 var dbCreature = new Creature(GetName(creature), GetTag(creature), serialized);
-                 DB.Set<Creature>(dbCreature);
+                 var dbCreature = new DMCreature(GetName(creature), GetTag(creature), serialized);
+                 DB.Set<DMCreature>(dbCreature);
 
                  DeleteLocalObject(Player, "DMCM_CREATURE_TO_SPAWN");
              });
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<Creature>(_CreatureIds[SelectedCreatureIndex]);
+            var dbCreature = DB.Get<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<Creature>(_CreatureIds[SelectedCreatureIndex]);
+            var dbCreature = DB.Get<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            DB.Delete<Creature>(_CreatureIds[SelectedCreatureIndex]);
+            DB.Delete<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
             Search();
         };
 
@@ -150,17 +150,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var query = new DBQuery<Creature>()
-                .OrderBy(nameof(Creature.Name));                
+            var query = new DBQuery<DMCreature>()
+                .OrderBy(nameof(DMCreature.Name));                
 
-            if (!string.IsNullOrWhiteSpace(SearchText)) query.AddFieldSearch(nameof(Creature.Name), SearchText, true);
+            if (!string.IsNullOrWhiteSpace(SearchText)) query.AddFieldSearch(nameof(DMCreature.Name), SearchText, true);
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
-            var totalRecordCount = DB.SearchCount<Creature>(query);
+            var totalRecordCount = DB.SearchCount<DMCreature>(query);
             UpdatePagination(totalRecordCount);
 
-            var results = DB.Search<Creature>(query);
+            var results = DB.Search<DMCreature>(query);
 
             _CreatureIds.Clear();
             var creatureNames = new GuiBindingList<string>();

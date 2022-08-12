@@ -1434,11 +1434,7 @@ namespace SWLOR.Game.Server.Service
             var critMod = 0;
             var itemType = GetBaseItemType(rightHandWeapon);
             var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
-            if (Item.PistolBaseItemTypes.Contains(itemType))
-            {
-                critMod += Perk.GetEffectivePerkLevel(player, PerkType.RapidShot);
-            }
-            else if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
                     critMod += Perk.GetEffectivePerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB

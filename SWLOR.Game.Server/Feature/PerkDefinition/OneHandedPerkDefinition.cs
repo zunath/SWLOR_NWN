@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Duelist();
             WailingBlows();
             ShieldMaster();
+            ShieldBash();
 
             return _builder.Build();
         }

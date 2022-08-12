@@ -239,6 +239,7 @@
         CreepingTerror = 232,
         ForceRage = 233,
         DroidEquipmentBlueprints = 234,
+        ThrowRock = 235,
         FlurryStyle = 236,
         CrushingStyle = 237,
         Duelist = 238,

@@ -87,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                 .Name("Double Shot I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                 .Name("Double Shot II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(5)
@@ -119,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                 .Name("Double Shot III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(8)

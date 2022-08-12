@@ -1804,7 +1804,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceRage2 = 1837,
         StrongStyleLightsaber = 1838,
         StrongStyleSaberstaff = 1839,
-
         Doublehand2 = 1840,
         Doublehand3 = 1841,
         Doublehand4 = 1842,
@@ -1815,6 +1814,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         DroidEquipmentBlueprints3 = 1847,
         DroidEquipmentBlueprints4 = 1848,
         DroidEquipmentBlueprints5 = 1849,
+        ThrowRock1 = 1850,
+        ThrowRock2 = 1851,
+        ThrowRock3 = 1852,
+        ThrowRock4 = 1853,
+        ThrowRock5 = 1854,
 
         FlurryStyle = 1855,
         CrushingStyle = 1856,

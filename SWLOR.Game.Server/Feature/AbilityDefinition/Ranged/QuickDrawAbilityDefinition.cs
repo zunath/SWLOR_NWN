@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                 .Name("Quick Draw I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                 .Name("Quick Draw II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(4)
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                 .Name("Quick Draw III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(5)

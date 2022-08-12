@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if(ability.DisplaysActivationMessage)
                         Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
-                    QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
+                    QueueWeaponAbility(activator, ability, feat);
                 }
             }
             // Concentration abilities are triggered once per tick.
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                     {
-                        ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                        ActivateAbility(activator, target, feat, ability, targetLocation);
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature
                             Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
                     
-                    ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                    ActivateAbility(activator, target, feat, ability, targetLocation);
                 }
             }
         }
@@ -140,14 +140,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="target">The target of the ability</param>
         /// <param name="feat">The type of feat associated with this ability.</param>
         /// <param name="ability">The ability details</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level</param>
         /// <param name="targetLocation">The targeted location</param>
         private static void ActivateAbility(
             uint activator,
             uint target,
             FeatType feat,
             AbilityDetail ability,
-            int effectivePerkLevel,
             Location targetLocation)
         {
             // Activation delay is increased if player is equipped with heavy or light armor.
@@ -177,7 +175,7 @@ namespace SWLOR.Game.Server.Feature
                     SendMessageToPC(activator, penaltyMessage);
                 }
 
-                var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, effectivePerkLevel) ?? 0.0f;
+                var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
                 return abilityDelay * armorPenalty;
             }
 
@@ -245,7 +243,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
 
                 ApplyRequirementEffects(activator, ability);
-                ability.ImpactAction?.Invoke(activator, target, effectivePerkLevel, targetLocation);
+                ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
@@ -310,15 +308,14 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="activator">The creature activating the ability.</param>
         /// <param name="ability">The ability details</param>
         /// <param name="feat">The feat being activated</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level</param>
-        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat, int effectivePerkLevel)
+        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat)
         {
             var abilityId = Guid.NewGuid().ToString();
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
             SetLocalInt(activator, ActiveAbilityName, (int)feat);
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
-            SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, effectivePerkLevel);
+            SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
 
             ApplyRequirementEffects(activator, ability);
 

@@ -153,10 +153,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceRage = 72,
         [RecastGroup("Furor", "Furor")]
         Furor = 73,
+        [RecastGroup("Throw Rock", "Throw Rock")]
+        ThrowRock = 74,
         [RecastGroup("Force Inspiration", "F. Inspiration")]
-        ForceInspiration = 74,
+        ForceInspiration = 75,
         [RecastGroup("Shield Bash", "Shield Bash")]
-        ShieldBash = 75,
+        ShieldBash = 76,
     }
 
     public class RecastGroupAttribute: Attribute

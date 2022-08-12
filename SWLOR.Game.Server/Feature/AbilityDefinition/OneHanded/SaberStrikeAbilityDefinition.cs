@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike1, PerkType.SaberStrike)
                 .Name("Saber Strike I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -110,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike2, PerkType.SaberStrike)
                 .Name("Saber Strike II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
@@ -121,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
                 .Name("Saber Strike III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()

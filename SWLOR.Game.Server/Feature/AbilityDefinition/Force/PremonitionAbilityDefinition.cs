@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Premonition1, PerkType.Premonition)
                 .Name("Premonition I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Premonition2, PerkType.Premonition)
                 .Name("Premonition II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(6)
                 .IsCastedAbility()

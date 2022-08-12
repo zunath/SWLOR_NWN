@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.CombatEnhancement1, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.CombatEnhancement2, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
@@ -103,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.CombatEnhancement3, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)

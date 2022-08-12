@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Disturbance1, PerkType.Disturbance)
                 .Name("Disturbance I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(1)
                 .IsCastedAbility()
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Disturbance2, PerkType.Disturbance)
                 .Name("Disturbance II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(2)
                 .IsCastedAbility()
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Disturbance3, PerkType.Disturbance)
                 .Name("Disturbance III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Disturbance, 20f)
                 .RequirementFP(3)
                 .IsCastedAbility()

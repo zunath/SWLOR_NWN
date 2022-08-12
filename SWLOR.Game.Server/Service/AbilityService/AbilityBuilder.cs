@@ -274,6 +274,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Saves the ability level of the ability to be pulled when used later.
+        /// </summary>
+        /// <param name="level">The level of the ability</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder Level(int level)
+        {
+            _activeAbility.AbilityLevel = level;
+
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>

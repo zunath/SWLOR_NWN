@@ -238,6 +238,7 @@
         ForceSpark = 231,
         CreepingTerror = 232,
         ForceRage = 233,
-        DroidEquipmentBlueprints = 234
+        DroidEquipmentBlueprints = 234,
+        ThrowRock = 235
     }
 }

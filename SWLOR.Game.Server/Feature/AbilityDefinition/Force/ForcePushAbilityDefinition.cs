@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush1, PerkType.ForcePush)
                 .Name("Force Push I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(1)
@@ -81,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush2, PerkType.ForcePush)
                 .Name("Force Push II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
@@ -96,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush3, PerkType.ForcePush)
                 .Name("Force Push III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
@@ -111,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush4, PerkType.ForcePush)
                 .Name("Force Push IV")
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)

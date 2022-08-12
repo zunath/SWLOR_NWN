@@ -556,6 +556,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         Vfx_UI_Select = 835,
         Vfx_UI_Cancel = 836,
         Vfx_Ship_Deflect = 837,
-        Vfx_Ship_Explosion = 838
+        Vfx_Ship_Explosion = 838,
+        Vfx_Imp_Mirv_Rock2 = 839,
+        Vfx_Imp_Mirv_Rock3 = 840,
     }
 }

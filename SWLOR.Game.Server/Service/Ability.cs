@@ -115,8 +115,8 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // Must have at least one level in the perk.
-            if (effectivePerkLevel <= 0)
+            // Must have appropriate levels in the perk to use the ability.
+            if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
             {
                 SendMessageToPC(activator, "You do not meet the prerequisites to use this ability.");
                 return false;

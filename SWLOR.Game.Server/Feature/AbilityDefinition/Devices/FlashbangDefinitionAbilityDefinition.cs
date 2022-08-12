@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.FlashbangGrenade1, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(1)
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.FlashbangGrenade2, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.FlashbangGrenade3, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)

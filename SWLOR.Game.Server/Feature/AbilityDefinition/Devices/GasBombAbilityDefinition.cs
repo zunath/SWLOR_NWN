@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.GasBomb1, PerkType.GasBomb)
                 .Name("Gas Bomb I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
@@ -121,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.GasBomb2, PerkType.GasBomb)
                 .Name("Gas Bomb II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
@@ -148,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.GasBomb3, PerkType.GasBomb)
                 .Name("Gas Bomb III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(6)

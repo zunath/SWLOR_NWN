@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
                 .Name("Benevolence I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
                 .Name("Benevolence II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -70,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
                 .Name("Benevolence III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .RequirementFP(8)
                 .IsCastedAbility()

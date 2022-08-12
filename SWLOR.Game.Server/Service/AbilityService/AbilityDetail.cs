@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
 
+        public int AbilityLevel { get; set; }
+
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
+            AbilityLevel = 1;
         }
     }
 }

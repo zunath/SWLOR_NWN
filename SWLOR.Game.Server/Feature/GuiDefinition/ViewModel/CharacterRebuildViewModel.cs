@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.Game.Server.Core.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
+using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -621,6 +622,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ShowModal($"Are you sure you'd like to save these changes?", () =>
             {
+                var race = GetRacialType(Player);
+
                 if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please distribute all ability points and skill points first. Resize the window if needed."), Player, false);
@@ -639,6 +642,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (_skillDistributionPoints[devicesIndex] > 0 && CharacterType == 1)
                 {
                     FloatingTextStringOnCreature("Force characters cannot gain ranks in the Devices skill.", Player, false);
+                    return;
+                }
+
+                if (race == RacialType.Droid && CharacterType == 1)
+                {
+                    FloatingTextStringOnCreature("Droids may not be Force Sensitive.", Player, false);
                     return;
                 }
 

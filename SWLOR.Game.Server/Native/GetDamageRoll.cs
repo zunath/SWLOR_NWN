@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Native
                 if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
                     var target = CNWSCreature.FromPointer(pTarget);
-                    int defenderStat = target.m_pStats.m_nConstitutionBase;
+                    int defenderStat = target.m_pStats.GetCONStat();
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
                     var ignoreDelta = (damageType != CombatDamageType.Physical && damageType != CombatDamageType.Force); // Ignore stat delta for elemental damage from weapons
@@ -484,16 +484,16 @@ namespace SWLOR.Game.Server.Native
             if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-                    return attacker.m_pStats.m_nStrengthBase;
+                    return attacker.m_pStats.GetSTRStat();
             }
             else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-                    return attacker.m_pStats.m_nStrengthBase;
+                    return attacker.m_pStats.GetSTRStat();
             } else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
-                    return attacker.m_pStats.m_nDexterityBase;
+                    return attacker.m_pStats.GetDEXStat();
             }
 
             return -1;

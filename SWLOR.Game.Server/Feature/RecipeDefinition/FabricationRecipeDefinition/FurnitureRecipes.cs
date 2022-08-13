@@ -643,8 +643,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("fine_wood", 4)
 				.Component("fiberp_flawed", 2);
 
-            // Fridge, Dark
-            _builder.Create(RecipeType.FridgeDark, SkillType.Fabrication)
+			// Fridge, Dark
+			_builder.Create(RecipeType.FridgeDark, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0217")
                 .Level(16)
@@ -680,6 +680,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 			_builder.Create(RecipeType.BedHighBackBlue, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Beds)
 				.Resref("structure_0136")
+				.Level(17)
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
+				.Component("fine_wood", 4)
+				.Component("ref_scordspar", 2);
+
+			// Bed, Medical/Exam
+			_builder.Create(RecipeType.BedMedicalExam, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Beds)
+				.Resref("structure_0137")
 				.Level(17)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)

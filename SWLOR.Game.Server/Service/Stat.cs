@@ -916,22 +916,22 @@ namespace SWLOR.Game.Server.Service
             switch (statType)
             {
                 case AbilityType.Might:
-                    stat = creature.m_pStats.m_nStrengthBase;
+                    stat = creature.m_pStats.GetSTRStat();
                     break;
                 case AbilityType.Perception:
-                    stat = creature.m_pStats.m_nDexterityBase;
+                    stat = creature.m_pStats.GetDEXStat();
                     break;
                 case AbilityType.Vitality:
-                    stat = creature.m_pStats.m_nConstitutionBase;
+                    stat = creature.m_pStats.GetCONStat();
                     break;
                 case AbilityType.Willpower:
-                    stat = creature.m_pStats.m_nWisdomBase;
+                    stat = creature.m_pStats.GetWISStat();
                     break;
                 case AbilityType.Agility:
-                    stat = creature.m_pStats.m_nIntelligenceBase;
+                    stat = creature.m_pStats.GetINTStat();
                     break;
                 case AbilityType.Social:
-                    stat = creature.m_pStats.m_nCharismaBase;
+                    stat = creature.m_pStats.GetCHAStat();
                     break;
                 default:
                     stat = 0;

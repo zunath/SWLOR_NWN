@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 0.125
   },
   "ClassList": {
     "type": "list",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 100
   },
   "DecayTime": {
     "type": "dword",
@@ -126,7 +126,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Gimpassa"
+      "0": "Gimpassa Hatchling"
     }
   },
   "fortbonus": {
@@ -143,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 100
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 16
   },
   "Interruptable": {
     "type": "byte",
@@ -177,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 330
+    "value": 130
   },
   "NaturalAC": {
     "type": "byte",
@@ -584,6 +584,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 16
   }
 }

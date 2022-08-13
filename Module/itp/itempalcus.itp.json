@@ -19536,6 +19536,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Electroblade Parts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "m_ls_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Electronics"
                     },
                     "RESREF": {
@@ -19552,17 +19563,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "m_lvibro_parts"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Lightsaber Parts"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "m_ls_parts"
                     }
                   },
                   {

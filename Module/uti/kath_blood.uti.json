@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Blood from a Kath Hound."
+    }
   },
   "Description": {
     "type": "cexolocstring",

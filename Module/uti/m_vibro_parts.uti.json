@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 517
+    "value": 528
   },
   "Charges": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Miscellaneous components salvaged from a Mandalorian Vibroblade."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -46,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 82
+    "value": 217
   },
   "PaletteID": {
     "type": "byte",

@@ -10410,7 +10410,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
+                      "value": 0.125
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10418,7 +10418,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Gimpassa"
+                      "value": "Gimpassa Hatchling"
                     },
                     "RESREF": {
                       "type": "resref",

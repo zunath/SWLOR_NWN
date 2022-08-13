@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 536
   },
   "Charges": {
     "type": "byte",
@@ -28,7 +28,7 @@
     "id": 90753,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Thick, matted fur of a Kath Hound. A Viscaran fashion statement, if such a thing were to exist."
     }
   },
   "Description": {

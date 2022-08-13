@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Native
                 if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
                     var target = CNWSCreature.FromPointer(pTarget);
-                    int defenderStat = target.m_pStats.m_nConstitutionBase;
+                    int defenderStat = target.m_pStats.GetCONStat();
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
 
@@ -460,12 +460,12 @@ namespace SWLOR.Game.Server.Native
             if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-                    return attacker.m_pStats.m_nStrengthBase;
+                    return attacker.m_pStats.GetSTRStat();
             }
             else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-                    return attacker.m_pStats.m_nStrengthBase;
+                    return attacker.m_pStats.GetSTRStat();
             }
 
             return -1;

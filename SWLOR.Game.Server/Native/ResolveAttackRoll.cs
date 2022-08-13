@@ -275,8 +275,8 @@ namespace SWLOR.Game.Server.Native
             if (isHit)
             {
                 var criticalStat = attackType == (uint)AttackType.Ranged
-                    ? attackerStats.m_nIntelligenceBase
-                    : attackerStats.m_nDexterityBase;
+                    ? attackerStats.GetINTStat()
+                    : attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
                 var criticalBonus = HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
                 if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Native
                 else if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim1) == 1)
                     criticalBonus += 2;
 
-                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.m_nIntelligenceBase, criticalBonus);
+                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetINTStat(), criticalBonus);
 
                 // Critical
                 if (criticalRoll <= criticalRate)
@@ -625,8 +625,8 @@ namespace SWLOR.Game.Server.Native
 
             switch (weaponAccuracy)
             {
-                case AbilityType.Perception when attacker.m_pStats.m_nWisdomBase > attacker.m_pStats.m_nDexterityBase:
-                case AbilityType.Agility when attacker.m_pStats.m_nWisdomBase > attacker.m_pStats.m_nIntelligenceBase:
+                case AbilityType.Perception when attacker.m_pStats.GetWISStat() > attacker.m_pStats.GetDEXStat():
+                case AbilityType.Agility when attacker.m_pStats.GetWISStat() > attacker.m_pStats.GetINTStat():
                     return AbilityType.Willpower;
                 default:
                     return AbilityType.Invalid;

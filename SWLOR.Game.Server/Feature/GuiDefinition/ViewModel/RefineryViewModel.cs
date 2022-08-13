@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Spawn the refined item onto the player.
                     CreateItemOnObject(refinedItem.RefinedItemResref, Player, stackSize);
 
-                    xp += refinedItem.XPGranted;
+                    xp += refinedItem.XPGranted * stackSize;
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");

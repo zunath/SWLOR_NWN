@@ -18,14 +18,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [NWNEventHandler("examine_bef")]
         public static void ExaminePlayer()
         {
+            var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+
+            if (!GetIsDM(dm) && !GetIsDMPossessed(dm))
+                return;
 
             if (!GetIsPC(target) && !GetIsDM(target) && !GetIsDMPossessed(target))
                 return;
 
             var payload = new DMPlayerExaminePayload(target);
 
-            var dm = OBJECT_SELF;
             SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true);
             Gui.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
             DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, false));

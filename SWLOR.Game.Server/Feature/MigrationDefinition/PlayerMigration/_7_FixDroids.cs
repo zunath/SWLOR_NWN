@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public override int Version => 7;
         public override void Migrate(uint player)
         {
+            RecalculateStats(player);
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var racialType = GetRacialType(player);

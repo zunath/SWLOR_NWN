@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var baseStamina = dbPlayer.MaxStamina;
-                var modifier = GetAbilityModifier(AbilityType.Might, creature);
+                var modifier = GetAbilityModifier(AbilityType.Agility, creature);
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
                 var foodBonus = 0;
 

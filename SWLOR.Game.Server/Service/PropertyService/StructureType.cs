@@ -1277,121 +1277,121 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             1)]
-        RugClassicLightBrown = 224
+        RugClassicLightBrown = 224,
         [Structure("Pile of Cushions (White)"),
             "zep_cushion002"
             "",
             true,
             1)]
-        PileofCushionsWhite = 225
+        PileofCushionsWhite = 225,
         [Structure("Oven"),
             "_mdrn_pl_oven"
             "",
             true,
             1)]
-        Oven = 226
+        Oven = 226,
         [Structure("Coffee Maker"),
             "_mdrn_pl_coffful"
             "",
             true,
             1)]
-        CoffeeMaker = 227
+        CoffeeMaker = 227,
         [Structure("Microwave (Black)"),
             "_mdrn_pl_microwb"
             "",
             true,
             1)]
-        MicrowaveBlack = 228
+        MicrowaveBlack = 228,
         [Structure("Bar (Wooden)"),
             "_mdrn_pl_barwood"
             "",
             true,
             1)]
-        BarWooden = 229
+        BarWooden = 229,
         [Structure("Bathtub"),
             "ZEP_TUB001"
             "",
             true,
             1)]
-        Bathtub = 232
+        Bathtub = 232,
         [Structure("Table, Plastic (Large)"),
             "_mdrn_pl_tabplal"
             "",
             true,
             1)]
-        TablePlasticLarge = 233
+        TablePlasticLarge = 233,
         [Structure("Table, Round, Oak"),
             "_mdrn_pl_table1o"
             "",
             true,
             1)]
-        TableRoundOak = 234
+        TableRoundOak = 234,
         [Structure("Metal Wall, Wide - Light, White"),
             "_mdrn_pl_hwall24"
             "",
             true,
             1)]
-        MetalWallWide = 235
+        MetalWallWide = 235,
         [Structure("Store Counter (Stained)"),
             "_mdrn_pl_store02"
             "",
             true,
             1)]
-        StoreCounterStained = 236
+        StoreCounterStained = 236,
         [Structure("Chair, Large (Grey/Red)"),
             "_mdrn_pl_chair30"
             "",
             true,
             1)]
-        ChairLargeGreyRed = 237
+        ChairLargeGreyRed = 237,
         [Structure("Bunkbed (Metal), Grey"),
             "_mdrn_pl_shipbnk"
             "",
             true,
             1)]
-        BunkbedMetalGrey= 238
+        BunkbedMetalGrey= 238,
         [Structure("Shower, White),
             "_mdrn_pl_shower"
             "",
             true,
             1)]
-        ShowerWhite = 239
+        ShowerWhite = 239,
         [Structure("Shower, Floor Basin"),
             "_mdrn_pl_showerf"
             "",
             true,
             1)]
-        ShowerFloorBasin = 240
+        ShowerFloorBasin = 240,
         [Structure("Couch, Leather Panels (Grey)"),
             "_mdrn_pl_couch03"
             "",
             true,
             1)]
-        CouchLeatherPanelsGrey = 241
+        CouchLeatherPanelsGrey = 241,
         [Structure("Shelves, Warehouse, Full"),
             "_mdrn_pl_shelf14"
             "",
             true,
             1)]
-        ShelvesWarehouseFull = 242
+        ShelvesWarehouseFull = 242,
         [Structure("Bookshelf, Jedi"),
             "swlor_0001"
             "",
             true,
             1)]
-        BookshelfJedi = 243
+        BookshelfJedi = 243,
         [Structure("Wooden Wall, Panels, Dark (Small)"),
             "_mdrn_pl_wwall2t"
             "",
             true,
             1)]
-        WoodenWallPanelsDarkSmall = 244
+        WoodenWallPanelsDarkSmall = 244,
         [Structure("Wooden Wall, Planks (Small)"),
             "_mdrn_pl_wwall6t"
             "",
             true,
             1)]
-        WoodenWallPlanksSmall = 245
+        WoodenWallPlanksSmall = 245,
         
         
         

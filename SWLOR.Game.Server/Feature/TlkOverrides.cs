@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature
                 "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" + 
                 "Primary Skills: One-Handed, Two-Handed, Martial Arts, Smithery, Gathering\n\n" +
                 "Other Notes:\n\n" +
+                "Increases maximum stamina.\n" +
                 "Improves damage dealt by regular melee weapons.\n" +
                 "Improves damage dealt by heavy melee weapons.\n" + 
                 "Improves damage dealt by throwing weapons.");
@@ -73,10 +74,9 @@ namespace SWLOR.Game.Server.Feature
                 "Improves effectiveness of First Aid abilities.\n" +
                 "Improves effectiveness of Force abilities.");
             SetTlkOverride(463,
-                "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
+                "Agility improves accuracy of ranged, finesse, and space weapons, as well as evasion.\n\n" +
                 "Primary Skills: One-Handed, Martial Arts, Ranged, Engineering\n\n" +
                 "Other Notes:\n\n" + 
-                "Increases maximum stamina.\n" +
                 "Improves evasion.\n" +
                 "Improves accuracy of finesse weapons.\n" +
                 "Improves accuracy of ranged weapons.\n" +
@@ -102,11 +102,11 @@ namespace SWLOR.Game.Server.Feature
         private static string BuildRecommendedButtonText()
         {
             return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
-                   "Might: Improves damage dealt by melee weapons and increases carrying capacity.\n" +
+                   "Might: Improves damage dealt by melee weapons, increases carrying capacity, and improves max stamina.\n" +
                    "Vitality: Improves your max hit points and reduces damage received.\n" +
                    "Perception: Improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n" +
                    "Willpower: Improves your force attack, force defense, and max force points.\n" +
-                   "Agility: Improves ranged accuracy, evasion, and max stamina.\n" +
+                   "Agility: Improves ranged/finesse accuracy and evasion.\n" +
                    "Social: Improves your XP gain and leadership capabilities.\n\n";
         }
 

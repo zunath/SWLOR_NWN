@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the DMG bonus granted by Might scaling on Crushing Staves.
+        /// Retrieves the DMG bonus granted by Might scaling on Crushing Style Staves and Strong Style Sabers.
         /// Returns 0 if an invalid weapon is held.
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
@@ -350,15 +350,17 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
         {
-            if (!Item.StaffBaseItemTypes.Contains(weaponType) || !GetHasFeat(FeatType.CrushingStyle, attacker))
-                return 0;
-
             int mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
-            if (Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle) > 1)
-                return mgtMod * 2;
-            else
+            if (Item.StaffBaseItemTypes.Contains(weaponType))
+                return mgtMod * Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle);
+            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod;
+            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))
+                return mgtMod;
+
+            return 0;
+
         }
 
         /// <summary>

@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Native
                     ? attackerStats.GetINTStat()
                     : attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
-                var criticalBonus = attacker.m_pStats.m_nCriticalHitRoll;
+                var criticalBonus = 95 - attacker.m_pStats.GetCriticalHitRoll(); // crit on 20 returns 95, 19-20 returns 90, etc.
                 Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
                 criticalBonus += HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
                 if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)

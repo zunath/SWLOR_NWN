@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature
         private static void AdjustStats(uint player, Player dbPlayer)
         {
             dbPlayer.UnallocatedSP = 10;
-            dbPlayer.Version = 1;
+            dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
             Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP);

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Emotes)
-                .SetInitialGeometry(0, 0, 300f, 300f)
+                .SetInitialGeometry(0, 0, 150f, 300f)
                 .SetTitle("Emotes")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

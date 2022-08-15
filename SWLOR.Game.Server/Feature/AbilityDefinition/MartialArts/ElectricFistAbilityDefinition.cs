@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist1, PerkType.ElectricFist)
                 .Name("Electric Fist I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist2, PerkType.ElectricFist)
                 .Name("Electric Fist II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -110,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist3, PerkType.ElectricFist)
                 .Name("Electric Fist III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

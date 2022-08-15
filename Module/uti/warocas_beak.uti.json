@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 536
   },
   "Charges": {
     "type": "byte",
@@ -28,7 +28,7 @@
     "id": 90753,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The intact beak of a Warocas. Makes a constant clacking noise jumbling around in your pack."
     }
   },
   "Description": {

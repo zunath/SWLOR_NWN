@@ -1309,7 +1309,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         BarWooden = 229,
         [Structure("Bathtub"),
-            "ZEP_TUB001"
+            "_mdrn_pl_bathtb1"
             "",
             true,
             1)]
@@ -1392,7 +1392,23 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         WoodenWallPlanksSmall = 245,
-        
+        [Structure("Television, Big Screen"),
+            "_mdrn_pl_tvbgscr"
+            "",
+            true,
+            1)]
+        TelevisionBigScreen = 245,
+        [Structure("TelevisionOldModel"),
+            "_mdrn_pl_tvold"
+            "",
+            true,
+            1)]
+        TelevisionOldModel = 246
+        [Structure("FoyerChandelier"),
+            "ZEP_CI_LGT_003"
+            "",
+            true,
+            1)]
         
         
         

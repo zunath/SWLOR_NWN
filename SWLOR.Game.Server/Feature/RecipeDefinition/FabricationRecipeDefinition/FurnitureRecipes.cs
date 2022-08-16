@@ -1464,7 +1464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(26)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 3)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 1-2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2
 				.Component("wood_ancient", 6)
 				.Component("fiberpl_good", 3);
 				
@@ -1508,7 +1508,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Level(21)
 				.Quantity(1)
 				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-				.EnhancementSlots(RecipeEnhancementType.Structure, 21)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2
+				.Component("fiberpl_flawed", 2)
+				.Component("elec_flawed", 3);
+
+			// Television, Old Model
+			_builder.Create(RecipeType.CoffeeMaker, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Electronics)
+				.Resref("structure_246")
+				.Level(28
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2
 				.Component("fiberpl_flawed", 2)
 				.Component("elec_flawed", 3);
         }
@@ -1657,6 +1668,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
 				.Component("ref_keromber", 3)
 				.Component("aracia_wood", 2);
+
+			// Foyer, Chandelier 
+			_builder.Create(RecipeType.FoyerChandelier, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Lighting)
+				.Resref("structure_0065")
+				.Level(34)
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
+				.Component("ref_keromber", 5)
+				.Component("fiberpl_good", 3);
+
 
 			// Chair, Wood, Medium
 			_builder.Create(RecipeType.ChairWoodMedium, SkillType.Fabrication)
@@ -2468,6 +2491,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ref_jascioclase", 3)
 				.Component("fiberpl_high", 4);
 
+			// Television, Big Screen
+			_builder.Create(RecipeType.TelevisonBigScreen, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Electronics)
+				.Resref("structure_246")
+				.Level(48)
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 2)
+				.Component("ref_jascioclase", 4)
+				.Component("elec_high", 6);
+
+			// 
 		}
 
 	}

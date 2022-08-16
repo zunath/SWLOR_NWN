@@ -628,6 +628,11 @@
         BookshelfJedi = 1223,
         WoodenWallPanelsDarkSmall = 1224,
         WoodenWallPlanksSmall = 1225,
+        TelevisionBigScreen = 1226,
+        TelevisionOldModel = 1227,
+        FoyerChandelier = 1228,
+
+
 
 
         ReinforcedConstructionParts = 1496,

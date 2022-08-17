@@ -201,10 +201,10 @@ namespace SWLOR.Game.Server.Native
             }
             else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
                 Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-                dmgValues[CombatDamageType.Physical] += mightMod;
+                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
             else if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
                 Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-                dmgValues[CombatDamageType.Physical] += mightMod;
+                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
 
             // Doublehand perk
             if (weapon != null)

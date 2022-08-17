@@ -294,7 +294,10 @@ namespace SWLOR.Game.Server.Native
                 {
                     var ip = defenderWeapon.GetPassiveProperty(i);
                     if (ip != null && ip.m_nPropertyName == (ushort)Core.NWScript.Enum.Item.ItemPropertyType.Light)
+                    {
                         saberBlock |= true;
+                        break;
+                    }
                 }
             }
 

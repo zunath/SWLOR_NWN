@@ -1272,147 +1272,265 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0)]
         SmitheryBench = 223,
-        [Structure("Rug, (Classic Light Brown)"),
+        [Structure("Rug, (Classic Light Brown)",
             "_mdrn_pl_carpt01"
             "",
             true,
             1)]
         RugClassicLightBrown = 224,
-        [Structure("Pile of Cushions (White)"),
+        [Structure("Pile of Cushions (White)",
             "zep_cushion002"
             "",
             true,
             1)]
         PileofCushionsWhite = 225,
-        [Structure("Oven"),
+        [Structure("Oven",
             "_mdrn_pl_oven"
             "",
             true,
             1)]
         Oven = 226,
-        [Structure("Coffee Maker"),
+        [Structure("Coffee Maker",
             "_mdrn_pl_coffful"
             "",
             true,
             1)]
         CoffeeMaker = 227,
-        [Structure("Microwave (Black)"),
+        [Structure("Microwave (Black)",
             "_mdrn_pl_microwb"
             "",
             true,
             1)]
         MicrowaveBlack = 228,
-        [Structure("Bar (Wooden)"),
+        [Structure("Bar (Wooden)",
             "_mdrn_pl_barwood"
             "",
             true,
             1)]
         BarWooden = 229,
-        [Structure("Bathtub"),
+        [Structure("Bathtub",
             "_mdrn_pl_bathtb1"
             "",
             true,
             1)]
         Bathtub = 232,
-        [Structure("Table, Plastic (Large)"),
+        [Structure("Table, Plastic (Large)",
             "_mdrn_pl_tabplal"
             "",
             true,
             1)]
         TablePlasticLarge = 233,
-        [Structure("Table, Round, Oak"),
+        [Structure("Table, Round, Oak",
             "_mdrn_pl_table1o"
             "",
             true,
             1)]
         TableRoundOak = 234,
-        [Structure("Metal Wall, Wide - Light, White"),
+        [Structure("Metal Wall, Wide, Light",
             "_mdrn_pl_hwall24"
             "",
             true,
             1)]
-        MetalWallWide = 235,
-        [Structure("Store Counter (Stained)"),
+        MetalWallWideLight = 235,
+        [Structure("Store Counter (Stained",
             "_mdrn_pl_store02"
             "",
             true,
             1)]
         StoreCounterStained = 236,
-        [Structure("Chair, Large (Grey/Red)"),
+        [Structure("Chair, Large (Grey/Red",
             "_mdrn_pl_chair30"
             "",
             true,
             1)]
         ChairLargeGreyRed = 237,
-        [Structure("Bunkbed (Metal), Grey"),
+        [Structure("Bunkbed (Metal), Grey",
             "_mdrn_pl_shipbnk"
             "",
             true,
             1)]
         BunkbedMetalGrey= 238,
-        [Structure("Shower, White),
+        [Structure("Shower, White",
             "_mdrn_pl_shower"
             "",
             true,
             1)]
         ShowerWhite = 239,
-        [Structure("Shower, Floor Basin"),
+        [Structure("Shower, Floor Basin",
             "_mdrn_pl_showerf"
             "",
             true,
             1)]
         ShowerFloorBasin = 240,
-        [Structure("Couch, Leather Panels (Grey)"),
-            "_mdrn_pl_couch03"
+        [Structure("Couch - Black and Grey",
+            "frn_couch_swlr05"
             "",
             true,
             1)]
         CouchLeatherPanelsGrey = 241,
-        [Structure("Shelves, Warehouse, Full"),
+        [Structure("Shelves, Warehouse, Full",
             "_mdrn_pl_shelf14"
             "",
             true,
             1)]
         ShelvesWarehouseFull = 242,
-        [Structure("Bookshelf, Jedi"),
+        [Structure("Bookshelf, Jedi",
             "swlor_0001"
             "",
             true,
             1)]
         BookshelfJedi = 243,
-        [Structure("Wooden Wall, Panels, Dark (Small)"),
+        [Structure("Wooden Wall, Panels, Dark (Small)",
             "_mdrn_pl_wwall2t"
             "",
             true,
             1)]
-        WoodenWallPanelsDarkSmall = 244,
-        [Structure("Wooden Wall, Planks (Small)"),
+        MetalWallSinglePipes = 244,
+        [Structure("Metal Wall, Single, Pipes,
             "_mdrn_pl_wwall6t"
             "",
             true,
             1)]
         WoodenWallPlanksSmall = 245,
-        [Structure("Television, Big Screen"),
+        [Structure("Television, Big Screen",
             "_mdrn_pl_tvbgscr"
             "",
             true,
             1)]
         TelevisionBigScreen = 245,
-        [Structure("TelevisionOldModel"),
+        [Structure("Television Old Model",
             "_mdrn_pl_tvold"
             "",
             true,
             1)]
-        TelevisionOldModel = 246
-        [Structure("FoyerChandelier"),
+        TelevisionOldModel = 246,
+        [Structure("Foyer Chandelier",
             "ZEP_CI_LGT_003"
             "",
             true,
             1)]
-        
-        
-        
-        
+        FoyerChandelier = 247,
+        [Structure("Metall Wall, Door, Light",
+            "_mdrn_pl_dwall09"
+            "",
+            true,
+            1)]
+        MetalWallDoorLight = 248,
+        [Structure("Metall Wall, Wide, Panels",
+            "_mdrn_pl_hwall19"
+            "",
+            true,
+            1)]
+        MetalWallWidePanels = 249,
+        [Structure("Metall Wall, Door, Panels",
+            "_mdrn_pl_dwall02"
+            "",
+            true,
+            1)]
+        MetalWallDoorPanels = 250, 
+        [Structure("Metall Wall, Single, Light",
+            "_mdrn_pl_qwall09"
+            "",
+            true,
+            1)]
+        MetalWallSingleLight = 251,
+        [Structure("Metal Wall, Single, Ribbed",
+            "_mdrn_pl_qwall08"
+            "",
+            true,
+            1)]
+        MetalWallSingleRibbed = 252,
+        [Structure("Metal Wall, Wide, Ribbed",
+            "_mdrn_pl_hwall23"
+            "",
+            true,
+            1)]
+        MetalWallWideRibbed = 253,
+        [Structure("Metal Wall, Door, Ribbed",
+            "_mdrn_pl_dwall08"
+            "",
+            true,
+            1)]
+        MetalWallDoorRibbed = 254,
+        [Structure("Metal Wall, Wide, Pipes",
+            "_mdrn_pl_hwall31"
+            "",
+            true,
+            1)]
+        MetalWallWidePipes = 255,
+        [Structure("Metal Wall, Door, Pipes",
+            "_mdrn_pl_dwall16"
+            "",
+            true,
+            1)]
+        MetalWallDoorPipes = 256,
+        [Structure("Couch, Cushion, Grey/Red",
+            "frn_couch_swlr04"
+            "",
+            true,
+            1)]
+        CouchCushionGreyRed = 257,
+        [Structure("Bench, Elegant, Grey",
+            "frn_couch_swlr03"
+            "",
+            true,
+            1)]
+        BenchElegantGrey = 258,
+        [Structure("Chaise Lounge - Orange",
+            "frn_couch_swlr02"
+            "",
+            true,
+            1)]
+        ChaiseLoungeOrange = 259,
+        [Structure("Couch, Blanket Cover, Red",
+            "frn_couch_swlr01"
+            "",
+            true,
+            1)]
+        CouchBlanketCoverRed = 260,
+        [Structure("Chair, Plinth",
+            "_mdrn_pl_chairel"
+            "",
+            true,
+            1)]
+        ChairPlinth = 260,
+        [Structure("Chair, Dining - Grey",
+            "frn_chair_swlr01"
+            "",
+            true,
+            1)]
+        ChairDiningGrey = 261,
+        [Structure("Chaise Lounge - Red",
+            "frn_chair_swlr01"
+            "",
+            true,
+            1)]
+        ChaiseLoungeRed = 262,
+        [Structure("Chair, Dining - Orange",
+            "_mdrn_pl_chairdi"
+            "",
+            true,
+            1)]
+        ChairDiningOrange = 263,
+        [Structure("Table, Polygon Design",
+            "_mdrn_pl_table26"
+            "",
+            true,
+            1)]
+        TablePolygonDesign = 264,
+        [Structure("Table, Round, Glass",
+            "_mdrn_pl_table16"
+            "",
+            true,
+            1)]
+        TableRoundGlass = 265,
+        [Structure("Table, Dark, Glass",
+            "zep_tableglass"
+            "",
+            true,
+            1)]
+        TableDarkGlass = 266,
+
         
         
 

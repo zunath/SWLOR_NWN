@@ -482,7 +482,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 accuracyStatOverride = AbilityType.Perception;
             }
 
-            // Crushing Style (Staff)
+            // Flurry Style (Staff)
             if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
                 GetHasFeat(FeatType.CrushingStyle, Player))
             {

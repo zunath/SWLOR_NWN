@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             WailingBlows();
             ShieldMaster();
             ShieldBash();
+            Bulwark();
 
             return _builder.Build();
         }
@@ -218,6 +219,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .GrantsFeat(FeatType.ShieldBash3);
+        }
+
+        private void Bulwark()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Bulwark)
+                .Name("Bulwark")
+
+                .AddPerkLevel()
+                .Description("While equipped with a shield, you automatically attempt to deflect ranged attacks once per round.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 10)
+                .GrantsFeat(FeatType.Bulwark);
         }
 
         private void WeaponFocusVibroblades()
@@ -735,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 
                 .AddPerkLevel()
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active.")
+                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active. Additionally, your lightsaber damage is increased by your MGT modifier while active.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleLightsaber);
         }

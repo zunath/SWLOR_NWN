@@ -780,7 +780,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active.")
+                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active. Additionally, your saberstaff damage is increased by your MGT modifier while active.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleSaberstaff);
         }

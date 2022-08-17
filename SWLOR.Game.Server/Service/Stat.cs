@@ -1362,7 +1362,6 @@ namespace SWLOR.Game.Server.Service
             if (Item.KatarBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.KatarMastery;
-                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
@@ -1378,7 +1377,6 @@ namespace SWLOR.Game.Server.Service
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.ThrowingWeaponMastery;
-                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {
@@ -1389,17 +1387,14 @@ namespace SWLOR.Game.Server.Service
             else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.VibrobladeMastery;
-                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.FinesseVibrobladeMastery;
-                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             else if (Item.LightsaberBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.LightsaberMastery;
-                if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
             }
             // Two-Handed
             else if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
@@ -1418,6 +1413,8 @@ namespace SWLOR.Game.Server.Service
             {
                 perkType = PerkType.SaberstaffMastery;
             }
+
+            if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
 
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
             numberOfAttacks += effectiveMasteryLevel;

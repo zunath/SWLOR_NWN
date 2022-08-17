@@ -282,6 +282,23 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
             Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
+            var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+
+            if (isHit && defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
+                Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem)) {
+
+                var deflectRoll = Random.Next(1, 100);
+                var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
+                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid ?
+                Item.GetWeaponAccuracyAbilityType(baseItemType) : weaponStyleAbilityOverride;
+                var attackerStatValue = Stat.GetStatValueNative(attacker, attackerStat);
+
+                var statDelta = Math.Clamp((defender.m_pStats.GetCONStat() - attackerStatValue) * 5, -50, 75);
+
+                isHit = deflectRoll + statDelta < attackRoll;
+                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, statDelta: {statDelta}, attackRoll: {attackRoll} -- Hit: {isHit}");
+            }
+
             // Hit
             if (isHit)
             {

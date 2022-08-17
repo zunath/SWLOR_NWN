@@ -247,6 +247,7 @@
         WailingBlows = 240,
         DirtyBlow = 241,
         ShieldBash = 242,
-        ForceInspiration = 243
+        ForceInspiration = 243,
+        Bulwark = 244
     }
 }

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
             {
-                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT")
+                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT" || GetEffectTag(e) == "FORCE_INSPIRATION")
                 {
                     RemoveEffect(target, e);
                 }

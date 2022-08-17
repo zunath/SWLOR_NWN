@@ -1833,7 +1833,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ShieldBash3 = 1865,
         ForceInspiration1 = 1866,
         ForceInspiration2 = 1867,
-        ForceInspiration3 = 1868
+        ForceInspiration3 = 1868,
+        Bulwark = 1869
 
     }
 }

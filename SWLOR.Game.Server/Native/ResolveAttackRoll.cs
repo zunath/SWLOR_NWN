@@ -282,11 +282,28 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
             Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
+            var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
             var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+            bool saberBlock = false;
 
-            if (isHit && defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
-                Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem)) {
+            if(defenderWeapon != null && (
+                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
+                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
+            {
+                for(var i = 0; i < defenderWeapon.m_lstPassiveProperties.Count; i++)
+                {
+                    var ip = defenderWeapon.GetPassiveProperty(i);
+                    if (ip != null && ip.m_nPropertyName == (ushort)Core.NWScript.Enum.Item.ItemPropertyType.Light)
+                        saberBlock |= true;
+                }
+            }
 
+            if (attackType == (uint)AttackType.Ranged && isHit && defender.GetFlatFooted() == 0 &&
+                defender.m_pcCombatRound.m_bDeflectArrow == 0 && (saberBlock || (
+                defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
+                Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem)))) {
+
+                defender.m_pcCombatRound.SetDeflectArrow(1);
                 var deflectRoll = Random.Next(1, 100);
                 var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
                 var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid ?

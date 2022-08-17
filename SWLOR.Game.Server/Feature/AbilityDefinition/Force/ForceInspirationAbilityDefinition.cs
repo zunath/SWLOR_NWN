@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             var effect = EffectLinkEffects(EffectAbilityIncrease(AbilityType.Willpower, baseAmount),
                 EffectAbilityIncrease(AbilityType.Agility, baseAmount));
-            effect = EffectLinkEffects(effect, EffectAbilityIncrease(AbilityType.Perception, baseAmount));
+            effect = EffectLinkEffects(effect, EffectAbilityIncrease(AbilityType.Might, baseAmount));
 
             for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
             {

@@ -9,9 +9,9 @@ using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
-    public class _7_UpgradeWeapons : PlayerMigrationBase
+    public class _8_UpgradeWeapons : PlayerMigrationBase
     {
-        public override int Version => 7;
+        public override int Version => 8;
         public override void Migrate(uint player)
         {
             var playerId = GetObjectUUID(player);
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 PerkType.ImprovedTwoWeaponFightingTwoHanded
             };
 
-            foreach (PerkType toRefund in refundList)
+            foreach (var toRefund in refundList)
             {
                 if (!dbPlayer.Perks.ContainsKey(toRefund))
                     continue;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private static void UpdateWeapons(uint player)
         {
-            Dictionary<string, (int, int)> itemReplace = new Dictionary<string, (int, int)>()
+            var itemReplace = new Dictionary<string, (int, int)>()
             {
                 { "tit_rifle", (12, 15) },
                 { "cap_rifle", (15, 20) },
@@ -92,13 +92,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
             for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
             {
-                BaseItem baseItem = GetBaseItemType(item);
+                var baseItem = GetBaseItemType(item);
                 if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
                     continue;
 
-                string itemResRef = GetResRef(item);
-                int oldDmg = 0;
-                int newDmg = 0;
+                var itemResRef = GetResRef(item);
+                var oldDmg = 0;
+                var newDmg = 0;
 
                 if (itemReplace.ContainsKey(itemResRef))
                 {
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 }
                 else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
 
-                int wpnDmg = newDmg - oldDmg;
+                var wpnDmg = newDmg - oldDmg;
                 if(wpnDmg <= 0) { continue; }
 
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                     }
                 }
 
-                ItemProperty newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
+                var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
                 BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
             }

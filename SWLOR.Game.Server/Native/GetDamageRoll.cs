@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Native
                     int defenderStat = target.m_pStats.GetCONStat();
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
-                    var ignoreDelta = (damageType != CombatDamageType.Physical && damageType != CombatDamageType.Force); // Ignore stat delta for elemental damage from weapons
+                    var ignoreDelta = damageType != CombatDamageType.Physical; // Ignore stat delta for elemental damage from weapons
 
                     Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_pStats.m_nRace);
                     damage = Combat.CalculateDamage(

@@ -239,32 +239,49 @@ namespace SWLOR.Game.Server.Native
                  offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
                  offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
             {
-                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + ": " + percentageModifier);
-                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
-                // in to the proficiency perks rather than granting them separately. 
-                
                 // Apply the base two weapon fighting penalty.
                 if(hasITWF == 0 || weapon == offhand) // Main-hand ITWF has no penalty.
                     percentageModifier -= 10;
 
+                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + ": " + percentageModifier);
+                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
+                // in to the proficiency perks rather than granting them separately. 
+
                 Log.Write(LogGroup.Attack, logMessage);
             }
 
+            // Staff Flurry - (-10% TH)
             if(Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
                 attackerStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
                 attackerStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
             {
                 percentageModifier -= 10;
-                Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10");
+                Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10%");
             }
 
-            // Combat Mode - Power Attack (-5 TH)
+            // Duelist - (+5% TH)
+            if(Item.OneHandedMeleeItemTypes.Contains((BaseItem)weapon.m_nBaseItem) || 
+                Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (offhand == null)
+                {
+                    percentageModifier += 5;
+                    Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
+                }
+                else if (Item.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem))
+                {
+                    percentageModifier += 5;
+                    Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
+                }
+            }
+
+            // Combat Mode - Power Attack (-5 ACC)
             if (attacker.m_nCombatMode == 2)
             {
                 accuracyModifiers -= 5;
                 Log.Write(LogGroup.Attack, "Applying Power Attack penalty: -5");
             }
-            // Combat Mode - Improved Power Attack (-10 TH)
+            // Combat Mode - Improved Power Attack (-10 ACC)
             else if (attacker.m_nCombatMode == 3)
             {
                 accuracyModifiers -= 10;
@@ -328,7 +345,7 @@ namespace SWLOR.Game.Server.Native
                     ? attackerStats.GetINTStat()
                     : attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
-                var criticalBonus = 95 - attacker.m_pStats.GetCriticalHitRoll(); // crit on 20 returns 95, 19-20 returns 90, etc.
+                var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100); // GetCriticalHitRoll() returns the lowest d20 value that results in a crit, so we convert that to % bonus
                 Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
                 criticalBonus += HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
                 if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)

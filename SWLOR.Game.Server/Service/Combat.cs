@@ -120,7 +120,8 @@ namespace SWLOR.Game.Server.Service
             if (critical > 0)
             {
                 minDamage = maxDamage;
-                maxDamage *= ((critical - 1) / 4) + 1;
+                maxDamage *= ((critical - 1) / 4.0f) + 1.0f;
+                Log.Write(LogGroup.Attack, $"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
             }
 
             return ((int)minDamage, (int)maxDamage);

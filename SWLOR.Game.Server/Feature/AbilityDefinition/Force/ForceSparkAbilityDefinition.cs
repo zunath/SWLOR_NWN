@@ -29,8 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
+
+            RemoveEffectByTag(target, "FORCE_SPARK");
+            var eBreach = TagEffect(EffectACDecrease(evaDecrease), "FORCE_SPARK");
+
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(evaDecrease), target, 60f);
+            ApplyEffectToObject(DurationType.Temporary, eBreach, target, 60f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
 
             Enmity.ModifyEnmity(activator, target, 300 + damage);

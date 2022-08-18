@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
@@ -18,31 +19,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var dbPlayer = DB.Get<Player>(playerId);
 
             RefundPerks(dbPlayer);
-            RecalculateStats(player);
             UpdateWeapons(player);
         }
 
-        private static void RefundPerks(Player dbPlayer)
-        {
-            List<PerkType> refundList = new(3)
-            {
-                PerkType.DualWield,
-                PerkType.ImprovedTwoWeaponFightingOneHanded,
-                PerkType.ImprovedTwoWeaponFightingTwoHanded
-            };
-
-            foreach (var toRefund in refundList)
-            {
-                if (!dbPlayer.Perks.ContainsKey(toRefund))
-                    continue;
-
-                dbPlayer.UnallocatedSP += 2;
-            }
-        }
-
-        private static void UpdateWeapons(uint player)
-        {
-            var itemReplace = new Dictionary<string, (int, int)>()
+        public Dictionary<string, (int, int)> itemReplace = new()
             {
                 { "tit_rifle", (12, 15) },
                 { "cap_rifle", (15, 20) },
@@ -90,40 +70,77 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 { "h_twinelec_5", (25, 28) }
             };
 
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+        private static void RefundPerks(Player dbPlayer)
+        {
+            List<PerkType> refundList = new(3)
             {
-                var baseItem = GetBaseItemType(item);
-                if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
+                PerkType.DualWield,
+                PerkType.ImprovedTwoWeaponFightingOneHanded,
+                PerkType.ImprovedTwoWeaponFightingTwoHanded
+            };
+
+            foreach (var toRefund in refundList)
+            {
+                if (!dbPlayer.Perks.ContainsKey(toRefund))
                     continue;
 
-                var itemResRef = GetResRef(item);
-                var oldDmg = 0;
-                var newDmg = 0;
+                dbPlayer.UnallocatedSP += 2;
+            }
+        }
 
-                if (itemReplace.ContainsKey(itemResRef))
-                {
-                    oldDmg = itemReplace[itemResRef].Item1;
-                    newDmg = itemReplace[itemResRef].Item2;
-                }
-                else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
+        private void UpdateWeapons(uint player)
+        {
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var slot = (InventorySlot)index;
 
-                var wpnDmg = newDmg - oldDmg;
-                if(wpnDmg <= 0) { continue; }
+                if (slot != InventorySlot.RightHand)
+                    continue;
 
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    if(GetItemPropertyType(ip) == ItemPropertyType.DMG &&
-                        (GetItemPropertySubType(ip) == (int)CombatDamageType.Physical))
-                    {
-                        wpnDmg += GetItemPropertyCostTableValue(ip);
-                        RemoveItemProperty(item, ip);
-                    }
-                }
+                var item = GetItemInSlot(slot, player);
+                Update(item);
+            }
 
-                var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
-                BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+
+                Update(item);
 
             }
+        }
+
+        private void Update (uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
+                return;
+
+            var itemResRef = GetResRef(item);
+            var oldDmg = 0;
+            var newDmg = 0;
+
+            if (itemReplace.ContainsKey(itemResRef))
+            {
+                oldDmg = itemReplace[itemResRef].Item1;
+                newDmg = itemReplace[itemResRef].Item2;
+            }
+            else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
+
+            var wpnDmg = newDmg - oldDmg;
+            if (wpnDmg <= 0) { return; }
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.DMG &&
+                    (GetItemPropertySubType(ip) == (int)CombatDamageType.Physical))
+                {
+                    wpnDmg += GetItemPropertyCostTableValue(ip);
+                    RemoveItemProperty(item, ip);
+                }
+            }
+
+            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
+            BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }
     }
 }

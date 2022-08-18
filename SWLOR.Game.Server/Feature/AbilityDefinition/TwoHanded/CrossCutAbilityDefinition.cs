@@ -75,7 +75,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(acLoss), target, 60f);
+
+            RemoveEffectByTag(target, "CROSS_CUT");
+            var eBreach = TagEffect(EffectACDecrease(acLoss), "CROSS_CUT");
+            ApplyEffectToObject(DurationType.Temporary, eBreach, target, 60f);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.CrossCut));
             DelayCommand(0.2f, () =>

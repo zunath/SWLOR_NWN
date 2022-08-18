@@ -565,6 +565,13 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Ring
         };
 
+        public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.LargeShield,
+            BaseItem.SmallShield,
+            BaseItem.TowerShield
+        };
+
         /// <summary>
         /// Retrieves the list of shield base item types.
         /// </summary>
@@ -736,8 +743,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
             BaseItem.QuarterStaff,
-            BaseItem.LightMace,
-            BaseItem.Electroblade
+            BaseItem.LightMace
         };
 
         /// <summary>

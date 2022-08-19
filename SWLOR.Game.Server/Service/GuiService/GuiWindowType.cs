@@ -43,5 +43,6 @@
         Refinery = 38,
         DMPlayerExamine = 39,
         AreaNotes = 40,
+        CreatureManager = 41,
     }
 }

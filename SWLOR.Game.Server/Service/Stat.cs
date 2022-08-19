@@ -1381,7 +1381,6 @@ namespace SWLOR.Game.Server.Service
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.RifleMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
             }
             // One-Handed
             else if (Item.VibrobladeBaseItemTypes.Contains(itemType))

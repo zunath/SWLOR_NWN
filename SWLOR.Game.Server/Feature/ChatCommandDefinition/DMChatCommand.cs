@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
@@ -42,6 +43,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetXPBonus();
             GetPlayerId();
             GetTag();
+            Notes();
+            CreatureManager();
 
             return _builder.Build();
         }
@@ -793,5 +796,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void Notes()
+        {
+            _builder.Create("notes", "note")
+                .Description("Toggles the area notes window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
+                });
+        }
+
+        private void CreatureManager()
+        {
+            _builder.Create("cm")
+                .Description("Toggles the Creature Manager window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                });
+        }
     }
 }

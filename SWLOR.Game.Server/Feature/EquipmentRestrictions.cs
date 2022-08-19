@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
-            var isSwapping = IsItemSwapping(creature, slot);
+            var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = CanItemBeUsed(creature, item);
             var canDualWield = ValidateDualWield(item, slot);
 
@@ -59,11 +59,42 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SkipEvent();
         }
 
-        private static bool IsItemSwapping(uint creature, InventorySlot slot)
+        private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
         {
-            var item = GetItemInSlot(slot, creature);
+            var itemInSlot = GetItemInSlot(slot, creature);
+            var itemType = GetBaseItemType(item);
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            var rightHandType = GetBaseItemType(rightHand);
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            var leftHandType = GetBaseItemType(leftHand);
 
-            return GetIsObjectValid(item);
+            // Two-handed weapons
+            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) || 
+                Item.TwinBladeBaseItemTypes.Contains(itemType) || 
+                Item.SaberstaffBaseItemTypes.Contains(itemType) ||
+                Item.RifleBaseItemTypes.Contains(itemType) ||
+                Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                if (GetIsObjectValid(rightHand) ||
+                    GetIsObjectValid(leftHand))
+                    return true;
+            }
+            // Shields & One-Handed Weapons
+            else if (Item.ShieldBaseItemTypes.Contains(itemType) || 
+                     Item.OneHandedMeleeItemTypes.Contains(itemType) || 
+                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) || 
+                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) || 
+                    Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
+                    Item.RifleBaseItemTypes.Contains(rightHandType) ||
+                    Item.PistolBaseItemTypes.Contains(rightHandType))
+                {
+                    return true;
+                }
+            }
+
+            return GetIsObjectValid(itemInSlot);
         }
 
         /// <summary>

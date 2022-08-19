@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ForceDrain1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
-                .Name("Force Drain 1")
+                .Name("Force Drain I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
                 .Name("Force Drain II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
                 .Name("Force Drain III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
@@ -65,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
                 .Name("Force Drain IV")
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)

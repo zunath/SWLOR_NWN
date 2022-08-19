@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.Skewer1, PerkType.Skewer)
                 .Name("Skewer I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.Skewer2, PerkType.Skewer)
                 .Name("Skewer II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -110,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.Skewer3, PerkType.Skewer)
                 .Name("Skewer III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

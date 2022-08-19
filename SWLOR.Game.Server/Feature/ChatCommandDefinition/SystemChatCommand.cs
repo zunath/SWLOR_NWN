@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         }
         private static void EmotesWindowCommand(ChatCommandBuilder builder)
         {
-            builder.Create("emotesgui")
+            builder.Create("emotegui", "emotesgui")
                 .Description("Displays the Emotes window.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>

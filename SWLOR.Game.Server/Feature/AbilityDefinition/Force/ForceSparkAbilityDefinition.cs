@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceSpark, 20f)
                 .RequirementFP(1)
                 .IsCastedAbility()
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceSpark, 20f)
                 .RequirementFP(2)
                 .IsCastedAbility()
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceSpark, 20f)
                 .RequirementFP(3)
                 .IsCastedAbility()

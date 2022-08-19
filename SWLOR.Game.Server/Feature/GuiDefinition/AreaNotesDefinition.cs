@@ -90,13 +90,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             colAreas.AddRow(row =>
                             {
-
-                                row.AddButton()
-                                    .SetText("Delete Note")
-                                    .BindOnClicked(model => model.OnClickDeleteNote())
-                                    .BindIsEnabled(model => model.IsDeleteEnabled)
-                                    .SetHeight(35f);
-
                                 row.AddButton()
                                     .BindOnClicked(model => model.OnClickSave())
                                     .SetText("Save")
@@ -108,6 +101,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Discard Changes")
                                     .SetHeight(35f)
                                     .BindIsEnabled(model => model.IsSaveEnabled);
+
+                                row.AddButton()
+                                    .SetText("Delete Note")
+                                    .BindOnClicked(model => model.OnClickDeleteNote())
+                                    .BindIsEnabled(model => model.IsDeleteEnabled)
+                                    .SetHeight(35f);
                             });
                         });
                     });

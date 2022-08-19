@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.PoisonStab1, PerkType.PoisonStab)
                 .Name("Poison Stab I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.PoisonStab2, PerkType.PoisonStab)
                 .Name("Poison Stab II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.PoisonStab3, PerkType.PoisonStab)
                 .Name("Poison Stab III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

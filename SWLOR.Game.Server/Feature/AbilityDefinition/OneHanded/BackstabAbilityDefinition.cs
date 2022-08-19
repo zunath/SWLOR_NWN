@@ -89,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -115,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

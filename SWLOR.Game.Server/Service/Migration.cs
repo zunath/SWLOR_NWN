@@ -135,5 +135,14 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Retrieves the latest migration version for players.
+        /// </summary>
+        /// <returns>The latest migration version for players.</returns>
+        public static int GetLatestPlayerVersion()
+        {
+            return _playerMigrations.Max(m => m.Key);
+        }
+
     }
 }

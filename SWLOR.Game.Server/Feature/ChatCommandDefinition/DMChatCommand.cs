@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetPlayerId();
             GetTag();
             Notes();
+            AreaManager();
 
             return _builder.Build();
         }
@@ -806,5 +807,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+
+        private void AreaManager()
+        {
+            _builder.Create("am", "areas")
+                .Description("Toggles the Area Manager window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaManager);
+                });
+        }
     }
 }

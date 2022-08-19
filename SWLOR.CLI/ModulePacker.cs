@@ -185,7 +185,6 @@ namespace SWLOR.CLI
                 "./jrl",
                 "./utc",
                 "./utd",
-                "./ute",
                 "./uti",
                 "./utm",
                 "./utp",

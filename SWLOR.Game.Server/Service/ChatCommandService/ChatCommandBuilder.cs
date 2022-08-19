@@ -107,6 +107,8 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
             {
                 AssignCommand(user, () => ActionPlayAnimation(animation));
             };
+            _currentDetail.EmoteAnimation = animation;
+            _currentDetail.IsEmoteLooping = false;
 
             return this;
         }
@@ -132,6 +134,8 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
 
                 AssignCommand(user, () => ActionPlayAnimation(animation, 1f, duration));
             };
+            _currentDetail.EmoteAnimation = animation;
+            _currentDetail.IsEmoteLooping = true;
 
             return this;
         }

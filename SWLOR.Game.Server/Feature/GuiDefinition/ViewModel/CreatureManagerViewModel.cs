@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, GuiPayloadBase>
     {
-        private readonly List<string> _CreatureIds = new();        
+        private readonly List<string> _creatureIds = new();        
         private const int ListingsPerPage = 20;
         private bool _skipPaginationSearch;
 
@@ -80,12 +80,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                  var serialized = ObjectPlugin.Serialize(creature);
                  var dbCreature = new DMCreature(GetName(creature), GetTag(creature), serialized);
-                 DB.Set<DMCreature>(dbCreature);
+                 DB.Set(dbCreature);
 
                  DeleteLocalObject(Player, "DMCM_CREATURE_TO_SPAWN");
+
+                 Search();
              });
             
-            Search();
         };
 
         public Action OnSelectCreature() => () =>
@@ -93,12 +94,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
+            var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
 
-            NWScript.EnterTargetingMode(Player, ObjectType.All);
+            EnterTargetingMode(Player);
             SendMessageToPC(Player, "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex]);
         };
 
@@ -107,12 +108,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
+            var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
 
-            NWScript.EnterTargetingMode(Player, ObjectType.Tile);
+            EnterTargetingMode(Player, ObjectType.Tile);
             SendMessageToPC(Player, "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex]);
         };
 
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            DB.Delete<DMCreature>(_CreatureIds[SelectedCreatureIndex]);
+            DB.Delete<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             Search();
         };
 
@@ -157,17 +158,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
-            var totalRecordCount = DB.SearchCount<DMCreature>(query);
+            var totalRecordCount = DB.SearchCount(query);
             UpdatePagination(totalRecordCount);
 
-            var results = DB.Search<DMCreature>(query);
+            var results = DB.Search(query);
 
-            _CreatureIds.Clear();
+            _creatureIds.Clear();
             var creatureNames = new GuiBindingList<string>();
 
             foreach (var record in results)
             {                
-                _CreatureIds.Add(record.Id);
+                _creatureIds.Add(record.Id);
                 creatureNames.Add(record.Name);                
             }
 
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
 
-            // Always add page 1. In the event no items are for sale,
+            // Always add page 1. In the event no creatures are found,
             // it still needs to be displayed.
             pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
             for (var x = 2; x <= pages; x++)

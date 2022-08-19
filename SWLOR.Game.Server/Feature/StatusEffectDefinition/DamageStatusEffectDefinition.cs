@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Stunned)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    var effect = EffectDazed();
+                    var effect = EffectSleep();
                     effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.Tranquilize);
 

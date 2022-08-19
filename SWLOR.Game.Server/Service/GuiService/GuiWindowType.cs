@@ -44,5 +44,7 @@
         DMPlayerExamine = 39,
         AreaNotes = 40,
         CreatureManager = 41,
+        AreaManager = 42,
+        Emotes = 43,
     }
 }

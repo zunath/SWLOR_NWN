@@ -212,6 +212,10 @@ namespace SWLOR.Game.Server.Service
             if (Property.GetStructureTypeFromItem(item) != StructureType.Invalid)
                 return MarketCategoryType.Structure;
 
+            // Food
+            if (tag == "FOOD")
+                return MarketCategoryType.Food;
+
             return MarketCategoryType.Miscellaneous;
         }
     }

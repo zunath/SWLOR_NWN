@@ -645,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
 			// Bed, Side Table
 			_builder.Create(RecipeType.BedSideTable, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Surfaces)
+				.Category(RecipeCategoryType.Beds)
 				.Resref("structure_0140")
 				.Level(15)
 				.Quantity(1)

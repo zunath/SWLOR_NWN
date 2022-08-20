@@ -10,9 +10,9 @@
         public int[] Pelvis { get; } = {1,};
 
         public int[] Shoulder { get; } = {0, };
-        public int[] Bicep { get; } = {1, };
-        public int[] Forearm { get; } = {1, };
-        public int[] Hand { get; } = {1, };
+        public int[] Bicep { get; } = {1, 2, 200, 201 };
+        public int[] Forearm { get; } = {1, 2, 200, 201 };
+        public int[] Hand { get; } = {1, 2, 200 };
 
         public int[] Thigh { get; } = {1, };
         public int[] Shin { get; } = {1, };

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Bed Roll
             _builder.Create(RecipeType.BedRoll, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0085")
                 .Level(1)
                 .Quantity(1)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cot
             _builder.Create(RecipeType.Cot, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0069")
                 .Level(3)
                 .Quantity(1)
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cot /w Table
             _builder.Create(RecipeType.CotWithTable, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0150")
                 .Level(9)
                 .Quantity(1)
@@ -612,7 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, High Back (Black/Grey)
             _builder.Create(RecipeType.BedHighBackBlackGrey, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0135")
                 .Level(14)
                 .Quantity(1)
@@ -645,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Side Table
             _builder.Create(RecipeType.BedSideTable, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0140")
                 .Level(15)
                 .Quantity(1)
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Low
             _builder.Create(RecipeType.BedLow, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0141")
                 .Level(16)
                 .Quantity(1)
@@ -733,7 +733,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, High Back (Blue)
             _builder.Create(RecipeType.BedHighBackBlue, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0136")
                 .Level(17)
                 .Quantity(1)
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Medical/Exam
             _builder.Create(RecipeType.BedMedicalExam, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0137")
                 .Level(17)
                 .Quantity(1)
@@ -931,7 +931,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bunk bed (Metal) Grey
             _builder.Create(RecipeType.BunkbedMetalGrey, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0238")
                 .Level(13)
                 .Quantity(1)
@@ -975,7 +975,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Pipes
             _builder.Create(RecipeType.MetalWallSinglePipes, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0244")
                 .Level(12)
                 .Quantity(1)
@@ -985,7 +985,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Pipes
             _builder.Create(RecipeType.MetalWallWidePipes, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0255")
                 .Level(15)
                 .Quantity(1)
@@ -995,7 +995,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Pipes
             _builder.Create(RecipeType.MetalWallDoorPipes, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0256")
                 .Level(17)
                 .Quantity(1)
@@ -1006,7 +1006,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Chair Plinth
             _builder.Create(RecipeType.ChairPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0260")
+                .Resref("structure_0261")
                 .Level(13)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1017,7 +1017,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Dining Chair - Grey
             _builder.Create(RecipeType.ChairDiningGrey, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0261")
+                .Resref("structure_0262")
                 .Level(14)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1028,7 +1028,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Dining Chair, Orange
             _builder.Create(RecipeType.ChairDiningOrange, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0263")
+                .Resref("structure_0264")
                 .Level(14)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1152,7 +1152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Wood, Yellow
             _builder.Create(RecipeType.BedWoodYellow, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0078")
                 .Level(23)
                 .Quantity(1)
@@ -1294,7 +1294,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bunk Bed
             _builder.Create(RecipeType.BunkBed, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0083")
                 .Level(26)
                 .Quantity(1)
@@ -1541,26 +1541,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ancient_wood", 6)
                 .Component("lth_good", 3);
 
-            // Wooden Wall, Planks (Small)
-            _builder.Create(RecipeType.WoodenWallPlanksSmall, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
-                .Resref("structure_0245")
-                .Level(26)
-                .Quantity(1)
-                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
-                .Component("wood_ancient", 6)
-                .Component("fiberpl_good", 3);
-
-            // Bar (Wooden)
-            _builder.Create(RecipeType.BarWooden, SkillType.Fabrication)
+            // Bar White
+            _builder.Create(RecipeType.BarWhite, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0229")
                 .Level(25)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
-                .Component("ancient_wood", 5)
+                .Component("ref_plagionite", 5)
                 .Component("fiberp_good", 3);
 
             // Bathtub
@@ -1609,7 +1598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Ribbed
             _builder.Create(RecipeType.MetalWallSingleRibbed, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0252")
                 .Level(21)
                 .Quantity(1)
@@ -1619,7 +1608,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Ribbed
             _builder.Create(RecipeType.MetalWallWideRibbed, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0253")
                 .Level(23)
                 .Quantity(1)
@@ -1629,7 +1618,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Ribbed
             _builder.Create(RecipeType.MetalWallDoorRibbed, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0254")
                 .Level(24)
                 .Quantity(1)
@@ -1651,7 +1640,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Table, Polygon Design
             _builder.Create(RecipeType.TablePolygonDesign, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("structure_0264")
+                .Resref("structure_0265")
                 .Level(25)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1662,7 +1651,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Table, Round, Glass
             _builder.Create(RecipeType.TableRoundGlass, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("structure_0265")
+                .Resref("structure_0266")
                 .Level(25)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1686,7 +1675,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Large
             _builder.Create(RecipeType.BedLarge, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0075")
                 .Level(31)
                 .Quantity(1)
@@ -2017,7 +2006,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Stone, Yellow
             _builder.Create(RecipeType.BedStoneYellow, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0074")
                 .Level(38)
                 .Quantity(1)
@@ -2072,7 +2061,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Extra Large
             _builder.Create(RecipeType.BedExtraLarge, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Beds)
+                .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0052")
                 .Level(39)
                 .Quantity(1)
@@ -2216,7 +2205,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Table Dark Glass
             _builder.Create(RecipeType.TableDarkGlass, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("structure_0266")
+                .Resref("structure_0267")
                 .Level(33)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 4)
@@ -2227,7 +2216,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Chaise Lounge - Red
             _builder.Create(RecipeType.ChaiseLoungeRed, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0262")
+                .Resref("structure_0263")
                 .Level(36)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 4)
@@ -2237,7 +2226,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Panels
             _builder.Create(RecipeType.MetalWallWidePanels, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0249")
                 .Level(37)
                 .Quantity(1)
@@ -2247,7 +2236,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Panels
             _builder.Create(RecipeType.MetalWallWidePanels, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0250")
                 .Level(38)
                 .Quantity(1)
@@ -2704,7 +2693,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wall Metal, Door Light 
             _builder.Create(RecipeType.MetalWallDoorLight, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0248")
                 .Level(45)
                 .Quantity(1)
@@ -2714,7 +2703,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide - Light, White
             _builder.Create(RecipeType.MetalWallWideLight, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0235")
                 .Level(43)
                 .Quantity(1)
@@ -2724,7 +2713,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single - Light, White
             _builder.Create(RecipeType.MetalWallSingleLight, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Walls)
+                .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0251")
                 .Level(41)
                 .Quantity(1)

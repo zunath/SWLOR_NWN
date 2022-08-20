@@ -696,8 +696,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true, 
             1)]
         StatueTwilek = 127,
-        [Structure("Chair, Chancellor",
-            "frn_chair_swlr02", 
+        [Structure("Chair - Chancellor",
+            "frn_chair_swlr01", 
             "", 
             true, 
             1)]
@@ -1302,14 +1302,14 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         MicrowaveBlack = 228,
-        [Structure("Bar (Wooden)",
-            "_mdrn_pl_barwood",
+        [Structure("Bar - White",
+			"_mdrn_pl_bar",
             "",
             true,
             1)]
         BarWooden = 229,
         [Structure("Couch Leather - Blue",
-			"frn_couch_swlr10",
+			"frn_couch_swlr05",
             "",
             true,
             1)]
@@ -1369,8 +1369,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         ShowerFloorBasin = 240,
-        [Structure("Couch - Black and Grey",
-            "frn_couch_swlr05",
+        [Structure("Couch, Leather - Grey",
+            "frn_couch_swlr06",
             "",
             true,
             1)]
@@ -1387,19 +1387,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         BookshelfJedi = 243,
-        [Structure("Wooden Wall, Panels, Dark (Small)",
-            "_mdrn_pl_wwall2t",
-            "",
-            true,
-            1)]
-        MetalWallSinglePipes = 244,
         [Structure("Metal Wall, Single, Pipes",
             "_mdrn_pl_wwall6t",
             "",
             true,
             1)]
-        WoodenWallPlanksSmall = 245,
-        [Structure("Television, Big Screen",
+		MetalWallSinglePipes = 244,
+		[Structure("Television, Big Screen",
             "_mdrn_pl_tvbgscr",
             "",
             true,
@@ -1471,26 +1465,26 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         MetalWallDoorPipes = 256,
-        [Structure("Couch, Cushion, Grey/Red",
+        [Structure("Couch, Cushion - Red",
             "frn_couch_swlr04",
             "",
             true,
             1)]
         CouchCushionGreyRed = 257,
         [Structure("Bench, Elegant, Grey",
-            "frn_couch_swlr03",
+            "frn_bench_swlr02",
             "",
             true,
             1)]
         BenchElegantGrey = 258,
         [Structure("Chaise Lounge - Orange",
-            "frn_couch_swlr02",
+			"frn_couch_swlr01",
             "",
             true,
             1)]
         ChaiseLoungeOrange = 259,
-        [Structure("Couch, Blanket Cover, Red",
-            "frn_couch_swlr01",
+        [Structure("Couch, Blanket Cover - Red",
+            "frn_couch_swlr03",
             "",
             true,
             1)]
@@ -1500,43 +1494,43 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             1)]
-        ChairPlinth = 260,
+        ChairPlinth = 261,
         [Structure("Chair, Dining - Grey",
-            "frn_chair_swlr01",
+            "frn_chair_swlr02",
             "",
             true,
             1)]
-        ChairDiningGrey = 261,
+        ChairDiningGrey = 262,
         [Structure("Chaise Lounge - Red",
-            "frn_chair_swlr01",
+            "frn_couch_swlr02",
             "",
             true,
             1)]
-        ChaiseLoungeRed = 262,
+        ChaiseLoungeRed = 263,
         [Structure("Chair, Dining - Orange",
             "_mdrn_pl_chairdi",
             "",
             true,
             1)]
-        ChairDiningOrange = 263,
+        ChairDiningOrange = 264,
         [Structure("Table, Polygon Design",
             "_mdrn_pl_table26",
             "",
             true,
             1)]
-        TablePolygonDesign = 264,
+        TablePolygonDesign = 265,
         [Structure("Table, Round, Glass",
             "_mdrn_pl_table16",
             "",
             true,
             1)]
-        TableRoundGlass = 265,
+        TableRoundGlass = 266,
         [Structure("Table, Dark, Glass",
             "zep_tableglass",
             "",
             true,
             1)]
-        TableDarkGlass = 266,
+        TableDarkGlass = 267,
 		
 
 

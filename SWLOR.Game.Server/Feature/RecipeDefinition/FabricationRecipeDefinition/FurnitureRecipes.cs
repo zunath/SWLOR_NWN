@@ -430,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("wood", 3);
 		
 			// Pile of Cushions (White)
-			_builder.Create(RecipeType.TagOfThing, SkillType.Fabrication)
+			_builder.Create(RecipeType.PileofCushionsWhite, SkillType.Fabrication)
    				 .Category(RecipeCategoryType.MiscellaneousFurniture)
    				 .Resref("structure_0225")
 				 .Level(9)
@@ -1004,7 +1004,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("fiberpl_flawed", 3);
 
 			// Chair Plinth
-			_builder.Create(RecipeType.ChairPlinthy, SkillType.Fabrication)
+			_builder.Create(RecipeType.ChairPlinth, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Seating)
 				.Resref("structure_0260")
 				.Level(13)
@@ -1015,7 +1015,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ref_scordspar", 3);
 
 			// Dining Chair - Grey
-			_builder.Create(RecipeType.DiningChairGrey, SkillType.Fabrication)
+			_builder.Create(RecipeType.ChairDiningGrey, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Seating)
 				.Resref("structure_0261")
 				.Level(14)
@@ -1026,7 +1026,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ref_scordspar", 3);
 
 			// Dining Chair, Orange
-			_builder.Create(RecipeType.DiningChairOrange, SkillType.Fabrication)
+			_builder.Create(RecipeType.ChairDiningOrange, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Seating)
 				.Resref("structure_0263")
 				.Level(14)
@@ -1035,7 +1035,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
 				.Component("wood_fine", 2)
 				.Component("ref_scordspar", 3);
-        }
+
+			// Chair Large Grey/Red
+			_builder.Create(RecipeType.ChairLargeGreyRed, SkillType.Fabrication)
+				.Category(RecipeCategoryType.Seating)
+				.Resref("structure_0237")
+				.Level(14)
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
+				.Component("lth_flawed", 2)
+				.Component("ref_scordspar", 2);
+		}
 
 		private void Tier3()
         {
@@ -2159,7 +2170,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("aracia_wood", 3);
 		
 			// Armchair, Low, Wood Trim (Blue)
-			_builder.Create(RecipeType.ArmchairLowWoodTrimBlue, SkillType.Fabrication)
+			_builder.Create(RecipeType.CouchLeatherBlue, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Seating)
 				.Resref("structure_0230")
 				.Level(35)
@@ -2649,7 +2660,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				
 			// Bookshelf, Jedi
 			_builder.Create(RecipeType.BookshelfJedi, SkillType.Fabrication)
-				.Category(RecipeCategoryType.Fixture)
+				.Category(RecipeCategoryType.Fixtures)
 				.Resref("structure_0243")
 				.Level(43)
 				.Quantity(1)
@@ -2670,7 +2681,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("fiberpl_high", 4);
 
 			// Television, Big Screen
-			_builder.Create(RecipeType.TelevisonBigScreen, SkillType.Fabrication)
+			_builder.Create(RecipeType.TelevisionBigScreen, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Electronics)
 				.Resref("structure_0246")
 				.Level(48)
@@ -2692,7 +2703,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 				.Component("ref_jasioclase", 3);
 
 			// Wall Metal, Door Light 
-			_builder.Create(RecipeType.WallMetalDoorLight, SkillType.Fabrication)
+			_builder.Create(RecipeType.MetalWallDoorLight, SkillType.Fabrication)
 				.Category(RecipeCategoryType.Walls)
 				.Resref("structure_0248")
 				.Level(45)

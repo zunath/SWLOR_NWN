@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         Birdbath = 26,
         [Structure("Sphinx Statue", 
-            "x0_sphinxstatue", 
+            "x0_sphinxstatue",
             "", 
             true, 
             1)]
@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         StatueTwilek = 127,
         [Structure("Chair, Chancellor",
-            "statue_twilek001", 
+            "frn_chair_swlr02", 
             "", 
             true, 
             1)]
@@ -1308,19 +1308,26 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         BarWooden = 229,
-        [Structure("Bathtub",
-            "_mdrn_pl_bathtb1",
+        [Structure("Couch Leather - Blue",
+			"frn_couch_swlr10",
             "",
             true,
             1)]
-        Bathtub = 232,
-        [Structure("Table, Plastic (Large)",
-            "_mdrn_pl_tabplal",
-            "",
-            true,
-            1)]
-        TablePlasticLarge = 233,
-        [Structure("Table, Round, Oak",
+        CouchLeatherBlue = 230,
+		[Structure("Bench, Leather Cushion (Brown)",
+			"frn_couch_swlr12",
+			"",
+			true,
+			1)]
+		BenchLeatherCushionBrown = 231,
+        //232 open
+		[Structure("Table, Plastic (Large)",
+			"_mdrn_pl_tabplal",
+			"",
+			true,
+			1)]
+		TablePlasticLarge = 233,
+		[Structure("Table, Round, Oak",
             "_mdrn_pl_table1o",
             "",
             true,
@@ -1386,7 +1393,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         MetalWallSinglePipes = 244,
-        [Structure("Metal Wall, Single, Pipes,
+        [Structure("Metal Wall, Single, Pipes",
             "_mdrn_pl_wwall6t",
             "",
             true,
@@ -1453,7 +1460,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         MetalWallDoorRibbed = 254,
         [Structure("Metal Wall, Wide, Pipes",
-            "_mdrn_pl_hwall31"
+            "_mdrn_pl_hwall31",
             "",
             true,
             1)]
@@ -1529,14 +1536,16 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             1)]
+        TableDarkGlass = 266,
+		
 
 
-        
-        
 
-        // Buildings start here
 
-        [Structure("City Hall - Style 1",
+
+		// Buildings start here
+
+		[Structure("City Hall - Style 1",
             "city_hall",
             "",
             true,

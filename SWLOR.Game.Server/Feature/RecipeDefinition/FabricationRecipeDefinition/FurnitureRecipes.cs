@@ -700,14 +700,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 		
             // Microwave (Black)
             _builder.Create(RecipeType.MicrowaveBlack, SkillType.Fabrication)
-		.Category(RecipeCategoryType.Electronics)
-		.Resref("structure_228")
-		.Level(18)
-		.Quantity(1)
-		.RequirementPerk(PerkType.FurnitureBlueprints, 2)
-		.EnhancementSlots(RecipeEnhancementType.Structure, 1)
-		.Component("ref_scordspar", 4)
-		.Component("elec_flawed", 2);
+				.Category(RecipeCategoryType.Electronics)
+				.Resref("structure_228")
+				.Level(18)
+				.Quantity(1)
+				.RequirementPerk(PerkType.FurnitureBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Structure, 1)
+				.Component("ref_scordspar", 4)
+				.Component("elec_flawed", 2);
 
 			// Flaming Statue
 			_builder.Create(RecipeType.FlamingStatue, SkillType.Fabrication)

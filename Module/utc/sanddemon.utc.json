@@ -568,7 +568,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_SAND_DEMON,40,2"
+          "value": "TATOOINE_SAND_DEMON,100,1"
         }
       },
       {
@@ -584,6 +584,36 @@
         "Value": {
           "type": "int",
           "value": 26
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_SAND_DEMON,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_SAND_DEMON_RARES,5,1"
         }
       }
     ]

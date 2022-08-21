@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.AreaManager)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 600f, 600f)
+                .SetInitialGeometry(0, 0, 700f, 600f)
                 .SetTitle("Area Notes")
 
                 .AddColumn(col =>
@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddColumn(colAreas =>
                         {
-                            colAreas.SetHeight(300f);
-                            colAreas.SetWidth(300f);
+                            colAreas.SetHeight(450f);
+                            colAreas.SetWidth(325f);
                             colAreas.AddRow(row =>
                             {
                                 row.SetHeight(300f);
@@ -79,8 +79,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     {
                                         cell.AddToggleButton()
                                             .BindText(model => model.AreaObjectList)
-                                            .SetWidth(300f)
-                                            .SetIsEnabled(false);
+                                            .BindIsToggled(model => model.AreaObjectToggled)
+                                            .BindOnClicked(model => model.OnSelectAreaObject())
+                                            .SetWidth(300f);
                                     });
                                 })
                                 .BindRowCount(model => model.AreaObjectList);
@@ -97,7 +98,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             colAreas.AddRow(row =>
                             {
+                                row.AddButton()
+                                    .SetText("Delete Object")
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickDeleteObject());
+
                                 row.AddSpacer();
+
+                                row.AddButton()
+                                    .SetText("Reset Area")
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickResetArea());
                             });
                         });
                     });

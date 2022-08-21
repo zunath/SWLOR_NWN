@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3228
+    "value": 6330
   },
   "BodyBag": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "K'lor'slugs were dangerous vermiforms that possessed a serpentine body propelled by many dangerously-edged legs. Their mouthes are gaping circular maws filled with concentric rings of teeth. "
     }
   },
   "Dex": {
@@ -119,7 +119,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss"
+      "0": "K'lor'slug"
     }
   },
   "fortbonus": {
@@ -198,7 +198,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 197
+    "value": 819
   },
   "Race": {
     "type": "byte",

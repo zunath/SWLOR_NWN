@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 1
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 3110
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -14,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 10.0
+    "value": 8.0
   },
   "ClassList": {
     "type": "list",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -63,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Sith apprentice was a Force-sensitive individual trained by a Sith Master to use the dark side of the Force. This one died during their trials and now haunts Korriban."
+      "0": "A Sith apprentice was a Force-sensitive individual trained by a Sith Master to use the dark side of the Force. This one seems to have become possessed by a force within this tomb."
     }
   },
   "Dex": {
@@ -77,6 +169,20 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sithhood"
+        }
+      },
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "forcewitarm001"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -175,7 +281,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Apprentice Ghost"
+      "0": "Possessed Apprentice"
     }
   },
   "fortbonus": {
@@ -254,11 +360,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 92
+    "value": 581
   },
   "Race": {
     "type": "byte",
-    "value": 24
+    "value": 6
   },
   "refbonus": {
     "type": "short",

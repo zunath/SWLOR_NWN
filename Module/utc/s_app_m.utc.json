@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 1
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 1171
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -27,10 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 6
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -38,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 13
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 132
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko bugs are small creatures, covered in millions of microscopic barbs that deliver a paralytic, blistering toxin. The barbs are often utilized in training sabers at the Sith Academy, mimicking the effects of losing a limb to a lightsaber. "
+      "0": "A Sith apprentice was a Force-sensitive individual trained by a Sith Master to use the dark side of the Force. This one seems to have become possessed by a force within this tomb."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 21
   },
   "Disarmable": {
     "type": "byte",
@@ -78,17 +170,38 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_bite"
+          "value": "sithhood"
+        }
+      },
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "forcewitarm001"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "s_app_electro"
+        }
+      },
+      {
+        "__struct_id": 32,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "s_app_electro"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_skin"
+          "value": "s_app_hide"
         }
       }
     ]
@@ -106,13 +219,69 @@
           "type": "word",
           "value": 289
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 48
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 256
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 49
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 50
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 51
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko Bug Swarm"
+      "0": "Possessed Apprentice"
     }
   },
   "fortbonus": {
@@ -129,11 +298,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 132
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -163,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 122
+    "value": 156
   },
   "NaturalAC": {
     "type": "byte",
@@ -191,11 +360,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 2094
+    "value": 581
   },
   "Race": {
     "type": "byte",
-    "value": 25
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -456,27 +625,11 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 452
+    "value": 107
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 299
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
@@ -484,7 +637,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -492,7 +645,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Tukata"
+    "value": "s_app_m"
   },
   "Tail_New": {
     "type": "dword",
@@ -504,7 +657,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata"
+    "value": "s_app_m"
   },
   "VarTable": {
     "type": "list",
@@ -521,7 +674,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_TUKATA,100,1"
+          "value": "KORRIBAN_SITH_APPRENTICE,100,1"
         }
       },
       {
@@ -536,7 +689,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 31
+          "value": 35
         }
       },
       {
@@ -551,7 +704,22 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_TUKATA,40,1"
+          "value": "KORRIBAN_SITH_APPRENTICE,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "KORRIBAN_SITH_APPRENTICE_RARES,10,1"
         }
       }
     ]
@@ -570,6 +738,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 24
   }
 }

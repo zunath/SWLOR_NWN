@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 20
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 526
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 20
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Hide"
+      "0": "K'lor'slug Innards"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 64
   },
   "Plot": {
     "type": "byte",
@@ -58,39 +58,7 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 43
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 25
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 99
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
+    "value": []
   },
   "StackSize": {
     "type": "word",
@@ -102,10 +70,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "terentatek_hide"
+    "value": "klorslug_innards"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "terentatek_hide"
+    "value": "klorslug_innards"
   }
 }

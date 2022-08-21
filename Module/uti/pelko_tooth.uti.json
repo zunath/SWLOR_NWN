@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 15
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,18 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 15
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 90753,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,18 +42,19 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Skin"
+      "0": "Pelko Bug Barb"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 64
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +87,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 104
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +102,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 44
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -114,7 +118,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 95
         },
         "Subtype": {
           "type": "word",
@@ -129,11 +133,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 100
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -145,11 +149,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 98
+          "value": 109
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 56
         }
       }
     ]
@@ -164,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_skin"
+    "value": "pelko_tooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_skin"
+    "value": "pelko_tooth"
   }
 }

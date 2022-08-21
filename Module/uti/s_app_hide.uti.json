@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 35
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,11 +18,11 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 35
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko Bug Toxin"
+      "0": "Sith Apprentice Hide"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 26
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -67,74 +67,12 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 15
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 10
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 108
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 33
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 44
-        },
-        "CostValue": {
-          "type": "word",
           "value": 40
         },
+        "CostValue": {
+          "type": "word",
+          "value": 100
+        },
         "Param1": {
           "type": "byte",
           "value": 255
@@ -145,7 +83,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 97
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 43
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 24
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 99
         },
         "Subtype": {
           "type": "word",
@@ -164,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_blood"
+    "value": "s_app_hide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_blood"
+    "value": "s_app_hide"
   }
 }

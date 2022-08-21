@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Bite"
+      "0": "Tuk'ata Bite"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 27
+          "value": 26
         },
         "Param1": {
           "type": "byte",
@@ -102,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_bite"
+    "value": "pelko_bite"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_bite"
+    "value": "pelko_bite"
   }
 }

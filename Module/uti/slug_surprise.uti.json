@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 15
+    "value": 11
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 311
   },
   "Charges": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -18,18 +18,15 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 15
+    "value": 11
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -42,19 +39,18 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko Bug Barb"
+      "0": "K'lor'slug Surprise"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 2
+    "value": 15
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 23
   },
   "Plot": {
     "type": "byte",
@@ -71,58 +67,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 3
         },
         "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
           "type": "word",
           "value": 15
         },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 44
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 95
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 335
         }
       },
       {
@@ -137,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -149,11 +114,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 109
+          "value": 106
         },
         "Subtype": {
           "type": "word",
-          "value": 56
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
         }
       }
     ]
@@ -168,10 +195,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_tooth"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_tooth"
+    "value": "slug_surprise"
   }
 }

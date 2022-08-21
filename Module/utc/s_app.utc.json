@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 1
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 6330
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -14,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 1.0
+    "value": 8.0
   },
   "ClassList": {
     "type": "list",
@@ -27,10 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 5
+          "value": 6
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -38,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 25
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -46,7 +138,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -5
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -63,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "K'lor'slugs were dangerous vermiforms that possessed a serpentine body propelled by many dangerously-edged legs. Their mouths are gaping circular maws filled with concentric rings of teeth. "
+      "0": "A Sith apprentice was a Force-sensitive individual trained by a Sith Master to use the dark side of the Force. This one seems to have become possessed by a force within this tomb."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 22
+    "value": 21
   },
   "Disarmable": {
     "type": "byte",
@@ -78,17 +170,38 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "hssiss_bite"
+          "value": "sithhood"
+        }
+      },
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "forcewitarm002"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "s_app_electro"
+        }
+      },
+      {
+        "__struct_id": 32,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "s_app_electro"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "hssiss_skin"
+          "value": "s_app_hide"
         }
       }
     ]
@@ -104,14 +217,63 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1750
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 48
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 256
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 49
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 50
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 51
         }
       }
     ]
@@ -119,7 +281,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "K'lor'slug"
+      "0": "Possessed Apprentice"
     }
   },
   "fortbonus": {
@@ -128,7 +290,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -140,7 +302,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 167
+    "value": 156
   },
   "NaturalAC": {
     "type": "byte",
@@ -198,11 +360,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 819
+    "value": 580
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -463,7 +625,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 396
+    "value": 107
   },
   "SpecAbilityList": {
     "type": "list",
@@ -483,7 +645,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "korr_hssiss"
+    "value": "s_app"
   },
   "Tail_New": {
     "type": "dword",
@@ -495,7 +657,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "korr_hssiss"
+    "value": "s_app"
   },
   "VarTable": {
     "type": "list",
@@ -512,7 +674,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_HSSISS,100,1"
+          "value": "KORRIBAN_SITH_APPRENTICE,100,1"
         }
       },
       {
@@ -527,7 +689,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 32
+          "value": 35
         }
       },
       {
@@ -542,7 +704,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_HSSISS,40,1"
+          "value": "KORRIBAN_SITH_APPRENTICE,40,1"
         }
       },
       {
@@ -557,7 +719,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_HSSISS_RARES,10,1"
+          "value": "KORRIBAN_SITH_APPRENTICE_RARES,10,1"
         }
       }
     ]
@@ -576,6 +738,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 24
   }
 }

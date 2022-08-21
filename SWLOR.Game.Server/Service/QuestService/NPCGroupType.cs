@@ -66,18 +66,18 @@ namespace SWLOR.Game.Server.Service.QuestService
         Hutlar_QionSlugs = 29,
         [NPCGroup("Qion Tigers")]
         Hutlar_QionTigers = 30,
-        [NPCGroup("Tuk'ata")]
-        Korriban_Tukata = 31,
-        [NPCGroup("Hssiss")]
-        Korriban_Hssiss = 32,
+        [NPCGroup("Pelko Bug Swarm")]
+        Korriban_PelkoSwarm = 31,
+        [NPCGroup("K'lor'slug")]
+        Korriban_Klorslug = 32,
         [NPCGroup("Shyrack")]
         Korriban_Shyrack = 33,
         [NPCGroup("Moraband Serpent")]
         Korriban_MorabandSerpent = 34,
-        [NPCGroup("Sith Apprentice Ghost")]
-        Korriban_SithApprenticeGhost = 35,
-        [NPCGroup("Terentatek")]
-        Korriban_Terentatek = 36,
+        [NPCGroup("Sith Apprentice")]
+        Korriban_SithApprentice = 35,
+        [NPCGroup("Wraid")]
+        Korriban_Wraid = 36,
         [NPCGroup("Octotench")]
         MonCala_Octotench = 37,
         [NPCGroup("Microtench")]

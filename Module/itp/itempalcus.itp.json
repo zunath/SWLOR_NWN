@@ -5657,17 +5657,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hssiss Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hssiss_bite"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Kath Hound Bite"
                     },
                     "RESREF": {
@@ -5684,6 +5673,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kinrath_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "K'lor'slug Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "klorslug_bite"
                     }
                   },
                   {
@@ -5739,6 +5739,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "octotench_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pelko Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pelko_bite"
                     }
                   },
                   {
@@ -5822,33 +5833,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Terentatek Claw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "terentatek_claw"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Test Claw"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "test_claw"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tuk'ata Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tukata_bite"
                     }
                   },
                   {
@@ -5915,6 +5904,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "warocas_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wraid Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wraid_claw"
                     }
                   }
                 ]
@@ -6963,7 +6963,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "hssiss_skin"
+                      "value": "klorslug_skin"
                     }
                   },
                   {
@@ -7080,6 +7080,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pelko Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pelko_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pirate Borealis Hide"
                     },
                     "RESREF": {
@@ -7190,6 +7201,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Possessed Apprentice Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Slug Hide"
                     },
                     "RESREF": {
@@ -7294,17 +7316,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrock_skin"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Apprentice Ghost Hide"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "s_app_gh_hide"
                     }
                   },
                   {
@@ -7685,33 +7696,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Terentatek Hide"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "terentatek_hide"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Test Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "test_skin"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tuk'ata Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tukata_skin"
                     }
                   },
                   {
@@ -7866,6 +7855,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "womprat_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wraid Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wraid_hide"
                     }
                   }
                 ]
@@ -19364,7 +19364,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "hssiss_tail"
+                      "value": "klorslug_claw"
                     }
                   },
                   {
@@ -19375,7 +19375,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "hssiss_innards"
+                      "value": "klorslug_innards"
                     }
                   },
                   {
@@ -19386,7 +19386,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "hssiss_meat"
+                      "value": "klorslug_meat"
                     }
                   },
                   {
@@ -19397,7 +19397,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "hssiss_skin2"
+                      "value": "klorslug_skin2"
                     }
                   },
                   {
@@ -19408,7 +19408,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "teren_claw"
+                      "value": "wraid_claw2"
                     }
                   },
                   {
@@ -19419,7 +19419,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "teren_tusk"
+                      "value": "wraid_scale"
                     }
                   },
                   {
@@ -19430,7 +19430,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "teren_spine"
+                      "value": "wraid_spine"
                     }
                   },
                   {
@@ -19441,7 +19441,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "teren_tooth"
+                      "value": "wraid_tooth"
                     }
                   },
                   {
@@ -20332,7 +20332,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata_tooth"
+                      "value": "pelko_tooth"
                     }
                   },
                   {
@@ -20343,7 +20343,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata_fur"
+                      "value": "pelko_chitin"
                     }
                   },
                   {
@@ -20354,7 +20354,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata_meat"
+                      "value": "pelko_meat"
                     }
                   },
                   {
@@ -20365,7 +20365,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata_blood"
+                      "value": "pelko_blood"
                     }
                   },
                   {
@@ -26129,17 +26129,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hssiss Surprise"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hssiss_surprise"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Kath Blood Broth"
                     },
                     "RESREF": {
@@ -26167,6 +26156,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kinrath_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "K'lor'slug Surprise"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_surprise"
                     }
                   },
                   {
@@ -31439,6 +31439,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Possessed Apprentice Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "s_app_electro"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Proto Longsword"
                           },
                           "RESREF": {
@@ -31477,17 +31488,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sith_electro"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Ghost Apprentice Electroblade"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "s_app_gh_electro"
                           }
                         },
                         {

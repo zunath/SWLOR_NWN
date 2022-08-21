@@ -9,30 +9,30 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
-            Hssiss();
+            Klorslug();
             MorabandSerpent();
             Shyrack();
-            Terentatek();
-            Tukata();
-            SithApprenticeGhost();
+            Wraid();
+            PelkoSwarm();
+            SithApprentice();
 
             SithCryptCrates();
 
             return _builder.Build();
         }
 
-        private void Hssiss()
+        private void Klorslug()
         {
-            _builder.Create("KORRIBAN_HSSISS")
+            _builder.Create("KORRIBAN_KLORSLUG")
                 .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 15)
-                .AddItem("hssiss_meat", 10)
-                .AddItem("hssiss_tail", 10)
-                .AddItem("hssiss_innards", 5);
+                .AddItem("klorslug_meat", 10)
+                .AddItem("klorslug_claw", 10)
+                .AddItem("klorslug_innards", 5);
 
-            _builder.Create("KORRIBAN_HSSISS_RARES")
+            _builder.Create("KORRIBAN_KLORSLUG_RARES")
                 .IsRare()
-                .AddItem("hssiss_skin2", 1, 1, true);
+                .AddItem("klorslug_skin2", 1, 1, true);
         }
 
         private void MorabandSerpent()
@@ -54,32 +54,32 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("shyrack_tooth", 20);
         }
 
-        private void Terentatek()
+        private void Wraid()
         {
-            _builder.Create("KORRIBAN_TERENTATEK")
+            _builder.Create("KORRIBAN_WRAID")
                 .AddItem("lth_flawed", 20)
                 .AddItem("lth_good", 5)
-                .AddItem("teren_claw", 10)
-                .AddItem("teren_tusk", 5)
-                .AddItem("teren_tooth", 5);
+                .AddItem("wraid_claw2", 10)
+                .AddItem("wraid_scale", 5)
+                .AddItem("wraid_tooth", 5);
 
-            _builder.Create("KORRIBAN_TERENTATEK_RARES")
+            _builder.Create("KORRIBAN_WRAID_RARES")
                 .IsRare()
-                .AddItem("teren_spine", 1, 1, true);
+                .AddItem("wraid_spine", 1, 1, true);
         }
 
-        private void Tukata()
+        private void PelkoSwarm()
         {
-            _builder.Create("KORRIBAN_TUKATA")
+            _builder.Create("KORRIBAN_PELKO")
                 .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 10)
-                .AddItem("tukata_fur", 20)
-                .AddItem("tukata_tooth", 20)
-                .AddItem("tukata_meat", 10)
-                .AddItem("tukata_blood", 5);
+                .AddItem("pelko_chitin", 20)
+                .AddItem("pelko_tooth", 20)
+                .AddItem("pelko_meat", 10)
+                .AddItem("pelko_blood", 5);
         }
 
-        private void SithApprenticeGhost()
+        private void SithApprentice()
         {
             _builder.Create("KORRIBAN_SITH_APPRENTICE")
                 .AddItem("lth_ruined", 5)

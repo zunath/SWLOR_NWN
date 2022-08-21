@@ -1,88 +1,12 @@
 {
   "__data_type": "UTC ",
-  "Appearance_Head": {
-    "type": "byte",
-    "value": 1
-  },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 1
+    "value": 10046
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
-  },
-  "BodyPart_Belt": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFoot": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Neck": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Pelvis": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_RThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Torso": {
-    "type": "byte",
-    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -90,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 8.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -103,26 +27,10 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 6
+          "value": 5
         }
       }
     ]
-  },
-  "Color_Hair": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Skin": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Tattoo1": {
-    "type": "byte",
-    "value": 1
-  },
-  "Color_Tattoo2": {
-    "type": "byte",
-    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 12
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -5
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 132
+    "value": 207
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Sith apprentice was a Force-sensitive individual trained by a Sith Master to use the dark side of the Force. This one seems to have become possessed by a force within this tomb."
+      "0": "Large reptilian creatures that inhabited desert planets. They have powerful front legs that enable them to move quickly when agitated by means of long, bounding strides. "
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 21
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -170,38 +78,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 1,
+        "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "sithhood"
+          "value": "wraid_claw"
         }
       },
       {
-        "__struct_id": 2,
+        "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "forcewitarm002"
-        }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "s_app_gh_electro"
-        }
-      },
-      {
-        "__struct_id": 32,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "s_app_gh_electro"
+          "value": "wraid_claw"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "s_app_gh_hide"
+          "value": "wraid_hide"
         }
       }
     ]
@@ -217,63 +111,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1750
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 48
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 256
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 44
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 45
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 49
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 50
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 46
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 51
         }
       }
     ]
@@ -281,7 +126,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Possessed Apprentice"
+      "0": "Korriban Wraid"
     }
   },
   "fortbonus": {
@@ -290,7 +135,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -298,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 132
+    "value": 207
   },
   "Int": {
     "type": "byte",
-    "value": 22
+    "value": 14
   },
   "Interruptable": {
     "type": "byte",
@@ -332,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 156
+    "value": 212
   },
   "NaturalAC": {
     "type": "byte",
@@ -360,11 +205,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 580
+    "value": 195
   },
   "Race": {
     "type": "byte",
-    "value": 6
+    "value": 8
   },
   "refbonus": {
     "type": "short",
@@ -625,7 +470,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 107
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
@@ -637,7 +482,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -645,7 +490,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "sith_ghost_apprentice"
+    "value": "korr_wraid"
   },
   "Tail_New": {
     "type": "dword",
@@ -657,7 +502,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sith_ghost"
+    "value": "korr_wraid"
   },
   "VarTable": {
     "type": "list",
@@ -674,7 +519,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_SITH_APPRENTICE,100,1"
+          "value": "KORRIBAN_WRAID,100,1"
         }
       },
       {
@@ -689,7 +534,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 35
+          "value": 36
         }
       },
       {
@@ -704,22 +549,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_SITH_APPRENTICE,40,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_SITH_APPRENTICE_RARES,10,1"
+          "value": "KORRIBAN_WRAID,40,1"
         }
       }
     ]
@@ -738,6 +568,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 16
   }
 }

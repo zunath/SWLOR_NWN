@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 19
+    "value": 28
   },
   "BaseItem": {
     "type": "int",
-    "value": 536
+    "value": 526
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 19
+    "value": 28
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "K'lor'slug Claw"
+      "0": "K'lor'slug Meat"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 98
+    "value": 3
   },
   "PaletteID": {
     "type": "byte",
@@ -72,10 +70,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_tail"
+    "value": "klorslug_meat"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_tail"
+    "value": "klorslug_meat"
   }
 }

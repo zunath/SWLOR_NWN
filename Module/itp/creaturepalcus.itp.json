@@ -9804,7 +9804,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "korr_hssiss"
+                      "value": "korr_klorslug"
                     }
                   },
                   {
@@ -9823,7 +9823,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "korr_terentatek"
+                      "value": "korr_wraid"
                     }
                   },
                   {
@@ -9849,7 +9849,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 8.0
+                      "value": 6.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9861,7 +9861,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata"
+                      "value": "pelko"
                     }
                   },
                   {
@@ -9880,7 +9880,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "sith_ghost"
+                      "value": "s_app"
                     }
                   },
                   {
@@ -9899,7 +9899,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "sith_ghost_male"
+                      "value": "s_app_m"
                     }
                   },
                   {

@@ -166,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_tusk"
+    "value": "wraid_scale"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_tusk"
+    "value": "wraid_scale"
   }
 }

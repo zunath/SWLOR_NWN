@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 15
+    "value": 9
   },
   "BaseItem": {
     "type": "int",
@@ -18,14 +18,13 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 15
+    "value": 9
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -42,15 +41,14 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban Wraid Claw"
+      "0": "Korriban Wraid Tooth"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 87
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
@@ -118,11 +116,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 110
+          "value": 108
         },
         "Subtype": {
           "type": "word",
-          "value": 45
+          "value": 31
         }
       },
       {
@@ -168,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_claw"
+    "value": "wraid_tooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_claw"
+    "value": "wraid_tooth"
   }
 }

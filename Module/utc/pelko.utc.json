@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10046
+    "value": 833
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 6.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 5
+          "value": 2
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -5
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 207
+    "value": 120
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Large reptilian creatures that inhabited desert planets. They have powerful front legs that enable them to move quickly when agitated by means of long, bounding strides. "
+      "0": "Pelko bugs are small creatures, covered in millions of microscopic barbs that deliver a paralytic, blistering toxin. The barbs are often utilized in training sabers at the Sith Academy, mimicking the effects of losing a limb to a lightsaber. "
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -81,21 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "terentatek_claw"
-        }
-      },
-      {
-        "__struct_id": 32768,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "terentatek_claw"
+          "value": "pelko_bite"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "terentatek_hide"
+          "value": "pelko_skin"
         }
       }
     ]
@@ -111,13 +104,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1750
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       }
@@ -126,7 +112,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban Wraid"
+      "0": "Pelko Bug Swarm"
     }
   },
   "fortbonus": {
@@ -143,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 207
+    "value": 120
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -177,7 +163,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 212
+    "value": 122
   },
   "NaturalAC": {
     "type": "byte",
@@ -205,11 +191,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 195
+    "value": 2094
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 25
   },
   "refbonus": {
     "type": "short",
@@ -470,11 +456,27 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 396
+    "value": 452
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 299
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -482,7 +484,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 24
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -490,11 +492,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "korr_terentatek"
+    "value": "Pelko"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 0
+    "value": 814
   },
   "TemplateList": {
     "type": "list",
@@ -502,7 +504,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "korr_terentatek"
+    "value": "pelko"
   },
   "VarTable": {
     "type": "list",
@@ -519,7 +521,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_TERENTATEK,100,1"
+          "value": "KORRIBAN_PELKO,100,1"
         }
       },
       {
@@ -534,7 +536,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 36
+          "value": 31
         }
       },
       {
@@ -549,7 +551,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_TERENTATEK,40,1"
+          "value": "KORRIBAN_PELKO,40,1"
         }
       }
     ]
@@ -568,6 +570,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 16
+    "value": 22
   }
 }

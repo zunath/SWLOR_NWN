@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 9
+    "value": 4
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 9
+    "value": 4
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban Wraid Tooth"
+      "0": "Pelko Bug Meat"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 2
+    "value": 3
   },
   "PaletteID": {
     "type": "byte",
@@ -120,7 +118,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 31
+          "value": 35
         }
       },
       {
@@ -166,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_tooth"
+    "value": "pelko_meat"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_tooth"
+    "value": "pelko_meat"
   }
 }

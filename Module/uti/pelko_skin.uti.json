@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 11
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 73
   },
   "Charges": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Comment": {
     "type": "cexostring",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 11
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "K'lor'slug Surprise"
+      "0": "Tuk'ata Skin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 15
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 23
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -67,73 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 41
         },
         "CostValue": {
-          "type": "word",
-          "value": 13
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 15
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 335
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 106
-        },
-        "Subtype": {
           "type": "word",
           "value": 5
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -145,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 106
+          "value": 117
         },
         "Subtype": {
           "type": "word",
-          "value": 4
+          "value": 0
         }
       },
       {
@@ -160,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 21
         },
         "Param1": {
           "type": "byte",
@@ -176,11 +114,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 106
+          "value": 99
         },
         "Subtype": {
           "type": "word",
-          "value": 6
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 41
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 100
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -195,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "FOOD"
+    "value": "pelko_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_surprise"
+    "value": "pelko_skin"
   }
 }

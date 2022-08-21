@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.AreaManager)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 1000f, 600f)
+                .SetInitialGeometry(0, 0, 600f, 600f)
                 .SetTitle("Area Notes")
 
                 .AddColumn(col =>
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.AddToggleButton()
                                             .BindText(model => model.AreaNames)
                                             .BindIsToggled(model => model.AreaToggled)
-                                            .BindOnClicked(model => model.OnSelectNote());
+                                            .BindOnClicked(model => model.OnSelectArea());
                                     });
                                 })
                                     .BindRowCount(model => model.AreaNames);
@@ -66,52 +66,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddColumn(colAreas =>
                         {
                             colAreas.SetHeight(300f);
+                            colAreas.SetWidth(300f);
                             colAreas.AddRow(row =>
                             {
-                                row.AddTextEdit()
-                                    .SetIsMultiline(true)
-                                    .SetMaxLength(AreaManagerViewModel.MaxNoteLength)
-                                    .BindValue(model => model.PrivateText)
-                                    .SetHeight(205f)
-                                    .SetWidth(600f)
-                                    .SetPlaceholder("DM Only Notes");
-                            });
+                                row.SetHeight(300f);
 
-                            colAreas.AddRow(row =>
-                            {
+                                row.AddList(template =>
+                                {
+                                    template.SetHeight(300f);
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .BindText(model => model.AreaObjectList)
+                                            .SetWidth(300f)
+                                            .SetIsEnabled(false);
+                                    });
+                                })
+                                .BindRowCount(model => model.AreaObjectList);
+                                
+                                /*
                                 row.AddTextEdit()
                                     .SetIsMultiline(true)
-                                    .SetMaxLength(AreaManagerViewModel.MaxNoteLength)
-                                    .BindValue(model => model.PublicText)
-                                    .SetHeight(205f)
-                                    .SetWidth(600f)
-                                    .SetPlaceholder("Public Notes");
+                                    .BindValue(model => model.AreaObjectList)
+                                    .SetHeight(450f)
+                                    .SetWidth(300f)
+                                    .SetIsEnabled(false);
+                                */
                             });
 
                             colAreas.AddRow(row =>
                             {
                                 row.AddSpacer();
-                            });
-
-                            colAreas.AddRow(row =>
-                            {
-                                row.AddButton()
-                                    .BindOnClicked(model => model.OnClickSave())
-                                    .SetText("Save")
-                                    .SetHeight(35f)
-                                    .BindIsEnabled(model => model.IsSaveEnabled);
-
-                                row.AddButton()
-                                    .BindOnClicked(model => model.OnClickDiscardChanges())
-                                    .SetText("Discard Changes")
-                                    .SetHeight(35f)
-                                    .BindIsEnabled(model => model.IsSaveEnabled);
-
-                                row.AddButton()
-                                    .SetText("Delete Note")
-                                    .BindOnClicked(model => model.OnClickDeleteNote())
-                                    .BindIsEnabled(model => model.IsDeleteEnabled)
-                                    .SetHeight(35f);
                             });
                         });
                     });

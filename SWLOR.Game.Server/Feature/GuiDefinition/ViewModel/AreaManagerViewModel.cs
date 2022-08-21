@@ -13,10 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AreaManagerViewModel: GuiViewModelBase<AreaManagerViewModel, GuiPayloadBase>
     {
-        public const int MaxNoteLength = 10000;
-
         private readonly List<uint> _areas = new();
-        private bool _isLoadingNote;
 
         public string SearchText
         {
@@ -49,35 +46,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
-
+        public GuiBindingList<string> AreaObjectList
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
         public bool IsAreaSelected
         {
             get => Get<bool>();
             set => Set(value);
-        }
-
-        public string PrivateText
-        {
-            get => Get<string>();
-            set
-            {
-                Set(value);
-
-                if(!_isLoadingNote)
-                    IsSaveEnabled = true;
-            }
-        }
-
-        public string PublicText
-        {
-            get => Get<string>();
-            set
-            {
-                Set(value);
-
-                if(!_isLoadingNote)
-                    IsSaveEnabled = true;
-            }
         }
 
         public int SelectedAreaIndex
@@ -88,150 +65,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            /*
             var areaResrefs = new GuiBindingList<string>();
             var areaNames = new GuiBindingList<string>();
             var areaToggled = new GuiBindingList<bool>();
 
             _areas.Clear();
 
-            foreach (var area in Area.GetAreas())
+            foreach (var area in Area.GetTemplateAreas())
             {
-                _areas.Add(area.Value);
-                areaResrefs.Add(area.Key);
-                areaNames.Add(GetName(area.Value));
-                areaToggled.Add(false);
+                if(Area.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
+                {
+                    _areas.Add(area.Value);
+                    areaResrefs.Add(area.Key);
+                    areaNames.Add(GetName(area.Value));
+                    areaToggled.Add(false);
+                }
             }
 
             SelectedAreaIndex = -1;
             AreaResrefs = areaResrefs;
             AreaNames = areaNames;
             AreaToggled = areaToggled;
-            PrivateText = string.Empty;
-            PublicText = string.Empty;
             IsAreaSelected = false;
-            IsSaveEnabled = false;
                         
             SearchText = string.Empty;
             Search();
 
-            WatchOnClient(model => model.PrivateText);
-            WatchOnClient(model => model.PublicText);
             WatchOnClient(model => model.SearchText);
-            */
+            //WatchOnClient(model => model.AreaObjectList);
         }
 
         public Action OnClickTest() => () =>
         {
             Targeting.EnterTargetingMode(Player, ObjectType.Tile, "Please click on a location to create instanced area.",
-             area =>
-             {
-                 Console.WriteLine("Selected: " + GetName(area));
-
-                 if (!GetIsObjectValid(area) || GetIsDM(area) || GetIsPC(area))
-                 {
-                     return;
-                 }
-
-                 Console.WriteLine("Creating new area instance from " + GetName(area));
-                 var serialized = ObjectPlugin.Serialize(area);
-                 //var dbCreature = new DMCreature(GetName(creature), GetTag(creature), serialized);
-                 //DB.Set<DMCreature>(dbCreature);
-                 var deserialized = ObjectPlugin.Deserialize(serialized);
-                 var targetArea = CreateArea(GetResRef(deserialized),"TEST");
-                 //RegisterInstance(property.Id, targetArea, property.Layout);
-                 
-                 SetName(targetArea, "!TEST");
-                 Console.WriteLine("Area created...");
-                
-             });
-        };
-
-        private void LoadNote()
-        {
-            if (SelectedAreaIndex <= -1)
-                return;
-
-            _isLoadingNote = true;
-
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
-                .ToList();
-
-            foreach (var note in notes)
+            area =>
             {
-                PrivateText = note.PrivateText;
-                PublicText = note.PublicText;
-                _isLoadingNote = false;
-            }
-
-            if (_isLoadingNote)
-            {
-                var dbNote = new AreaNote
+                if (Area.GetIsTemplateArea(area))
                 {
-                    AreaResref = AreaResrefs[SelectedAreaIndex]
-                };
-                DB.Set<AreaNote>(dbNote);
-            }
+                    foreach (var x in Area.GetTemplateAreaCustomObjectsByArea(area))
+                    {
+                        Console.WriteLine(GetName(x));
+                    }
+                }
+            });
+        };
 
-            _isLoadingNote = false;
-            IsSaveEnabled = false;
-        }
-
-        private void SaveNote()
+        private void LoadAreaObjectList()
         {
             if (SelectedAreaIndex <= -1)
                 return;
+            
+            var areaObjectList = new GuiBindingList<string>();
 
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
-                .ToList();
-
-            foreach (var note in notes)
+            foreach (var areaObject in Area.GetTemplateAreaCustomObjectsByArea(_areas[SelectedAreaIndex]))
             {
-                note.PrivateText = PrivateText;
-                note.PublicText = PublicText;
-                _isLoadingNote = false;
+                areaObjectList.Add(GetName(areaObject));
             }
 
-            var message = AreaNames[SelectedAreaIndex] + ": " + notes[0].PublicText;            
-            foreach (var player in Area.GetPlayersInArea(_areas[SelectedAreaIndex]))
-            {
-                SendMessageToPC(player, ColorToken.Purple(message));
-            }
+            if (areaObjectList.Count == 0) areaObjectList.Add("No Objects.");
 
-            DB.Set(notes[0]);
-            IsSaveEnabled = false;
+            AreaObjectList = areaObjectList;
         }
 
-        public Action OnCloseWindow() => SaveNote;
-
-        public Action OnClickDeleteNote() => () =>
-        {
-            if (SelectedAreaIndex < 0)
-                return;
-
-            ShowModal($"Are you sure you want to delete the note for this area? '{AreaNames[SelectedAreaIndex]}'", () =>
-            {                                
-                PrivateText = string.Empty;
-                PublicText = string.Empty;
-                _isLoadingNote = true;
-                IsAreaSelected = false;
-                IsDeleteEnabled = false;
-                IsSaveEnabled = false;
-                _isLoadingNote = false;
-
-                SaveNote();
-            });
-
-            IsSaveEnabled = false;
-        };
-
-        public Action OnSelectNote() => () =>
+        public Action OnSelectArea() => () =>
         {
             if (SelectedAreaIndex > -1)
                 AreaToggled[SelectedAreaIndex] = false;
@@ -239,20 +135,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedAreaIndex = index;
 
-            LoadNote();
+            LoadAreaObjectList();
 
             IsDeleteEnabled = true;
             AreaToggled[index] = true;
             IsAreaSelected = true;
 
-            IsSaveEnabled = false;
-        };
-
-        public Action OnClickSave() => SaveNote;
-
-        public Action OnClickDiscardChanges() => () =>
-        {
-            LoadNote();
             IsSaveEnabled = false;
         };
 
@@ -269,19 +157,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (string.IsNullOrWhiteSpace(SearchText)) 
             {
-                foreach (var area in Area.GetAreas())
+                foreach (var area in Area.GetTemplateAreas())
                 {
-                    _areas.Add(area.Value);
-                    areaResrefs.Add(area.Key);
-                    areaNames.Add(GetName(area.Value));
-                    areaToggled.Add(false);
-                }
-            }
-            else
-            {
-                foreach (var area in Area.GetAreas())
-                {
-                    if (GetStringUpperCase(GetName(area.Value)).Contains(GetStringUpperCase(SearchText)))
+                    if (Area.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
                     {
                         _areas.Add(area.Value);
                         areaResrefs.Add(area.Key);
@@ -290,13 +168,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 }
             }
+            else
+            {
+                foreach (var area in Area.GetTemplateAreas())
+                {
+                    if (Area.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
+                    {
+                        if (GetStringUpperCase(GetName(area.Value)).Contains(GetStringUpperCase(SearchText)))
+                        {
+                            _areas.Add(area.Value);
+                            areaResrefs.Add(area.Key);
+                            areaNames.Add(GetName(area.Value));
+                            areaToggled.Add(false);
+                        }
+                    }
+                }
+            }
 
             SelectedAreaIndex = -1;
             AreaResrefs = areaResrefs;
             AreaNames = areaNames;
             AreaToggled = areaToggled;
-            PrivateText = string.Empty;
-            PublicText = string.Empty;
+            AreaObjectList.Clear();
             IsAreaSelected = false;
             IsSaveEnabled = false;
         }

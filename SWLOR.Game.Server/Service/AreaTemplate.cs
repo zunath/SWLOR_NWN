@@ -4,22 +4,15 @@ using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AreaTemplateService
+    public class AreaTemplate
     {
         private static Dictionary<string, uint> TemplateAreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> TemplateAreaCustomObjectsByArea { get; } = new();
-
-        [NWNEventHandler("mod_cache")]
-        public static void CacheData()
-        {
-            return;
-        }
 
         public static void CacheTemplateArea(string resref, uint area)
         {
@@ -33,6 +26,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void CacheTemplateAreas()
         {
+            Console.WriteLine("Creating Area Templates, please wait...");
             foreach (var area in Area.GetAreas())
             {
                 // store transition targets to restore after CreateArea is called.
@@ -69,13 +63,12 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // restore all save DM spawned objects
-                var query = new DBQuery<AreaTemplate>()
-                    .AddFieldSearch(nameof(AreaTemplate.AreaResref), GetResRef(targetArea), false)
-                    .OrderBy(nameof(AreaTemplate.AreaResref));
+                var query = new DBQuery<AreaTemplateObject>()
+                    .AddFieldSearch(nameof(AreaTemplateObject.AreaResref), GetResRef(targetArea), false)
+                    .OrderBy(nameof(AreaTemplateObject.AreaResref));
                 var areaTemplates = DB.Search(query)
                     .ToList();
 
-                //Console.WriteLine("Area Template created: " + GetName(targetArea));
                 foreach (var x in areaTemplates)
                 {
                     var deserialized = ObjectPlugin.Deserialize(x.ObjectData);
@@ -90,7 +83,8 @@ namespace SWLOR.Game.Server.Service
                     {
                         TemplateAreaCustomObjectsByArea[targetArea].Add(newObject);
                     }
-                    Console.WriteLine("Object Restored: " + GetName(newObject));
+
+                    SetLocalString(newObject, "DBID", x.Id);
                 }
             }
             Console.WriteLine("Created " + GetTemplateAreas().Count + " template areas.");
@@ -129,14 +123,6 @@ namespace SWLOR.Game.Server.Service
                 TemplateAreaCustomObjectsByArea[area].Remove(customObject);
         }
 
-        // *************  need to handle on object destroyed ************
-
-        [NWNEventHandler("dm_spwnobj_bef")]
-        public static void DmSpawnObjectBefore()
-        {
-            // nothing needed here?
-        }
-
         /// <summary>
         /// When a DM spawns an object in the template area, add it to the cache.
         /// </summary>
@@ -154,7 +140,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     TemplateAreaCustomObjectsByArea[area].Add(spawn);
 
-                    var areaTemplate = new AreaTemplate
+                    var areaTemplate = new AreaTemplateObject
                     {
                         AreaResref = GetResRef(area),
                         ObjectName = GetName(spawn),
@@ -165,8 +151,8 @@ namespace SWLOR.Game.Server.Service
                         LocationOrientation = GetFacing(spawn)
                     };
                     
-                    DB.Set<AreaTemplate>(areaTemplate);
-                    Console.WriteLine("Object saved: " + GetName(spawn));
+                    DB.Set<AreaTemplateObject>(areaTemplate);
+                    SetLocalString(spawn, "DBID", areaTemplate.Id);
                 };                   
             }
         }

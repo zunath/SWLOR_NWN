@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Entity
 {
-    public class AreaTemplate : EntityBase
+    public class AreaTemplateObject : EntityBase
     {
         [Indexed]
         public string AreaResref { get; set; }
@@ -11,13 +11,13 @@
         public float LocationY { get; set; }
         public float LocationZ { get; set; }
         public float LocationOrientation { get; set; }
-        public AreaTemplate(string areaResRef, string name, string data, string locationX, string locationY, string locationZ, string locationOrientation)
+        public AreaTemplateObject(string areaResRef, string name, string data, string locationX, string locationY, string locationZ, string locationOrientation)
         {
             AreaResref = areaResRef;
             ObjectName = name;
             ObjectData = data;
         }
-        public AreaTemplate()
+        public AreaTemplateObject()
         {
             AreaResref = string.Empty;
             ObjectName = string.Empty;

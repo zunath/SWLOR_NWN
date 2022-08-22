@@ -82,26 +82,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaResrefs = new GuiBindingList<string>();
             var areaNames = new GuiBindingList<string>();
             var areaToggled = new GuiBindingList<bool>();
+            var areaObjectList = new GuiBindingList<string>();
+            var areaObjectToggled = new GuiBindingList<bool>();
 
             _areas.Clear();
             _objects.Clear();
-            /*
-            foreach (var area in AreaTemplateService.GetTemplateAreas())
-            {
-                if(AreaTemplateService.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
-                {
-                    _areas.Add(area.Value);
-                    areaResrefs.Add(area.Key);
-                    areaNames.Add(GetName(area.Value));
-                    areaToggled.Add(false);
-                }
-            }
-            */
 
             SelectedAreaIndex = -1;
             AreaResrefs = areaResrefs;
             AreaNames = areaNames;
             AreaToggled = areaToggled;
+            AreaObjectList = areaObjectList;
+            AreaObjectToggled = areaObjectToggled;
             IsAreaSelected = false;
                         
             SearchText = string.Empty;
@@ -109,21 +101,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.SearchText);
         }
-
-        public Action OnClickTest() => () =>
-        {
-            Targeting.EnterTargetingMode(Player, ObjectType.Tile, "Please click on a location to create instanced area.",
-            area =>
-            {
-                if (AreaTemplateService.GetIsTemplateArea(area))
-                {
-                    foreach (var x in AreaTemplateService.GetTemplateAreaCustomObjectsByArea(area))
-                    {
-                        Console.WriteLine(GetName(x));
-                    }
-                }
-            });
-        };
 
         private void LoadAreaObjectList()
         {
@@ -134,17 +111,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaObjectToggled = new GuiBindingList<bool>();
 
             _objects.Clear();
-            foreach (var areaObject in AreaTemplateService.GetTemplateAreaCustomObjectsByArea(_areas[SelectedAreaIndex]))
+            foreach (var areaObject in AreaTemplate.GetTemplateAreaCustomObjectsByArea(_areas[SelectedAreaIndex]))
             {
                 _objects.Add(areaObject);
                 areaObjectList.Add(GetName(areaObject));
                 areaObjectToggled.Add(false);
             }
 
-            if (areaObjectList.Count == 0) areaObjectList.Add("No Objects.");
-
             AreaObjectList = areaObjectList;
             AreaObjectToggled = areaObjectToggled;
+            
+            IsDeleteObjectEnabled = false;
         }
 
         public Action OnSelectArea() => () =>
@@ -165,53 +142,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
         public Action OnSelectAreaObject() => () =>
         {
-            if (SelectedAreaIndex > -1)
-                AreaToggled[SelectedAreaIndex] = false;
+            if (SelectedAreaObjectIndex > -1)
+                AreaObjectToggled[SelectedAreaObjectIndex] = false;
 
             var index = NuiGetEventArrayIndex();
             SelectedAreaObjectIndex = index;
 
             IsDeleteObjectEnabled = true;
-
             AreaObjectToggled[index] = true;
-           // IsAreaObjectSelected = true;
         };
 
         public Action OnClickDeleteObject() => () =>
         {
-            if (!(SelectedAreaObjectIndex > -1))
+            if (SelectedAreaIndex < 0)
                 return;
 
-            var index = NuiGetEventArrayIndex();
-            SelectedAreaObjectIndex = index;
+            var areaObject = _objects[SelectedAreaObjectIndex];
+            var areaObjectId = GetLocalString(areaObject, "DBID");
+
+            // Can enable modal for this but it seems like it would be a hassle to have for every single object in practice.
+            //ShowModal($"Are you sure you want to permanently remove this DM spawned object? '{AreaObjectList[SelectedAreaObjectIndex]}'", () =>
+            //{
+                var query = new DBQuery<AreaTemplateObject>()
+                    .AddFieldSearch(nameof(AreaTemplateObject.AreaResref), GetResRef(_areas[SelectedAreaIndex]), false)
+                    .AddFieldSearch(nameof(AreaTemplateObject.Id), areaObjectId, false)
+                    .OrderBy(nameof(AreaTemplateObject.AreaResref));
+                var areaTemplates = DB.Search(query)
+                    .ToList();
+
+                foreach (var dbRecord in areaTemplates)
+                {
+                    DB.Delete<AreaTemplateObject>(dbRecord.Id);
+                }
+
+                AreaTemplate.RemoveTemplateAreaCustomObjectByArea(_areas[SelectedAreaIndex], areaObject);
+                DestroyObject(areaObject);
+
+                _objects.RemoveAt(SelectedAreaObjectIndex);
+                AreaObjectList.RemoveAt(SelectedAreaObjectIndex);
+                AreaObjectToggled.RemoveAt(SelectedAreaObjectIndex);
+            //});
         };
 
         public Action OnClickResetArea() => () =>
         {
             if (!(SelectedAreaIndex > -1))
                 return;
-            Console.WriteLine("SelectedAreaIndex = " + SelectedAreaIndex);
 
             ShowModal($"Are you sure you want to permanently remove all DM spawned objects from '{AreaNames[SelectedAreaIndex]}'", () =>
             {
-                Console.WriteLine("2-SelectedAreaIndex = " + SelectedAreaIndex);
+                var query = new DBQuery<AreaTemplateObject>()
+                    .AddFieldSearch(nameof(AreaTemplateObject.AreaResref), GetResRef(_areas[SelectedAreaIndex]), false)
+                    .OrderBy(nameof(AreaTemplateObject.AreaResref));
+                var areaTemplates = DB.Search(query)
+                    .ToList();
 
-                foreach (var areaObject in AreaTemplateService.GetTemplateAreaCustomObjectsByArea(_areas[SelectedAreaIndex]))
+                foreach (var dbRecord in areaTemplates)
                 {
-                    Console.WriteLine("Removing object: " + GetName(areaObject));
+                    DB.Delete<AreaTemplateObject>(dbRecord.Id);
+                }
 
-                    var query = new DBQuery<AreaTemplate>()
-                        .AddFieldSearch(nameof(AreaTemplate.AreaResref), GetResRef(_areas[SelectedAreaIndex]), false)
-                        .OrderBy(nameof(AreaTemplate.AreaResref));
-                    var areaTemplates = DB.Search(query)
-                        .ToList();
-
-                    foreach(var dbRecord in areaTemplates)
-                    {
-                        Console.WriteLine("Removing db record for object: " + dbRecord.ObjectName);
-                        DB.Delete<AreaTemplate>(dbRecord.Id);                       
-                    }
-                    AreaTemplateService.RemoveTemplateAreaCustomObjectByArea(_areas[SelectedAreaIndex], areaObject);
+                foreach (var areaObject in AreaTemplate.GetTemplateAreaCustomObjectsByArea(_areas[SelectedAreaIndex]))
+                {
+                    AreaTemplate.RemoveTemplateAreaCustomObjectByArea(_areas[SelectedAreaIndex], areaObject);
                     DestroyObject(areaObject);
                 }
                 Search();
@@ -237,9 +230,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (string.IsNullOrWhiteSpace(SearchText)) 
             {
-                foreach (var area in AreaTemplateService.GetTemplateAreas())
+                foreach (var area in AreaTemplate.GetTemplateAreas())
                 {
-                    if (AreaTemplateService.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
+                    if (AreaTemplate.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
                     {
                         _areas.Add(area.Value);
                         areaResrefs.Add(area.Key);
@@ -250,9 +243,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                foreach (var area in AreaTemplateService.GetTemplateAreas())
+                foreach (var area in AreaTemplate.GetTemplateAreas())
                 {
-                    if (AreaTemplateService.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
+                    if (AreaTemplate.GetTemplateAreaCustomObjectsByArea(area.Value).Count() > 0)
                     {
                         if (GetStringUpperCase(GetName(area.Value)).Contains(GetStringUpperCase(SearchText)))
                         {

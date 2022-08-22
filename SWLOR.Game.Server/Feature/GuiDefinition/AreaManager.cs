@@ -34,11 +34,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Search")
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickSearch());
-
-                        row.AddButton()
-                            .SetText("TEST")
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickTest());
                     });
 
                     col.AddRow(row =>
@@ -69,11 +64,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             colAreas.SetWidth(325f);
                             colAreas.AddRow(row =>
                             {
-                                row.SetHeight(300f);
+                                row.SetHeight(450f);
 
                                 row.AddList(template =>
                                 {
-                                    template.SetHeight(300f);
+                                    template.SetHeight(450f);
 
                                     template.AddCell(cell =>
                                     {
@@ -85,15 +80,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                 })
                                 .BindRowCount(model => model.AreaObjectList);
-                                
-                                /*
-                                row.AddTextEdit()
-                                    .SetIsMultiline(true)
-                                    .BindValue(model => model.AreaObjectList)
-                                    .SetHeight(450f)
-                                    .SetWidth(300f)
-                                    .SetIsEnabled(false);
-                                */
                             });
 
                             colAreas.AddRow(row =>

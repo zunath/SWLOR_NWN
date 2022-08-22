@@ -103,6 +103,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         amount > dbPlayer.UnallocatedXP)
                         return;
 
+                    // return XP over the skill cap
+                    var playerSkill = dbPlayer.Skills[_skillType];                    
+                    var maxXPToDistributeToSkill = 0;
+                    
+                    for (var skillRank = playerSkill.Rank; skillRank < skill.MaxRank; skillRank++)
+                    {
+                        maxXPToDistributeToSkill += Skill.GetRequiredXP(skillRank);
+                    }
+
+                    maxXPToDistributeToSkill -= playerSkill.XP;
+
+                    if (amount > maxXPToDistributeToSkill)
+                        amount = maxXPToDistributeToSkill;
+
+                    
                     dbPlayer.UnallocatedXP -= amount;
                     DB.Set(dbPlayer);
 

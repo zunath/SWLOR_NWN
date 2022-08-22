@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Bite")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .RequirementStamina(6)
                 .UnaffectedByHeavyArmor()
                 .HasRecastDelay(RecastGroup.Bite, 60f)

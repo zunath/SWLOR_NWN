@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(2)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
@@ -87,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>

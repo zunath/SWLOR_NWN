@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Service
             public int RespawnDelayMinutes { get; set; }
             public bool UseRandomSpawnLocation { get; set; }
         }
-
         private class ActiveSpawn
         {
             public Guid SpawnDetailId { get; set; }

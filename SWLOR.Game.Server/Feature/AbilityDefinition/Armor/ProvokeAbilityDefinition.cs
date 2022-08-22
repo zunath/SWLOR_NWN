@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, level, location) =>
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, level, location) =>

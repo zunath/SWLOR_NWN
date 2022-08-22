@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
                 .HasRecastDelay(RecastGroup.Earthquake, 60f)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>
                 {

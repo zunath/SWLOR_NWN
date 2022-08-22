@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(6)
                 .UnaffectedByHeavyArmor()
+                .IsHostileAbility()
                 .HasRecastDelay(RecastGroup.Roar, 60f)
                 .HasImpactAction((activator, target, level, location) =>
                 {

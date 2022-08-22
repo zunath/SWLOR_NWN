@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Venom, 35f)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>
                 {

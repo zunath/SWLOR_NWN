@@ -86,6 +86,29 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void ResetPlayerWindows(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            foreach (var (type, _window) in _windowTemplates)
+            {
+                var window = GetPlayerWindow(player, type);
+                var resizable = JsonObjectGet(_window.Window, "resizable");
+
+                if (JsonGetInt(resizable) == 1)
+                {
+                    dbPlayer.WindowGeometries[type] = _window.InitialGeometry;
+                    window.ViewModel.Geometry = _window.InitialGeometry;
+                }
+            }
+
+            DB.Set(dbPlayer);
+        }
+
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>

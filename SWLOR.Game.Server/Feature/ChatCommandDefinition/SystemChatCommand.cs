@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ListEmotesCommand(builder);
             StuckCommand(builder);
             EmotesWindowCommand(builder);
+            ResetWindows(builder);
 
             return builder.Build();
         }
@@ -124,6 +125,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
+                });
+        }
+        private static void ResetWindows(ChatCommandBuilder builder)
+        {
+            builder.Create("resetwindows")
+                .Description("Resets size and position of all NUI windows.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.ResetPlayerWindows(user);
                 });
         }
     }

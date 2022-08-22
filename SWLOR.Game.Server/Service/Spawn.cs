@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Service
                 _queuedSpawnsByArea[area] = new List<QueuedSpawn>();
 
             var activeSpawns = _activeSpawnsByArea[area];
-            var queuedSpawns = _queuedSpawnsByArea[area];
+            var queuedSpawns = _queuedSpawnsByArea[area];            
 
             // Spawns are currently active for this area. No need to spawn.
             if (activeSpawns.Count > 0 || queuedSpawns.Count > 0) return;
@@ -385,6 +385,7 @@ namespace SWLOR.Game.Server.Service
         {
             ProcessQueuedSpawns();
             ProcessDespawnAreas();
+            ProcessRespawnAreas();
         }
 
         /// <summary>
@@ -469,6 +470,51 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _queuedAreaDespawns.Remove(area);
+                }
+            }
+        }
+
+        /// <summary>
+        /// On each module heartbeat, iterate over the list of areas and trigger
+        /// respawn on expired Spawns.
+        /// </summary>
+        private static void ProcessRespawnAreas()
+        {
+            var now = DateTime.UtcNow;
+
+            foreach(var _area in _activeSpawnsByArea)
+            {
+                var area = _area.Key;
+                var activeSpawns = _activeSpawnsByArea[area];
+
+                foreach (var activeSpawn in activeSpawns)
+                {
+                    if (GetObjectType(activeSpawn.SpawnObject) != ObjectType.Placeable)
+                        continue;
+
+                    var spawn = activeSpawn.SpawnObject;
+
+                    var spawnId = GetLocalString(spawn, "SPAWN_ID");
+                    if (string.IsNullOrWhiteSpace(spawnId)) return;
+                    if (GetLocalInt(spawn, "RESPAWN_QUEUED") == 1) return;
+
+                    var createdTimestampString = GetLocalString(spawn, "DECAY_TIMESTAMP");
+                    var cDateTime = DateTime.UtcNow;
+
+                    if (!DateTime.TryParse(createdTimestampString, out cDateTime))
+                    {
+                        continue;
+                    }
+
+                    var spawnGuid = new Guid(spawnId);
+                    var respawnTime = now;
+
+                    if (now > cDateTime)
+                    {
+                        CreateQueuedSpawn(spawnGuid, respawnTime);
+                        ExecuteScript("spawn_despawn", spawn);
+                        DestroyObject(spawn);
+                    }
                 }
             }
         }
@@ -627,6 +673,14 @@ namespace SWLOR.Game.Server.Service
 
                 var spawn = CreateObject(objectType, resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
+
+                if (objectType == ObjectType.Placeable)
+                {
+                    // Randomized resource decay and respawn.
+                    // Normal delay plus 12 - 120 minutes from creation.
+                    var decayMinutes = detail.RespawnDelayMinutes + Random.D10(6) * 2;
+                    SetLocalString(spawn, "DECAY_TIMESTAMP", DateTime.UtcNow.AddMinutes(decayMinutes).ToString());
+                }
 
                 AI.SetAIFlag(spawn, aiFlag);
                 AdjustScripts(spawn);

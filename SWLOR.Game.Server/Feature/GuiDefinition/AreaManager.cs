@@ -56,6 +56,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindRowCount(model => model.AreaNames);
                             });
 
+                            colAreas.AddRow(row =>
+                            {
+                                row.AddSpacer();
+
+                                row.AddButton()
+                                    .SetText("Resave All Objects")
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickResaveAllObjects());
+
+                                row.AddSpacer();
+                            });
                         });
 
                         row.AddColumn(colAreas =>

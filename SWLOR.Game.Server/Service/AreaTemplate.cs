@@ -156,5 +156,29 @@ namespace SWLOR.Game.Server.Service
                 };                   
             }
         }
+
+        // this is in case DM's adjust objects positions or other attributes and want to resave the changes.
+        public static void ResaveAllAreaTemplateObjectsByArea(uint area)
+        {
+            if (!GetIsTemplateArea(area))
+                return;
+
+            foreach(var _customObject in TemplateAreaCustomObjectsByArea[area])
+            {                
+                var customObject = _customObject;
+                var dbId = GetLocalString(customObject, "DBID");
+
+                var dbObject = DB.Get<AreaTemplateObject>(dbId);
+
+                dbObject.ObjectName = GetName(customObject);
+                dbObject.ObjectData = ObjectPlugin.Serialize(customObject);
+                dbObject.LocationX = GetPosition(customObject).X;
+                dbObject.LocationY = GetPosition(customObject).Y;
+                dbObject.LocationZ = GetPosition(customObject).Z;
+                dbObject.LocationOrientation = GetFacing(customObject);
+
+                DB.Set<AreaTemplateObject>(dbObject);
+            }
+        }
     }
 }

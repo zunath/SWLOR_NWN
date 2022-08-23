@@ -211,6 +211,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
+        public Action OnClickResaveAllObjects() => () =>
+        {
+            if (!(SelectedAreaIndex > -1))
+                return;
+
+            ShowModal($"Are you sure you want to permanently resave all DM spawned objects in '{AreaNames[SelectedAreaIndex]}'", () =>
+            {
+                AreaTemplate.ResaveAllAreaTemplateObjectsByArea(_areas[SelectedAreaIndex]);
+                Search();
+            });
+        };
+
         private void Search()
         {
             var areaResrefs = new GuiBindingList<string>();

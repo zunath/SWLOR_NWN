@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Resave All Objects")
                                     .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsResaveAllEnabled)
                                     .BindOnClicked(model => model.OnClickResaveAllObjects());
 
                                 row.AddSpacer();
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Delete Object")
                                     .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsDeleteObjectEnabled)
                                     .BindOnClicked(model => model.OnClickDeleteObject());
 
                                 row.AddSpacer();
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Reset Area")
                                     .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsResetAreaEnabled)
                                     .BindOnClicked(model => model.OnClickResetArea());
                             });
                         });

@@ -20,7 +20,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public bool IsSaveEnabled
+        public bool IsSaveEnabled1
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsResaveAllEnabled
         {
             get => Get<bool>();
             set => Set(value);
@@ -30,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
-        public bool IsAreaResetEnabled
+        public bool IsResetAreaEnabled
         {
             get => Get<bool>();
             set => Set(value);
@@ -135,7 +140,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadAreaObjectList();
 
             IsDeleteObjectEnabled = true;
-            IsAreaResetEnabled = true;
+            IsResetAreaEnabled = true;
+            IsResaveAllEnabled = true;
 
             AreaToggled[index] = true;
             IsAreaSelected = true;
@@ -148,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedAreaObjectIndex = index;
 
-            IsDeleteObjectEnabled = true;
+            IsDeleteObjectEnabled = false;
             AreaObjectToggled[index] = true;
         };
 
@@ -181,6 +187,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _objects.RemoveAt(SelectedAreaObjectIndex);
                 AreaObjectList.RemoveAt(SelectedAreaObjectIndex);
                 AreaObjectToggled.RemoveAt(SelectedAreaObjectIndex);
+                SelectedAreaObjectIndex = -1;
+                IsDeleteObjectEnabled = false;
             //});
         };
 
@@ -276,9 +284,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AreaToggled = areaToggled;
             AreaObjectList = areaObjectList;
             AreaObjectToggled = areaObjectToggled;
+            
             IsAreaSelected = false;
             IsDeleteObjectEnabled = false;
-            IsAreaResetEnabled = false;
+            IsResetAreaEnabled = false;
+            IsResaveAllEnabled = false;
         }
 
         public Action OnClickSearch() => Search;

@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindValue(model => model.SelectedAreaObjectName)
                                     .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
                                     .SetPlaceholder("Object Name")
-                                    .SetMaxLength(32);
+                                    .SetMaxLength(100);
                             });
 
                             colEditor.AddRow(rowEditor =>

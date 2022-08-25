@@ -145,15 +145,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int SelectedPageIndexAppearances
         {
             get => Get<int>();
-            set
-            {
-                Set(value);
-                /*if (!_skipPaginationSearch)
-                {
-                    ClearObjectHighlight();
-                    SearchAppearances();
-                }   */             
-            }
+            set => Set(value);           
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -217,8 +209,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 IsSelectedObjectPlaceableOrCreature = false;
             }
-
-            Console.WriteLine("objectindex=" + SelectedAreaObjectIndex);
 
             SearchAppearances(GetObjectType(_objects[SelectedAreaObjectIndex]));
 
@@ -301,23 +291,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Search();
             });
         };
-/*
-        public Action OnClickCyclePreviousAppearance() => () =>
-        {
-            if (SelectedAreaIndex < 0)
-                return;
-
-            CyclePreviousPlaceableOrCreatureAppearance();
-        };
-
-        public Action OnClickCycleNextAppearance() => () =>
-        {
-            if (SelectedAreaIndex < 0)
-                return;
-
-            CycleNextPlaceableOrCreatureAppearance();
-        };
-*/
 
         public Action OnClickSearch() => Search;
 
@@ -465,37 +438,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var pageNumber = 0;
             var actualRowCount = 0;            
 
-            Console.WriteLine("Page index to load: " + SelectedPageIndexAppearances);
-
             switch (objectType)
             {
                 case ObjectType.Placeable:
-
-                    Console.WriteLine("Processing " + AreaTemplate.GetPlaceableAppearancePageCount() + " placeable appearance pages:");
-
                     for (var page = 0; 
                          page < AreaTemplate.GetPlaceableAppearancePageCount(); 
                          page++)
                     {
-                        
-                        Console.WriteLine("\tCurrent Page = " + page);
-
                         foreach (var appearance in AreaTemplate.GetPlaceableAppearances(page))
                         {
                             if (string.IsNullOrWhiteSpace(SearchAppearanceText))
                             {
                                 if (actualRowCount > 0)
-                                    if (actualRowCount % AreaTemplate.PAGESIZE == 0)
-                                    {
-                                        Console.WriteLine("\t\tAdding page, prior page = " + pageNumber);
-                                        pageNumber++;
-                                    }
-
+                                    if (actualRowCount % AreaTemplate.PAGESIZE == 0) pageNumber++;
+                                    
                                 if (!_placeableAppearanceByPage.ContainsKey(pageNumber))
                                     _placeableAppearanceByPage[pageNumber] = new Dictionary<int, string>();
 
                                 _placeableAppearanceByPage[pageNumber].Add(appearance.Key, appearance.Value);
-
                                 actualRowCount++;
                             }
                             else
@@ -503,28 +463,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
                                 {
                                     if (actualRowCount > 0)
-                                        if (actualRowCount % AreaTemplate.PAGESIZE == 0)
-                                        {
-                                            pageNumber++;
-                                        }
-
+                                        if (actualRowCount % AreaTemplate.PAGESIZE == 0) pageNumber++;
+                                        
                                     if (!_placeableAppearanceByPage.ContainsKey(pageNumber))
                                         _placeableAppearanceByPage[pageNumber] = new Dictionary<int, string>();
 
                                     _placeableAppearanceByPage[pageNumber].Add(appearance.Key, appearance.Value);
-
                                     actualRowCount++;
                                 }
                             }
                         }
                     }
                     _totalCountAppearancePlaceables = actualRowCount;
-                    Console.WriteLine("total record count placeables: " + AreaTemplate.TotalCountAppearancePlaceables);
-                    Console.WriteLine("total page count placeables: " + _placeableAppearanceByPage.Count);
 
                     foreach (var appearance in _placeableAppearanceByPage[SelectedPageIndexAppearances])
                     {
-                        Console.WriteLine("adding: " + appearance.Value);
                         _objectAppearanceIds.Add(appearance.Key);
                         _objectAppearanceNames.Add(appearance.Value);
                         objectAppearanceList.Add(appearance.Value);
@@ -532,34 +485,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     UpdatePaginationAppearances(GetObjectType(_objects[SelectedAreaObjectIndex]));
-
                     break;
                 case ObjectType.Creature:
-                    Console.WriteLine("Processing " + AreaTemplate.GetCreatureAppearancePageCount() + " Creature appearance pages:");
-
                     for (var page = 0;
                          page < AreaTemplate.GetCreatureAppearancePageCount();
                          page++)
                     {
-
-                        Console.WriteLine("\tCurrent Page = " + page);
-
                         foreach (var appearance in AreaTemplate.GetCreatureAppearances(page))
                         {
                             if (string.IsNullOrWhiteSpace(SearchAppearanceText))
                             {
                                 if (actualRowCount > 0)
-                                    if (actualRowCount % AreaTemplate.PAGESIZE == 0)
-                                    {
-                                        Console.WriteLine("\t\tAdding page, prior page = " + pageNumber);
-                                        pageNumber++;
-                                    }
+                                    if (actualRowCount % AreaTemplate.PAGESIZE == 0) pageNumber++;
 
                                 if (!_creatureAppearanceByPage.ContainsKey(pageNumber))
                                     _creatureAppearanceByPage[pageNumber] = new Dictionary<int, string>();
 
                                 _creatureAppearanceByPage[pageNumber].Add(appearance.Key, appearance.Value);
-
                                 actualRowCount++;
                             }
                             else
@@ -567,30 +509,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
                                 {
                                     if (actualRowCount > 0)
-                                        if (actualRowCount % AreaTemplate.PAGESIZE == 0)
-                                        {
-                                            pageNumber++;
-                                        }
-
+                                        if (actualRowCount % AreaTemplate.PAGESIZE == 0) pageNumber++;
+                                        
                                     if (!_creatureAppearanceByPage.ContainsKey(pageNumber))
                                         _creatureAppearanceByPage[pageNumber] = new Dictionary<int, string>();
 
                                     _creatureAppearanceByPage[pageNumber].Add(appearance.Key, appearance.Value);
-
                                     actualRowCount++;
                                 }
                             }
                         }
                     }
                     _totalCountAppearanceCreatures = actualRowCount;
-                    Console.WriteLine("total record count Creatures: " + AreaTemplate.TotalCountAppearanceCreatures);
-                    Console.WriteLine("total page count Creatures: " + _creatureAppearanceByPage.Count);
 
                     if (_creatureAppearanceByPage[SelectedPageIndexAppearances].Count > 0)
                     {
                         foreach (var appearance in _creatureAppearanceByPage[SelectedPageIndexAppearances])
                         {
-                            Console.WriteLine("adding: " + appearance.Value);
                             _objectAppearanceIds.Add(appearance.Key);
                             _objectAppearanceNames.Add(appearance.Value);
                             objectAppearanceList.Add(appearance.Value);
@@ -613,25 +548,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var totalCount = 0;
 
-            Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-
             switch (objectType)
             {
                 case ObjectType.Placeable:
                     totalCount = _totalCountAppearancePlaceables;
-                    Console.WriteLine("total record count placeables: " + AreaTemplate.TotalCountAppearancePlaceables);
                     break;
                 case ObjectType.Creature:
                     totalCount = _totalCountAppearanceCreatures;
-                    Console.WriteLine("total record count creatures: " + AreaTemplate.TotalCountAppearanceCreatures);
                     break;
                 default:
                     break;
             }
 
             var pages = (int)(totalCount / AreaTemplate.PAGESIZE + (totalCount % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-            Console.WriteLine("total calculated pages: " + pages);
 
             // Always add page 1. In the event no structures are available,
             // it still needs to be displayed.
@@ -643,8 +572,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PageNumbersAppearances = pageNumbers;
 
-            Console.WriteLine("total present pages: " + pageNumbers.Count);
-
             // In the event no results are found, default the index to zero
             if (pages <= 0)
                 SelectedPageIndexAppearances = 0;
@@ -653,289 +580,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (SelectedPageIndexAppearances > pages - 1)
                 SelectedPageIndexAppearances = pages - 1;
 
-            Console.WriteLine("Page Number is now: " + SelectedPageIndexAppearances);
-
             _skipPaginationSearch = false;
         }
-
-        /*
-        public void SearchAppearance()
-        {
-            PlaceableAppearanceByPage
-
-
-            _objectAppearanceIds.Clear();
-            _objectAppearanceNames.Clear();
-            ObjectAppearanceToggled.Clear();
-
-            var objectAppearanceList = new GuiBindingList<string>();
-            var objectAppearanceToggled = new GuiBindingList<bool>();
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Placeable)
-            {
-                var pageNumbers = new GuiBindingList<GuiComboEntry>();
-                var pages = (int)(AreaTemplate.TotalCountAppearancePlaceables / AreaTemplate.PAGESIZE + (AreaTemplate.TotalCountAppearancePlaceables % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-                Console.WriteLine("total record count: " + AreaTemplate.TotalCountAppearancePlaceables);
-                Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-                Console.WriteLine("total calculated pages: " + pages);
-
-                // Always add page 1. In the event no structures are available,
-                // it still needs to be displayed.
-                pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-                for (var x = 2; x <= pages; x++)
-                {
-                    pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-                }
-
-                //PageNumbers = pageNumbers;
-
-                Console.WriteLine("total present pages: " + pageNumbers.Count);
-
-                SelectedPageIndex = 0;
-
-                for (int page = 0; page < pageNumbers.Count; page++)
-                {
-                    Console.WriteLine("SearchText = " + SearchAppearanceText);
-                    Console.WriteLine("processing page: " + page);
-                    foreach (var appearance in AreaTemplate.GetPlaceableAppearances(page))
-                    {
-                        if (string.IsNullOrWhiteSpace(SearchAppearanceText))
-                        {
-                            //Console.WriteLine("adding: " + appearance.Value);
-                            _objectAppearanceIds.Add(appearance.Key);
-                            _objectAppearanceNames.Add(appearance.Value);
-                            objectAppearanceList.Add(appearance.Value);
-                            objectAppearanceToggled.Add(false);
-                            if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                        }
-                        else
-                        {
-                            if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
-                            {
-                                //Console.WriteLine("adding: " + appearance.Value);
-                                _objectAppearanceIds.Add(appearance.Key);
-                                _objectAppearanceNames.Add(appearance.Value);
-                                objectAppearanceList.Add(appearance.Value);
-                                objectAppearanceToggled.Add(false);
-                                if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                            }
-                        }
-                    }
-                }
-                ObjectAppearanceList = objectAppearanceList;
-                ObjectAppearanceToggled = objectAppearanceToggled;
-                Console.WriteLine("Added " + objectAppearanceList.Count + " appearances.");
-
-                if (string.IsNullOrEmpty(SearchAppearanceText)) UpdatePagination(AreaTemplate.TotalCountAppearancePlaceables);
-                else UpdatePagination(_objectAppearanceIds.Count);
-            }
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Creature)
-            {
-                var pageNumbers = new GuiBindingList<GuiComboEntry>();
-                var pages = (int)(AreaTemplate.TotalCountAppearanceCreatures
-                                    / AreaTemplate.PAGESIZE
-                                    + (AreaTemplate.TotalCountAppearanceCreatures
-                                        % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-                Console.WriteLine("total record count: " + AreaTemplate.TotalCountAppearanceCreatures);
-                Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-                Console.WriteLine("total calculated pages: " + pages);
-
-                // Always add page 1. In the event no structures are available,
-                // it still needs to be displayed.
-                pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-                for (var x = 2; x <= pages; x++)
-                {
-                    pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-                }
-
-                //PageNumbers = pageNumbers;
-
-                Console.WriteLine("total present pages: " + pageNumbers.Count);
-
-                SelectedPageIndex = 0;
-
-                for (int page = 0; page < pageNumbers.Count; page++)
-                {
-                    Console.WriteLine("SearchText = " + SearchAppearanceText);
-                    Console.WriteLine("processing page: " + page);
-                    foreach (var appearance in AreaTemplate.GetCreatureAppearances(page))
-                    {
-                        if (string.IsNullOrWhiteSpace(SearchAppearanceText))
-                        {
-                            //Console.WriteLine("adding: " + appearance.Value);
-                            _objectAppearanceIds.Add(appearance.Key);
-                            _objectAppearanceNames.Add(appearance.Value);
-                            objectAppearanceList.Add(appearance.Value);
-                            objectAppearanceToggled.Add(false);
-                            if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                        }
-                        else
-                        {
-                            if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
-                            {
-                                //Console.WriteLine("adding: " + appearance.Value);
-                                _objectAppearanceIds.Add(appearance.Key);
-                                _objectAppearanceNames.Add(appearance.Value);
-                                objectAppearanceList.Add(appearance.Value);
-                                objectAppearanceToggled.Add(false);
-                                if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                            }
-                        }
-                    }
-                }
-                Console.WriteLine("Added " + objectAppearanceList.Count + " appearances.");
-                ObjectAppearanceList = objectAppearanceList;
-                ObjectAppearanceToggled = objectAppearanceToggled;
-
-                if (string.IsNullOrEmpty(SearchAppearanceText)) UpdatePagination(AreaTemplate.TotalCountAppearanceCreatures);
-                else UpdatePagination(_objectAppearanceIds.Count);
-            }
-
-
-            _skipPaginationSearch = false;
-
-            /*
-            _skipPaginationSearch = true;
-
-            _objectAppearanceIds.Clear();
-            _objectAppearanceNames.Clear();
-
-            ObjectAppearanceToggled.Clear();
-
-            var objectAppearanceList = new GuiBindingList<string>();
-            var objectAppearanceToggled = new GuiBindingList<bool>();
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Placeable)
-            {
-                var pageNumbers = new GuiBindingList<GuiComboEntry>();
-                var pages = (int)(AreaTemplate.TotalCountAppearancePlaceables / AreaTemplate.PAGESIZE + (AreaTemplate.TotalCountAppearancePlaceables % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-                Console.WriteLine("total record count: " + AreaTemplate.TotalCountAppearancePlaceables);
-                Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-                Console.WriteLine("total calculated pages: " + pages);
-
-                // Always add page 1. In the event no structures are available,
-                // it still needs to be displayed.
-                pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-                for (var x = 2; x <= pages; x++)
-                {
-                    pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-                }
-
-                //PageNumbers = pageNumbers;
-
-                Console.WriteLine("total present pages: " + pageNumbers.Count);
-
-                SelectedPageIndex = 0;
-
-                for (int page = 0; page < pageNumbers.Count; page++)
-                {
-                    Console.WriteLine("SearchText = " + SearchAppearanceText);
-                    Console.WriteLine("processing page: " + page);
-                    foreach (var appearance in AreaTemplate.GetPlaceableAppearances(page))
-                    {
-                        if (string.IsNullOrWhiteSpace(SearchAppearanceText))
-                        {
-                            //Console.WriteLine("adding: " + appearance.Value);
-                            _objectAppearanceIds.Add(appearance.Key);
-                            _objectAppearanceNames.Add(appearance.Value);
-                            objectAppearanceList.Add(appearance.Value);
-                            objectAppearanceToggled.Add(false);
-                            if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                        }
-                        else
-                        {
-                            if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
-                            {
-                                //Console.WriteLine("adding: " + appearance.Value);
-                                _objectAppearanceIds.Add(appearance.Key);
-                                _objectAppearanceNames.Add(appearance.Value);
-                                objectAppearanceList.Add(appearance.Value);
-                                objectAppearanceToggled.Add(false);
-                                if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                            }
-                        }
-                    }
-                }
-                ObjectAppearanceList = objectAppearanceList;
-                ObjectAppearanceToggled = objectAppearanceToggled;
-                Console.WriteLine("Added " + objectAppearanceList.Count + " appearances.");
-
-                if (string.IsNullOrEmpty(SearchAppearanceText)) UpdatePagination(AreaTemplate.TotalCountAppearancePlaceables);
-                else UpdatePagination(_objectAppearanceIds.Count);
-            }
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Creature)
-            {
-                var pageNumbers = new GuiBindingList<GuiComboEntry>();
-                var pages = (int)(AreaTemplate.TotalCountAppearanceCreatures 
-                                    / AreaTemplate.PAGESIZE 
-                                    + (AreaTemplate.TotalCountAppearanceCreatures 
-                                        % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-                Console.WriteLine("total record count: " + AreaTemplate.TotalCountAppearanceCreatures);
-                Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-                Console.WriteLine("total calculated pages: " + pages);
-
-                // Always add page 1. In the event no structures are available,
-                // it still needs to be displayed.
-                pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-                for (var x = 2; x <= pages; x++)
-                {
-                    pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-                }
-
-                //PageNumbers = pageNumbers;
-
-                Console.WriteLine("total present pages: " + pageNumbers.Count);
-
-                SelectedPageIndex = 0;
-
-                for (int page = 0; page < pageNumbers.Count; page++)
-                {
-                    Console.WriteLine("SearchText = " + SearchAppearanceText);
-                    Console.WriteLine("processing page: " + page);
-                    foreach (var appearance in AreaTemplate.GetCreatureAppearances(page))
-                    {
-                        if (string.IsNullOrWhiteSpace(SearchAppearanceText))
-                        {
-                            //Console.WriteLine("adding: " + appearance.Value);
-                            _objectAppearanceIds.Add(appearance.Key);
-                            _objectAppearanceNames.Add(appearance.Value);
-                            objectAppearanceList.Add(appearance.Value);
-                            objectAppearanceToggled.Add(false);
-                            if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                        }
-                        else
-                        {
-                            if (GetStringUpperCase(appearance.Value).Contains(GetStringUpperCase(SearchAppearanceText)))
-                            {
-                                //Console.WriteLine("adding: " + appearance.Value);
-                                _objectAppearanceIds.Add(appearance.Key);
-                                _objectAppearanceNames.Add(appearance.Value);
-                                objectAppearanceList.Add(appearance.Value);
-                                objectAppearanceToggled.Add(false);
-                                if (_objectAppearanceIds.Count >= AreaTemplate.PAGESIZE) break;
-                            }
-                        }
-                    }
-                }
-                Console.WriteLine("Added " + objectAppearanceList.Count + " appearances.");
-                ObjectAppearanceList = objectAppearanceList;
-                ObjectAppearanceToggled = objectAppearanceToggled;
-                
-                if (string.IsNullOrEmpty(SearchAppearanceText)) UpdatePagination(AreaTemplate.TotalCountAppearanceCreatures);
-                else UpdatePagination(_objectAppearanceIds.Count);
-            }            
-
- 
-            _skipPaginationSearch = false;
-            
-        }
-        */
 
         private void ClearObjectHighlight()
         {
@@ -971,92 +617,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsDeleteObjectEnabled = false;
             _skipPaginationSearch = true;
         }
-        /*
-        private void CyclePreviousPlaceableOrCreatureAppearance()
-        {
-            var areaObject = _objects[SelectedAreaObjectIndex];
-            var areaObjectId = GetLocalString(areaObject, "DBID");
-            var dbObject = DB.Get<AreaTemplateObject>(areaObjectId);
-
-            switch (GetObjectType(areaObject))
-            {
-                case ObjectType.Creature:
-                    {
-                        var currentCreatureAppearance = GetAppearanceType(areaObject);
-                        var newCreatureAppearance = currentCreatureAppearance - 1;
-
-                        while (!AreaTemplate.GetCreatureAppearances(SelectedPageIndex).ContainsKey((int)newCreatureAppearance)
-                                && (int)newCreatureAppearance > -1)
-                        {
-                            newCreatureAppearance--;
-                        }
-                        SetCreatureAppearanceType(areaObject, newCreatureAppearance);
-                    }
-                    break;
-                case ObjectType.Placeable:
-                    {
-                        var currentPlaceableAppearance = ObjectPlugin.GetAppearance(areaObject);
-                        var newPlaceableAppearance = currentPlaceableAppearance - 1;
-
-                        while (!AreaTemplate.GetPlaceableAppearances(SelectedPageIndex).ContainsKey((int)newPlaceableAppearance)
-                                && newPlaceableAppearance > -1)
-                        {
-                            newPlaceableAppearance--;
-                        }
-
-                        ObjectPlugin.SetAppearance(areaObject, newPlaceableAppearance);
-                        SendMessageToPC(OBJECT_SELF, "Placeable appearance change will only display after exiting and re-entering the area.");
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            DB.Set<AreaTemplateObject>(dbObject);
-        }
-
-        private void CycleNextPlaceableOrCreatureAppearance()
-        {
-            var areaObject = _objects[SelectedAreaObjectIndex];
-            var areaObjectId = GetLocalString(areaObject, "DBID");
-            var dbObject = DB.Get<AreaTemplateObject>(areaObjectId);
-
-            switch (GetObjectType(areaObject))
-            {
-                case ObjectType.Creature:
-                    {
-                        var currentCreatureAppearance = GetAppearanceType(areaObject);
-                        var newCreatureAppearance = currentCreatureAppearance + 1;
-
-                        while (!AreaTemplate.GetCreatureAppearances(SelectedPageIndex).ContainsKey((int)newCreatureAppearance)
-                                && (int)newCreatureAppearance < UtilPlugin.Get2DARowCount("appearance"))
-                        {
-                            newCreatureAppearance++;
-                        }
-                        SetCreatureAppearanceType(areaObject, newCreatureAppearance);
-                    }
-                    break;
-                case ObjectType.Placeable:
-                    {
-                        var currentPlaceableAppearance = ObjectPlugin.GetAppearance(areaObject);
-                        var newPlaceableAppearance = currentPlaceableAppearance + 1;
-
-                        while (!AreaTemplate.GetPlaceableAppearances(SelectedPageIndex).ContainsKey((int)newPlaceableAppearance)
-                                && newPlaceableAppearance < UtilPlugin.Get2DARowCount("placeables"))
-                        {
-                            newPlaceableAppearance++;
-                        }
-
-                        ObjectPlugin.SetAppearance(areaObject, newPlaceableAppearance);
-                        SendMessageToPC(OBJECT_SELF, "Placeable appearance change will only display after exiting and re-entering the area.");
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            DB.Set<AreaTemplateObject>(dbObject);
-        }*/
 
         public Action OnRotateClockwise() => () =>
         {
@@ -1176,27 +736,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             position.Z = z;
             ObjectPlugin.SetPosition(placeable, position);
         };
-
-        public Action OnSaveChanges() => () =>
-        {
-            if (SelectedAreaObjectIndex < 0)
-                return;
-
-            var areaObject = _objects[SelectedAreaObjectIndex];
-
-            var areaObjectId = GetLocalString(areaObject, "DBID");
-            var dbObject = DB.Get<AreaTemplateObject>(areaObjectId);
-
-            dbObject.ObjectName = GetName(areaObject);
-            dbObject.ObjectData = ObjectPlugin.Serialize(areaObject);
-            dbObject.LocationX = GetPosition(areaObject).X;
-            dbObject.LocationY = GetPosition(areaObject).Y;
-            dbObject.LocationZ = GetPosition(areaObject).Z;
-            dbObject.LocationOrientation = GetFacing(areaObject);
-
-            DB.Set<AreaTemplateObject>(dbObject);
-        };
-
         public Action OnSaveObjectChanges() => () =>
         {
             if (SelectedAreaObjectIndex < 0)
@@ -1207,7 +746,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaObjectId = GetLocalString(areaObject, "DBID");
             var dbObject = DB.Get<AreaTemplateObject>(areaObjectId);
 
-            Console.WriteLine("SetName = " + dbObject.ObjectName);
             SetName(areaObject, SelectedAreaObjectName);
 
             dbObject.ObjectName = GetName(areaObject);
@@ -1220,45 +758,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DB.Set<AreaTemplateObject>(dbObject);
         };
 
-        /*
-        private void UpdatePagination(long totalRecordCount)
-        {
-            _skipPaginationSearch = true;
-            
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / AreaTemplate.PAGESIZE + (totalRecordCount % AreaTemplate.PAGESIZE == 0 ? 0 : 1));
-
-            Console.WriteLine("total record count: " + totalRecordCount);
-            Console.WriteLine("max pagesize: " + AreaTemplate.PAGESIZE);
-            Console.WriteLine("total calculated pages: " + pages);
-
-            // Always add page 1. In the event no structures are available,
-            // it still needs to be displayed.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            Console.WriteLine("total present pages: " + pageNumbers.Count);
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
-
-            Console.WriteLine("Page Number is now: " + SelectedPageIndex);
-
-            _skipPaginationSearch = false;
-        }
-        */
-
-        public Action OnPreviousPage() => () =>
+        public Action OnPreviousPageAppearance() => () =>
         {
             _skipPaginationSearch = true;
             var newPage = SelectedPageIndexAppearances - 1;
@@ -1272,7 +772,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPaginationSearch = false;
         };
 
-        public Action OnNextPage() => () =>
+        public Action OnNextPageAppearance() => () =>
         {
             _skipPaginationSearch = true;
             var newPage = SelectedPageIndexAppearances + 1;
@@ -1286,55 +786,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPaginationSearch = false;
         };
 
-        /*
-        private void RefreshAppearanceList()
-        {
-            _objectAppearanceIds.Clear();
-            _objectAppearanceNames.Clear();
-
-            ObjectAppearanceToggled.Clear();
-
-            var objectAppearanceList = new GuiBindingList<string>();
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Placeable)
-            {
-                foreach (var appearance in AreaTemplate.GetPlaceableAppearances(SelectedPageIndex))
-                {
-                    _objectAppearanceIds.Add(appearance.Key);
-                    objectAppearanceList.Add(appearance.Value);
-                    ObjectAppearanceToggled.Add(false);
-                    // temporary - need to add paging
-                    //if (objectAppearanceList.Count > 50) break;
-                }
-                UpdatePagination(AreaTemplate.TotalCountAppearancePlaceables);
-            }
-
-            if (GetObjectType(_objects[SelectedAreaObjectIndex]) == ObjectType.Creature)
-            {
-                foreach (var appearance in AreaTemplate.GetCreatureAppearances(SelectedPageIndex))
-                {
-                    _objectAppearanceIds.Add(appearance.Key);
-                    objectAppearanceList.Add(appearance.Value);
-                    ObjectAppearanceToggled.Add(false);
-                    // temporary - need to add paging
-                    //if (objectAppearanceList.Count > 50) break;
-                }
-                UpdatePagination(AreaTemplate.TotalCountAppearanceCreatures);
-            }
-            
-            ObjectAppearanceList = objectAppearanceList;            
-        }*/
-
         public Action OnSelectObjectAppearance() => () =>
         {
-            Console.WriteLine("SelectedAreaObjectIndex = " + SelectedAppearanceIndex);
             if (SelectedAppearanceIndex > -1)
                 ObjectAppearanceToggled[SelectedAppearanceIndex] = false;
 
             var index = NuiGetEventArrayIndex();
             SelectedAppearanceIndex = index;
-
-            Console.WriteLine("index = " + SelectedAppearanceIndex);
 
             if (index < 0)
                 return;

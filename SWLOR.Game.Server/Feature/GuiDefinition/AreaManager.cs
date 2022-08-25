@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetWidth(32f)
                                     .SetHeight(35f)
                                     .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
-                                    .BindOnClicked(model => model.OnPreviousPage());
+                                    .BindOnClicked(model => model.OnPreviousPageAppearance());
 
                                 rowEditor.AddComboBox()
                                     .BindOptions(model => model.PageNumbersAppearances)
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetWidth(32f)
                                     .SetHeight(35f)
                                     .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
-                                    .BindOnClicked(model => model.OnNextPage());
+                                    .BindOnClicked(model => model.OnNextPageAppearance());
 
                                 rowEditor.AddSpacer();
                             });

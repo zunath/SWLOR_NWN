@@ -13,12 +13,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.AreaManager)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 700f, 600f)
-                .SetTitle("Area Notes")
+                .SetInitialGeometry(0, 0, 975f, 650f)
+                .SetTitle("Area Manager")
+                .BindOnClosed(model => model.OnWindowClose())
 
-                .AddColumn(col =>
+                .AddColumn(colSearch =>
                 {
-                    col.AddRow(row =>
+                    // Main Search - Top Window Row
+                    colSearch.AddRow(row =>
                     {
                         row.AddTextEdit()
                             .SetPlaceholder("Search")
@@ -36,11 +38,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickSearch());
                     });
 
-                    col.AddRow(row =>
+                    // Main Window Container - Second Window Row
+                    colSearch.AddRow(row =>
                     {
                         row.AddColumn(colAreas =>
                         {
-                            colAreas.SetHeight(450f);
+                            colAreas.SetHeight(500f);
                             colAreas.AddRow(row =>
                             {
                                 row.AddList(template =>
@@ -63,20 +66,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Resave All Objects")
                                     .SetHeight(35f)
-                                    .BindIsEnabled(model => model.IsResaveAllEnabled)
+                                    .BindIsEnabled(model => model.IsResaveAllObjectsEnabled)
                                     .BindOnClicked(model => model.OnClickResaveAllObjects());
 
                                 row.AddSpacer();
                             });
                         });
 
-                        row.AddColumn(colAreas =>
+                        row.AddColumn(colObjects =>
                         {
-                            colAreas.SetHeight(450f);
-                            colAreas.SetWidth(325f);
-                            colAreas.AddRow(row =>
+                            colObjects.SetHeight(450f);
+                            colObjects.SetWidth(325f);
+                            colObjects.AddRow(row =>
                             {
-                                row.SetHeight(450f);
+                                //row.SetHeight(450f);
 
                                 row.AddList(template =>
                                 {
@@ -87,14 +90,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.AddToggleButton()
                                             .BindText(model => model.AreaObjectList)
                                             .BindIsToggled(model => model.AreaObjectToggled)
-                                            .BindOnClicked(model => model.OnSelectAreaObject())
-                                            .SetWidth(300f);
+                                            .BindOnClicked(model => model.OnSelectAreaObject());
+                                            //.SetWidth(300f);
                                     });
                                 })
                                 .BindRowCount(model => model.AreaObjectList);
                             });
 
-                            colAreas.AddRow(row =>
+                            colObjects.AddRow(row =>
                             {
                                 row.AddButton()
                                     .SetText("Delete Object")
@@ -109,6 +112,244 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(35f)
                                     .BindIsEnabled(model => model.IsResetAreaEnabled)
                                     .BindOnClicked(model => model.OnClickResetArea());
+                            });
+                        });
+
+                        row.AddColumn(colEditor =>
+                        {
+                            colEditor.SetHeight(500f);
+                            colEditor.SetWidth(325f);
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddTextEdit()
+                                    .BindValue(model => model.SelectedAreaObjectName)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .SetPlaceholder("Object Name")
+                                    .SetMaxLength(32);
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddLabel()
+                                    .SetText("Position")
+                                    .SetHeight(20f);
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddSpacer();
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_up")
+                                    .SetTooltip("Y-Axis +")
+                                    .BindOnClicked(model => model.OnYAxisUp())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_down")
+                                    .SetTooltip("Y-Axis -")
+                                    .BindOnClicked(model => model.OnYAxisDown())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_right")
+                                    .SetTooltip("X-Axis +")
+                                    .BindOnClicked(model => model.OnXAxisUp())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_left")
+                                    .SetTooltip("X-Axis -")
+                                    .BindOnClicked(model => model.OnXAxisDown())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_zup")
+                                    .SetTooltip("Z-Axis +")
+                                    .BindOnClicked(model => model.OnZAxisUp())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("arrow_zdown")
+                                    .SetTooltip("Z-Axis -")
+                                    .BindOnClicked(model => model.OnZAxisDown())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("level")
+                                    .SetTooltip("Z-Axis Reset")
+                                    .BindOnClicked(model => model.OnZAxisReset())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddSpacer();
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddLabel()
+                                    .SetText("Facing")
+                                    .SetHeight(20f);
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddSpacer();
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("clockwise")
+                                    .SetTooltip("Clockwise")
+                                    .BindOnClicked(model => model.OnRotateClockwise())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("counterclockwise")
+                                    .SetTooltip("Counter-Clockwise")
+                                    .BindOnClicked(model => model.OnRotateCounterClockwise())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("north")
+                                    .SetTooltip("North")
+                                    .BindOnClicked(model => model.OnSetFacingNorth())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("south")
+                                    .SetTooltip("South")
+                                    .BindOnClicked(model => model.OnSetFacingSouth())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("east")
+                                    .SetTooltip("East")
+                                    .BindOnClicked(model => model.OnSetFacingEast())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddButtonImage()
+                                    .SetImageResref("west")
+                                    .SetTooltip("West")
+                                    .BindOnClicked(model => model.OnSetFacingWest())
+                                    .SetWidth(32f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                rowEditor.AddSpacer();
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddLabel()
+                                    .SetText("Appearance")
+                                    .SetHeight(20f);
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddTextEdit()
+                                    .SetPlaceholder("Search")
+                                    .SetMaxLength(100)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .BindValue(model => model.SearchAppearanceText);
+
+                                rowEditor.AddButton()
+                                    .SetText("X")
+                                    .SetHeight(35f)
+                                    .SetWidth(35f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                .BindOnClicked(model => model.OnClickClearAppearanceSearch());
+
+                                rowEditor.AddButton()
+                                    .SetText("Search")
+                                    .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .BindOnClicked(model => model.OnClickAppearanceSearch());
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                colEditor.AddRow(row =>
+                                {
+                                    row.SetHeight(200f);
+
+                                    row.AddList(template =>
+                                    {
+                                        //template.SetHeight(190f);
+                                        template.BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature);
+
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.ObjectAppearanceList)
+                                                .BindIsToggled(model => model.ObjectAppearanceToggled)
+                                                .BindOnClicked(model => model.OnSelectObjectAppearance());
+                                        });
+                                    })
+                                    .BindRowCount(model => model.ObjectAppearanceList);
+                                });
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddSpacer();
+                                rowEditor.AddButton()
+                                    .SetText("<")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .BindOnClicked(model => model.OnPreviousPage());
+
+                                rowEditor.AddComboBox()
+                                    .BindOptions(model => model.PageNumbersAppearances)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .BindSelectedIndex(model => model.SelectedPageIndexAppearances);
+
+                                rowEditor.AddButton()
+                                    .SetText(">")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .BindOnClicked(model => model.OnNextPage());
+
+                                rowEditor.AddSpacer();
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddSpacer();
+                            });
+
+                            colEditor.AddRow(rowEditor =>
+                            {
+                                rowEditor.AddButton()
+                                    .SetText("Save Changes")
+                                    .BindOnClicked(model => model.OnSaveObjectChanges())
+                                    .BindIsEnabled(model => model.IsSelectedObjectPlaceableOrCreature)
+                                    .SetHeight(35f);
                             });
                         });
                     });

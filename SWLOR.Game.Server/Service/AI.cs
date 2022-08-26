@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Service
             var self = OBJECT_SELF;
 
             // Certain effects should interrupt the random walk process.
-            var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify};
+            var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify, EffectTypeScript.Confused, EffectTypeScript.Sleep, EffectTypeScript.Stunned};
             for (var effect = GetFirstEffect(self); GetIsEffectValid(effect); effect = GetNextEffect(self))
             {
                 if (effects.Contains(GetEffectType(effect)))
@@ -504,6 +504,10 @@ namespace SWLOR.Game.Server.Service
                 Random.D100(1) <= 40)
             {
                 AssignCommand(self, ActionRandomWalk);
+            }
+            else if (aiFlags.HasFlag(AIFlag.WalkWaypoints))
+            {
+                AssignCommand(self, () => { GenericAIDefinition.WalkWayPoints(); });
             }
         }
 

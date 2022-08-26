@@ -133,6 +133,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
+        /// Indicates that this spawn object will Walk Way Points when not in combat.
+        /// </summary>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder WalksWaypoints()
+        {
+            ActiveSpawn.AIFlags |= AIFlag.WalkWaypoints;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates that this spawn object will return home if they stray too far from their spawn point.
         /// </summary>
         /// <returns>A spawn table builder with the configured settings.</returns>

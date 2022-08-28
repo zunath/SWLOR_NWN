@@ -89,9 +89,21 @@ namespace SWLOR.Game.Server.Feature
                 "Improves quest credit rewards.\n" + 
                 "Improves XP gain.");
 
+            SetTlkOverride(535, "Credit"); // Gold Piece
+
             SetTlkOverride(1027, "Poison"); // Acid
 
+            SetTlkOverride(3593, "Give credits."); // GP
+            SetTlkOverride(5025, "The Galactic Credit Standard, or simply the 'credit', is the main form of currency throughout the galaxy."); // GP desc
+            SetTlkOverride(6407, "Credits"); // GP
+            SetTlkOverride(7059, "Drop or give credits, etc.");
+
             SetTlkOverride(7099, "Evasion");
+
+            SetTlkOverride(61619, "Sell <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(61620, "Buy <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(62489, "Acquired <CUSTOM0> credits");
+            SetTlkOverride(62490, "Lost <CUSTOM0> credits");
 
             SetTlkOverride(66751, "Holonet");
             SetTlkOverride(66755, "Comms");

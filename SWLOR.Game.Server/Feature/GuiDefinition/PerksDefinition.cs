@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         })
                             .SetRowHeight(40f)
-                            .SetScrollbars(NuiScrollbars.Both)
+                            .SetScrollbars(NuiScrollbars.Y)
                             .BindRowCount(model => model.PerkButtonTexts);
 
                         row.AddColumn(col2 =>
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddText()
                                     .BindText(model => model.SelectedDetails)
-                                    .SetHeight(150f)
+                                    .SetHeight(300f)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
                             col2.AddRow(row2 =>
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .SetVerticalAlign(NuiVerticalAlign.Top);
                                     });
                                 })
-                                    .SetScrollbars(NuiScrollbars.Both)
+                                    .SetScrollbars(NuiScrollbars.None)
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });

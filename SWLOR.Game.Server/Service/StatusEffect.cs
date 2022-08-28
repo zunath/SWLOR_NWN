@@ -360,5 +360,30 @@ namespace SWLOR.Game.Server.Service
 
             return (T)_creaturesWithStatusEffects[creature][effectType].EffectData;
         }
+
+        /// <summary>
+        /// Retrieves the effect duration associated with a creature's effect.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="effectTypes">The type(s) of effect.</param>
+        /// <returns>A float time remaining of the status effect</returns>
+        public static int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes)
+        {
+            foreach (var effectType in effectTypes)
+            {
+                if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
+                !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
+                    continue;
+
+                if (_creaturesWithStatusEffects[creature][effectType].Expiration >= DateTime.MaxValue) return 0;
+
+                var effectTimespan = _creaturesWithStatusEffects[creature][effectType].Expiration - DateTime.UtcNow;
+
+                return (int)effectTimespan.TotalSeconds;
+            }
+
+            return 0;
+            
+        }
     }
 }

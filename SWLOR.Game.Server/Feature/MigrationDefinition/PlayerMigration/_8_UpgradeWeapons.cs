@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            RefundPerks(dbPlayer);
+            RefundPerks(dbPlayer, player);
             UpdateWeapons(player);
         }
 
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 { "h_twinelec_5", (25, 28) }
             };
 
-        private static void RefundPerks(Player dbPlayer)
+        private static void RefundPerks(Player dbPlayer, uint player)
         {
             List<PerkType> refundList = new(3)
             {
@@ -85,6 +85,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                     continue;
 
                 dbPlayer.UnallocatedSP += 2;
+            }
+
+            if(dbPlayer.Perks.ContainsKey(PerkType.RapidShot))
+            {
+                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
+                var refundAmount = perkDetail.PerkLevels[0].Price;
+
+                dbPlayer.UnallocatedSP += refundAmount;
+                dbPlayer.Perks.Remove(PerkType.RapidShot);
+
+                foreach (var action in perkDetail.RefundedTriggers)
+                {
+                    action(player, PerkType.RapidShot, 0);
+                }
             }
         }
 

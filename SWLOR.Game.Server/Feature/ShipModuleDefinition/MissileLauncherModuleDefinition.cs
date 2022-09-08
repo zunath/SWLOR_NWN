@@ -10,7 +10,7 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class MissileLauncherModuleDefinition: IShipModuleListDefinition
+    public class MissileLauncherModuleDefinition : IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
 
@@ -21,6 +21,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Deals 15 explosive DMG to your target and nearby ships.", 3, 14f, 18, 15);
             MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Deals 19 explosive DMG  to your target and nearby ships.", 4, 17f, 22, 19);
             MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Deals 24 explosive DMG to your target and nearby ships.", 5, 20f, 26, 24);
+            MissileLauncher("cap_missile_1", "Concussion Missile I", "Cap Missile I", "A corvette's concussion missile launchers.", 5, 18f, 30, 25);
+            MissileLauncher("cap_missile_2", "Concussion Missile II", "Cap Missile II", "A frigate's concussion missile launchers.", 5, 18f, 30, 25);
+            MissileLauncher("cap_missile_3", "Concussion Missile III", "Cap Missile III", "A cruiser's concussion missile launchers.", 5, 18f, 30, 35);
+            MissileLauncher("cap_missile_4", "Concussion Missile IV", "Cap Missile IV", "A heavy cruiser's concussion missile launchers.", 5, 18f, 30, 35);
+            MissileLauncher("cap_missile_5", "Concussion Missile V", "Cap Missile V", "A battlecruiser's concussion missile launchers.", 5, 18f, 30, 45);
+            MissileLauncher("cap_missile_6", "Concussion Missile VI", "Cap Missile VI", "A battleship's concussion missile launchers.", 5, 18f, 30, 45);
+            MissileLauncher("cap_missile_7", "Concussion Missile VII", "Cap Missile VII", "A dreadnought's concussion missile launchers.", 5, 18f, 30, 60);
 
             return _builder.Build();
         }
@@ -62,13 +69,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         private void MissileLauncher(
-            string itemTag, 
-            string name, 
-            string shortName, 
-            string description, 
-            int requiredLevel, 
-            float recast, 
-            int capacitor, 
+            string itemTag,
+            string name,
+            string shortName,
+            string description,
+            int requiredLevel,
+            float recast,
+            int capacitor,
             int dmg)
         {
             _builder.Create(itemTag)
@@ -102,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
                     });
-                    
+
                     // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
                     // Then apply damage on target and those nearby.
                     DelayCommand(delay, () =>
@@ -137,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);
                                 continue;
                             }
-                            
+
                             PerformAttack(activator, nearby, dmg, attackBonus, null);
 
                             nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);

@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10076
+    "value": 10063
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.125
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -13
+    "value": -3
   },
   "CurrentHitPoints": {
     "type": "short",

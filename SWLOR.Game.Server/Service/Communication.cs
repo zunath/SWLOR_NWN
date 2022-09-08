@@ -6,6 +6,7 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Service
 
             if(type == GuiEventType.ChatBarFocus)
             {
-                var chatIndic = TagEffect(EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
                 ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
             } else if (type == GuiEventType.ChatBarUnfocus)
             {

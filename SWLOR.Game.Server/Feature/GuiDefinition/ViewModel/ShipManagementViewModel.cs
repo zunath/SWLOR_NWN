@@ -467,7 +467,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var propertyIds = DB.Search(permissionQuery)
+            var permissionCount = (int)DB.SearchCount(permissionQuery);
+            var propertyIds = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
                 .Select(s => s.PropertyId)
                 .ToList();
 

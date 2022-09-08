@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
                 ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action CANNOT be undone, even with a character rebuild. Are you SURE you want to upgrade this stat?"
-                : "Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
+                : $"Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
 
             ShowModal(promptMessage, () =>
             {

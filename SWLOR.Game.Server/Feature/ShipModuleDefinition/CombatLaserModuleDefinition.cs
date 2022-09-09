@@ -21,18 +21,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals 17 thermal DMG to your target.", 3, 5f, 12, 17);
             CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals 21 thermal DMG to your target.", 4, 6f, 15, 21);
             CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals 26 thermal DMG to your target.", 5, 7f, 18, 26);
-            CombatLaser("cap_pdl_1", "Capital Point Defense I", "Cap PDL I", "A corvette's fast firing point defense. 15 DMG.", 5, 2f, 2, 15);
-            CombatLaser("cap_pdl_2", "Capital Point Defense II", "Cap PDL II", "A frigate's fast firing point defense. 19 DMG.", 5, 2f, 2, 19);
-            CombatLaser("cap_pdl_3", "Capital Point Defense III", "Cap PDL III", "A cruiser's fast firing point defense. 23 DMG.", 5, 2f, 2, 23);
-            CombatLaser("cap_pdl_4", "Capital Point Defense IV", "Cap PDL IV", "A heavy cruiser's fast firing point defense. 27 DMG.", 5, 2f, 2, 27);
-            CombatLaser("cap_pdl_5", "Capital Point Defense V", "Cap PDL V", "A battlecruiser's fast firing point defense. 31 DMG.", 5, 2f, 2, 31);
-            CombatLaser("cap_pdl_6", "Capital Point Defense VI", "Cap PDL VI", "A battleship's fast firing point defense. 35 DMG.", 5, 2f, 2, 35);
-            CombatLaser("cap_pdl_7", "Capital Point Defense VII", "Cap PDL VII", "A dreadnought's fast firing point defense. 40 DMG.", 5, 2f, 2, 40);
-            CombatLaser("blast_can_1", "Blaster Cannon I", "BlastCannon1", "A blaster cannon. Fast firing and powerful. 6 DMG.", 1, 2f, 2, 6);
-            CombatLaser("blast_can_2", "Blaster Cannon II", "BlastCannon2", "A blaster cannon. Fast firing and powerful. 10 DMG.", 2, 2f, 2, 10);
-            CombatLaser("blast_can_3", "Blaster Cannon III", "BlastCannon3", "A blaster cannon. Fast firing and powerful. 14 DMG.", 3, 2f, 2, 14);
-            CombatLaser("blast_can_4", "Blaster Cannon IV", "BlastCannon4", "A blaster cannon. Fast firing and powerful. 18 DMG.", 4, 2f, 2, 18);
-            CombatLaser("blast_can_5", "Blaster Cannon V", "BlastCannon5", "A blaster cannon. Fast firing and powerful. 22 DMG.", 5, 2f, 2, 22);
+            CombatLaser("cap_pdl_1", "Capital Point Defense I", "Cap PDL I", "Deals 15 damage to target every second.", 5, 1f, 2, 15);
+            CombatLaser("cap_pdl_2", "Capital Point Defense II", "Cap PDL II", "Deals 17 damage to target every second.", 5, 1f, 2, 17);
+            CombatLaser("cap_pdl_3", "Capital Point Defense III", "Cap PDL III", "Deals 19 damage to target every second.", 5, 1f, 2, 19);
+            CombatLaser("cap_pdl_4", "Capital Point Defense IV", "Cap PDL IV", "Deals 21 damage to target every second.", 5, 1f, 2, 21);
+            CombatLaser("cap_pdl_5", "Capital Point Defense V", "Cap PDL V", "Deals 23 damage to target every second.", 5, 1f, 2, 23);
+            CombatLaser("cap_pdl_6", "Capital Point Defense VI", "Cap PDL VI", "Deals 25 damage to target every second.", 5, 1f, 2, 25);
+            CombatLaser("cap_pdl_7", "Capital Point Defense VII", "Cap PDL VII", "Deals 30 damage to target every second.", 5, 1f, 2, 30);
+            CombatLaser("blast_can_1", "Blaster Cannon I", "BlastCannon1", "Deals 6 damage to target every 2 seconds.", 1, 2f, 2, 6);
+            CombatLaser("blast_can_2", "Blaster Cannon II", "BlastCannon2", "Deals 10 damage to target every 2 seconds.", 2, 2f, 2, 10);
+            CombatLaser("blast_can_3", "Blaster Cannon III", "BlastCannon3", "Deals 14 damage to target every 2 seconds.", 3, 2f, 2, 14);
+            CombatLaser("blast_can_4", "Blaster Cannon IV", "BlastCannon4", "Deals 18 damage to target every 2 seconds.", 4, 2f, 2, 18);
+            CombatLaser("blast_can_5", "Blaster Cannon V", "BlastCannon5", "Deals 22 damage to target every 2 seconds.", 5, 2f, 2, 22);
 
             return _builder.Build();
         }

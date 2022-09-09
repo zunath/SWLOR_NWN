@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Physical] = 0;
             var physicalDamage = 0;
             var foundDMG = false;
+            var weaponPerkLevel = 0;
 
             // Calculate attacker's base DMG
             var specializationDMGBonus = CalculateSpecializationDMG(attacker, weapon);
@@ -124,7 +125,8 @@ namespace SWLOR.Game.Server.Native
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
-                    if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
+                    if (ip == null) continue;
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         // Catch old-style DMG properties here, and correct the damage type by hand.
                         var damageTypeId = ip.m_nSubType;
@@ -139,6 +141,11 @@ namespace SWLOR.Game.Server.Native
                         dmg += ip.m_nCostTableValue;
                         dmgValues[damageType] = dmg;
                         foundDMG = true;
+                    }
+
+                    if (weaponPerkLevel == 0 && ip.m_nPropertyName == (ushort)ItemPropertyType.UseLimitationPerk)
+                    {
+                        weaponPerkLevel = ip.m_nCostTableValue;
                     }
                 }
             }
@@ -246,7 +253,6 @@ namespace SWLOR.Game.Server.Native
                     int defenderStat = target.m_pStats.GetCONStat();
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
-                    var ignoreDelta = damageType != CombatDamageType.Physical; // Ignore stat delta for elemental damage from weapons
 
                     Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_pStats.m_nRace);
                     damage = Combat.CalculateDamage(
@@ -256,7 +262,7 @@ namespace SWLOR.Game.Server.Native
                         defense,
                         defenderStat, 
                         critical,
-                        ignoreDelta);
+                        weaponPerkLevel);
 
                     // Apply droid bonus for electrical damage.
                     if (target.m_pStats.m_nRace == (ushort)RacialType.Robot && damageType == CombatDamageType.Electrical)

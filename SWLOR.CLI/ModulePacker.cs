@@ -99,7 +99,15 @@ namespace SWLOR.CLI
             // Get all of the files we just unpacked.
             Console.WriteLine("Getting files...");
             var files = Directory.EnumerateFiles("./", "*.*")
-                .Where(x => folders.Contains("./" + x.ToLower().Substring(x.Length - 3, 3)));
+                .Where(x => folders.Contains("./" + x.ToLower().Substring(x.Length - 3, 3))).ToList();
+
+            // Make sure that extensions are lowercase because nwn_gff only supports these
+            for (int i = 0; i < files.Count; i++)
+            {
+                var fileWithFormattedExtension = Path.ChangeExtension(files[i], Path.GetExtension(files[i]).ToLower());
+                File.Move(files[i], fileWithFormattedExtension);
+                files[i] = fileWithFormattedExtension;
+            }
 
             Parallel.ForEach(files, (file) =>
             {
@@ -113,7 +121,7 @@ namespace SWLOR.CLI
                 File.Delete(file);
             });
 
-            files = Directory.GetFiles("./", "*.nss").Union(Directory.GetFiles("./", "*.ncs"));
+            files = Directory.GetFiles("./", "*.nss").Union(Directory.GetFiles("./", "*.ncs")).ToList();
             Parallel.ForEach(files, (file) =>
             {
                 Console.WriteLine("Moving script: " + file);
@@ -177,7 +185,6 @@ namespace SWLOR.CLI
                 "./jrl",
                 "./utc",
                 "./utd",
-                "./ute",
                 "./uti",
                 "./utm",
                 "./utp",

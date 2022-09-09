@@ -459,7 +459,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC_BulkF"
+    "value": "npc_bulkf"
   },
   "Tail_New": {
     "type": "dword",

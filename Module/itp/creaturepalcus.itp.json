@@ -1090,7 +1090,7 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Hostile"
+                      "value": "Animals"
                     },
                     "NAME": {
                       "type": "cexostring",

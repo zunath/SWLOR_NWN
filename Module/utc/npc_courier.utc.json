@@ -86,7 +86,7 @@
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 5
   },
   "FeatList": {
     "type": "list",
@@ -459,7 +459,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC_Courier"
+    "value": "npc_courier"
   },
   "Tail_New": {
     "type": "dword",

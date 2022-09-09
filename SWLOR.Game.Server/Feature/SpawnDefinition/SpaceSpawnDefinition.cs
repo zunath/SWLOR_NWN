@@ -43,32 +43,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -102,32 +102,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -166,32 +166,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -235,32 +235,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -304,32 +304,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -364,32 +364,32 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
-                .WithFrequency(500)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(200)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
                 .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
-                .WithFrequency(40)
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
                 .WithFrequency(20)
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "cap_btlship")
-                .WithFrequency(5)
+                .WithFrequency(3)
                 .RandomlyWalks()
                 .ReturnsHome()
 

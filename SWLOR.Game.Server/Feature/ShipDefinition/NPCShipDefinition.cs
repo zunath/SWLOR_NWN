@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Courier")
+            _builder.Create("npc_courier")
                 .ItemResref("npc_courier")
                 .Name("NPC - Courier")
                 .Appearance(AppearanceType.NeutralStriker)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Turret1")
+            _builder.Create("npc_turret1")
                 .ItemResref("npc_turret1")
                 .Name("NPC - Mk 1 Defense Turret")
                 .Appearance(AppearanceType.Turret1)
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Shuttle")
+            _builder.Create("npc_shuttle")
                 .ItemResref("npc_shuttle")
                 .Name("NPC - Shuttle")
                 .Appearance(AppearanceType.VLambda)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Turret2")
+            _builder.Create("npc_turret2")
                 .ItemResref("npc_turret2")
                 .Name("NPC - Mk 2 Defense Turret")
                 .Appearance(AppearanceType.Turret1)
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Freighter")
+            _builder.Create("npc_freighter")
                 .ItemResref("npc_freighter")
                 .Name("NPC - Freighter")
                 .Appearance(AppearanceType.FreighterSmall)
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Turret3")
+            _builder.Create("npc_turret3")
                 .ItemResref("npc_turret3")
                 .Name("NPC - Mk 3 Defense Turret")
                 .Appearance(AppearanceType.Turret1)
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_BulkF")
+            _builder.Create("npc_bulkf")
                 .ItemResref("npc_bulkf")
                 .Name("NPC - Bulk Freighter")
                 .Appearance(AppearanceType.LargeCargoShip)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Turret4")
+            _builder.Create("npc_turret4")
                 .ItemResref("npc_turret4")
                 .Name("NPC - Mk 4 Defense Turret")
                 .Appearance(AppearanceType.Turret1)
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Merchant")
+            _builder.Create("npc_merchant")
                 .ItemResref("npc_merchant")
                 .Name("NPC - Merchantman")
                 .Appearance(AppearanceType.RepublicForay)
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
 
-            _builder.Create("NPC_Turret5")
+            _builder.Create("npc_turret5")
                 .ItemResref("npc_turret5")
                 .Name("NPC - Mk 5 Defense Turret")
                 .Appearance(AppearanceType.Turret1)

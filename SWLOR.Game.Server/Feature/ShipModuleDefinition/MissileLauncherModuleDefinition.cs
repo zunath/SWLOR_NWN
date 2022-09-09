@@ -21,13 +21,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Deals 15 explosive DMG to your target and nearby ships.", 3, 14f, 18, 15);
             MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Deals 19 explosive DMG  to your target and nearby ships.", 4, 17f, 22, 19);
             MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Deals 24 explosive DMG to your target and nearby ships.", 5, 20f, 26, 24);
-            MissileLauncher("cap_missile_1", "Concussion Missile I", "Cap Missile I", "A corvette's concussion missile launchers.", 5, 18f, 30, 25);
-            MissileLauncher("cap_missile_2", "Concussion Missile II", "Cap Missile II", "A frigate's concussion missile launchers.", 5, 18f, 30, 25);
-            MissileLauncher("cap_missile_3", "Concussion Missile III", "Cap Missile III", "A cruiser's concussion missile launchers.", 5, 18f, 30, 35);
-            MissileLauncher("cap_missile_4", "Concussion Missile IV", "Cap Missile IV", "A heavy cruiser's concussion missile launchers.", 5, 18f, 30, 35);
-            MissileLauncher("cap_missile_5", "Concussion Missile V", "Cap Missile V", "A battlecruiser's concussion missile launchers.", 5, 18f, 30, 45);
-            MissileLauncher("cap_missile_6", "Concussion Missile VI", "Cap Missile VI", "A battleship's concussion missile launchers.", 5, 18f, 30, 45);
-            MissileLauncher("cap_missile_7", "Concussion Missile VII", "Cap Missile VII", "A dreadnought's concussion missile launchers.", 5, 18f, 30, 60);
+            MissileLauncher("cap_missile_1", "Concussion Missile I", "CapMissile1", "A corvette's concussion missile launchers.", 5, 18f, 30, 25);
+            MissileLauncher("cap_missile_2", "Concussion Missile II", "CapMissile2", "A frigate's concussion missile launchers.", 5, 18f, 30, 25);
+            MissileLauncher("cap_missile_3", "Concussion Missile III", "CapMissile3", "A cruiser's concussion missile launchers.", 5, 18f, 30, 35);
+            MissileLauncher("cap_missile_4", "Concussion Missile IV", "CapMissile4", "A heavy cruiser's concussion missile launchers.", 5, 18f, 30, 35);
+            MissileLauncher("cap_missile_5", "Concussion Missile V", "CapMissile5", "A battlecruiser's concussion missile launchers.", 5, 18f, 30, 45);
+            MissileLauncher("cap_missile_6", "Concussion Missile VI", "CapMissile6", "A battleship's concussion missile launchers.", 5, 18f, 30, 45);
+            MissileLauncher("cap_missile_7", "Concussion Missile VII", "CapMissile7", "A dreadnought's concussion missile launchers.", 5, 18f, 30, 60);
 
             return _builder.Build();
         }

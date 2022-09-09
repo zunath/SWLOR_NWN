@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             CombatLaser("cap_pdl_5", "Capital Point Defense V", "Cap PDL V", "A battlecruiser's fast firing point defense. 31 DMG.", 5, 2f, 2, 31);
             CombatLaser("cap_pdl_6", "Capital Point Defense VI", "Cap PDL VI", "A battleship's fast firing point defense. 35 DMG.", 5, 2f, 2, 35);
             CombatLaser("cap_pdl_7", "Capital Point Defense VII", "Cap PDL VII", "A dreadnought's fast firing point defense. 40 DMG.", 5, 2f, 2, 40);
-            CombatLaser("blast_can_1", "Blaster Cannon I", "Blaster Cannon I", "A blaster cannon. Fast firing and powerful. 6 DMG.", 1, 2f, 2, 6);
-            CombatLaser("blast_can_2", "Blaster Cannon II", "Blaster Cannon II", "A blaster cannon. Fast firing and powerful. 10 DMG.", 2, 2f, 2, 10);
-            CombatLaser("blast_can_3", "Blaster Cannon III", "Blaster Cannon III", "A blaster cannon. Fast firing and powerful. 14 DMG.", 3, 2f, 2, 14);
-            CombatLaser("blast_can_4", "Blaster Cannon IV", "Blaster Cannon IV", "A blaster cannon. Fast firing and powerful. 18 DMG.", 4, 2f, 2, 18);
-            CombatLaser("blast_can_5", "Blaster Cannon V", "Blaster Cannon V", "A blaster cannon. Fast firing and powerful. 22 DMG.", 5, 2f, 2, 22);
+            CombatLaser("blast_can_1", "Blaster Cannon I", "BlastCannon1", "A blaster cannon. Fast firing and powerful. 6 DMG.", 1, 2f, 2, 6);
+            CombatLaser("blast_can_2", "Blaster Cannon II", "BlastCannon2", "A blaster cannon. Fast firing and powerful. 10 DMG.", 2, 2f, 2, 10);
+            CombatLaser("blast_can_3", "Blaster Cannon III", "BlastCannon3", "A blaster cannon. Fast firing and powerful. 14 DMG.", 3, 2f, 2, 14);
+            CombatLaser("blast_can_4", "Blaster Cannon IV", "BlastCannon4", "A blaster cannon. Fast firing and powerful. 18 DMG.", 4, 2f, 2, 18);
+            CombatLaser("blast_can_5", "Blaster Cannon V", "BlastCannon5", "A blaster cannon. Fast firing and powerful. 22 DMG.", 5, 2f, 2, 22);
 
             return _builder.Build();
         }

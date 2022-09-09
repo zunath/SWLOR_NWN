@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("msl_launch_b");
 
             _builder.Create("npc_courier")
-                .ItemTag("NPC_Courier")
+                .ItemTag("npc_courier")
                 .ShipModule("blast_can_1")
                 .ShipModule("blast_can_1");
 
             _builder.Create("npc_turret1")
-                .ItemTag("NPC_Turret1")
+                .ItemTag("npc_turret1")
                 .ShipModule("blast_can_1")
                 .ShipModule("blast_can_1");
         }
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("blast_can_2");
 
             _builder.Create("npc_turret2")
-                .ItemTag("NPC_Turret2")
+                .ItemTag("npc_turret2")
                 .ShipModule("blast_can_2")
                 .ShipModule("blast_can_2");
         }
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("blast_can_3");
 
             _builder.Create("npc_turret3")
-                .ItemTag("NPC_Turret3")
+                .ItemTag("npc_turret3")
                 .ShipModule("blast_can_3")
                 .ShipModule("blast_can_3");
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("blast_can_3");
 
             _builder.Create("npc_sithfig")
-                .ItemTag("npc_aurek")
+                .ItemTag("npc_sithfig")
                 .ShipModule("blast_can_3");
         }
 
@@ -114,13 +114,13 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("shld_boost_3");
 
             _builder.Create("npc_bulkf")
-                .ItemTag("NPC_BulkF")
+                .ItemTag("npc_bulkf")
                 .ShipModule("blast_can_4")
                 .ShipModule("blast_can_4")
                 .ShipModule("blast_can_4");
 
             _builder.Create("npc_turret4")
-                .ItemTag("NPC_Turret4")
+                .ItemTag("npc_turret4")
                 .ShipModule("blast_can_4")
                 .ShipModule("blast_can_4")
                 .ShipModule("blast_can_4");
@@ -145,13 +145,13 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("shld_boost_4");
 
             _builder.Create("npc_merchant")
-                .ItemTag("NPC_Merchant")
+                .ItemTag("npc_merchant")
                 .ShipModule("blast_can_5")
                 .ShipModule("blast_can_5")
                 .ShipModule("blast_can_5");
 
             _builder.Create("npc_turret5")
-                .ItemTag("NPC_Turret5")
+                .ItemTag("npc_turret5")
                 .ShipModule("blast_can_5")
                 .ShipModule("blast_can_5")
                 .ShipModule("blast_can_5");

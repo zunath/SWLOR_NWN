@@ -459,7 +459,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC_Turret4"
+    "value": "npc_turret4"
   },
   "Tail_New": {
     "type": "dword",

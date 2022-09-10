@@ -716,7 +716,8 @@
         WildBloodBroth = 2078,
         GrandioseSandwich = 2079,
         WildStew = 2080,
-        KlorslugSurprise = 2081,
+        HssissSurprise = 2081,
+        KlorslugSurprise = 2082,
 
 
         // Engineering: 3001-4000

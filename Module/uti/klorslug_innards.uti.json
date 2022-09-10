@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 28
+    "value": 20
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 28
+    "value": 20
   },
   "Cursed": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Meat"
+      "0": "K'lor'slug Innards"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 3
+    "value": 28
   },
   "PaletteID": {
     "type": "byte",
@@ -70,10 +70,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_meat"
+    "value": "klorslug_innards"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_meat"
+    "value": "klorslug_innards"
   }
 }

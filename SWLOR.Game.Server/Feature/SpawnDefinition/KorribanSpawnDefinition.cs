@@ -23,12 +23,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Wastelands()
         {
             _builder.Create("KORRIBAN_WASTELANDS", "Wastelands")
-                .AddSpawn(ObjectType.Creature, "tukata")
+                .AddSpawn(ObjectType.Creature, "pelko")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "korr_hssiss")
+                .AddSpawn(ObjectType.Creature, "korr_klorslug")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome();
@@ -37,12 +37,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Valley()
         {
             _builder.Create("KORRIBAN_VALLEY", "Valley")
-                .AddSpawn(ObjectType.Creature, "tukata")
+                .AddSpawn(ObjectType.Creature, "pelko")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "korr_hssiss")
+                .AddSpawn(ObjectType.Creature, "korr_klorslug")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
@@ -56,12 +56,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Ravine()
         {
             _builder.Create("KORRIBAN_RAVINE", "Ravine")
-                .AddSpawn(ObjectType.Creature, "tukata")
+                .AddSpawn(ObjectType.Creature, "pelko")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "korr_hssiss")
+                .AddSpawn(ObjectType.Creature, "korr_klorslug")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
@@ -89,17 +89,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Dunes()
         {
             _builder.Create("KORRIBAN_DUNES", "Dunes")
-                .AddSpawn(ObjectType.Creature, "tukata")
+                .AddSpawn(ObjectType.Creature, "pelko")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "korr_hssiss")
+                .AddSpawn(ObjectType.Creature, "korr_klorslug")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "korr_terentatek")
+                .AddSpawn(ObjectType.Creature, "korr_wraid")
                 .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
@@ -108,12 +108,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SithCrypt()
         {
             _builder.Create("KORRIBAN_SITH_CRYPT", "Sith Crypt")
-                .AddSpawn(ObjectType.Creature, "sith_ghost")
+                .AddSpawn(ObjectType.Creature, "s_app")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "sith_ghost_male")
+                .AddSpawn(ObjectType.Creature, "s_app_m")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome();

@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 9
+    "value": 11
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 311
   },
   "Charges": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 9
+    "value": 11
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Tooth"
+      "0": "K'lor'slug Surprise"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 2
+    "value": 15
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 23
   },
   "Plot": {
     "type": "byte",
@@ -69,27 +67,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 3
         },
         "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
           "type": "word",
           "value": 15
         },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 335
         }
       },
       {
@@ -104,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -116,11 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 108
+          "value": 106
         },
         "Subtype": {
           "type": "word",
-          "value": 31
+          "value": 5
         }
       },
       {
@@ -131,11 +129,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 44
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -147,11 +145,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 106
         },
         "Subtype": {
           "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
           "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
         }
       }
     ]
@@ -166,10 +195,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_tooth"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_tooth"
+    "value": "slug_surprise"
   }
 }

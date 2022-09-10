@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Skin"
+      "0": "Sith Apprentice Hide"
     }
   },
   "ModelPart1": {
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 40
         },
         "CostValue": {
           "type": "word",
-          "value": 22
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 97
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 50
+          "value": 24
         },
         "Param1": {
           "type": "byte",
@@ -114,7 +114,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 98
+          "value": 99
         },
         "Subtype": {
           "type": "word",
@@ -133,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_skin"
+    "value": "s_app_hide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_skin"
+    "value": "s_app_hide"
   }
 }

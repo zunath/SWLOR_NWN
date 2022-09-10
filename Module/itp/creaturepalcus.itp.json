@@ -4470,6 +4470,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Master Brokisee Shax"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpcbrokisee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 45.0
                     },
                     "FACTION": {
@@ -10332,11 +10351,30 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hssiss"
+                      "value": "K'lor'slug"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "korr_hssiss"
+                      "value": "korr_klorslug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Wraid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_wraid"
                     }
                   },
                   {
@@ -10362,6 +10400,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pelko Bug Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pelko"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 8.0
                     },
                     "FACTION": {
@@ -10375,82 +10470,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrack"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 10.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Apprentice Ghost"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sith_ghost"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 10.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Apprentice Ghost"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sith_ghost_male"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Terentatek"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "korr_terentatek"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 6.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tuk'ata"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tukata"
                     }
                   }
                 ]
@@ -10961,7 +10980,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",

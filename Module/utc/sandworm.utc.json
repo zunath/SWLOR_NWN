@@ -519,7 +519,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_SAND_WORM,60,2"
+          "value": "TATOOINE_SAND_WORM,100,1"
         }
       },
       {
@@ -535,6 +535,36 @@
         "Value": {
           "type": "int",
           "value": 31
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_SAND_WORM,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_SAND_WORM_RARES,5,1"
         }
       }
     ]

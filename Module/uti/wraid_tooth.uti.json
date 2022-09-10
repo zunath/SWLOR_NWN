@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 15
+    "value": 9
   },
   "BaseItem": {
     "type": "int",
@@ -18,14 +18,13 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 15
+    "value": 9
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -42,15 +41,14 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Fur"
+      "0": "Korriban Wraid Tooth"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 39
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
@@ -102,6 +100,37 @@
         },
         "CostTable": {
           "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 108
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 31
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 44
         },
         "CostValue": {
@@ -124,37 +153,6 @@
           "type": "word",
           "value": 0
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 109
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 55
-        }
       }
     ]
   },
@@ -168,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_fur"
+    "value": "wraid_tooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_fur"
+    "value": "wraid_tooth"
   }
 }

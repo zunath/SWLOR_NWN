@@ -45,7 +45,7 @@
     "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Claw"
+      "0": "Korriban Wraid Claw"
     }
   },
   "ModelPart1": {
@@ -168,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_claw"
+    "value": "wraid_claw2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_claw"
+    "value": "wraid_claw2"
   }
 }

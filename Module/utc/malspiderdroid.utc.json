@@ -510,7 +510,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CZ220_LOOT_DROID,60,2"
+          "value": "CZ220_LOOT_DROID,100,1"
         }
       },
       {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CZ220_CREDITS,80,1"
+          "value": "CZ220_LOOT_DROID,40,1"
         }
       },
       {
@@ -556,6 +556,21 @@
         "Value": {
           "type": "cexostring",
           "value": "CZ220_LOOT_DROID_RARES,2,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CZ220_CREDITS,80,1"
         }
       }
     ]

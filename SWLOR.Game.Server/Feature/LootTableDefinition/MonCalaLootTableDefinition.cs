@@ -27,14 +27,16 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_good", 20)
                 .AddItem("aradile_meat", 10)
                 .AddItem("aradile_tail", 10)
-                .AddItem("aradile_innards", 5)
-                .AddItem("aradile_skin2", 2, 1, true);
+                .AddItem("aradile_innards", 5);
+
+            _builder.Create("MONCALA_ARADILE_RARES")
+                .AddItem("aradile_skin2", 1, 1, true);
         }
 
         private void Viper()
         {
             _builder.Create("MONCALA_VIPER")
-                .AddItem("lth_flawed", 10)
+                .AddItem("lth_flawed", 5)
                 .AddItem("lth_good", 20)
                 .AddItem("viper_meat", 10)
                 .AddItem("viper_bile", 5)
@@ -54,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_AMPHIHYDRUS_RARES")
                 .IsRare()
-                .AddItem("map_028", 4, 1, true)
-                .AddItem("map_029", 4, 1, true)
+                .AddItem("map_028", 2, 1, true)
+                .AddItem("map_029", 2, 1, true)
                 .AddItem("agate", 1, 1, true);
         }
 
@@ -79,11 +81,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("c_butter", 1)
                 .AddGold(40, 20);
 
-            _builder.Create("MONCALA_ECOTERRORIST_RARES")
+            _builder.Create("MONCALA_ECOTERRORIST_GEAR")
                 .IsRare()
-                .AddItem("map_027", 3, 1, true)
-                .AddItem("map_59", 1, 1, true)
-                .AddItem("map_60", 1, 1, true)
                 .AddItem("poach_shield", 5)
                 .AddItem("poach_cloak", 5)
                 .AddItem("poach_belt", 5)
@@ -109,6 +108,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("seeker_cap", 5)
                 .AddItem("seeker_gloves", 5)
                 .AddItem("seeker_boots", 5);
+
+            _builder.Create("MONCALA_ECOTERRORIST_RARES")
+                .IsRare()
+                .AddItem("map_027", 3, 1, true)
+                .AddItem("map_59", 1, 1, true)
+                .AddItem("map_60", 1, 1, true);
         }
 
         private void EcoTerroristLeader()
@@ -123,6 +128,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("poach_helmet", 5)
                 .AddItem("poach_bracer", 5)
                 .AddItem("poach_leggings", 5)
+                .AddGold(80, 10);
+
+            _builder.Create("MONCALA_ECOTERRORIST_LEADER_HUNT")
                 .AddItem("hunter_cloak", 5)
                 .AddItem("hunter_belt", 5)
                 .AddItem("hunter_ring", 5)
@@ -130,7 +138,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("hunter_tunic", 5)
                 .AddItem("hunter_cap", 5)
                 .AddItem("hunter_gloves", 5)
-                .AddItem("hunter_boots", 5)
+                .AddItem("hunter_boots", 5);
+
+            _builder.Create("MONCALA_ECOTERRORIST_LEADER_SEEK")
                 .AddItem("seeker_cloak", 5)
                 .AddItem("seeker_belt", 5)
                 .AddItem("seeker_ring", 5)
@@ -138,8 +148,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("seeker_tunic", 5)
                 .AddItem("seeker_cap", 5)
                 .AddItem("seeker_gloves", 5)
-                .AddItem("seeker_boots", 5)
-                .AddGold(80, 10);
+                .AddItem("seeker_boots", 5);
 
             _builder.Create("MONCALA_ECOTERRORIST_LEADER_RARES")
                 .IsRare()
@@ -154,10 +163,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_MICROTENCH")
                 .AddItem("mtench_tentacle", 20)
-                .AddItem("mtench_mantle", 10)
-                .AddItem("mtench_ink", 3)
+                .AddItem("mtench_mantle", 10);
 
-                .AddItem("mtench_poison", 2, 1, true);
+            _builder.Create("MONCALA_MICROTENCH_RARES")
+                .IsRare()
+                .AddItem("mtench_ink", 3, 1, true)
+                .AddItem("mtench_poison", 1, 1, true);
         }
 
         private void Octotench()
@@ -166,9 +177,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mtench_tentacle", 25)
                 .AddItem("mtench_mantle", 20)
                 .AddItem("mtench_ink", 3)
-                .AddItem("mtench_sac", 1)
+                .AddItem("mtench_sac", 3)
+                .AddItem("mtench_poison", 3);
 
-                .AddItem("mtench_poison", 5, 1, true)
+            _builder.Create("MONCALA_OCTOTENCH_RARES")
+                .IsRare()
+                .AddItem("mtench_ink", 3, 1, true)
+                .AddItem("mtench_sac", 3, 1, true)
+                .AddItem("mtench_poison", 3, 1, true)
                 .AddItem("map_58", 1, 1, true);
         }
 
@@ -178,8 +194,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("scorch_tail", 20)
                 .AddItem("scorch_leg", 10)
                 .AddItem("scorch_chitin", 15)
-                .AddItem("scorch_antennae", 5)
+                .AddItem("scorch_antennae", 5);
 
+            _builder.Create("MONCALA_SCORCHELLUS_RARES")
                 .AddItem("map_58", 1, 1, true);
         }
     }

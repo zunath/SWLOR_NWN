@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 19
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 536
+    "value": 69
   },
   "Charges": {
     "type": "byte",
@@ -18,17 +18,15 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 19
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,24 +41,56 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Tail"
+      "0": "K'lor'slug Bite"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 98
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 13
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 34
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 27
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -72,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_tail"
+    "value": "klorslug_bite"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_tail"
+    "value": "klorslug_bite"
   }
 }

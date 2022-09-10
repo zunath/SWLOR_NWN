@@ -519,7 +519,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_CAIRNMOG,40,2"
+          "value": "VISCARA_CAIRNMOG,100,1"
         }
       },
       {
@@ -535,6 +535,36 @@
         "Value": {
           "type": "int",
           "value": 11
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_CAIRNMOG,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_CAIRNMOG_RARES,20,1"
         }
       }
     ]

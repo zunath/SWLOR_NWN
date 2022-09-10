@@ -527,7 +527,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_KATH_HOUND,75,2"
+          "value": "VISCARA_KATH_HOUND,100,1"
         }
       },
       {
@@ -543,6 +543,21 @@
         "Value": {
           "type": "cexostring",
           "value": "VISCARA_KATH_HOUND_RARES,20,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_KATH_HOUND,50,1"
         }
       }
     ]

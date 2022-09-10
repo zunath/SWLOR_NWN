@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.125
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -9
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -205,7 +205,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 734
+    "value": 1039
   },
   "Race": {
     "type": "byte",
@@ -550,7 +550,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_GIMPASSA,60,2"
+          "value": "VISCARA_GIMPASSA,100,1"
         }
       },
       {
@@ -566,6 +566,36 @@
         "Value": {
           "type": "int",
           "value": 9
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_GIMPASSA,60,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_GIMPASSA_RARES,20,1"
         }
       }
     ]

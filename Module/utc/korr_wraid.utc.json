@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2509
+    "value": 10046
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 18
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 9.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 14
+          "value": 21
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 5
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 12
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 2
+    "value": -5
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 45
+    "value": 207
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Large reptilian creatures that inhabited desert planets. They have powerful front legs that enable them to move quickly when agitated by means of long, bounding strides. "
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 18
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "amphih_claw"
+          "value": "wraid_claw"
+        }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "wraid_claw"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mc_amphihy_hide"
+          "value": "wraid_hide"
         }
       }
     ]
@@ -104,14 +111,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1730
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1831
+          "value": 1750
         }
       },
       {
@@ -126,7 +126,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Amphi-Hydrus"
+      "0": "Korriban Wraid"
     }
   },
   "fortbonus": {
@@ -135,7 +135,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -143,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 45
+    "value": 207
   },
   "Int": {
     "type": "byte",
-    "value": 22
+    "value": 14
   },
   "Interruptable": {
     "type": "byte",
@@ -177,11 +177,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 63
+    "value": 212
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 3
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +189,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 152
+    "value": 155
   },
   "PerceptionRange": {
     "type": "byte",
@@ -205,11 +205,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3789
+    "value": 195
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 8
   },
   "refbonus": {
     "type": "short",
@@ -344,7 +344,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 12
+          "value": 0
         }
       },
       {
@@ -470,95 +470,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 57
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 76
+    "value": 83
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -566,11 +490,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "mc_amphihydrus"
+    "value": "korr_wraid"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",
@@ -578,7 +502,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "mc_amphihydrus"
+    "value": "korr_wraid"
   },
   "VarTable": {
     "type": "list",
@@ -595,7 +519,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_AMPHIHYDRUS,100,1"
+          "value": "KORRIBAN_WRAID,100,1"
         }
       },
       {
@@ -610,7 +534,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 19
+          "value": 36
         }
       },
       {
@@ -625,22 +549,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_AMPHIHYDRUS_RARES,5,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "MONCALA_AMPHIHYDRUS,40,1"
+          "value": "KORRIBAN_WRAID,40,1"
         }
       }
     ]
@@ -659,6 +568,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 16
   }
 }

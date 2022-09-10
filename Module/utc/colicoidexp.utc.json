@@ -541,7 +541,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CZ220_LOOT_COLICOID,95,1"
+          "value": "CZ220_LOOT_COLICOID,100,1"
         }
       },
       {
@@ -586,7 +586,22 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CZ220_CREDITS,80,2"
+          "value": "CZ220_CREDITS,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CZ220_CREDITS,60,1"
         }
       }
     ]

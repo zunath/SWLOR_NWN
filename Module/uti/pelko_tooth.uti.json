@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 15
   },
   "BaseItem": {
     "type": "int",
-    "value": 525
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,18 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 15
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 90753,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,30 +42,23 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Ghost Apprentice Electroblade"
+      "0": "Pelko Bug Barb"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 131
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 231
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 132
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 64
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -75,11 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 26
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -91,11 +87,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 104
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -106,11 +102,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 0
+          "value": 44
         },
         "CostValue": {
           "type": "word",
-          "value": 0
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -122,11 +118,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 83
+          "value": 95
         },
         "Subtype": {
           "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
           "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 56
         }
       }
     ]
@@ -137,14 +164,14 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Tag": {
     "type": "cexostring",
-    "value": "s_app_gh_electro"
+    "value": "pelko_tooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "s_app_gh_electro"
+    "value": "pelko_tooth"
   }
 }

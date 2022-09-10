@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 35
+    "value": 39
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 35
+    "value": 39
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,12 +43,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Blood"
+      "0": "Korriban Wraid Scale"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 26
+    "value": 95
   },
   "PaletteID": {
     "type": "byte",
@@ -98,37 +100,6 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 10
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 108
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 33
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 44
         },
         "CostValue": {
@@ -151,6 +122,37 @@
           "type": "word",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 49
+        }
       }
     ]
   },
@@ -164,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_blood"
+    "value": "wraid_scale"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_blood"
+    "value": "wraid_scale"
   }
 }

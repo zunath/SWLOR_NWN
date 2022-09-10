@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 22
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 22
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Skin"
+      "0": "Korriban Wraid Spine"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 111
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 64
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 104
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -114,11 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 108
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 30
         }
       },
       {
@@ -129,11 +129,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 44
         },
         "CostValue": {
           "type": "word",
-          "value": 100
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -145,7 +145,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 98
+          "value": 95
         },
         "Subtype": {
           "type": "word",
@@ -164,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_skin"
+    "value": "wraid_spine"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_skin"
+    "value": "wraid_spine"
   }
 }

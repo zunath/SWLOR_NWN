@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("mando_rifle", 5)
                 .AddItem("mando_knife", 5)
                 .AddItem("b_flour", 8)
-                .AddItem("sweet_butter", 2, 1, true)
+                .AddItem("sweet_butter", 2)
                 .AddGold(30, 10);
 
             _builder.Create("VISCARA_MANDALORIAN_RANGER_TAGS")
@@ -163,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("m_plexiplate", 20, 1, true)
                 .AddItem("map_053", 10, 1, true)
+                .AddItem("map_048", 5, 1, true)
                 .AddItem("jade", 5, 1, true)
                 .AddItem("agate", 5, 1, true);
         }
@@ -189,7 +190,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_MANDALORIAN_SCOUT_RARES")
                 .IsRare()
                 .AddItem("m_plexiplate", 10, 1, true)
-                .AddItem("map_053", 10, 1, true);
+                .AddItem("map_053", 10, 1, true)
+                .AddItem("map_048", 2, 1, true);
         }
 
         private void MandalorianCrate()
@@ -202,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("jade", 1, 1, true)
                 .AddItem("agate", 1, 1, true)
                 .AddItem("m_plexiplate", 10, 1, true)
-                .AddItem("m_ls_parts", 5, 1, true)
+                .AddItem("m_ls_parts", 10)
                 .AddItem("m_lvibro_parts", 10)
                 .AddItem("m_vibro_parts", 10)
                 .AddItem("m_polearm_parts", 10)
@@ -240,40 +242,51 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("VISCARA_GIMPASSA")
                 .AddItem("lth_ruined", 5)
-                .AddItem("gimp_shell", 2, 1, true)
-                .AddItem("gimp_tooth", 8)
+                .AddItem("gimp_tooth", 10)
                 .AddItem("lth_flawed", 20)
-                .AddItem("gimp_blood", 5)
                 .AddItem("gimp_meat", 10);
+
+            _builder.Create("VISCARA_GIMPASSA_RARES")
+                .IsRare()
+                .AddItem("gimp_blood", 2, 1, true)
+                .AddItem("gimp_shell", 1, 1, true);
+
+
         }
 
         private void Kinrath()
         {
             _builder.Create("VISCARA_KINRATH")
-                .AddItem("kinrath_limb", 5)
                 .AddItem("kinrath_meat", 10)
-                .AddItem("kinrath_silk", 20)
                 .AddItem("lth_ruined", 10)
-                .AddItem("lth_flawed", 5);
+                .AddItem("lth_flawed", 5)
+                .AddItem("kinrath_limb", 1);
+
+            _builder.Create("VISCARA_KINRATH_RARES")
+                .IsRare()
+                .AddItem("kinrath_limb", 1, 1, true)
+                .AddItem("kinrath_silk", 2, 1, true);
         }
 
         private void Cairnmog()
         {
             _builder.Create("VISCARA_CAIRNMOG")
-                .AddItem("cairnmog_meat", 7)
-                .AddItem("cairnmog_spine", 9)
-                .AddItem("cairnmog_blood", 2, 1, true)
-                .AddItem("lth_ruined", 10)
-                .AddItem("lth_flawed", 20)
-                .AddItem("cairnmog_tooth", 4)
+                .AddItem("cairnmog_meat", 10)
+                .AddItem("cairnmog_spine", 10)
+                .AddItem("lth_ruined", 5)
+                .AddItem("lth_flawed", 10);
 
+            _builder.Create("VISCARA_CAIRNMOG_RARES")
+                .IsRare()
+                .AddItem("cairnmog_blood", 2, 1, true)
+                .AddItem("cairnmog_tooth", 4, 1, true)
                 .AddItem("map_049", 1, 1, true);
         }
 
         private void VellenFleshleader()
         {
             _builder.Create("VISCARA_VELLEN_FLESHLEADER")
-                .AddItem("babonsch", 5, 1, true)
+                .AddItem("babonsch", 5)
                 .AddItem("cox_metal", 5)
                 .AddItem("lth_flawed", 5)
                 .AddItem("elec_flawed", 5)
@@ -288,14 +301,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_VELLEN_FLESHLEADER_RARES")
                 .IsRare()
-                .AddItem("map_041", 20, 1, true)
-                .AddItem("map_045", 5, 1, true);
+                .AddItem("babonsch", 5, 1, true)
+                .AddItem("map_041", 4, 1, true)
+                .AddItem("map_045", 1, 1, true);
         }
 
         private void VellenFlesheater()
         {
             _builder.Create("VISCARA_VELLEN_FLESHEATER")
-                .AddItem("cox_metal", 5)
                 .AddItem("lth_flawed", 15)
                 .AddItem("lth_ruined", 5)
                 .AddItem("fiberp_ruined", 15)
@@ -308,9 +321,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_VELLEN_FLESHEATER_RARES")
                 .IsRare()
-                .AddItem("map_041", 20, 1, true)
-                .AddItem("map_045", 5, 1, true)
-                .AddItem("babonsch", 5, 1, true);
+                .AddItem("map_041", 4, 1, true)
+                .AddItem("map_045", 1, 1, true)
+                .AddItem("babonsch", 10, 1, true)
+                .AddItem("cox_metal", 20, 1, true);
         }
 
         private void CoxxionCrate()
@@ -336,10 +350,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_RAIVOR")
                 .AddItem("raivor_meat", 10)
                 .AddItem("raivor_claw", 10)
-                .AddItem("raivor_tail_bone", 10)
-                .AddItem("raivor_scale", 5)
-                .AddItem("raivor_blood", 8)
-                
+                .AddItem("raivor_tail_bone", 10);
+
+
+            _builder.Create("VISCARA_RAIVOR_RARES")
+                .IsRare()
+                .AddItem("raivor_scale", 2, 1, true)
+                .AddItem("raivor_blood", 4, 1, true)
                 .AddItem("map_042", 1, 1, true);
         }
 
@@ -350,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("waro_feathers", 15)
                 .AddItem("lth_ruined", 20)
                 .AddItem("warocas_meat", 20)
-                .AddItem("waro_leg", 10, 1, true);
+                .AddItem("waro_leg", 10, 1);
 
             _builder.Create("VISCARA_WAROCAS_RARES")
                 .IsRare()
@@ -360,13 +377,16 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Nashtah()
         {
             _builder.Create("VISCARA_NASHTAH")
-                .AddItem("lth_ruined", 20)
+                .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 10)
                 .AddItem("nashtah_meat", 30)
                 .AddItem("nash_scale", 10)
-                .AddItem("nash_tail", 2)
-                .AddItem("nashtah_foot", 8)
+                .AddItem("nashtah_foot", 10);
 
+
+            _builder.Create("VISCARA_NASHTAH_RARES")
+                .IsRare()
+                .AddItem("nash_tail", 3, 1, true)
                 .AddItem("map_049", 1, 1, true);
         }
 
@@ -376,12 +396,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("p_crystal_blue", 10)
                 .AddItem("p_crystal_red", 10)
                 .AddItem("p_crystal_green", 10)
-                .AddItem("p_crystal_yellow", 10)
-                .AddItem("agate", 1, 1, true);
+                .AddItem("p_crystal_yellow", 10);
 
             _builder.Create("VISCARA_CRYSTAL_SPIDER_RARES")
                 .IsRare()
-                .AddItem("map_039", 20, 1, true);
+                .AddItem("agate", 3, 1, true)
+                .AddItem("map_039", 1, 1, true);
         }
     }
 }

@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Claw"
+      "0": "Wraid Claw"
     }
   },
   "ModelPart1": {
@@ -133,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "terentatek_claw"
+    "value": "wraid_claw"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "terentatek_claw"
+    "value": "wraid_claw"
   }
 }

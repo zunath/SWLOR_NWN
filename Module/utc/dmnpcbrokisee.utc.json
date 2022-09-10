@@ -1,20 +1,96 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 100
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 10029
+    "value": 10006
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
   },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
+  },
   "Cha": {
     "type": "byte",
-    "value": 10
+    "value": 24
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 6.0
+    "value": 70.0
   },
   "ClassList": {
     "type": "list",
@@ -23,14 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 21
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 40
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 31
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 105
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 106
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 106
   },
   "Comment": {
     "type": "cexostring",
@@ -38,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 13
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 800
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Force-sensitive tuk'ata, or Sith hounds, were used for thousands of years to guard the tombs of the Dark Lords of the Sith on Korriban. "
+      "0": "Jedi Guardians are legendary warrior-monks of the Republic, and are the living instruments of the Force's will. Sworn defenders of the people, these men and women devote their lives to training in all matters relating to combat, that they may be ready to defend the people of this galaxy when called upon."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -78,24 +170,31 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_bite"
+          "value": "vnpcjediweapm001"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcmjedi4"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukata_skin"
+          "value": "vnpcswar4"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -104,7 +203,105 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1824
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1738
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1170
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1353
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1365
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1173
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1363
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
         }
       }
     ]
@@ -112,7 +309,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata"
+      "0": "Master Brokisee Shax"
     }
   },
   "fortbonus": {
@@ -129,15 +326,15 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 800
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
@@ -163,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 122
+    "value": 1200
   },
   "NaturalAC": {
     "type": "byte",
@@ -175,11 +372,11 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 155
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 10
   },
   "Phenotype": {
     "type": "int",
@@ -191,11 +388,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 4380
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 165
   },
   "refbonus": {
     "type": "short",
@@ -203,55 +400,55 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "x2_def_attacked"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "x2_def_ondamage"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "x2_def_ondeath"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "x2_def_ondisturb"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "x2_def_endcombat"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "x2_def_heartbeat"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "x2_def_onblocked"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "x2_def_percept"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "x2_def_rested"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "x2_def_spellcast"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "x2_def_userdef"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -456,35 +653,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 452
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 299
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 83
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -492,7 +673,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Tukata"
+    "value": "BrokiseeShax"
   },
   "Tail_New": {
     "type": "dword",
@@ -504,42 +685,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_TUKATA,40,2"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 31
-        }
-      }
-    ]
+    "value": "dmnpcbrokisee"
   },
   "WalkRate": {
     "type": "int",
@@ -555,6 +701,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 24
   }
 }

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 69
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Bite"
+      "0": "Wraid Hide"
     }
   },
   "ModelPart1": {
@@ -50,11 +50,11 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 13
+    "value": 14
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 27
+          "value": 25
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 99
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 0
         }
       }
     ]
@@ -102,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_bite"
+    "value": "wraid_hide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_bite"
+    "value": "wraid_hide"
   }
 }

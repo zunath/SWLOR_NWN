@@ -694,7 +694,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "HUTLAR_BYYSK,40,2"
+          "value": "HUTLAR_BYYSK,100,1"
         }
       },
       {
@@ -709,7 +709,37 @@
         },
         "Value": {
           "type": "cexostring",
+          "value": "HUTLAR_BYYSK_GEAR,50,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
           "value": "HUTLAR_BYYSK_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HUTLAR_BYYSK_GEAR_RARES,10,1"
         }
       }
     ]

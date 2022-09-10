@@ -724,7 +724,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_ECOTERRORIST_LEADER,85,2"
+          "value": "MONCALA_ECOTERRORIST_LEADER,100,1"
         }
       },
       {
@@ -740,6 +740,36 @@
         "Value": {
           "type": "cexostring",
           "value": "MONCALA_ECOTERRORIST_LEADER_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORIST_LEADER_HUNT,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORIST_LEADER_SEEK,100,1"
         }
       }
     ]

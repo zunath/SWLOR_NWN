@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             UpdateWeapons(player);
         }
 
-        public Dictionary<string, (int, int)> itemReplace = new()
+        private readonly Dictionary<string, (int, int)> _itemReplace = new()
             {
                 { "tit_rifle", (12, 15) },
                 { "cap_rifle", (15, 20) },
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private static void RefundPerks(Player dbPlayer, uint player)
         {
-            List<PerkType> refundList = new(3)
+            List<PerkType> refundList = new()
             {
                 PerkType.DualWield,
                 PerkType.ImprovedTwoWeaponFightingOneHanded,
@@ -89,11 +89,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
             if(dbPlayer.Perks.ContainsKey(PerkType.RapidShot))
             {
-                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
-                var refundAmount = perkDetail.PerkLevels[0].Price;
-
+                var rapidShotLevel = dbPlayer.Perks[PerkType.RapidShot];
+                var refundAmount = 3;
+                if (rapidShotLevel == 2) refundAmount += 5; 
                 dbPlayer.UnallocatedSP += refundAmount;
                 dbPlayer.Perks.Remove(PerkType.RapidShot);
+
+                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
 
                 foreach (var action in perkDetail.RefundedTriggers)
                 {
@@ -116,11 +118,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             }
 
             for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
-            {
-
                 Update(item);
-
-            }
         }
 
         private void Update (uint item)
@@ -133,10 +131,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var oldDmg = 0;
             var newDmg = 0;
 
-            if (itemReplace.ContainsKey(itemResRef))
+            if (_itemReplace.ContainsKey(itemResRef))
             {
-                oldDmg = itemReplace[itemResRef].Item1;
-                newDmg = itemReplace[itemResRef].Item2;
+                oldDmg = _itemReplace[itemResRef].Item1;
+                newDmg = _itemReplace[itemResRef].Item2;
             }
             else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
 

@@ -1124,11 +1124,11 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 5 * GetEffectInteger(effect, 1);
+                    accuracy += 5 * GetEffectInteger(effect, 0);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 5 * GetEffectInteger(effect, 1);
+                    accuracy -= 5 * GetEffectInteger(effect, 0);
                 }
             }
 

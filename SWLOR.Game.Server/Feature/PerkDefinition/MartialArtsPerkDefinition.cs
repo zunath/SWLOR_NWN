@@ -71,14 +71,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Inner Strength")
 
                 .AddPerkLevel()
-                .Description("Improves critical chance by +5%. [Cross Skill]")
+                .Description("Improves critical chance by 5%. [Cross Skill]")
                 .Price(5)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength1)
 
                 .AddPerkLevel()
-                .Description("Improves critical chance by +5%. [Cross Skill]")
+                .Description("Improves critical chance by 5%. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -140,13 +140,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Katars")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with katars is increased by +5.")
+                .Description("Your accuracy with katars is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusKatars)
 
                 .AddPerkLevel()
-                .Description("Your base damage with katars is increased by +2 DMG.")
+                .Description("Your base damage with katars is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationKatars);
@@ -299,13 +299,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Staves")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with staves is increased by +5.")
+                .Description("Your accuracy with staves is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusStaves)
 
                 .AddPerkLevel()
-                .Description("Your base damage with staves is increased by +2 DMG.")
+                .Description("Your base damage with staves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationStaves);
@@ -470,16 +470,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
-                .Description("Favoring alacrity over brawn, attacks with staves now use your Agility for accuracy and Perception for damage. In addition, you gain an additional attack with staves, but all staff attacks are made with a -10% to-hit penalty.")
+                .Description("Your staff attacks now use Agility for accuracy and Perception for damage. In addition, you gain an additional attack with staves, but all staff attacks are made with a -10% to-hit penalty.")
                 .Price(1)
                 .RequirementCannotHavePerk(PerkType.CrushingStyle)
                 .GrantsFeat(FeatType.FlurryStyle)
 
                 .AddPerkLevel()
-                .Description("You master the art of striking quickly and often. You gain an additional attack with staves, and no longer suffer a to-hit penalty for attacks made with staves.")
+                .Description("You gain an additional attack with staves, and no longer suffer a to-hit penalty for attacks made with staves.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 35)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FlurryMastery);
         }
         private void CrushingStyle()
@@ -488,16 +487,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crushing Style")
 
                 .AddPerkLevel()
-                .Description("Attacking with overwhelming strength, the MGT bonus to damage for attacks with MGT weapons is increased to your modifier for attacks with a staff. In addition, your critical chance is raised by 15%.")
+                .Description("Your attacks with a staff now gain a DMG bonus equal to your MGT modifier. In addition, your critical chance is raised by 15%.")
                 .Price(1)
                 .RequirementCannotHavePerk(PerkType.FlurryStyle)
                 .GrantsFeat(FeatType.CrushingStyle)
 
                 .AddPerkLevel()
-                .Description("You've mastered patient, overwhelming blows with a staff. MGT DMG scaling is increased to 1.5x your MGT modifier, and critical chance is increased by a further 15%.")
+                .Description("Your MGT DMG bonus is increased to twice your MGT modifier, and critical chance is increased by a further 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 35)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrushingMastery);
         }
 

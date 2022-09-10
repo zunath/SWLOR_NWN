@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Wailing Blows")
 
                 .AddPerkLevel()
-                .Description("Defending against two blades opens up your opponents. While dual-wielding one-handed weapons, you gain +15% critical chance.")
+                .Description("While dual-wielding one-handed weapons, you gain 15% critical chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .GrantsFeat(FeatType.WailingBlows)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Duelist")
 
                 .AddPerkLevel()
-                .Description("Focusing on one light blade makes it easier to land decisive blows. While wielding one-handed weapons with a shield or free hand, you gain +5% to hit and +5% critical chance. [Cross Skill]")
+                .Description("While wielding one-handed weapons with a shield or free hand, you gain 5% to hit and 5% critical chance. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.Duelist)
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
-                .Description("Deft handling of your shield affords you quick counter-attacks. While equipped with a shield, you gain an additional attack with your main-hand weapon.")
+                .Description("While equipped with a shield, you gain an additional attack with your main-hand weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .GrantsFeat(FeatType.ShieldMaster);
@@ -239,13 +239,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with vibroblades is increased by +5.")
+                .Description("Your accuracy with vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusVibroblades)
 
                 .AddPerkLevel()
-                .Description("Your base damage with vibroblades is increased by +2 DMG.")
+                .Description("Your base damage with vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
@@ -398,13 +398,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Finesse Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with finesse vibroblades is increased by +5.")
+                .Description("Your accuracy with finesse vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusFinesseVibroblades)
 
                 .AddPerkLevel()
-                .Description("Your base damage with finesse vibroblades is increased by +2 DMG.")
+                .Description("Your base damage with finesse vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
@@ -557,14 +557,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Lightsabers")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with lightsabers is increased by +5.")
+                .Description("Your accuracy with lightsabers is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.WeaponFocusLightsabers)
 
                 .AddPerkLevel()
-                .Description("Your base damage with lightsabers is increased by +2 DMG.")
+                .Description("Your base damage with lightsabers is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

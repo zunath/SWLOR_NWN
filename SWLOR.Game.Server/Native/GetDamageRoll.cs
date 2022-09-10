@@ -195,25 +195,10 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] += 6;
             }
 
-            // MGT mod bonus to Crushing Staves + Strong Style
             var mightMod = attacker.m_pStats.m_nStrengthModifier;
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
 
-            if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-            {
-                if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
-                    dmgValues[CombatDamageType.Physical] += mightMod * 2; // Mastery gives 2x MGT
-                else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
-                    dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves 1x MGT
-            }
-            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
-            else if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
-
-            // Doublehand perk
+            // Doublehand perk, MGT mod bonus to Crushing Staves + Strong Style
             if (weapon != null)
             {
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
@@ -228,6 +213,20 @@ namespace SWLOR.Game.Server.Native
                         dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                     }
                 }
+
+                if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
+                        dmgValues[CombatDamageType.Physical] += mightMod * 2; // Mastery gives 2x MGT
+                    else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
+                        dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves 1x MGT
+                }
+                else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
+                else if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
             }
 
             var critMultiplier = 1;
@@ -505,7 +504,8 @@ namespace SWLOR.Game.Server.Native
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return attacker.m_pStats.GetSTRStat();
-            } else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            } 
+            else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
                     return attacker.m_pStats.GetDEXStat();

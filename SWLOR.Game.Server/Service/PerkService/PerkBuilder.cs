@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <summary>
         /// Adds a requirement that the player must have leveled a specific other perk.
         /// </summary>
-        /// <param name="mustHavePerkType">The type of perk the player cannot have.</param>
+        /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
         public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)

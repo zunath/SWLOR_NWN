@@ -71,7 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             {
                 attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                 attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
-            } else
+            } 
+            else
             {
                 attackerStat = GetAbilityScore(activator, AbilityType.Might);
                 attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);

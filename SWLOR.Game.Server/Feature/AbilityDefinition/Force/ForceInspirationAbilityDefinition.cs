@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void Impact(uint activator, uint target, int baseAmount) 
         {
-            var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
+            var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;
-            var length = BaseLength + willpowerMod * 30f;
+            var length = BaseLength + willpowerMod * 15f;
 
             var effect = EffectLinkEffects(EffectAbilityIncrease(AbilityType.Willpower, baseAmount),
                 EffectAbilityIncrease(AbilityType.Agility, baseAmount));

@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
         {
-            int mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
+            var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
             if (Item.StaffBaseItemTypes.Contains(weaponType))
                 return mgtMod * Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle);

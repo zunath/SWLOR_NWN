@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var might = GetAbilityModifier(AbilityType.Might, activator);
+            var might = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
@@ -68,7 +68,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ShieldBash1, PerkType.ShieldBash)
                 .Name("Shield Bash I")
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
-                .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -81,7 +80,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ShieldBash2, PerkType.ShieldBash)
                 .Name("Shield Bash II")
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
-                .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -94,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ShieldBash3, PerkType.ShieldBash)
                 .Name("Shield Bash III")
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
-                .HasActivationDelay(0.5f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .IsHostileAbility()

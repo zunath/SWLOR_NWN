@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     {
         public int Version => 5;
 
-        private readonly Dictionary<string, (int, int)> itemReplace = new()
+        private readonly Dictionary<string, (int, int)> _itemReplace = new()
             {
                 { "tit_rifle", (12, 15) },
                 { "cap_rifle", (15, 20) },
@@ -92,22 +92,22 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         private void UpdateWeapon(uint item)
         {
-            BaseItem baseItem = GetBaseItemType(item);
+            var baseItem = GetBaseItemType(item);
             if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
-            string itemResRef = GetResRef(item);
+            var itemResRef = GetResRef(item);
             int oldDmg = 0;
             int newDmg = 0;
 
-            if (itemReplace.ContainsKey(itemResRef))
+            if (_itemReplace.ContainsKey(itemResRef))
             {
-                oldDmg = itemReplace[itemResRef].Item1;
-                newDmg = itemReplace[itemResRef].Item2;
+                oldDmg = _itemReplace[itemResRef].Item1;
+                newDmg = _itemReplace[itemResRef].Item2;
             }
             else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
 
-            int wpnDmg = newDmg - oldDmg;
+            var wpnDmg = newDmg - oldDmg;
             if (wpnDmg <= 0) { return; }
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
             }
 
-            ItemProperty newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
+            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
             BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }
 

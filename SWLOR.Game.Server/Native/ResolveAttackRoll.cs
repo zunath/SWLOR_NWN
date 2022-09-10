@@ -15,6 +15,7 @@ using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using InventorySlot = NWN.Native.API.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
+using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
@@ -301,35 +302,51 @@ namespace SWLOR.Game.Server.Native
 
             var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
             var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-            bool saberBlock = false;
+            var saberBlock = false;
+            var shieldBlock = false;
+
+            var defenderPER = defender.m_pStats.GetDEXStat();
+            var defenderVIT = defender.m_pStats.GetCONStat();
 
             if(defenderWeapon != null && (
                 (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
                 (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
             {
+                // Checking for saber reflect - they just need to be wielding a lightsaber or saberstaff.
                 for(var i = 0; i < defenderWeapon.m_lstPassiveProperties.Count; i++)
                 {
                     var ip = defenderWeapon.GetPassiveProperty(i);
-                    if (ip != null && ip.m_nPropertyName == (ushort)Core.NWScript.Enum.Item.ItemPropertyType.Light)
+                    if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.Light)
                     {
-                        saberBlock |= true;
+                        // It needs to be an /actual/ lightsaber, so we check for a Light IP
+                        saberBlock = true;
                         break;
                     }
                 }
             }
+            // Checking for Bulwark shield reflect - need to have the feat and a shield equipped
+            if (defenderOffhand != null)
+                shieldBlock = defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&
+                    Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
 
-            if (attackType == (uint)AttackType.Ranged && isHit && defender.GetFlatFooted() == 0 &&
-                defender.m_pcCombatRound.m_bDeflectArrow == 0 && (saberBlock || (
-                defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
-                Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem)))) {
+            // Deflect Ranged Attacks
 
-                var defenderStat = saberBlock == true ? defender.m_pStats.GetDEXStat() : defender.m_pStats.GetCONStat();
+            if (attackType == (uint)AttackType.Ranged &&            // Ranged Attacks only
+                isHit && defender.GetFlatFooted() == 0 &&           // Only triggers on hits and the defender isn't incapacitated
+                defender.m_pcCombatRound.m_bDeflectArrow == 0 &&    // Can only trigger once per combat round
+                (shieldBlock || saberBlock))                        // Must have either a lightsaber or Bulwark + a shield equipped
+            {
+                var defenderStat = saberBlock ? defenderPER : defenderVIT;
+                if (shieldBlock && saberBlock && (defenderVIT > defenderPER))
+                    defenderStat = defenderVIT;
 
-                defender.m_pcCombatRound.SetDeflectArrow(1);
+                defender.m_pcCombatRound.SetDeflectArrow(1);        // We set the Deflect Arrow var to true for this round so it doesn't fire again
+
                 var deflectRoll = Random.Next(1, 100);
                 var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
-                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid ?
-                Item.GetWeaponAccuracyAbilityType(baseItemType) : weaponStyleAbilityOverride;
+                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid 
+                    ? Item.GetWeaponAccuracyAbilityType(baseItemType) 
+                    : weaponStyleAbilityOverride;
                 var attackerStatValue = Stat.GetStatValueNative(attacker, attackerStat);
 
                 var statDelta = Math.Clamp((defenderStat - attackerStatValue) * 5, -50, 75);
@@ -684,7 +701,8 @@ namespace SWLOR.Game.Server.Native
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return AbilityType.Perception;
-            } else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            } 
+            else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
                     return AbilityType.Agility;

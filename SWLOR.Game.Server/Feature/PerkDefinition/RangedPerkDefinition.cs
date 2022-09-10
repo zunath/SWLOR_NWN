@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dirty Blow")
 
                 .AddPerkLevel()
-                .Description("Quick and deceptive attacks leave the enemy wide open. While equipped with a pistol or shurikens, your critical chance increases by 10%.")
+                .Description("While equipped with a pistol or shurikens, your critical chance increases by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.DirtyBlow)
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Point Blank Shot")
 
                 .AddPerkLevel()
-                .Description("While a target is within 5 meters / 15 feet, you gain +5 accuracy and +1 DMG.")
+                .Description("While a target is within 5 meters, you gain +5 accuracy and +1 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.PointBlankShot);
@@ -168,13 +168,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Pistols")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with pistols is increased by +5.")
+                .Description("Your accuracy with pistols is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusPistol)
 
                 .AddPerkLevel()
-                .Description("Your base damage with damage is increased by +2 DMG.")
+                .Description("Your base damage with damage is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
@@ -327,13 +327,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Throwing Weapons")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with throwing weapons is increased by +5.")
+                .Description("Your accuracy with throwing weapons is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusThrowingWeapons)
 
                 .AddPerkLevel()
-                .Description("Your base damage with staves is increased by +2 DMG.")
+                .Description("Your base damage with staves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
@@ -486,13 +486,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Rifles")
 
                 .AddPerkLevel()
-                .Description("Your accuracy with rifles is increased by +5.")
+                .Description("Your accuracy with rifles is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusRifles)
 
                 .AddPerkLevel()
-                .Description("Your base damage with rifles is increased by +2 DMG.")
+                .Description("Your base damage with rifles is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);

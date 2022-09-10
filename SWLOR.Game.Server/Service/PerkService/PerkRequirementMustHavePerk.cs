@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         private readonly PerkType _mustHavePerkType;
         private readonly int _mustHavePerkLevel;
 
-        public PerkRequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
+        public PerkRequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
         {
             _mustHavePerkType = mustHavePerkType;
             _mustHavePerkLevel = mustHavePerkLevel;
@@ -22,11 +22,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType))
-                return $"You must have perk: {perkDetail.Name}";
-
-            if (_mustHavePerkLevel > 0 && Perk.GetEffectivePerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
-                return $"You must have perk {perkDetail.Name} leveled to {_mustHavePerkLevel}.";
+            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetEffectivePerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
+               return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
 
             return string.Empty;
         }
@@ -36,9 +33,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             get
             {
                 var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
-                if(_mustHavePerkLevel > 0)
-                    return $"Must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
-                return $"Must have perk {perkDetail.Name}.";
+                return $"Must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
             }
         }
     }

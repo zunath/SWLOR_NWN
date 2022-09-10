@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
-                .EffectIcon(EffectIconType.DamageImmunityElectrical)
+                .EffectIcon(EffectIconType.Shocked)
                 .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d4(), DamageType.Electrical);
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Tranquilize)
                 .Name("Tranquilize")
-                .EffectIcon(EffectIconType.Stunned)
+                .EffectIcon(EffectIconType.Sleep)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var effect = EffectSleep();
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Burn)
                 .Name("Burn")
-                .EffectIcon(EffectIconType.Poison) // todo: need a better icon
+                .EffectIcon(EffectIconType.Burning)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(2, 4);

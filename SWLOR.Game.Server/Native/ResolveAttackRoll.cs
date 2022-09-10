@@ -15,7 +15,6 @@ using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using InventorySlot = NWN.Native.API.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
-using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
@@ -251,29 +250,30 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, logMessage);
             }
 
-            // Staff Flurry - (-10% TH)
-            if(Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) && 
-                attackerStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
-                attackerStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
+            if (weapon != null)
             {
-                percentageModifier -= 10;
-                Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10%");
-            }
+                // Staff Flurry - (-10% TH)
+                if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    attackerStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
+                    attackerStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
+                {
+                    percentageModifier -= 10;
+                    Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10%");
+                }
 
-            // Duelist - (+5% TH)
-            if(Item.OneHandedMeleeItemTypes.Contains((BaseItem)weapon.m_nBaseItem) || 
-                Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-            {
-                if (offhand == null)
-                {
-                    percentageModifier += 5;
-                    Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
-                }
-                else if (Item.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem))
-                {
-                    percentageModifier += 5;
-                    Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
-                }
+                // Duelist - (+5% TH)
+                if(attackerStats.HasFeat((ushort)FeatType.Duelist) == 1)
+                    if (Item.OneHandedMeleeItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                        Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                    {
+                        var isDuelistValid = offhand == null || Item.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
+
+                        if (isDuelistValid)
+                        {
+                            percentageModifier += 5;
+                            Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
+                        }
+                    }
             }
 
             // Combat Mode - Power Attack (-5 ACC)
@@ -312,18 +312,9 @@ namespace SWLOR.Game.Server.Native
                 (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
                 (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
             {
-                // Checking for saber reflect - they just need to be wielding a lightsaber or saberstaff.
-                for(var i = 0; i < defenderWeapon.m_lstPassiveProperties.Count; i++)
-                {
-                    var ip = defenderWeapon.GetPassiveProperty(i);
-                    if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.Light)
-                    {
-                        // It needs to be an /actual/ lightsaber, so we check for a Light IP
-                        saberBlock = true;
-                        break;
-                    }
-                }
+                saberBlock = true;
             }
+
             // Checking for Bulwark shield reflect - need to have the feat and a shield equipped
             if (defenderOffhand != null)
                 shieldBlock = defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
 {
-    public class PlayerShipDefinition: IShipListDefinition
+    public class PlayerShipDefinition : IShipListDefinition
     {
         private readonly ShipBuilder _builder = new();
 
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
             _builder.Create("sdeed_throne")
                 .ItemResref("sdeed_throne")
                 .Name("Throne")
-                .Appearance(AppearanceType.RepublicForay)
+                .Appearance(AppearanceType.SithInfiltratorA)
                 .RequirePerk(PerkType.Starships, 5)
                 .MaxArmor(80)
                 .MaxCapacitor(120)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
             _builder.Create("sdeed_consular")
                 .ItemResref("sdeed_consular")
                 .Name("Consular")
-                .Appearance(AppearanceType.RepublicHammerhead)
+                .Appearance(AppearanceType.RepublicGunshipC)
                 .RequirePerk(PerkType.Starships, 5)
                 .MaxArmor(150)
                 .MaxCapacitor(150)

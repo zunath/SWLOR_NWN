@@ -6701,6 +6701,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 4) Sentinel Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsentmast002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 4) Sith Lightsaber"
                     },
                     "RESREF": {
@@ -6799,6 +6810,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hu_byysk_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Battlecruiser Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlcrui_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Battleship Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlship_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Corvette Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_corv_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Cruiser Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_crusier_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Dreadnought Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_dread_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Frigate Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_frigate_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Heavy Cruiser Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_hvycrui_skin"
                     }
                   },
                   {
@@ -7030,6 +7118,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_war_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Merchantman Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "merchantman_skin"
                     }
                   },
                   {
@@ -7360,6 +7459,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcsass4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin T4 Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsass006"
                     }
                   },
                   {
@@ -7954,11 +8064,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jedi Temple Guard Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguard003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jedi Temple Guard Mask"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcjediguardhel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguard002"
                     }
                   },
                   {
@@ -29714,6 +29846,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fus_lantern"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kyber Crystal Fragment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kyberfragment"
                     }
                   },
                   {

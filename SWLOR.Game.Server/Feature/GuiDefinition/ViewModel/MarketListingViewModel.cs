@@ -303,6 +303,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Do the update for this record.
                 dbListing.Price = _itemPrices[index];
                 dbListing.IsListed = ItemListed[index];
+
+                if(dbListing.IsListed)
+                    dbListing.DateListed = DateTime.UtcNow;
+
                 DB.Set(dbListing);
             }
             

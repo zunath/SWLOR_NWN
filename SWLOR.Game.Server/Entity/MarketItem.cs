@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.PlayerMarketService;
+﻿using System;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -24,5 +25,6 @@ namespace SWLOR.Game.Server.Entity
         public string IconResref { get; set; }
         [Indexed]
         public MarketCategoryType Category { get; set; }
+        public DateTime? DateListed { get; set; }
     }
 }

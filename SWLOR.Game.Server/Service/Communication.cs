@@ -6,6 +6,7 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -77,8 +78,30 @@ namespace SWLOR.Game.Server.Service
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
 
+        /// <summary>
+        /// When a player focuses the chatbar, set a typing indicator on the player; when
+        /// unfocused, remove the indicator.
+        /// </summary>
+
+        [NWNEventHandler("mod_gui_event")]
+        public static void TypingIndicator()
+        {
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (!GetIsPC(player)) return;
+
+            if(type == GuiEventType.ChatBarFocus)
+            {
+                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
+            } else if (type == GuiEventType.ChatBarUnfocus)
+            {
+                RemoveEffectByTag(player, "typingindicator");
+            }
+        }
+
         // Register DMFI Voice Command Handler which lives in nwscript land.
-       [NWNEventHandler("mod_chat")]
+        [NWNEventHandler("mod_chat")]
         public static void ProcessNativeChatMessage()
         {
             ExecuteScriptNWScript("dmfi_onplychat", OBJECT_SELF);

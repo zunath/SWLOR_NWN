@@ -132,6 +132,9 @@
         DamageImmunityPositiveDecrease = 127,
         DamageImmunitySonicDecrease = 128,
         Wounding = 129,
-        Food = 130
+        Food = 130,
+        Dash = 131,
+        Shocked = 132,
+        Burning = 133
     }
 }

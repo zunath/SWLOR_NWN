@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ChangeItemDescription();
             ConcentrationAbility();
             Customize();
+            AlwaysWalk();
 
             return _builder.Build();
         }
@@ -324,6 +325,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         player = GetMaster(player);
                     }
                     Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, null, OBJECT_INVALID, uiTarget);
+                });
+        }
+
+        private void AlwaysWalk()
+        {
+            _builder.Create("alwayswalk", "walk")
+                .Description("Forces walking when moving your character. \"/alwayswalk off\" or \"/walk off\" to disable.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, _, _, args) =>
+                {
+                    if (args.Length > 0 &&
+                        (args[0] == "off" || args[0] == "0"))
+                    {
+                        PlayerPlugin.SetAlwaysWalk(user, false);
+                        SendMessageToPC(user, "Walk mode disabled.");
+                        return;
+                    }
+
+                    PlayerPlugin.SetAlwaysWalk(user, true);
+                    SendMessageToPC(user, "Walk mode enabled.");
                 });
         }
     }

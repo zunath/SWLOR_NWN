@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.ForceRage2)
                 .Name("Force Rage II")
-                .EffectIcon(EffectIconType.DamageResistance)
+                .EffectIcon(EffectIconType.DamageIncrease)
                 .Replaces(StatusEffectType.ForceRage1);
         }
     }

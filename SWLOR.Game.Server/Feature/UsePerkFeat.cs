@@ -325,20 +325,28 @@ namespace SWLOR.Game.Server.Feature
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
             {
-                if (GetLocalString(activator, ActiveAbilityIdName) != abilityId) return;
-
-                // Remove the local variables.
-                DeleteLocalInt(activator, ActiveAbilityName);
-                DeleteLocalString(activator, ActiveAbilityIdName);
-                DeleteLocalInt(activator, ActiveAbilityFeatIdName);
-                DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
-
-                // Notify the activator and nearby players
-                SendMessageToPC(activator, $"Your weapon ability {ability.Name} is no longer queued.");
-
-                if (ability.DisplaysActivationMessage)
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} no longer has weapon ability {ability.Name} readied.");
+                DequeueWeaponAbility(activator, ability.DisplaysActivationMessage);
             });
+        }
+
+        public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
+        {
+
+            string abilityName = GetLocalString(target, ActiveAbilityName);
+            if (string.IsNullOrWhiteSpace(abilityName))
+                return;
+
+            // Remove the local variables.
+            DeleteLocalInt(target, ActiveAbilityName);
+            DeleteLocalString(target, ActiveAbilityIdName);
+            DeleteLocalInt(target, ActiveAbilityFeatIdName);
+            DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
+
+            // Notify the activator and nearby players
+            SendMessageToPC(target, $"Your weapon ability {abilityName} is no longer queued.");
+
+            if (sendMessage)
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityName} readied.");
         }
 
         /// <summary>

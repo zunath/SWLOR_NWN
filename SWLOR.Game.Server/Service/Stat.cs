@@ -1124,11 +1124,11 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 5 * GetEffectInteger(effect, 1);
+                    accuracy += 5 * GetEffectInteger(effect, 0);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 5 * GetEffectInteger(effect, 1);
+                    accuracy -= 5 * GetEffectInteger(effect, 0);
                 }
             }
 
@@ -1143,11 +1143,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 5 * effect.GetInteger(1);
+                    accuracy += 5 * effect.GetInteger(0);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 5 * effect.GetInteger(1);
+                    accuracy -= 5 * effect.GetInteger(0);
                 }
             }
 
@@ -1306,7 +1306,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon)
+        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offhand = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1340,10 +1340,21 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.RapidShot);
             }
 
+            static int GetFlurryBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.FlurryStyle);
+            }
+
+            static int GetShieldBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
+            }
+
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
+            var offhandType = GetBaseItemType(offhand);
             var numberOfAttacks = 1;
             var perkType = PerkType.Invalid;
 
@@ -1355,6 +1366,7 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
+                numberOfAttacks += GetFlurryBonus(player);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
@@ -1369,7 +1381,6 @@ namespace SWLOR.Game.Server.Service
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.RifleMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
             }
             // One-Handed
             else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
@@ -1402,11 +1413,39 @@ namespace SWLOR.Game.Server.Service
                 perkType = PerkType.SaberstaffMastery;
             }
 
+            if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
+
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(player, bab);
+        }
+
+        public static void ApplyCritModifier(uint player, uint rightHandWeapon)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var critMod = 0;
+            var itemType = GetBaseItemType(rightHandWeapon);
+            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
+            if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.Duelist);
+            }
+
+            if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                critMod += Perk.GetEffectivePerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+            }
+
+            critMod += Perk.GetEffectivePerkLevel(player, PerkType.InnerStrength);
+
+            CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
 
     }

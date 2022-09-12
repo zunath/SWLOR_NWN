@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CreepingTerror();
             ForceRage();
             ThrowRock();
+            ForceInspiration();
 
             return _builder.Build();
         }
@@ -651,6 +652,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceValor)
                 .GrantsFeat(FeatType.ForceRage2);
+        }
+
+        private void ForceInspiration()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceInspiration)
+                .Name("Force Inspiration")
+
+                .AddPerkLevel()
+                .Description("Increases your target's MGT, AGI, and WIL by 1 for 15 minutes. Does not stack with Combat Enhancement.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceInspiration1)
+
+                .AddPerkLevel()
+                .Description("Increases your target's MGT, AGI, and WIL by 2 for 15 minutes. Does not stack with Combat Enhancement.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceInspiration2)
+
+                .AddPerkLevel()
+                .Description("Increases your target's MGT, AGI, and WIL by 3 for 15 minutes. Does not stack with Combat Enhancement.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceInspiration3);
         }
     }
 }

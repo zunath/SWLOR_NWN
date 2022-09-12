@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Service
         {
             ExecuteScript("crea_death_bef", OBJECT_SELF);
             RemoveFromAlliesCache();
+            RemoveEffectByTag(OBJECT_SELF, "AGGRO_AOE"); // Removes aggro AOE on dead creatures
             ExecuteScript("cdef_c2_default7", OBJECT_SELF);
             ExecuteScript("crea_death_aft", OBJECT_SELF);
         }

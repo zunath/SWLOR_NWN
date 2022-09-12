@@ -45,39 +45,39 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             }
 
             // Force Heal
-            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal5, () => hpPercentage <= 80 && activeConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal5, () => hpPercentage <= 99 && activeConcentration == FeatType.Invalid))
             {
                 return (FeatType.ForceHeal5, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal4, () => hpPercentage <= 80 && activeConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal4, () => hpPercentage <= 99 && activeConcentration == FeatType.Invalid))
             {
                 return (FeatType.ForceHeal4, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal3, () => hpPercentage <= 80 && activeConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal3, () => hpPercentage <= 99 && activeConcentration == FeatType.Invalid))
             {
                 return (FeatType.ForceHeal3, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal2, () => hpPercentage <= 80 && activeConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal2, () => hpPercentage <= 99 && activeConcentration == FeatType.Invalid))
             {
                 return (FeatType.ForceHeal2, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal1, () => hpPercentage <= 80 && activeConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceHeal1, () => hpPercentage <= 99 && activeConcentration == FeatType.Invalid))
             {
                 return (FeatType.ForceHeal1, self);
             }
 
             // Benevolence
-            if(CheckIfCanUseFeat(self, self, FeatType.Benevolence3, () => hpPercentage <= 50))
+            if(CheckIfCanUseFeat(self, self, FeatType.Benevolence3, () => hpPercentage <= 75))
             {
                 return (FeatType.Benevolence3, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.Benevolence2, () => hpPercentage <= 50))
+            if (CheckIfCanUseFeat(self, self, FeatType.Benevolence2, () => hpPercentage <= 75))
             {
                 return (FeatType.Benevolence2, self);
             }
-            if (CheckIfCanUseFeat(self, self, FeatType.Benevolence2, () => hpPercentage <= 50))
+            if (CheckIfCanUseFeat(self, self, FeatType.Benevolence1, () => hpPercentage <= 75))
             {
-                return (FeatType.Benevolence2, self);
+                return (FeatType.Benevolence1, self);
             }
 
             // Force Drain
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 return (FeatType.ForceBurst4, target);
             }
-            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst4))
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst3))
             {
                 return (FeatType.ForceBurst3, target);
             }
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.Knockdown, self);
             }
 
-            // Knockdown
+            // Furor
             if (CheckIfCanUseFeat(self, self, FeatType.Furor))
             {
                 return (FeatType.Furor, self);

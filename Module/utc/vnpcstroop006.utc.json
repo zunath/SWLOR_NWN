@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 20
+    "value": 14
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 53.0
+    "value": 46.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 17
+          "value": 11
         },
         "ClassLevel": {
           "type": "short",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 26
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 150
+    "value": 80
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "In the Empire, the most loyal, talented and (most importantly) merciless soldiers are granted the honor of undergoing special training to serve in more advanced, specialized divisions of the Imperial Military. These soldiers are among those elite few to be offered this opportunity. \n\nEquipped with more advanced weapons and armor, and authorized to act more independently than their trooper brethren, it is their job to scout out the enemy for weaknesses, and disrupt the enemy command structure. \n\nOf course, as only those who view the lives of others as meaningless are accepted into such roles, they'll gladly turn their rifles on just about any target in their considerable ranges, civilian or military."
+      "0": "Sith Heavy Gunners, madmen armed to the teeth with some of the finest blaster and explosive technology the Empire has to offer. Whether it be a repeater sending out more rounds per second than even a Jedi Master could hope to deflect or explosives capable of leveling a building or bringing down a shield generator, these men and women are a terror on any warfront."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -173,28 +173,28 @@
         "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpchmark1"
+          "value": "vnpchhvy"
         }
       },
       {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcamark1"
+          "value": "vnpcavang002"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrmark3"
+          "value": "vnpcrhvygun"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsmark3"
+          "value": "vnpcshvygun"
         }
       }
     ]
@@ -206,6 +206,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1605
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -238,13 +245,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1349
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1844
         }
       },
@@ -252,14 +252,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 411
+          "value": 1617
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1346
+          "value": 1614
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1242
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
         }
       },
       {
@@ -289,13 +303,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Sniper"
+      "0": "Sith Trooper, Heavy Gunner"
     }
   },
   "fortbonus": {
@@ -312,11 +333,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 150
+    "value": 80
   },
   "Int": {
     "type": "byte",
-    "value": 32
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -329,6 +350,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcmelite3"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -346,7 +387,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 350
+    "value": 400
   },
   "NaturalAC": {
     "type": "byte",
@@ -647,11 +688,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 79
+    "value": 73
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -659,7 +700,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithSniper"
+    "value": "SithTrooperHonorGuard"
   },
   "Tail_New": {
     "type": "dword",
@@ -671,7 +712,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcssnipe3"
+    "value": "vnpcstroop006"
   },
   "WalkRate": {
     "type": "int",
@@ -687,6 +728,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 12
+    "value": 20
   }
 }

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -39,16 +39,24 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Sorcerer T3 Skin"
+      "0": "(NPC 1) HEAVY GUN"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 11
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 32
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 32
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 59
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 50
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -81,11 +89,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 118
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 5
         }
       },
       {
@@ -96,11 +104,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 55
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -112,7 +120,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 34
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
         },
         "Subtype": {
           "type": "word",
@@ -127,11 +166,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 55
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -143,7 +182,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
@@ -158,11 +197,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 40
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 200
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -174,11 +213,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 97
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 4
         }
       },
       {
@@ -189,11 +228,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 14
         },
         "CostValue": {
           "type": "word",
-          "value": 55
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -205,42 +244,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 61
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 41
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 200
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 98
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 1
         }
       }
     ]
@@ -255,10 +263,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithSorcererT3Skin"
+    "value": "NPC1HEAVYGUN"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcssorc3"
+    "value": "vnpcrhvygun"
   }
 }

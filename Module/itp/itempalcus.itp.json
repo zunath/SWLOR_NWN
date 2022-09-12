@@ -6250,6 +6250,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 1) HEAVY GUN"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrhvygun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 1) Invader Rifle"
                     },
                     "RESREF": {
@@ -7531,6 +7542,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Heavy Gunner Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcshvygun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Invader T1 Skin"
                     },
                     "RESREF": {
@@ -8201,6 +8223,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpchtroop4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Heavy Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcavang002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Heavy Gunner Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchhvy"
                     }
                   },
                   {

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 45.0
+    "value": 38.0
   },
   "ClassList": {
     "type": "list",
@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 11
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 19
         }
       }
     ]
@@ -231,6 +231,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1590
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       },
@@ -331,7 +345,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 150
+    "value": 87
   },
   "NaturalAC": {
     "type": "byte",
@@ -632,7 +646,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 73
   },
   "Str": {
     "type": "byte",

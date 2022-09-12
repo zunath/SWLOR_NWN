@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
@@ -144,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(40.0f)
                 .RequirementFP(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);

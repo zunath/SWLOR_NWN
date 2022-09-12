@@ -55,13 +55,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Power Attack")
 
                 .AddPerkLevel()
-                .Description("Grants the Power Attack feat which grants a +3 DMG bonus at the cost of -5 to accuracy. [Cross Skill]")
+                .Description("Grants the Power Attack feat which grants a 3 DMG bonus at the cost of -5 to accuracy. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.PowerAttack)
 
                 .AddPerkLevel()
-                .Description("Grants the Improved Power Attack feat which grants a +6 DMG bonus at the cost of -10 to accuracy. [Cross Skill]")
+                .Description("Grants the Improved Power Attack feat which grants a 6 DMG bonus at the cost of -10 to accuracy. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Superior Weapon Focus")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain +5% bonus to all attack rolls.")
+                .Description("Grants an additional 5 accuracy while wielding two-handed weapons.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Increased Multiplier")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain x1 to all critical hits.")
+                .Description("Increases the maximum critical damage of two-handed weapons by 50%.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -112,13 +112,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Heavy Vibroblades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with heavy vibroblades.")
+                .Description("Your accuracy with heavy vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusHeavyVibroblades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with heavy vibroblades.")
+                .Description("Your base damage with heavy vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationHeavyVibroblades);
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Heavy Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a heavy vibroblade.")
+                .Description("Improves the chance to critically hit with heavy vibroblades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalHeavyVibroblades);
@@ -271,13 +271,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Polearms")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with polearms.")
+                .Description("Your accuracy with polearms is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusPolearms)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with polearms.")
+                .Description("Your base damage with polearms is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationPolearms);
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Polearms")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a polearm.")
+                .Description("Improves the chance to critically hit with polearms by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalPolearms);
@@ -430,13 +430,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Twin Blades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with twin blades.")
+                .Description("Your accuracy with twin blades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusTwinBlades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with twin blades.")
+                .Description("Your base damage with twin blades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationTwinBlades);
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Twin Blades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a twin blades.")
+                .Description("Improves the chance to critically hit with twin blades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalTwinBlades);
@@ -517,13 +517,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Description("Grants an additional attack while equipped with twin blades.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
                 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Description("Grants an additional attack while equipped with twin blades.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .GrantsFeat(FeatType.TwinBladeMastery2);
@@ -589,14 +589,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Saberstaffs")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with saberstaffs.")
+                .Description("Your accuracy with saberstaves is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.WeaponFocusSaberstaffs)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with saberstaffs.")
+                .Description("Your base damage with saberstaves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -609,7 +609,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Saberstaffs")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a saberstaff.")
+                .Description("Improves the chance to critically hit with saberstaves by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -758,8 +758,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Two Weapon Fighting (Two-Handed)")
 
                 .AddPerkLevel()
-                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon. [Cross Skill]")
-                .Price(6)
+                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon, and reduces the two-weapon fighting penalty to 0%/-10%. [Cross Skill]")
+                .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingOneHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
@@ -780,7 +780,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active.")
+                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active. Additionally, your saberstaff damage is increased by your MGT modifier while active.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleSaberstaff);
         }

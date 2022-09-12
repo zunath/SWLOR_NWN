@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             RapidShot();
+            DirtyBlow();
             RapidReload();
             PrecisionAim();
             PointBlankShot();
@@ -43,18 +44,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RapidShot()
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidShot)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.RapidShot)
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Grants 1 additional attack with pistols and rifles.")
+                .Description("Grants an additional attack with pistols.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
 
                 .AddPerkLevel()
-                .Description("Grants 2 additional attacks with pistols and rifles.")
+                .Description("Grants an additional attack with pistols, for a total of two attacks.")
                 .Price(5)
-                .RequirementSkill(SkillType.Ranged, 35)
+                .RequirementSkill(SkillType.Ranged, 40)
                 
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -80,13 +81,50 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 });
         }
 
+        private void DirtyBlow()
+        {
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.DirtyBlow)
+                .Name("Dirty Blow")
+
+                .AddPerkLevel()
+                .Description("While equipped with a pistol or shurikens, your critical chance increases by 10%.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 25)
+                .GrantsFeat(FeatType.DirtyBlow)
+
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                });
+
+
+        }
+
         private void RapidReload()
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidReload)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RapidReload)
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
-                .Description("Allows Rifles to gain attacks per round via the Rapid Shot and Rifle Mastery perks.")
+                .Description("Rifles can now gain additional attacks per round (via Rifle Mastery). While equipped with a rifle, critical damage is increased by 50%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidReload);
@@ -118,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Point Blank Shot")
 
                 .AddPerkLevel()
-                .Description("Grants +1 to your attack roll and damage when your target is within 15 feet.")
+                .Description("While a target is within 5 meters, you gain +5 accuracy and +1 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.PointBlankShot);
@@ -130,13 +168,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Pistols")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with pistols.")
+                .Description("Your accuracy with pistols is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusPistol)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with pistols.")
+                .Description("Your base damage with damage is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
@@ -148,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Pistols")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a pistol.")
+                .Description("Improves the chance to critically hit with pistols by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalPistol);
@@ -262,21 +300,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Double Shot")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 8 DMG.")
+                .Description("Your next attack deals an additional 8 x 2 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 18 DMG.")
+                .Description("Your next attack deals an additional 18 x 2 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 28 DMG.")
+                .Description("Your next attack deals an additional 28 x 2 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -289,13 +327,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Throwing Weapons")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with throwing weapons.")
+                .Description("Your accuracy with throwing weapons is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusThrowingWeapons)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with throwing weapons.")
+                .Description("Your base damage with staves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
@@ -307,7 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Throwing Weapons")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a throwing weapon.")
+                .Description("Improves the chance to critically hit with throwing weapons by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalThrowingWeapons);
@@ -448,13 +486,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Rifles")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with rifles.")
+                .Description("Your accuracy with rifles is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusRifles)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with rifles.")
+                .Description("Your base damage with rifles is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);
@@ -466,7 +504,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Rifles")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using rifles.")
+                .Description("Improves the chance to critically hit with rifles by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
@@ -535,13 +573,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Description("Grants an additional attack when equipped with a rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
+                .RequirementMustHavePerk(PerkType.RapidReload)
                 .GrantsFeat(FeatType.RifleMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Description("Grants an additional attack when equipped with a rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .GrantsFeat(FeatType.RifleMastery2);

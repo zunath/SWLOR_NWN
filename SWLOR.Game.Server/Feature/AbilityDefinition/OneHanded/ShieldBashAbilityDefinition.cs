@@ -11,53 +11,39 @@ using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
-    public class RiotBladeAbilityDefinition : IAbilityListDefinition
+    public class ShieldBashAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            RiotBlade1(builder);
-            RiotBlade2(builder);
-            RiotBlade3(builder);
+            ShieldBash1(builder);
+            ShieldBash2(builder);
+            ShieldBash3(builder);
 
             return builder.Build();
         }
 
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var rightHandType = GetBaseItemType(weapon);
+            var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var leftHandType = GetBaseItemType(weapon);
             
-            if (Item.VibrobladeBaseItemTypes.Contains(rightHandType))
+            if (Item.ShieldBaseItemTypes.Contains(leftHandType))
             {
                 return string.Empty;
             }
             else
-                return "A vibroblade must be equipped in your right hand to use this ability.";
+                return "A shield must be equipped in your left hand to use this ability.";
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
-            switch (level)
-            {
-                case 1:
-                    dmg = 10;
-                    break;
-                case 2:
-                    dmg = 20;
-                    break;
-                case 3:
-                    dmg = 30;
-                    break;
-                default:
-                    break;
-            }
+            var dmg = 8 * level; // 8, 16, 24 DMG
+            var effDuration = 3f + 3 * level; // 6, 9, 12 sec
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
@@ -68,20 +54,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+            ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, effDuration);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 
             Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
-        private static void RiotBlade1(AbilityBuilder builder)
+        private static void ShieldBash1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
-                .Name("Riot Blade I")
-                .Level(1)
-                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
-                .HasActivationDelay(0.5f)
+            builder.Create(FeatType.ShieldBash1, PerkType.ShieldBash)
+                .Name("Shield Bash I")
+                .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -89,13 +75,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void RiotBlade2(AbilityBuilder builder)
+        private static void ShieldBash2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
-                .Name("Riot Blade II")
-                .Level(2)
-                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
-                .HasActivationDelay(0.5f)
+            builder.Create(FeatType.ShieldBash2, PerkType.ShieldBash)
+                .Name("Shield Bash II")
+                .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -103,13 +87,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void RiotBlade3(AbilityBuilder builder)
+        private static void ShieldBash3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
-                .Name("Riot Blade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
-                .HasActivationDelay(0.5f)
+            builder.Create(FeatType.ShieldBash3, PerkType.ShieldBash)
+                .Name("Shield Bash III")
+                .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .IsHostileAbility()

@@ -108,6 +108,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Devices", true)]
         Devices = 34,
+
+        [PerkCategory("One Handed - Shield", true)]
+        OneHandedShield = 35,
     }
 
     public class PerkCategoryAttribute : Attribute

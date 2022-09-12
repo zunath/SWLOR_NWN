@@ -535,6 +535,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade,
             BaseItem.Katar,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
@@ -544,6 +545,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Dart,
             BaseItem.Cannon,
             BaseItem.Longbow,
+            BaseItem.Rifle,
         };
 
         /// <summary>
@@ -565,6 +567,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Ring
         };
 
+        /// <summary>
+        /// Retrieves the list of shield base item types.
+        /// </summary>
         public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.LargeShield,

@@ -84,9 +84,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
             
-            if (inflict) 
-                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
+            if (inflict)
+            {
+                RemoveEffectByTag(target, "SABER_STRIKE");
+                var eBreach = TagEffect(EffectACDecrease(2), "SABER_STRIKE");
+                ApplyEffectToObject(DurationType.Temporary, eBreach, target, breachTime);
+            }
             
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 

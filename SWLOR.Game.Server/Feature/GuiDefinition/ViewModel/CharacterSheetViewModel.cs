@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
                 var damageStat = GetAbilityScore(Player, damageAbility);
                 var skillRank = dbPlayer.Skills[skill].Rank;
-                var dmg = Item.GetDMG(item) + Combat.GetDoublehandDMGBonus(Player) + Combat.GetPowerAttackDMGBonus(Player);
+                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(Player, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(Player, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
@@ -481,6 +481,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
             }
+
+            // Flurry Style (Staff)
+            if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
+                GetHasFeat(FeatType.CrushingStyle, Player))
+            {
+                damageStat = AbilityType.Perception;
+                accuracyStatOverride = AbilityType.Agility;
+            } 
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);

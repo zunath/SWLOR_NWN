@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _5_UpdateStoredWeapons: IServerMigration
+    public class _5_UpdateStoredWeapons: ServerMigrationBase
     {
         public int Version => 5;
 
@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public void Migrate()
         {
             UpdatePersistentStorageWeapons();
+            GrantRebuildTokenToAllPlayers();
         }
 
         private void UpdatePersistentStorageWeapons()

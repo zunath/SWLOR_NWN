@@ -520,7 +520,7 @@ namespace SWLOR.Game.Server.Service
             var isSeen = GetLastPerceptionSeen();
             var isVanished = GetLastPerceptionVanished();
 
-            if (GetIsPC(lastPerceived)) return;
+            if (GetIsPC(lastPerceived) || GetIsDead(lastPerceived)) return;
             var isSameFaction = GetFactionEqual(self, lastPerceived);
             if (!isSameFaction) return;
 

@@ -254,6 +254,7 @@ namespace SWLOR.Game.Server.Service
         {
             var self = OBJECT_SELF;
             SetIsDestroyable(false);
+            RemoveEffectByTag(self, "AGGRO_AOE"); // Dead creatures don't need aggro!
 
             var area = GetArea(self);
             var position = GetPosition(self);

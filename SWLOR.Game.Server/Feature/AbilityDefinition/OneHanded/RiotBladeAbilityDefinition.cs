@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var might = GetAbilityModifier(AbilityType.Might, activator);
+            var might = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);

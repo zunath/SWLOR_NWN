@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var distance = 3f + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
+            var distance = 6f + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
             var party = Party.GetAllPartyMembersWithinRange(activator, distance);
 
             foreach (var member in party)

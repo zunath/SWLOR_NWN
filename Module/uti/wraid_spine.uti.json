@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 525
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
@@ -41,28 +41,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Ghost Apprentice Electroblade"
+      "0": "Korriban Wraid Spine"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 131
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 231
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 132
+    "value": 111
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 64
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -75,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 26
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -91,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 104
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -106,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 0
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 0
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -122,11 +114,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 83
+          "value": 108
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 30
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 44
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 40
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 95
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -137,14 +160,14 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Tag": {
     "type": "cexostring",
-    "value": "s_app_gh_electro"
+    "value": "wraid_spine"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "s_app_gh_electro"
+    "value": "wraid_spine"
   }
 }

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Hide"
+      "0": "Pelko Bug Toxin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 26
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 64
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 25
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +83,69 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 104
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 108
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 33
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 44
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 40
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 95
         },
         "Subtype": {
           "type": "word",
@@ -102,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "terentatek_hide"
+    "value": "pelko_blood"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "terentatek_hide"
+    "value": "pelko_blood"
   }
 }

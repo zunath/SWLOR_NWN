@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 39
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 39
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Tusk"
+      "0": "K'lor'slug Skin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 95
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -69,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 22
         },
         "Param1": {
           "type": "byte",
@@ -85,7 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
+          "value": 99
         },
         "Subtype": {
           "type": "word",
@@ -100,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 44
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -116,42 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 98
         },
         "Subtype": {
           "type": "word",
           "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 109
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 49
         }
       }
     ]
@@ -166,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_tusk"
+    "value": "klorslug_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_tusk"
+    "value": "klorslug_skin"
   }
 }

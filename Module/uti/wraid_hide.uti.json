@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 20
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 526
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 20
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Innards"
+      "0": "Wraid Hide"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 28
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -58,7 +58,39 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 43
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 25
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 99
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -70,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hssiss_innards"
+    "value": "wraid_hide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_innards"
+    "value": "wraid_hide"
   }
 }

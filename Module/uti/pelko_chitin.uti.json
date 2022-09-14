@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 9
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
@@ -18,13 +18,14 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 9
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 90753,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -41,14 +42,15 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Tooth"
+      "0": "Pelko Bug Chitin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 2
+    "value": 39
   },
   "PaletteID": {
     "type": "byte",
@@ -100,37 +102,6 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 108
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 31
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 44
         },
         "CostValue": {
@@ -153,6 +124,37 @@
           "type": "word",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 55
+        }
       }
     ]
   },
@@ -166,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_tooth"
+    "value": "pelko_chitin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_tooth"
+    "value": "pelko_chitin"
   }
 }

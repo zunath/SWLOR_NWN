@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 22
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 22
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Terentatek Spine"
+      "0": "Tuk'ata Skin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 111
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
+          "value": 117
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 21
         },
         "Param1": {
           "type": "byte",
@@ -114,11 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 108
+          "value": 99
         },
         "Subtype": {
           "type": "word",
-          "value": 30
+          "value": 0
         }
       },
       {
@@ -129,11 +129,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 44
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -145,7 +145,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 98
         },
         "Subtype": {
           "type": "word",
@@ -164,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "teren_spine"
+    "value": "pelko_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "teren_spine"
+    "value": "pelko_skin"
   }
 }

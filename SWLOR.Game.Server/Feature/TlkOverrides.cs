@@ -89,9 +89,46 @@ namespace SWLOR.Game.Server.Feature
                 "Improves quest credit rewards.\n" + 
                 "Improves XP gain.");
 
+            SetTlkOverride(535, "Credit"); // Gold Piece
+
             SetTlkOverride(1027, "Poison"); // Acid
 
+            SetTlkOverride(3593, "Give credits."); // GP
+            SetTlkOverride(5025, "The Galactic Credit Standard, or simply the 'credit', is the main form of currency throughout the galaxy."); // GP desc
+            SetTlkOverride(6407, "Credits"); // GP
+            SetTlkOverride(7059, "Drop or give credits, etc.");
+
             SetTlkOverride(7099, "Evasion");
+
+            SetTlkOverride(8035, "Resting");
+            SetTlkOverride(8049, "Horrified");
+            SetTlkOverride(8056, "Accuracy Increased");
+            SetTlkOverride(8057, "Accuracy Decreased");
+            SetTlkOverride(8060, "Defense Increased");
+            SetTlkOverride(8061, "Defense Decreased");
+            SetTlkOverride(8062, "Evasion Increased");
+            SetTlkOverride(8063, "Evasion Decreased");
+            SetTlkOverride(8077, "Force Drained");
+
+            SetTlkOverride(58369, "Might Increased");
+            SetTlkOverride(58370, "Might Decreased");
+            SetTlkOverride(58371, "Perception Increased");
+            SetTlkOverride(58372, "Perception Decreased");
+            SetTlkOverride(58373, "Vitality Increased");
+            SetTlkOverride(58374, "Vitality Decreased");
+            SetTlkOverride(58375, "Agility Increased");
+            SetTlkOverride(58376, "Agility Decreased");
+            SetTlkOverride(58377, "Willpower Increased");
+            SetTlkOverride(58378, "Willpower Decreased");
+            SetTlkOverride(58379, "Social Increased");
+            SetTlkOverride(58380, "Social Decreased");
+
+            SetTlkOverride(61619, "Sell <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(61620, "Buy <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(62489, "Acquired <CUSTOM0> credits");
+            SetTlkOverride(62490, "Lost <CUSTOM0> credits");
+
+            SetTlkOverride(66129, "Premonition");
 
             SetTlkOverride(66751, "Holonet");
             SetTlkOverride(66755, "Comms");

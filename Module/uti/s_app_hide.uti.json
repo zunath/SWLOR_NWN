@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 11
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 73
   },
   "Charges": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Comment": {
     "type": "cexostring",
@@ -18,11 +18,11 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 11
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -41,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hssiss Surprise"
+      "0": "Sith Apprentice Hide"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 15
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 23
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 40
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 15
+          "value": 97
         },
         "Subtype": {
           "type": "word",
-          "value": 335
+          "value": 0
         }
       },
       {
@@ -98,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 24
         },
         "Param1": {
           "type": "byte",
@@ -114,73 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 106
+          "value": 99
         },
         "Subtype": {
           "type": "word",
-          "value": 5
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
           "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 106
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 106
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 6
         }
       }
     ]
@@ -195,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "FOOD"
+    "value": "s_app_hide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "hssiss_surprise"
+    "value": "s_app_hide"
   }
 }

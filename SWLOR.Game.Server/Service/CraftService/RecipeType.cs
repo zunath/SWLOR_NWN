@@ -717,6 +717,7 @@
         GrandioseSandwich = 2079,
         WildStew = 2080,
         HssissSurprise = 2081,
+        KlorslugSurprise = 2082,
 
 
         // Engineering: 3001-4000

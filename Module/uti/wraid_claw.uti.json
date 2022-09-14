@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 15
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 69
   },
   "Charges": {
     "type": "byte",
@@ -18,18 +18,15 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 15
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,26 +36,25 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
-    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Fur"
+      "0": "Wraid Claw"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 39
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 13
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -71,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 27
         },
         "Param1": {
           "type": "byte",
@@ -87,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 1
         }
       },
       {
@@ -102,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 44
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -118,42 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 109
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 55
+          "value": 4
         }
       }
     ]
@@ -168,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_fur"
+    "value": "wraid_claw"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_fur"
+    "value": "wraid_claw"
   }
 }

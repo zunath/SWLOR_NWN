@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,17 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,16 +43,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Apprentice Ghost Hide"
+      "0": "Korriban Wraid Scale"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 95
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 64
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +69,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 40
+          "value": 45
         },
         "CostValue": {
           "type": "word",
-          "value": 100
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +85,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 97
+          "value": 104
         },
         "Subtype": {
           "type": "word",
@@ -98,11 +100,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 44
         },
         "CostValue": {
           "type": "word",
-          "value": 24
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -114,11 +116,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 95
         },
         "Subtype": {
           "type": "word",
           "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 49
         }
       }
     ]
@@ -133,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "s_app_gh_hide"
+    "value": "wraid_scale"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "s_app_gh_hide"
+    "value": "wraid_scale"
   }
 }

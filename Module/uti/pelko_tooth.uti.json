@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 4
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,18 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 4
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 90753,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,14 +42,15 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Tuk'ata Meat"
+      "0": "Pelko Bug Barb"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 3
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
@@ -98,37 +102,6 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 108
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 35
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 44
         },
         "CostValue": {
@@ -151,6 +124,37 @@
           "type": "word",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 56
+        }
       }
     ]
   },
@@ -164,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_meat"
+    "value": "pelko_tooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_meat"
+    "value": "pelko_tooth"
   }
 }

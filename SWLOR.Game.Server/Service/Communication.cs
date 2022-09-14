@@ -6,6 +6,7 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -77,8 +78,30 @@ namespace SWLOR.Game.Server.Service
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
 
+        /// <summary>
+        /// When a player focuses the chatbar, set a typing indicator on the player; when
+        /// unfocused, remove the indicator.
+        /// </summary>
+
+        [NWNEventHandler("mod_gui_event")]
+        public static void TypingIndicator()
+        {
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (!GetIsPC(player)) return;
+
+            if(type == GuiEventType.ChatBarFocus)
+            {
+                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
+            } else if (type == GuiEventType.ChatBarUnfocus)
+            {
+                RemoveEffectByTag(player, "typingindicator");
+            }
+        }
+
         // Register DMFI Voice Command Handler which lives in nwscript land.
-       [NWNEventHandler("mod_chat")]
+        [NWNEventHandler("mod_chat")]
         public static void ProcessNativeChatMessage()
         {
             ExecuteScriptNWScript("dmfi_onplychat", OBJECT_SELF);
@@ -137,37 +160,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-
-            if (channel == ChatChannel.PlayerShout &&
-                GetIsPC(sender) &&
-                !GetIsDM(sender) &&
-                !GetIsDMPossessed(sender))
-            {
-                var playerId = GetObjectUUID(sender);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (!dbPlayer.Settings.IsHolonetEnabled)
-                {
-                    SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
-                    return;
-                }
-
-                // 5 minute wait in between Holonet messages.
-                var lastHolonet = GetLocalString(sender, "HOLONET_LAST_SEND");
-                var now = DateTime.UtcNow;
-                if (!string.IsNullOrWhiteSpace(lastHolonet))
-                {
-                    var dateTime = DateTime.ParseExact(lastHolonet, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                    if (now <= dateTime.AddMinutes(HolonetDelayMinutes))
-                    {
-                        SendMessageToPC(sender, $"Holonet messages may only be sent once per {HolonetDelayMinutes} minutes.");
-                        return;
-                    }
-                }
-
-                SetLocalString(sender, "HOLONET_LAST_SEND", now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-            }
-
             var chatComponents = new List<CommunicationComponent>();
 
             // Quick early out - if we start with "//" or "((", this is an OOC message.
@@ -221,6 +213,36 @@ namespace SWLOR.Game.Server.Service
                         component.Blue = 0;
                     }
                 }
+            }
+
+            if (channel == ChatChannel.PlayerShout &&
+                GetIsPC(sender) &&
+                !GetIsDM(sender) &&
+                !GetIsDMPossessed(sender))
+            {
+                var playerId = GetObjectUUID(sender);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (!dbPlayer.Settings.IsHolonetEnabled)
+                {
+                    SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
+                    return;
+                }
+
+                // 5 minute wait in between Holonet messages.
+                var lastHolonet = GetLocalString(sender, "HOLONET_LAST_SEND");
+                var now = DateTime.UtcNow;
+                if (!string.IsNullOrWhiteSpace(lastHolonet))
+                {
+                    var dateTime = DateTime.ParseExact(lastHolonet, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    if (now <= dateTime.AddMinutes(HolonetDelayMinutes))
+                    {
+                        SendMessageToPC(sender, $"Holonet messages may only be sent once per {HolonetDelayMinutes} minutes.");
+                        return;
+                    }
+                }
+
+                SetLocalString(sender, "HOLONET_LAST_SEND", now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             }
 
 

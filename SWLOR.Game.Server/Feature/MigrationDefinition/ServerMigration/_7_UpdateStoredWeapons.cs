@@ -12,9 +12,9 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _5_UpdateStoredWeapons: ServerMigrationBase
+    public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {
-        public int Version => 5;
+        public int Version => 7;
 
         private readonly Dictionary<string, (int, int)> _itemReplace = new()
             {

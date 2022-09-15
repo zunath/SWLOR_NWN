@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("msl_launch_2");
 
             _builder.Create("npc_freighter")
-                .ItemTag("NPC_Freighter")
+                .ItemTag("npc_freighter")
                 .ShipModule("blast_can_3")
                 .ShipModule("blast_can_3");
 

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void RousingShout()
         {
-            _builder.Create(FeatType.Chi1, PerkType.RousingShout)
+            _builder.Create(FeatType.RousingShout, PerkType.RousingShout)
                 .Name("Rousing Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.RousingShout, 300f)
@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     if (!GetIsDead(target))
                     {
                         return "Your target is not unconscious.";
+                    }
+
+                    if (GetArea(activator) != GetArea(target))
+                    {
+                        return "Your target is too far away.";
                     }
 
                     return string.Empty;

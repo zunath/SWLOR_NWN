@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick"))
+            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick", AbilityType.Willpower))
             {
                 var effect = EffectConfused();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));

@@ -1448,5 +1448,32 @@ namespace SWLOR.Game.Server.Service
             CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
 
+        /// <summary>
+        /// Returns the three-character shortened version of ability names.
+        /// </summary>
+        /// <param name="type">The type of ability to retrieve.</param>
+        /// <returns>A three-character shortened version of the ability name.</returns>
+        public static string GetAbilityNameShort(AbilityType type)
+        {
+            switch (type)
+            {
+                default:
+                case AbilityType.Invalid:
+                    return "INV";
+                case AbilityType.Might:
+                    return "MGT";
+                case AbilityType.Perception:
+                    return "PER";
+                case AbilityType.Vitality:
+                    return "VIT";
+                case AbilityType.Agility:
+                    return "AGI";
+                case AbilityType.Willpower:
+                    return "WIL";
+                case AbilityType.Social:
+                    return "SOC";
+            }
+        }
+
     }
 }

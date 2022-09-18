@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .HasActivationDelay(8f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!GetIsDead(target))

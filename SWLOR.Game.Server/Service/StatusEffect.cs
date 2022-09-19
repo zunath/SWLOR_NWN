@@ -209,13 +209,15 @@ namespace SWLOR.Game.Server.Service
         /// <param name="length">The amount of time, in seconds, the status effect should last. Set to 0.0f to make it permanent.</param>
         /// <param name="effectData">Effect data used by the effect.</param>
         /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
+        /// <param name="sendApplicationMessage">If true, a message will be sent to nearby players when the status effect is applied.</param>
         public static void Apply(
             uint source, 
             uint target, 
             StatusEffectType statusEffectType, 
             float length, 
             object effectData = null,
-            FeatType concentrationFeatType = FeatType.Invalid)
+            FeatType concentrationFeatType = FeatType.Invalid,
+            bool sendApplicationMessage = true)
         {
             var statusEffectDetail = _statusEffects[statusEffectType];
             if (!_creaturesWithStatusEffects.ContainsKey(target))
@@ -279,7 +281,9 @@ namespace SWLOR.Game.Server.Service
                 ObjectPlugin.AddIconEffect(target, (int)statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+            if(sendApplicationMessage)
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+
             Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
 
@@ -427,9 +431,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to remove the status effect from.</param>
         /// <param name="statusEffectType">The type of status effect to remove.</param>
-        public static void Remove(uint creature, StatusEffectType statusEffectType)
+        /// <param name="showMessage">If true, a message will be displayed. Otherwise no message is displayed.</param>
+        public static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage = true)
         {
-            Remove(creature, statusEffectType, true, true);
+            Remove(creature, statusEffectType, showMessage, true);
         }
 
         /// <summary>
@@ -494,6 +499,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Retrieves a status effect detail by its type.
+        /// </summary>
+        /// <param name="type">The type to search for.</param>
+        /// <returns>A status effect detail</returns>
+        public static StatusEffectDetail GetDetail(StatusEffectType type)
+        {
+            return _statusEffects[type];
         }
 
         /// <summary>

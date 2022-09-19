@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shocking Shout")
 
                 .AddPerkLevel()
-                .Description("Attempts to stun all nearby enemies for 6 seconds.")
+                .Description("Attempts to stun all nearby enemies for 6 seconds. (Max: 6 targets)")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -288,18 +288,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants 1 STM regeneration to other nearby party members every six seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Leadership, 5)
+                .RequirementSkill(SkillType.Leadership, 15)
                 .GrantsFeat(FeatType.Rejuvenation)
 
                 .AddPerkLevel()
                 .Description("Grants 2 STM regeneration to other nearby party members every six seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Leadership, 15)
+                .RequirementSkill(SkillType.Leadership, 35)
 
                 .AddPerkLevel()
                 .Description("Grants 3 STM regeneration to other nearby party members every six seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Leadership, 35);
+                .RequirementSkill(SkillType.Leadership, 45);
         }
 
         private void FrenziedShout()

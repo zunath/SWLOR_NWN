@@ -60,22 +60,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Dedication)
                 .Name("Dedication")
-                .EffectIcon(EffectIconType.Dedication)
-                .GrantAction((source, target, length, data) =>
-                {
-
-                });
+                .EffectIcon(EffectIconType.Dedication);
         }
 
         private void FrenziedShout()
         {
             _builder.Create(StatusEffectType.FrenziedShout)
                 .Name("Frenzied Shout")
-                .EffectIcon(EffectIconType.FrenziedShout)
-                .GrantAction((source, target, length, data) =>
-                {
-
-                });
+                .EffectIcon(EffectIconType.FrenziedShout);
         }
 
         private void Rejuvenation()
@@ -83,9 +75,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _builder.Create(StatusEffectType.Rejuvenation)
                 .Name("Rejuvenation")
                 .EffectIcon(EffectIconType.SoldiersPrecision)
-                .GrantAction((source, target, length, data) =>
+                .TickAction((source, target, data) =>
                 {
-
+                    var level = Perk.GetEffectivePerkLevel(source, PerkType.Rejuvenation);
+                    Stat.RestoreStamina(target, level);
                 });
         }
 
@@ -93,33 +86,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.SoldiersPrecision)
                 .Name("Soldier's Precision")
-                .EffectIcon(EffectIconType.SoldiersPrecision)
-                .GrantAction((source, target, length, data) =>
-                {
-
-                });
+                .EffectIcon(EffectIconType.SoldiersPrecision);
         }
 
         private void SoldiersSpeed()
         {
             _builder.Create(StatusEffectType.SoldiersSpeed)
                 .Name("Soldier's Speed")
-                .EffectIcon(EffectIconType.SoldiersSpeed)
-                .GrantAction((source, target, length, data) =>
-                {
-
-                });
+                .EffectIcon(EffectIconType.SoldiersSpeed);
         }
 
         private void SoldiersStrike()
         {
             _builder.Create(StatusEffectType.SoldiersStrike)
                 .Name("Soldier's Strike")
-                .EffectIcon(EffectIconType.SoldiersStrike)
-                .GrantAction((source, target, length, data) =>
-                {
-
-                });
+                .EffectIcon(EffectIconType.SoldiersStrike);
         }
     }
 }

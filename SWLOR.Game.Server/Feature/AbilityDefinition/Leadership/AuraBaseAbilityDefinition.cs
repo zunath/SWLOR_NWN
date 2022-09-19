@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 {
                     if (detail.TargetsParty)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f);
+                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 {
                     if (detail.TargetsNPCs)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f);
+                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }

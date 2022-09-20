@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Service.SkillService
 
         [Skill(SkillCategoryType.Utility,
             "Leadership",
-            20,
+            50,
             true,
             "Ability to handle people, negotiate, and manage relations.",
             true,

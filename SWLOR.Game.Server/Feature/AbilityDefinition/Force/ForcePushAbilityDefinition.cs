@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            if (!Ability.GetAbilityResisted(activator, target, "Force Push"))
+            if (!Ability.GetAbilityResisted(activator, target, "Force Push", AbilityType.Willpower))
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f + willpowerBonus);
             }

@@ -123,6 +123,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Indicates this ability runs an action immediately after validation but before any delays or impacts.
+        /// This can be used to disable an active effect, like an aura, if a player uses the ability a second time.
+        /// The result of the action can be true or false. If true, the delay and impact action will run when finished.
+        /// If false, only this activation action will run and then the ability will exit.
+        /// </summary>
+        /// <param name="action">The action to fire when an ability passes validation but before the delay/impact process occurs.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder HasActivationAction(AbilityActivationAction action)
+        {
+            _activeAbility.ActivationAction = action;
+
+            return this;
+        }
+
+        /// <summary>
         /// Assigns an impact action on the active ability we're building.
         /// Calling this more than once will replace the previous action.
         /// Impact actions are fired when a ability is used. The timing of when it fires depends on the activation type.
@@ -130,7 +145,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// "Queued" abilities fire the impact action on the next weapon hit.
         /// "Concentration" abilities fire the impact action on each concentration cycle.
         /// </summary>
-        /// <param name="action">The action to fire when a ability impacts a target.</param>
+        /// <param name="action">The action to fire when an ability impacts a target.</param>
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder HasImpactAction(AbilityImpactAction action)
         {

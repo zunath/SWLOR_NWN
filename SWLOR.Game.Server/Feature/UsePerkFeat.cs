@@ -276,26 +276,31 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
-            if (GetIsPC(activator))
+            var executeImpact = ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+
+            if (executeImpact == true)
             {
-                if (activationDelay > 0.0f)
+                if (GetIsPC(activator))
                 {
-                    PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    if (activationDelay > 0.0f)
+                    {
+                        PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    }
                 }
-            }
 
-            Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
+                Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
 
-            // If currently attacking a target, re-attack it after the end of the activation period.
-            // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
-            if (GetCurrentAction(activator) == ActionType.AttackObject)
-            {
-                var attackTarget = GetAttackTarget(activator);
-                DelayCommand(activationDelay + 0.1f, () =>
+                // If currently attacking a target, re-attack it after the end of the activation period.
+                // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
+                if (GetCurrentAction(activator) == ActionType.AttackObject)
                 {
-                    AssignCommand(activator, () => ActionAttack(attackTarget));
-                });
+                    var attackTarget = GetAttackTarget(activator);
+                    DelayCommand(activationDelay + 0.1f, () =>
+                    {
+                        AssignCommand(activator, () => ActionAttack(attackTarget));
+                    });
+                }
             }
         }
 

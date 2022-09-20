@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx1, int damageAmt, int healAmt, uint target, uint source)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Drain"))
+            if (!Ability.GetAbilityResisted(source, target, "Force Drain", AbilityType.Willpower))
             {
                 PlaySound("plr_force_absorb");
 

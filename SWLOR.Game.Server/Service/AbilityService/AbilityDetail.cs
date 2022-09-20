@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
+    public delegate bool AbilityActivationAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);
     public delegate void AbilityImpactAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);
     public delegate float AbilityActivationDelayAction(uint activator, uint target, int effectivePerkLevel);
     public delegate float AbilityRecastDelayAction(uint activator);
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
     public class AbilityDetail
     {
         public string Name { get; set; }
+        public AbilityActivationAction ActivationAction { get; set; }
         public AbilityImpactAction ImpactAction { get; set; }
         public AbilityActivationDelayAction ActivationDelay { get; set; }
         public AbilityRecastDelayAction RecastDelay { get; set; }
@@ -31,7 +33,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
-
         public int AbilityLevel { get; set; }
 
         public AbilityDetail()

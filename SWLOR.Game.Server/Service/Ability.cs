@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -346,18 +345,20 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The creature performing the attack</param>
         /// <param name="defender">The creature defending against the attack</param>
         /// <param name="actionName">Name of the action or ability to display in the combat log</param>
-        public static bool GetAbilityResisted(uint attacker, uint defender, string actionName)
+        /// <param name="abilityType">The type of ability to check against.</param>
+        public static bool GetAbilityResisted(uint attacker, uint defender, string actionName, AbilityType abilityType)
         {
-            var attackerWIL = GetAbilityModifier(AbilityType.Willpower, attacker) * 10;
-            var defenderWIL = GetAbilityModifier(AbilityType.Willpower, defender) * 10;
+            var abilityShortName = Stat.GetAbilityNameShort(abilityType);
+            var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 2.5f;
+            var defenderStat = (GetAbilityScore(defender, abilityType) - 10) * 2.5f;
             var attackerRoll = d100();
-            var totalAttack = attackerRoll + attackerWIL;
-            var isResisted = totalAttack <= defenderWIL + 50;
+            var totalAttack = attackerRoll + attackerStat;
+            var isResisted = totalAttack <= defenderStat + 50;
 
-            var operation = attackerWIL < 0 ? "-" : "+";
+            var operation = attackerStat < 0 ? "-" : "+";
             var coloredAttackerName = ColorToken.Custom(GetName(attacker), 153, 255, 255);
             var resistText = isResisted ? "*resist*" : "*success*";
-            var message = ColorToken.Combat($"{coloredAttackerName} inflicts {actionName} on {GetName(defender)} {resistText} [WIL vs WIL] : ({attackerRoll} {operation} {Math.Abs(attackerWIL)} = {totalAttack})");
+            var message = ColorToken.Combat($"{coloredAttackerName} inflicts {actionName} on {GetName(defender)} {resistText} [{abilityShortName} vs {abilityShortName}] : ({attackerRoll} {operation} {Math.Abs(attackerStat)} = {totalAttack})");
 
             SendMessageToPC(attacker, message);
             SendMessageToPC(defender, message);

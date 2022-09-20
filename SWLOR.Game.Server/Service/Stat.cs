@@ -739,6 +739,28 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
                 defense += 20;
 
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.FrenziedShout))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.FrenziedShout);
+                if (GetIsObjectValid(source))
+                {
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.FrenziedShout);
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            defense -= sourceSOC;
+                            break;
+                        case 2:
+                            defense -= (int)(sourceSOC * 1.5f);
+                            break;
+                        case 3:
+                            defense -= sourceSOC * 2;
+                            break;
+                    }
+                }
+            }
+
             return defense;
         }
 
@@ -748,6 +770,29 @@ namespace SWLOR.Game.Server.Service
                 attack += 10;
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage2))
                 attack += 20;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersStrike))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
+                if (GetIsObjectValid(source))
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersStrike);
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            attack += sourceSOC;
+                            break;
+                        case 2:
+                            attack += (int)(sourceSOC * 1.5f);
+                            break;
+                        case 3:
+                            attack += sourceSOC * 2;
+                            break;
+                    }
+                }
+            }
 
             return attack;
         }
@@ -1132,6 +1177,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            accuracy += GetSoldierPrecisionAccuracyBonus(creature);
+
             Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
 
             return accuracy;
@@ -1151,9 +1198,68 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            accuracy += GetSoldierPrecisionAccuracyBonus(creature.m_idSelf);
+
             Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
+        }
+
+        private static int CalculateEffectEvasion(uint creature)
+        {
+            var evasionBonus = 0;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersSpeed))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
+                if (GetIsObjectValid(source))
+                {
+                    var sourceSOC = GetAbilityScore(creature, AbilityType.Social);
+                    var perkLevel = Perk.GetEffectivePerkLevel(creature, PerkType.SoldiersSpeed);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            evasionBonus += sourceSOC / 2;
+                            break;
+                        case 2:
+                            evasionBonus += sourceSOC;
+                            break;
+                        case 3:
+                            evasionBonus += (int)(sourceSOC * 1.5f);
+                            break;
+                    }
+
+                }
+            }
+
+            return evasionBonus;
+        }
+
+        private static int GetSoldierPrecisionAccuracyBonus(uint creature)
+        {
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersPrecision))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersPrecision);
+
+                if (GetIsObjectValid(source))
+                {
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersPrecision);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            return sourceSOC / 2;
+                        case 2:
+                            return sourceSOC;
+                        case 3:
+                            return (int)(sourceSOC * 1.5f);
+                    }
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -1189,6 +1295,8 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
             }
+
+            evasionBonus += CalculateEffectEvasion(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
@@ -1238,6 +1346,8 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
             }
+
+            evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
             return stat * 3 + skillLevel + ac * 5 + evasionBonus;
         }
@@ -1446,6 +1556,33 @@ namespace SWLOR.Game.Server.Service
             critMod += Perk.GetEffectivePerkLevel(player, PerkType.InnerStrength);
 
             CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
+        }
+
+        /// <summary>
+        /// Returns the three-character shortened version of ability names.
+        /// </summary>
+        /// <param name="type">The type of ability to retrieve.</param>
+        /// <returns>A three-character shortened version of the ability name.</returns>
+        public static string GetAbilityNameShort(AbilityType type)
+        {
+            switch (type)
+            {
+                default:
+                case AbilityType.Invalid:
+                    return "INV";
+                case AbilityType.Might:
+                    return "MGT";
+                case AbilityType.Perception:
+                    return "PER";
+                case AbilityType.Vitality:
+                    return "VIT";
+                case AbilityType.Agility:
+                    return "AGI";
+                case AbilityType.Willpower:
+                    return "WIL";
+                case AbilityType.Social:
+                    return "SOC";
+            }
         }
 
     }

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Impact(uint source, uint target)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Stun"))
+            if (!Ability.GetAbilityResisted(source, target, "Force Stun", AbilityType.Willpower))
             {
                 var effect = EffectDazed();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));

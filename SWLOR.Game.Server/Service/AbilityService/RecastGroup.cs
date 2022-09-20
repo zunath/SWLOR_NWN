@@ -159,6 +159,24 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceInspiration = 75,
         [RecastGroup("Shield Bash", "Shield Bash")]
         ShieldBash = 76,
+        [RecastGroup("Rousing Shout", "R. Shout")]
+        RousingShout = 77,
+        [RecastGroup("Dedication", "Dedication")]
+        Dedication = 78,
+        [RecastGroup("Soldier's Speed", "Sol. Speed")]
+        SoldiersSpeed = 79,
+        [RecastGroup("Soldier's Strike", "Sol. Strike")]
+        SoldiersStrike = 80,
+        [RecastGroup("Charge", "Charge")]
+        Charge = 81,
+        [RecastGroup("Soldier's Precisionn", "Sol. Precision")]
+        SoldiersPrecision = 82,
+        [RecastGroup("Shocking Shout", "Shock. Shout")]
+        ShockingShout = 83,
+        [RecastGroup("Rejuvenation", "Rejuvenation")]
+        Rejuvenation = 84,
+        [RecastGroup("Frenzied Shout", "Frenz. Shout")]
+        FrenziedShout = 85,
     }
 
     public class RecastGroupAttribute: Attribute

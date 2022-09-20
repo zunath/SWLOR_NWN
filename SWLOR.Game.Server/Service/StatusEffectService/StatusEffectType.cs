@@ -20,7 +20,8 @@
         StaminaPack5 = 15,
         Poison = 16,
         Bleed = 17,
-
+        Charge = 18,
+        Dedication = 19,
         Premonition1 = 20,
         Premonition2 = 21,
         CreepingTerror = 22,
@@ -29,10 +30,13 @@
         ForceHeal3 = 25,
         ForceHeal4 = 26,
         ForceHeal5 = 27,
-
+        FrenziedShout = 28,
+        Rejuvenation = 29,
+        SoldiersPrecision = 30,
         BattleInsight1 = 31,
         BattleInsight2 = 32,
-
+        SoldiersSpeed = 33,
+        SoldiersStrike = 34,
         ForceDrain1 = 35,
         ForceDrain2 = 36,
         ForceDrain3 = 37,

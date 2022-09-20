@@ -1834,7 +1834,17 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceInspiration1 = 1866,
         ForceInspiration2 = 1867,
         ForceInspiration3 = 1868,
-        Bulwark = 1869
+        Bulwark = 1869,
+
+        RousingShout = 1870,
+        Dedication = 1871,
+        SoldiersSpeed = 1872,
+        SoldiersStrike = 1873,
+        Charge = 1874,
+        SoldiersPrecision = 1875,
+        ShockingShout = 1876,
+        Rejuvenation = 1877,
+        FrenziedShout = 1878,
 
     }
 }

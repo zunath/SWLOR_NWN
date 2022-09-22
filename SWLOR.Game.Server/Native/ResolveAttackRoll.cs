@@ -321,6 +321,7 @@ namespace SWLOR.Game.Server.Native
                     Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
 
             // Deflect Ranged Attacks
+            var deflected = false;
 
             if (attackType == (uint)AttackType.Ranged &&            // Ranged Attacks only
                 isHit && defender.GetFlatFooted() == 0 &&           // Only triggers on hits and the defender isn't incapacitated
@@ -343,6 +344,15 @@ namespace SWLOR.Game.Server.Native
                 var statDelta = Math.Clamp((defenderStat - attackerStatValue) * 5, -50, 75);
 
                 isHit = deflectRoll + statDelta < attackRoll;
+                deflected = !isHit;
+
+                var feedbackString = deflected ? "*success*" : "*failure*";
+                var attackerName = ColorToken.GetNameColorNative(attacker);
+                var defenderName = ColorToken.GetNameColorNative(defender);
+                feedbackString = $"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}";
+
+                attacker.SendFeedbackString(new CExoString(feedbackString));
+                defender.SendFeedbackString(new CExoString(feedbackString));
                 Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, statDelta: {statDelta}, attackRoll: {attackRoll} -- Hit: {isHit}");
             }
 
@@ -388,10 +398,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         Log.Write(LogGroup.Attack, $"Immune to critical hits");
                         // Immune!
-                        var pData = new CNWCCMessageData();
-                        pData.SetObjectID(0, defender.m_idSelf);
-                        pData.SetInteger(0, 126); //Critical Hit Immunity Feedback
-                        pAttackData.m_alstPendingFeedback.Add(pData);
+                        var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
+                        attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
                         pAttackData.m_nAttackResult = 1;
                     }
                     else
@@ -410,8 +418,16 @@ namespace SWLOR.Game.Server.Native
             // Miss
             else
             {
-                Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
-                pAttackData.m_nAttackResult = 4;
+                if(deflected)
+                {
+                    Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
+                    pAttackData.m_nAttackResult = 2;
+                } 
+                else
+                {
+                    Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
+                    pAttackData.m_nAttackResult = 4;
+                }
                 pAttackData.m_nMissedBy = 1; // Dunno if this is needed by anything, but filling it out in case.
             }
 

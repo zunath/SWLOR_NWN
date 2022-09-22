@@ -312,13 +312,13 @@ namespace SWLOR.Game.Server.Service
                 case 4:
                     type = ": *miss*";
                     break;
+                case 2:
+                    type = ": *deflect*";
+                    break;
             }
 
-            var attackerName = (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim();
-            var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
-
-            attackerName = Convert.ToBoolean(attacker.m_bPlayerCharacter) ? ColorToken.Custom(attackerName, 153, 255, 255) : ColorToken.Custom(attackerName, 204, 153, 204);
-            defenderName = Convert.ToBoolean(defender.m_bPlayerCharacter) ? ColorToken.Custom(defenderName, 153, 255, 255) : ColorToken.Custom(defenderName, 204, 153, 204);
+            var attackerName = ColorToken.GetNameColorNative(attacker);
+            var defenderName = ColorToken.GetNameColorNative(defender);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }

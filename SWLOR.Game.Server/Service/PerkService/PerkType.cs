@@ -248,6 +248,15 @@
         DirtyBlow = 241,
         ShieldBash = 242,
         ForceInspiration = 243,
-        Bulwark = 244
+        Bulwark = 244,
+        RousingShout = 245,
+        Dedication = 246,
+        SoldiersSpeed = 247,
+        SoldiersStrike = 248,
+        Charge = 249,
+        SoldiersPrecision = 250,
+        ShockingShout = 251,
+        Rejuvenation = 252,
+        FrenziedShout = 253,
     }
 }

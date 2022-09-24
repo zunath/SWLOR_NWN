@@ -46,5 +46,6 @@
         CreatureManager = 41,
         AreaManager = 42,
         Emotes = 43,
+        DroidAssembly = 44,
     }
 }

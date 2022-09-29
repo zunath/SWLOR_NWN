@@ -1,9 +1,11 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -118,6 +120,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetIsPC(_target) && !GetIsDM(_target))
             {
+                var dmName = GetName(Player);
+                var oldName = GetName(_target);
                 CreaturePlugin.SetOriginalName(_target, NewFirstName, false);
                 CreaturePlugin.SetOriginalName(_target, NewLastName, true);
 
@@ -125,9 +129,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!string.IsNullOrWhiteSpace(NewLastName))
                     newFullName += $" {NewLastName}";
 
+                var playerId = GetObjectUUID(_target);
+                var dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer.Name = newFullName;
+                DB.Set(dbPlayer);
+
                 BootPC(_target, $"Your name has been changed to '{newFullName}'. Please reconnect to the server.");
 
                 FloatingTextStringOnCreature($"Target renamed to '{newFullName}'.", Player);
+                Log.Write(LogGroup.DM, $"DM '{dmName}' renamed player '{oldName}' to '{newFullName}'.");
             }
             else
             {

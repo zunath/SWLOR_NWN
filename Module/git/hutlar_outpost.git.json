@@ -20836,7 +20836,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.706461712975591e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -21490,7 +21490,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.552784323740071e-033
+                      "value": 4.161295919658977e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -21817,7 +21817,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.033975888950801e-025
+                      "value": 7.010455193681196e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -22175,7 +22175,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.577721810442024e-030
+                      "value": 2.869859254937225e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -22564,7 +22564,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.201556301065695e-039
+                      "value": 7.743956467041236e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -22953,7 +22953,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -23700,7 +23700,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.068771459779309e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -24089,7 +24089,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -24478,7 +24478,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.069068955443286e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -24867,7 +24867,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.327042578545982e-042
+                      "value": 3.023581696473658e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -25375,7 +25375,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.349563601548611e-041
+                      "value": 3.85202934858249e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -25628,7 +25628,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.861912597184908e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -25943,7 +25943,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.623197309358247e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -26258,7 +26258,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.068771459779309e-038
+                      "value": 7.743956467041236e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -26826,7 +26826,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.889493957830756e-026
                     },
                     "XPosition": {
                       "type": "float",
@@ -28710,7 +28710,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.096986186827664e-024
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -29174,7 +29174,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.066668391044051e-040
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -29406,7 +29406,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.851860347951953e-034
                     },
                     "XPosition": {
                       "type": "float",
@@ -30504,7 +30504,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.851860347951953e-034
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -30767,7 +30767,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.066668391044051e-040
                     },
                     "XPosition": {
                       "type": "float",
@@ -31200,7 +31200,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.096986186827664e-024
                     },
                     "XPosition": {
                       "type": "float",
@@ -32906,7 +32906,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.889493957830756e-026
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -33442,7 +33442,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.743956467041236e-039
+                      "value": 1.068771459779309e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -33740,7 +33740,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.623197309358247e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -34007,7 +34007,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.861912597184908e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -34305,7 +34305,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.85202934858249e-041
+                      "value": 6.349563601548611e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -34841,7 +34841,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.101583034114703e-039
+                      "value": 9.327042578545982e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -35371,7 +35371,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -36036,7 +36036,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -36290,7 +36290,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.825710333057753e-024
+                      "value": 9.201556301065695e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -36482,7 +36482,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.613002194478404e-023
+                      "value": 1.577721810442024e-030
                     },
                     "XPosition": {
                       "type": "float",
@@ -36705,7 +36705,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.782881022934827e-023
+                      "value": 1.033975888950801e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -36990,7 +36990,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.845501307182415e-022
+                      "value": 1.552784323740071e-033
                     },
                     "XPosition": {
                       "type": "float",
@@ -37277,7 +37277,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.19114008207636e-021
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -37531,7 +37531,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.069251965022726e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -37818,7 +37818,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.043466985251e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -38074,7 +38074,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.341805152028776e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -38359,7 +38359,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.918233585063051e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -38613,7 +38613,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.202392304189678e-037
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -39185,7 +39185,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.531239844181921e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -39355,7 +39355,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.122468526504132e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -40237,7 +40237,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.242077542919707e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -40407,7 +40407,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.53118962164496e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -40701,7 +40701,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.122406869371701e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -41585,7 +41585,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.395580606070986e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -41943,7 +41943,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.312142466135948e-043
+                      "value": 3.53118962164496e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -42301,7 +42301,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.484155085839415e-044
+                      "value": 3.122468526504132e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -43888,7 +43888,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.531239844181921e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -44308,7 +44308,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.122468526504132e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -45446,7 +45446,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.531239844181921e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -45730,7 +45730,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.122468526504132e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -46969,7 +46969,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.531239844181921e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -47201,7 +47201,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.122468526504132e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -47464,7 +47464,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.552110912606905e-015
                     },
                     "XPosition": {
                       "type": "float",
@@ -47928,7 +47928,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.069251965022726e-038
+                      "value": 2.575843736212578e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -48516,7 +48516,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 7.101583034114703e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -50122,7 +50122,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.825710333057753e-024
                     },
                     "XPosition": {
                       "type": "float",
@@ -50451,7 +50451,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.613002194478404e-023
                     },
                     "XPosition": {
                       "type": "float",
@@ -50780,7 +50780,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.04728794979874e-025
+                      "value": 6.782881022934827e-023
                     },
                     "XPosition": {
                       "type": "float",
@@ -51109,7 +51109,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.845501307182415e-022
                     },
                     "XPosition": {
                       "type": "float",
@@ -51341,7 +51341,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.19114008207636e-021
                     },
                     "XPosition": {
                       "type": "float",
@@ -51604,7 +51604,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.960209590028366e-041
+                      "value": 1.069251965022726e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -51867,7 +51867,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.043466985251e-020
                     },
                     "XPosition": {
                       "type": "float",
@@ -52130,7 +52130,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.861912597184908e-039
+                      "value": 2.341805152028776e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -52353,7 +52353,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.059731403126257e-038
+                      "value": 9.918233585063051e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -52638,7 +52638,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.023581696473658e-041
+                      "value": 4.202392304189678e-037
                     },
                     "XPosition": {
                       "type": "float",
@@ -52923,7 +52923,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.069068955443286e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -53409,7 +53409,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.068771459779309e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -54028,7 +54028,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.242077542919707e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -54353,7 +54353,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.743956467041236e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -54607,7 +54607,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.869859254937225e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -54923,7 +54923,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.010455193681196e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -55239,7 +55239,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.161295919658977e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -55555,7 +55555,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.395580606070986e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -55767,7 +55767,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -2.980235080940474e-008
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -55971,7 +55971,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -4.547477303572245e-013
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -56175,7 +56175,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -6.938898866990904e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -56379,7 +56379,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -1.0587918151566e-022
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -56554,7 +56554,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -1.61558790426461e-027
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -56729,7 +56729,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": -2.465191210436425e-032
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -59340,7 +59340,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.541428310757299e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -59686,7 +59686,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.591354418360263e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -59859,7 +59859,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.928545419317815e-039
+                      "value": 4.161295919658977e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -60032,7 +60032,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.161295919658977e-041
+                      "value": 1.928545419317815e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -60205,7 +60205,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.591354418360263e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -60553,7 +60553,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.541428310757299e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -63470,7 +63470,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -2.465191210436425e-032
                     },
                     "XPosition": {
                       "type": "float",
@@ -63675,7 +63675,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -1.61558790426461e-027
                     },
                     "XPosition": {
                       "type": "float",
@@ -63879,7 +63879,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -1.0587918151566e-022
                     },
                     "XPosition": {
                       "type": "float",
@@ -64083,7 +64083,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -6.938898866990904e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -64287,7 +64287,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -4.547477303572245e-013
                     },
                     "XPosition": {
                       "type": "float",
@@ -64491,7 +64491,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": -2.980235080940474e-008
                     },
                     "XPosition": {
                       "type": "float",
@@ -64734,7 +64734,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 4.354254718196504e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -64904,7 +64904,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 9.316436150469508e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -65105,7 +65105,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 3.637630683540793e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -65368,7 +65368,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 1.051135838346089e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -65631,7 +65631,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -65832,7 +65832,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -66095,7 +66095,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -66296,7 +66296,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -66559,7 +66559,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -66760,7 +66760,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -67023,7 +67023,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -67286,7 +67286,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -67518,7 +67518,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -67688,7 +67688,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -68848,7 +68848,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -69018,7 +69018,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -69281,7 +69281,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -69482,7 +69482,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -69745,7 +69745,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -70008,7 +70008,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -70209,7 +70209,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -70441,7 +70441,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -70673,7 +70673,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -70936,7 +70936,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -71168,7 +71168,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.051135838346089e-038
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -71462,7 +71462,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.637630683540793e-041
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -71756,7 +71756,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.316436150469508e-039
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -72050,7 +72050,2018 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.354254718196504e-041
+                      "value": 1.401298464324817e-044
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 32,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 24
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 25
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DHRG-001"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 25
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dhrg001"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dhrg001"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 2.312142466135948e-043
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 33,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 62
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 63
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DHRG-002"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 19
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dhrg002"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dhrg002"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 4.484155085839415e-044
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 34,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 156
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 157
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DHRG-003"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 85
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 6
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dhrg003"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dhrg003"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 35,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 389
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 390
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DHRG-004"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 92
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 7
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 9
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dhrg004"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dhrg004"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 36,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 24
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 25
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DLRG-001"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 11
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dlrg001"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dlrg001"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 37,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 62
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 63
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DLRG-002"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 10
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 36
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 92
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dlrg002"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dlrg002"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 38,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 156
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 157
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DLRG-003"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 36
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 6
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 36
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 92
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 8
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dlrg003"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dlrg003"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 39,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 389
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 52
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 390
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "id": 48931,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 48930,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "DLRG-004"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 178
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 8
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 37
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 90
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 36
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 92
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 104
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 64
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 167
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 9
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 5
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "dlrg004"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "dlrg004"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -72773,7 +74784,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.331913584288211e-018
+                      "value": 2.242077542919707e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -73045,7 +75056,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.388022601176344e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -73183,7 +75194,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.746320846587364e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -73321,7 +75332,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.746320846587364e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -73476,7 +75487,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.388022601176344e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -73788,7 +75799,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.242077542919707e-043
+                      "value": 5.331913584288211e-018
                     },
                     "XPosition": {
                       "type": "float",

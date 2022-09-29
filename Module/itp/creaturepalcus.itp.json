@@ -5151,6 +5151,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dessta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dessta_bocktorb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dockhand"
                     },
                     "RESREF": {

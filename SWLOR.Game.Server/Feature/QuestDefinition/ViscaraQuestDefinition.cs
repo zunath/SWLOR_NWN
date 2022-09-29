@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             VanquishTheVellenRaiders();
             WarWithTheMandalorianWarriors();
             KathHoundPartCollection();
+            TaxiTerminalRepairs();
 
             return _builder.Build();
         }
@@ -494,6 +495,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(600)
                 .AddXPReward(400);
+        }
+
+        private void TaxiTerminalRepairs()
+        {
+            _builder.Create("taxi_term_repairs", "Taxi Terminal Repairs")
+
+                .AddState()
+                .SetStateJournalText(
+                    "Dessta Bocktorb needs twenty flawed electronics and five units of agate to repair the taxi terminals around Veles Colony. Return to her with these items to collect your reward.")
+                .AddCollectItemObjective("elec_flawed", 20)
+                .AddCollectItemObjective("agate", 5)
+
+                .AddState()
+                .SetStateJournalText("Speak to Dessta Bocktorb for your reward.")
+
+                .AddKeyItemReward(KeyItemType.TaxiHailingDevice);
         }
     }
 }

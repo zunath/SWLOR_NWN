@@ -74517,6 +74517,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Droid Assembly Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "droid_ass_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Engineering Terminal"
                     },
                     "RESREF": {

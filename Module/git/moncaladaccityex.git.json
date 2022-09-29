@@ -579277,7 +579277,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.255119239548591e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -579691,7 +579691,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.609091732176098e-020
                     },
                     "XPosition": {
                       "type": "float",
@@ -579941,7 +579941,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.609091732176098e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -580499,7 +580499,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.255119239548591e-020
                     },
                     "XPosition": {
                       "type": "float",
@@ -581065,7 +581065,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 2
+                            "value": 3
                           },
                           "Param1": {
                             "type": "byte",
@@ -581537,7 +581537,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 7.538433696382511e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -581931,7 +581931,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 7.576512012277529e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -582128,7 +582128,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.157630101904709e-027
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -582325,7 +582325,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.312274572719226e-027
                     },
                     "XPosition": {
                       "type": "float",
@@ -582522,7 +582522,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.312274572719226e-027
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -582719,7 +582719,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.157630101904709e-027
                     },
                     "XPosition": {
                       "type": "float",
@@ -582916,7 +582916,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.576512012277529e-025
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -583310,7 +583310,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.538433696382511e-025
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -653796,7 +653796,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 2
+                            "value": 3
                           },
                           "Param1": {
                             "type": "byte",

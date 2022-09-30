@@ -39153,7 +39153,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "nw_convo_karrav"
+          "value": ""
         },
         "CRAdjust": {
           "type": "int",

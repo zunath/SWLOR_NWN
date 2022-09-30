@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Rejuvenation)
                 .Name("Rejuvenation")
-                .EffectIcon(EffectIconType.SoldiersPrecision)
+                .EffectIcon(EffectIconType.Rejuvenation)
                 .TickAction((source, target, data) =>
                 {
                     var level = Perk.GetEffectivePerkLevel(source, PerkType.Rejuvenation);

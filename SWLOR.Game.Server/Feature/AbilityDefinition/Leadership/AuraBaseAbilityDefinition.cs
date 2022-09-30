@@ -253,16 +253,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             while (aura.Auras.Count >= maxAuras)
             {
+                var removeType = aura.Auras[0].Type;
                 if (aura.Auras[0].TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, type, false);
+                    StatusEffect.Remove(activator, removeType, false);
                 }
 
                 if (aura.Auras[0].TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, type, false);
+                        StatusEffect.Remove(member, removeType, false);
                     }
                 }
 
@@ -270,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, type, false);
+                        StatusEffect.Remove(npc, removeType, false);
                     }
                 }
 

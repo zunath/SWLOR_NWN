@@ -46,11 +46,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Use Key", () =>
                 {
-                    var waypointTag = GetLocalString(door, "LOCKED_DOOR_INSIDE_WP");
-                    var waypoint = GetWaypointByTag(waypointTag);
-                    var waypointLocation = GetLocation(waypoint);
+                    if (Enmity.HasEnmity(player))
+                    {
+                        FloatingTextStringOnCreature("An enemy is targeting you. Defeat them before entering!", player, false);
+                    }
+                    else
+                    {
+                        var waypointTag = GetLocalString(door, "LOCKED_DOOR_INSIDE_WP");
+                        var waypoint = GetWaypointByTag(waypointTag);
+                        var waypointLocation = GetLocation(waypoint);
 
-                    AssignCommand(player, () => ActionJumpToLocation(waypointLocation));
+                        AssignCommand(player, () => ActionJumpToLocation(waypointLocation));
+                    }
 
                     EndConversation();
                 });

@@ -76,14 +76,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
+
                         // Safety check - if another player pulls all of the ore from the asteroid, give an error message.
-                        if (!GetIsObjectValid(target))
+                        if (!GetIsObjectValid(target) || remainingUnits <= 0)
                         {
                             SendMessageToPC(activator, "Your target has been fully mined.");
                             return;
                         }
-
-                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
                         // Perk & module bonuses
                         var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);

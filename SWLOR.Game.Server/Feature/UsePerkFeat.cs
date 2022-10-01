@@ -276,7 +276,9 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
-            var executeImpact = ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+            var executeImpact = ability.ActivationAction == null 
+                ? true
+                : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
 
             if (executeImpact == true)
             {

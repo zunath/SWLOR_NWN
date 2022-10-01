@@ -81,6 +81,18 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Returns time in the following manner:
+        /// 2 days, 12 hours, 5 minutes, 45 seconds
+        /// </summary>
+        /// <param name="time">The time span</param>
+        /// <param name="showIfZero">Will show the units if they are zero.</param>
+        /// <returns>String containing a formatted time.</returns>
+        public static string GetTimeLongIntervals(TimeSpan time, bool showIfZero)
+        {
+            return GetTimeLongIntervals(time.Days, time.Hours, time.Minutes, time.Seconds, showIfZero);
+        }
+
+        /// <summary>
+        /// Returns time in the following manner:
         /// 2D, 12H, 5M, 45S
         /// </summary>
         /// <param name="days">The number of days</param>

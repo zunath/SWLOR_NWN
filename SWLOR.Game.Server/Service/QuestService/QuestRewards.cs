@@ -47,20 +47,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public void GiveReward(uint player)
         {
-            // 5% credit bonus per social modifier.
-            var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
-
-            // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
-            var guildRelations = 0f;
-            if (IsGuildQuest)
-            {
-                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
-                guildRelations = perkLevel * 0.05f;
-            }
-
-            var amount = Amount + 
-                         (int)(Amount * social) +
-                         (int)(Amount * guildRelations);
+            var amount = Quest.CalculateQuestGoldReward(player, IsGuildQuest, Amount);
             GiveGoldToCreature(player, amount);
         }
     }

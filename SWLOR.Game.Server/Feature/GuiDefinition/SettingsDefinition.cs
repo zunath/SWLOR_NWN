@@ -56,6 +56,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .SetHeight(30f);
 
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Reset Reminders")
+                            .SetTooltip("If enabled, you will receive periodic reminders about automatic server resets.")
+                            .BindIsChecked(model => model.DisplayServerResetReminders);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
+
                     col.AddRow(row =>
                     {
                         row.BindIsVisible(model => model.IsForceSensitive);

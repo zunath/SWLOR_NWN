@@ -100,7 +100,11 @@ namespace SWLOR.Game.Server.Feature
 
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {
-                        SendMessageToPC(player, message);
+                        var playerId = GetObjectUUID(player);
+                        var dbPlayer = DB.Get<Player>(playerId);
+
+                        if(GetIsDM(player) || dbPlayer.Settings.DisplayServerResetReminders)
+                            SendMessageToPC(player, message);
                     }
 
                     _nextNotification = delta.TotalMinutes <= 15 

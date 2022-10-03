@@ -39,6 +39,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool DisplayServerResetReminders
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
@@ -50,11 +56,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
+            DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.ShareLightsaberForceXP);
+            WatchOnClient(model => model.DisplayServerResetReminders);
         }
 
         public Action OnSave() => () =>
@@ -66,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
+            dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
 
             DB.Set(dbPlayer);
 

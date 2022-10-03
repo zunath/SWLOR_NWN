@@ -1416,7 +1416,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offhand = OBJECT_INVALID)
+        /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
+        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1464,7 +1465,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
-            var offhandType = GetBaseItemType(offhand);
+            var offHandType = GetBaseItemType(offHandItem);
             var numberOfAttacks = 1;
             var perkType = PerkType.Invalid;
 
@@ -1523,7 +1524,8 @@ namespace SWLOR.Game.Server.Service
                 perkType = PerkType.SaberstaffMastery;
             }
 
-            if (Item.ShieldBaseItemTypes.Contains(offhandType)) numberOfAttacks += GetShieldBonus(player);
+            if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
+                numberOfAttacks += GetShieldBonus(player);
 
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
             numberOfAttacks += effectiveMasteryLevel;

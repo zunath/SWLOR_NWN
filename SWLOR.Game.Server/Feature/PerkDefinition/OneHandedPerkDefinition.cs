@@ -169,25 +169,43 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shield Master")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
+                    if (slot == InventorySlot.RightHand)
+                    {
+                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                    }
+                    else if (slot == InventorySlot.LeftHand)
+                    {
+                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                    }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot == InventorySlot.RightHand)
+                    {
+                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                    }
+                    else if (slot == InventorySlot.LeftHand)
+                    {
+                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                    }
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
 
                 .AddPerkLevel()

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
 
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {
-                        FloatingTextStringOnCreature(message, player, false);
+                        SendMessageToPC(player, message);
                     }
 
                     _nextNotification = delta.TotalMinutes <= 15 

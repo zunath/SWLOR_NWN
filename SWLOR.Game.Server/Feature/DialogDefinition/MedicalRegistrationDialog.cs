@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void MainPageInit(DialogPage page)
         {
             var player = GetPC();
-            page.Header = "If you die, you will return to the last medical facility you registered at. Would you like to register to this medical facility?";
+            page.Header = "In the event you suffer a critical injury you will return to your registered medical facility. Would you like to register to this medical facility?";
 
             page.AddResponse("Register", () =>
             {

@@ -26,20 +26,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
-
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             switch (level)
             {
                 case 1:
-                    dmg = 12;
+                    dmg = 12 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 19;
+                    dmg = 19 + (willBonus * 2);
                     break;
                 case 3:
-                    dmg = 28;
+                    dmg = 28 + (willBonus * 3);
                     break;
                 case 4:
-                    dmg = 40;
+                    dmg = 40 + (willBonus * 4);
                     break;
             }
 
@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasRecastDelay(RecastGroup.ForceBurst, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -95,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasRecastDelay(RecastGroup.ForceBurst, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
@@ -110,7 +112,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasRecastDelay(RecastGroup.ForceBurst, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -125,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasRecastDelay(RecastGroup.ForceBurst, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()

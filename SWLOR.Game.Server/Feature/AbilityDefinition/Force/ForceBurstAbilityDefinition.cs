@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
+            
             var builder = new AbilityBuilder();
             ForceBurst1(builder);
             ForceBurst2(builder);
@@ -22,6 +23,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return builder.Build();
         }
+       
+    
+    
+  
+
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
@@ -30,18 +36,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 12 + (willBonus * 6);
+                    dmg = 12 + (willBonus * 4);
                     break;
                 case 2:
-                    dmg = 19 + (willBonus * 12);
+                    dmg = 19 + (willBonus * 9);
                     break;
                 case 3:
-                    dmg = 28 + (willBonus * 18);
+                    dmg = 28 + (willBonus * 14);
                     break;
                 case 4:
-                    dmg = 40 + (willBonus * 24);
+                    dmg = 40 + (willBonus * 18);
                     break;
+
+           
+
             }
+
+
+
+
+
+
+
+            
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
@@ -73,8 +90,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             
             Enmity.ModifyEnmity(activator, target, level * 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-        }
 
+            
+        }
+        
+       
+  
         private static void ForceBurst1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
@@ -83,13 +104,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceBurst, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(4)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
-        }
+                
+        }        
+   
+        
+        
 
         private static void ForceBurst2(AbilityBuilder builder)
         {
@@ -99,13 +124,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceBurst, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(5)
+                .RequirementFP(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
-        }
+        }       
+        
 
         private static void ForceBurst3(AbilityBuilder builder)
         {
@@ -115,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceBurst, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(10)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -131,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceBurst, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(7)
+                .RequirementFP(12)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()

@@ -1846,5 +1846,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Rejuvenation = 1877,
         FrenziedShout = 1878,
 
+        ForceDeath1 = 1879,
+        ForceDeath2 = 1880,
+        ForceDeath3 = 1881,
+
     }
 }

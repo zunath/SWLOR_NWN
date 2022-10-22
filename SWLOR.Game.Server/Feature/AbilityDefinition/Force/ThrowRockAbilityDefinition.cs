@@ -26,24 +26,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            
             var dmg = 0;
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
 
             switch (level)
+
             {
                 case 1:
-                    dmg = 10;
+                    dmg = 10 + (willBonus * 2);
                     break;
                 case 2:
-                    dmg = 15;
+                    dmg = 15 + (willBonus * 4);
                     break;
                 case 3:
-                    dmg = 25;
+                    dmg = 25 + (willBonus * 6);
                     break;
                 case 4:
-                    dmg = 34;
+                    dmg = 34 + (willBonus * 8);
                     break;
                 case 5:
-                    dmg = 43;
+                    dmg = 43 + (willBonus * 10);
                     break;
             }
 
@@ -74,7 +77,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Instant, eVFX, target);
                 ApplyEffectToObject(DurationType.Instant, eDMG, target);
+
             });
+            { 
+            var willpowerBonus = 0.3f * GetAbilityModifier(AbilityType.Willpower, activator);
+            if (!Ability.GetAbilityResisted(activator, target, "Rock Throw", AbilityType.Willpower))
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 3f + willpowerBonus);
+            }
+            else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
+            }
         }
 
         private static void ThrowRock1(AbilityBuilder builder)
@@ -99,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(5)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -114,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -129,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(7)
+                .RequirementFP(10)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -143,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(5)
                 .HasRecastDelay(RecastGroup.ThrowRock, 30f)
                 .HasMaxRange(40.0f)
-                .RequirementFP(8)
+                .RequirementFP(12)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)

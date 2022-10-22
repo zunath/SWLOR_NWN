@@ -32,16 +32,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    multiplier = 0.25f;
+                    multiplier = 0.2f;
                     break;
                 case 2:
-                    multiplier = 0.5f;
+                    multiplier = 0.4f;
                     break;
                 default:
                     break;
             }
 
-            ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
+             float heal = 0;
+            switch (level)
+            {
+                case 1:
+                    heal = 2f;
+                    break;
+                case 2:
+                    heal = 4f;
+                    break;
+                default:
+                    break;
+            }
+
+            ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * heal)), activator);
             Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * (multiplier + willpowerBonus)));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
             

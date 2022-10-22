@@ -349,8 +349,8 @@ namespace SWLOR.Game.Server.Service
         public static bool GetAbilityResisted(uint attacker, uint defender, string actionName, AbilityType abilityType)
         {
             var abilityShortName = Stat.GetAbilityNameShort(abilityType);
-            var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 2.5f;
-            var defenderStat = (GetAbilityScore(defender, abilityType) - 10) * 2.5f;
+            var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 1.5;
+            var defenderStat = (GetAbilityScore(defender, abilityType) - 10);
             var attackerRoll = d100();
             var totalAttack = attackerRoll + attackerStat;
             var isResisted = totalAttack <= defenderStat + 50;

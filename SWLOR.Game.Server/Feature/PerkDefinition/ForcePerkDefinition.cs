@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceRage();
             ThrowRock();
             ForceInspiration();
+            
 
             return _builder.Build();
         }
@@ -680,5 +681,41 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceInspiration3);
         }
+
+
+               private void ForceDeath()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDeath)
+                .Name("Force Death")
+
+                .AddPerkLevel()
+                .Description("Deals 30 dmage, and gives yourself 40 temporary hp")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDeath1)
+
+                .AddPerkLevel()
+                .Description("Deals 45 dmage, and gives yourself 55 temporary hp")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDeath2)
+
+                .AddPerkLevel()
+                .Description("Deals 60 dmage, and gives yourself 70 temporary hp")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDeath3);
+
+                
+                
+
+
+
+        }
+
+        
     }
 }

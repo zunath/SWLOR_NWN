@@ -28,20 +28,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
-
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             switch (level)
             {
                 case 1:
-                    dmg = 12;
+                    dmg = 12 + (willBonus * 3);
                     break;
                 case 2:
-                    dmg = 19;
+                    dmg = 19 + (willBonus * 9);
                     break;
                 case 3:
-                    dmg = 28;
+                    dmg = 28 + (willBonus * 14);
                     break;
                 case 4:
-                    dmg = 40;
+                    dmg = 40 + (willBonus * 18);
                     break;
             }
 
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .RequirementFP(4)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(5)
+                .RequirementFP(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(10)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(7)
+                .RequirementFP(12)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)

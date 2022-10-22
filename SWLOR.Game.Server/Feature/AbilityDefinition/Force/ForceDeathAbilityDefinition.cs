@@ -3,29 +3,30 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class BenevolenceAbilityDefinition : IAbilityListDefinition
+    public class ForceDeathAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            Benevolence1();
-            Benevolence2();
-            Benevolence3();
+            ForceDeath1();
+            ForceDeath2();
+            ForceDeath3();
 
             return _builder.Build();
         }
 
+
         private void Impact(uint activator, uint target, int baseAmount)
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willBonus * 10  + Random.D10(1);
+            var amount = baseAmount + willBonus * 10;
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
@@ -34,10 +35,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private void Benevolence1()
+        private void ForceDeath1()
         {
-            _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
-                .Name("Benevolence I")
+            _builder.Create(FeatType.ForceDeath1, PerkType.ForceDeath)
+                .Name("Force Death I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
@@ -52,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void Benevolence2()
+        private void ForceDeath2()
         {
-            _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
-                .Name("Benevolence II")
+            _builder.Create(FeatType.ForceDeath2, PerkType.ForceDeath)
+                .Name("Force Death II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
@@ -70,10 +71,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void Benevolence3()
+        private void ForceDeath3()
         {
-            _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
-                .Name("Benevolence III")
+            _builder.Create(FeatType.ForceDeath3, PerkType.ForceDeath)
+                .Name("Force Death III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
@@ -87,5 +88,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 45);
                 });
         }
+
     }
 }

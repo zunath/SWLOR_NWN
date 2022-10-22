@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceDrainStatusEffectDefinition : IStatusEffectListDefinition
     {
+        
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -28,14 +29,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage1 = (willBonus * 1) + 10;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage1, healdamage1, target, source);
                     Enmity.ModifyEnmityOnAll(source, 200);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage1 = (willBonus * 1) + 10;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage1, healdamage1, target, source);
                     Enmity.ModifyEnmityOnAll(source, 80);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -50,14 +55,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
+                    
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage2 = (willBonus * 1) + 15;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage2, healdamage2, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage2 = (willBonus * 1) + 15;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage2, healdamage2, target, source);
                     Enmity.ModifyEnmityOnAll(source, 100);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -65,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
         private void ForceDrain3(StatusEffectBuilder builder)
         {
+            var willBonus = GetAbilityModifier(AbilityType.Willpower);
             builder.Create(StatusEffectType.ForceDrain3)
                 .Name("Force Drain III")
                 .EffectIcon(EffectIconType.LevelDrain)
@@ -72,14 +83,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage3 = (willBonus * 2) + 20;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage3, healdamage3, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage3 = (willBonus * 2) + 20;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage3, healdamage3, target, source);
                     Enmity.ModifyEnmityOnAll(source, 150);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -94,14 +109,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage4 = (willBonus * 2) + 25;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage4, healdamage4, target, source);
                     Enmity.ModifyEnmityOnAll(source, 300);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage4 = (willBonus * 2) + 25;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage4, healdamage4, target, source);
                     Enmity.ModifyEnmityOnAll(source, 200);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -115,14 +134,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage3 = (willBonus * 2) + 30;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage3, healdamage3, target, source);
                     Enmity.ModifyEnmityOnAll(source, 350);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source); 
+                    var healdamage5 = (willBonus * 2) + 30;
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, healdamage5, healdamage5, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -131,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx1, int damageAmt, int healAmt, uint target, uint source)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Drain", AbilityType.Willpower))
+            
             {
                 PlaySound("plr_force_absorb");
 

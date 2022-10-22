@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
+            var willpowerBonus = 0.3f * GetAbilityModifier(AbilityType.Willpower, activator);
             if (!Ability.GetAbilityResisted(activator, target, "Force Push", AbilityType.Willpower))
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f + willpowerBonus);
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(1)
+                .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(2)
+                .RequirementFP(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(3)
+                .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(4)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)

@@ -30,15 +30,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    multiplier = 0.25f;
+                    multiplier = 0.1f;
                     break;
                 case 2:
-                    multiplier = 0.5f;
+                    multiplier = 0.2f;
                     break;
                 default:
                     break;
             }
-
+            
             ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
             Stat.RestoreFP(activator, (int)(GetCurrentHitPoints(activator) * (multiplier + willpowerBonus)));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);

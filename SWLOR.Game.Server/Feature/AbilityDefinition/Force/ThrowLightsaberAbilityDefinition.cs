@@ -44,6 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var dmg = 0;
             const float Range = 15.0f;
             var count = 1;
@@ -60,16 +62,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             
             AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
 
+            
             switch (level)
+
             {
                 case 1:
-                    dmg = 8;
+                    dmg = 8 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 17;
+                    dmg = 17 + (willBonus * 3);
                     break;
                 case 3:
-                    dmg = 24;
+                    dmg = 24 + (willBonus * 6);
                     break;
             }
 
@@ -145,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(4)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -159,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(6)
+                .RequirementFP(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()

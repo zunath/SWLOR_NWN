@@ -21,8 +21,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ForceDeath3(builder);
 
             return builder.Build();
-
         }
+            
+         
+           
+
+                  
+    
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
@@ -30,62 +35,46 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 12 + (willBonus * 4);
+                    dmg = 30 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 19 + (willBonus * 9);
+                    dmg = 45 + (willBonus * 2);
                     break;
                 case 3:
-                    dmg = 28 + (willBonus * 14);
+                    dmg = 60 + (willBonus * 3);
                     break;
-                case 4:
-                    dmg = 40 + (willBonus * 18);
-                    break;
-
+               
            
 
             }
 
+            var Temphp = 0;
+             switch (level)
+            {
+                case 1:
+                    Temphp = 40 + (willBonus * 2);
+                    break;
+                case 2:
+                    Temphp = 55 + (willBonus * 4);
+                    break;
+                case 3:
+                    Temphp = 70 + (willBonus * 6);
+                    break;
+               
+           
 
-
-
-
-
-
-            
-
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-
+            }
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
-            var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
-            AssignCommand(activator, () =>
-            {
-                PlaySound("plr_force_blast");
-                DoFireball(target);
-            });
 
-            DelayCommand(delay, () =>
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), target);
-            });
-            
-            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
-            
+            ApplyEffectToObject(DurationType.Instant, EffectTemporaryHitpoints(Temphp), OBJECT_SELF, 60f);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
         }
 
            private static void ForceDeath1(AbilityBuilder builder)
@@ -93,12 +82,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceDeath1, PerkType.ForceDeath)
                 .Name("Force Death I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceBody Death, 6f)
+                .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
@@ -110,12 +98,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceDeath2, PerkType.ForceDeath)
                 .Name("Force Death II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
@@ -127,12 +114,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceDeath3, PerkType.ForceDeath)
                 .Name("Force Death III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                .HasImpactAction(ImpactAction);

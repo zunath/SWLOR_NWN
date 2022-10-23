@@ -690,7 +690,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Death")
 
                 .AddPerkLevel()
-                .Description("Deals 30 dmage, and gives yourself 40 temporary hp")
+                .Description("Deals 30 damage, and gives yourself 40 temporary hp")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

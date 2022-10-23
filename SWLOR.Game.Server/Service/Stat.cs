@@ -627,8 +627,30 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustForceAttack(Player entity, int adjustBy)
         {
             entity.ForceAttack += adjustBy;
-        }
+           { 
+             
+             if (Ability.IsAbilityToggled(entity, AbilityToggleType.ForceStance))
+             {
 
+                var bonus = entity.ForceAttack += adjustBy; 
+
+                var level = Perk.GetEffectivePerkLevel(entity, PerkType.ForceStance);
+                switch (level)
+                {
+                    case 1:
+                        bonus += 2f; 
+                        break;
+                    case 2:
+                        bonus += 3f; 
+                        break;
+                     case 3:
+                        bonus += 4f; 
+                        break;
+                }
+             }
+           }
+        }
+    
         /// <summary>
         /// Modifies a player's control by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.

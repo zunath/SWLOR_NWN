@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var willmod = GetAbilityModifier(AbilityType.Willpower, activator);
-                    var damage2 = (willmod * 3) + 19;
+                    var damage2 = (willmod * 2) + 19;
                     Impact(activator, target, damage2, 4);
                 });
         }
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var willmod = GetAbilityModifier(AbilityType.Willpower, activator);
-                    var damage3 = (willmod * 5) + 32;
+                    var damage3 = (willmod * 3) + 32;
                     Impact(activator, target, damage3, 6);
                 });
         }

@@ -36,20 +36,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 12 + (willBonus * 4);
+                    dmg = 12 + (willBonus * 2);
                     break;
                 case 2:
-                    dmg = 19 + (willBonus * 9);
+                    dmg = 19 + (willBonus * 4);
                     break;
                 case 3:
-                    dmg = 28 + (willBonus * 14);
+                    dmg = 28 + (willBonus * 8);
                     break;
                 case 4:
-                    dmg = 40 + (willBonus * 18);
+                    dmg = 40 + (willBonus * 16);
                     break;
-
-           
-
             }
 
 

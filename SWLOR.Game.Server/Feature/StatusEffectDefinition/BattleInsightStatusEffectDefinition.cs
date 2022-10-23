@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.BattleInsight2)
                 .TickAction((source, target, effectData) =>
                 {
-                    var effect = EffectAttackDecrease(5);
-                    effect = EffectLinkEffects(effect, EffectACDecrease(5));
+                    var effect = EffectAttackDecrease(15);
+                    effect = EffectLinkEffects(effect, EffectACDecrease(10));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        effect = EffectAttackIncrease(3);
-                        effect = EffectLinkEffects(effect, EffectACIncrease(3));
+                        effect = EffectAttackIncrease(10);
+                        effect = EffectLinkEffects(effect, EffectACIncrease(5));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
@@ -55,8 +55,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Replaces(StatusEffectType.BattleInsight1)
                 .TickAction((source, target, effectData) =>
                 {
-                    var effect = EffectAttackDecrease(8);
-                    effect = EffectLinkEffects(effect, EffectACDecrease(8));
+                    var effect = EffectAttackDecrease(25);
+                    effect = EffectLinkEffects(effect, EffectACDecrease(10));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        effect = EffectAttackIncrease(6);
-                        effect = EffectLinkEffects(effect, EffectACIncrease(6));
+                        effect = EffectAttackIncrease(13);
+                        effect = EffectLinkEffects(effect, EffectACIncrease(7));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }

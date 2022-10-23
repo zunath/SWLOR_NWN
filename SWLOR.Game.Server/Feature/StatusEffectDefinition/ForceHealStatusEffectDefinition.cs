@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyHeal(uint source, uint target, int amount)
         {
-            var wilBonus = GetAbilityModifier(AbilityType.Willpower, source) * 5;
+            var wilBonus = GetAbilityModifier(AbilityType.Willpower, source) * 3;
             if (wilBonus < 0)
                 wilBonus = 0;
 

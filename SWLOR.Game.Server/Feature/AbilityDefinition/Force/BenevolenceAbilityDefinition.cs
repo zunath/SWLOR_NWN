@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private void Impact(uint activator, uint target, int baseAmount)
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willBonus * 10  + Random.D10(1);
+            var amount = baseAmount + willBonus * 11  + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
-                .RequirementFP(6)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
-                .RequirementFP(8)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Benevolence, 6f)
                 .HasActivationDelay(6f)
-                .RequirementFP(10)
+                .RequirementFP(7)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .UsesAnimation(Animation.LoopingConjure1)

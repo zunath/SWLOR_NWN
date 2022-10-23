@@ -5,6 +5,7 @@
         Invalid = 0,
         Dash = 1,
         StrongStyleSaberstaff = 2,
-        StrongStyleLightsaber = 3
+        StrongStyleLightsaber = 3,
+        ForceStance = 4,
     }
 }

@@ -36,8 +36,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 })
                 .TickAction((source, target, effectData) =>
                 {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
                     var level = (int)effectData;
-                    var dmg = level * 4; // (4/8/12)
+                    var dmg = level * 4 + (willBonus * 1); // (4/8/12)
 
                     var attackerStat = GetAbilityScore(source, AbilityType.Willpower);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);

@@ -1849,6 +1849,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceDeath1 = 1879,
         ForceDeath2 = 1880,
         ForceDeath3 = 1881,
+        ForceStance1 = 1882,
+        ForceStance2 = 1883,
+        ForceStance3 = 1884,
 
     }
 }

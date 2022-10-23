@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ThrowRock();
             ForceInspiration();
             ForceDeath();
+            ForceStance();
             
 
             return _builder.Build();
@@ -715,6 +716,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
 
 
+        }
+
+           private void ForceStance()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStance)
+                .Name("Force Stance")
+
+                .AddPerkLevel()
+                .Description("placeholder")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceStance1)
+
+                .AddPerkLevel()
+                .Description("placeholder.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceStance2)
+
+                .AddPerkLevel()
+                .Description("placeholder")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceStance3);
         }
 
         

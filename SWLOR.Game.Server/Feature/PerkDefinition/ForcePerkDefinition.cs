@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceRage();
             ThrowRock();
             ForceInspiration();
+            ForceDeath();
             
 
             return _builder.Build();
@@ -683,7 +684,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
-               private void ForceDeath()
+        private void ForceDeath()
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDeath)
                 .Name("Force Death")

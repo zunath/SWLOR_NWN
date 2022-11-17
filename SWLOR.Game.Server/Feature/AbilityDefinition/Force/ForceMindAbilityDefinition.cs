@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    multiplier = 0.8f;
+                    multiplier = 0.1f;
                     break;
                 case 2:
-                    multiplier = 0.9f;
+                    multiplier = 0.2f;
                     break;
                 default:
                     break;
@@ -43,10 +43,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    heal = 2f;
+                    heal = .5f;
                     break;
                 case 2:
-                    heal = 4f;
+                    heal = 1f;
                     break;
                 default:
                     break;

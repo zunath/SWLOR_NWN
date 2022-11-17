@@ -532,7 +532,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Benevolence")
 
                 .AddPerkLevel()
-                .Description("Restores 40 HP to a single target.")
+                .Description("Restores 15 HP to a single target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -540,7 +540,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
-                .Description("Restores 80 HP to a single target.")
+                .Description("Restores 30 HP to a single target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
-                .Description("Restores 120 HP to a single target.")
+                .Description("Restores 145 HP to a single target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

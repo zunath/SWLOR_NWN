@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Flamethrower();
             WristRocket();
             DeflectorShield();
+            ThermalDetonator();
 
             return _builder.Build();
         }
@@ -434,5 +436,32 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DeflectorShield3);
         }
+
+         private void ThermalDetonator()
+        {
+            _builder.Create(PerkCategoryType.Devices, PerkType.ThermalDetonator)
+                .Name("Thermal Detontator")
+
+                .AddPerkLevel()
+                .Description("Deals 20 fire DMG to all creatures within range of explosion. Consumes explosives on use.")
+                .RequirementSkill(SkillType.Devices, 25)
+                .RequirementCharacterType(CharacterType.Standard)
+                .Price(2)
+                .GrantsFeat(FeatType.ThermalDetonator1)
+
+                .AddPerkLevel()
+                 .Description("Deals 40 fire fire to all creatures within range of explosion. Consumes explosives on use.")
+                .Price(3)
+                .RequirementSkill(SkillType.Devices, 35)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.ThermalDetonator2)
+
+                .AddPerkLevel()
+                .Description("Deals 60 fire DMG to all creatures within range of explosion. Consumes explosives on use.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 50)
+                .RequirementCharacterType(CharacterType.Standard)
+               .GrantsFeat(FeatType.ThermalDetonator3);
+         }
     }
 }

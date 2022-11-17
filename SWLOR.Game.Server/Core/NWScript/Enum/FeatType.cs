@@ -1849,9 +1849,18 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceDeath1 = 1879,
         ForceDeath2 = 1880,
         ForceDeath3 = 1881,
-        ForceStance1 = 1882,
-        ForceStance2 = 1883,
-        ForceStance3 = 1884,
+        
+        Tutaminis1 = 1882,
+        Tutaminis2 = 1883,
+        Tutaminis3 = 1884,
+        Tutaminis4 = 1885,
+        Tutaminis5 = 1886,
+        ThermalDetonator1 = 1887,
+        ThermalDetonator2 = 1888,
+        ThermalDetonator3 = 1889,
+
+
+       
 
     }
 }

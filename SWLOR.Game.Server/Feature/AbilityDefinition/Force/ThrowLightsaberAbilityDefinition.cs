@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
+          
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);

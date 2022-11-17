@@ -198,9 +198,12 @@ namespace SWLOR.Game.Server.Native
             var mightMod = attacker.m_pStats.m_nStrengthModifier;
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
 
-            // Doublehand perk, MGT mod bonus to Crushing Staves + Strong Style
+            
+           
+
+
             if (weapon != null)
-            {
+            {                              
                 if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
                     var weaponType = (BaseItem)weapon.m_nBaseItem;

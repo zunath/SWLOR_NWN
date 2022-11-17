@@ -34,21 +34,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             {
                 case 1:
-                    dmg = 10 + (willBonus * 2);
+                    dmg = 10 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 15 + (willBonus * 4);
+                    dmg = 15 + (willBonus * 2);
                     break;
                 case 3:
-                    dmg = 25 + (willBonus * 6);
+                    dmg = 25 + (willBonus * 3);
                     break;
                 case 4:
-                    dmg = 34 + (willBonus * 8);
+                    dmg = 34 + (willBonus * 4);
                     break;
                 case 5:
-                    dmg = 43 + (willBonus * 10);
+                    dmg = 43 + (willBonus * 5);
                     break;
             }
+
+          
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
@@ -79,14 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Instant, eDMG, target);
 
             });
-            { 
-            var willpowerBonus = 0.3f * GetAbilityModifier(AbilityType.Willpower, activator);
-            if (!Ability.GetAbilityResisted(activator, target, "Rock Throw", AbilityType.Willpower))
-            {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 3f + willpowerBonus);
-            }
-            else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
-            }
+         
         }
 
         private static void ThrowRock1(AbilityBuilder builder)

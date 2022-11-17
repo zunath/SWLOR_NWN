@@ -32,18 +32,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 12 + (willBonus * 2);
+                    dmg = 12 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 19 + (willBonus * 4);
+                    dmg = 19 + (willBonus * 2);
                     break;
                 case 3:
-                    dmg = 28 + (willBonus * 8);
+                    dmg = 28 + (willBonus * 4);
                     break;
                 case 4:
-                    dmg = 40 + (willBonus * 16);
+                    dmg = 40 + (willBonus * 8);
                     break;
             }
+
+          
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
@@ -79,7 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasRecastDelay(RecastGroup.ForceLightning, 6f)
+                .HasActivationDelay(6f)
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -92,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasRecastDelay(RecastGroup.ForceLightning, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -106,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasRecastDelay(RecastGroup.ForceLightning, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(8)
                 .IsCastedAbility()
@@ -120,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasRecastDelay(RecastGroup.ForceLightning, 6f)
+                .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(10)
                 .IsCastedAbility()

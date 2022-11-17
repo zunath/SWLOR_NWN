@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -45,6 +46,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var attack = Stat.GetAttack(source, AbilityType.Willpower, SkillType.Force);
                     var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
                     var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+
+                     var player = OBJECT_SELF;
+                     if(Ability.IsAbilityToggled(player, AbilityToggleType.ForceStance))
+                     dmg = (int)(dmg * 1.60f);
 
                     AssignCommand(source, () =>
                     {

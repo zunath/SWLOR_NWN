@@ -14,9 +14,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             Dash();
-
+            
             return _builder.Build();
         }
+        
 
         [NWNEventHandler("space_enter")]
         public static void EnterSpace()

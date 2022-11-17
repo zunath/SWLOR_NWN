@@ -55,8 +55,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
-                    {
-                        Impact(activator, target, 6);
+                    {   
+                        var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var permultiplier1 = perceptionbonus * 1;
+                        var bonushealing1 = 8 + permultiplier1;
+                        Impact(activator, target, bonushealing1);
                     });
                 });
         }
@@ -78,7 +81,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 14);
+                        var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var permultiplier2 = perceptionbonus * 2;
+                        var bonushealing2 = 6 + permultiplier2;
+                        Impact(activator, target, bonushealing2);
                     });
                 });
         }
@@ -100,7 +106,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 24);
+                        
+                        var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var permultiplier3 = perceptionbonus * 3;
+                        var bonushealing3 = 24 + permultiplier3;
+                        Impact(activator, target, bonushealing3);
                     });
                 });
         }

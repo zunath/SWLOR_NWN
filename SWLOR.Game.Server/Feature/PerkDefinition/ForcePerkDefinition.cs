@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -34,8 +37,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceRage();
             ThrowRock();
             ForceInspiration();
-            ForceDeath();
-            ForceStance();
+            ForceDeath();           
+            Tutaminis();
             
 
             return _builder.Build();
@@ -533,7 +536,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.ForceDeath)
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
@@ -541,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.ForceDeath)
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
@@ -549,7 +552,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.ForceDeath)
                 .GrantsFeat(FeatType.Benevolence3);
         }
 
@@ -615,7 +618,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.CreepingTerror1)
 
                 .AddPerkLevel()
@@ -623,7 +625,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
@@ -631,7 +632,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.CreepingTerror3);
         }
 
@@ -695,20 +695,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.ForceDeath1)
 
                 .AddPerkLevel()
-                .Description("Deals 45 dmage, and gives yourself 55 temporary hp")
+                .Description("Deals 45 damage, and gives yourself 55 temporary hp")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.ForceDeath2)
 
                 .AddPerkLevel()
-                .Description("Deals 60 dmage, and gives yourself 70 temporary hp")
+                .Description("Deals 60 damage, and gives yourself 70 temporary hp")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
                 .GrantsFeat(FeatType.ForceDeath3);
 
                 
@@ -718,33 +721,48 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         }
 
-           private void ForceStance()
-        {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStance)
-                .Name("Force Stance")
-
-                .AddPerkLevel()
-                .Description("placeholder")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 25)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceStance1)
-
-                .AddPerkLevel()
-                .Description("placeholder.")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 35)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceStance2)
-
-                .AddPerkLevel()
-                .Description("placeholder")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 45)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceStance3);
-        }
-
         
+
+         private void Tutaminis()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.Tutaminis)
+                .Name("Tutaminis")
+
+                .AddPerkLevel()
+                .Description("Increase your defense by 10")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Tutaminis1)
+
+                .AddPerkLevel()
+                .Description("increase your defense by 20")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Tutaminis2)
+
+                .AddPerkLevel()
+                .Description("increase your defense by 30.")
+                .Price(5)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Tutaminis3)
+
+                .AddPerkLevel()
+                .Description("increase your defense by 40")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Tutaminis4)
+
+                .AddPerkLevel()
+                .Description("increase your defense by 50")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.Tutaminis5);
+
+         }
     }
 }

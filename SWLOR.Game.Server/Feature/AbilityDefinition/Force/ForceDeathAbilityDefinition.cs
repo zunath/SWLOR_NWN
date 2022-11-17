@@ -45,12 +45,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
                
            
+                     
 
             }
 
+            
+
+
             var Temphp = 0;
              switch (level)
-            {
+             {
                 case 1:
                     Temphp = 40 + (willBonus * 2);
                     break;
@@ -60,7 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 case 3:
                     Temphp = 70 + (willBonus * 6);
                     break;
-               
+
+                   
            
 
             }
@@ -70,12 +75,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
+            AssignCommand(activator, () =>
+            
 
-
-            ApplyEffectToObject(DurationType.Instant, EffectTemporaryHitpoints(Temphp), OBJECT_SELF, 60f);
+            ActionPlayAnimation(Animation.CastOutAnimation, 1.0f,4.0f));
+            ApplyEffectToObject(DurationType.Instant, EffectTemporaryHitpoints(Temphp), OBJECT_SELF, 30f);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
-        }
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Evil), target, 4.0f);
+        }   
 
            private static void ForceDeath1(AbilityBuilder builder)
            {
@@ -85,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
@@ -101,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(7)
                 .IsCastedAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
@@ -117,11 +124,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceDeath, 6f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(9)
                 .IsCastedAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-               .HasImpactAction(ImpactAction);
+                .HasImpactAction(ImpactAction);
            }
         
     }

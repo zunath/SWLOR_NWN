@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
        
-    
+         
     
   
 
@@ -36,29 +36,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 12 + (willBonus * 2);
+                    dmg = 12 + (willBonus * 1);
                     break;
                 case 2:
-                    dmg = 19 + (willBonus * 4);
+                    dmg = 19 + (willBonus * 2);
                     break;
                 case 3:
-                    dmg = 28 + (willBonus * 8);
+                    dmg = 28 + (willBonus * 4);
                     break;
                 case 4:
-                    dmg = 40 + (willBonus * 16);
+                    dmg = 40 + (willBonus * 8);
                     break;
             }
 
+          
 
-
-
-
-
-
-            
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-
+            
+            
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
@@ -72,6 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
 
+            
+              
             AssignCommand(activator, () =>
             {
                 PlaySound("plr_force_blast");

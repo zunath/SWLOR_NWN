@@ -30,10 +30,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
+            
+
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
             ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(accDecrease), target, 10f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
-
+       
             Enmity.ModifyEnmityOnAll(activator, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }

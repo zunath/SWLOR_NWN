@@ -24,18 +24,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var willpowerBonus = 0.05f * GetAbilityModifier(AbilityType.Willpower, activator);
-            if (willpowerBonus > 0.4f)
-                willpowerBonus = 0.4f;
+            
 
             float multiplier = 0;
             switch (level)
             {
                 case 1:
-                    multiplier = 0.2f;
+                    multiplier = 0.8f;
                     break;
                 case 2:
-                    multiplier = 0.4f;
+                    multiplier = 0.9f;
                     break;
                 default:
                     break;
@@ -55,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * heal)), activator);
-            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * (multiplier + willpowerBonus)));
+            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
             
             Enmity.ModifyEnmityOnAll(activator, 2000);

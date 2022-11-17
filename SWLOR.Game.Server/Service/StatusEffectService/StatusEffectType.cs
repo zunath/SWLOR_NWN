@@ -55,6 +55,14 @@
         ForceValor1 = 50,
         ForceValor2 = 51,
         ForceRage1 = 52,
-        ForceRage2 = 53
+        ForceRage2 = 53,
+        Tutaminis1 = 54,
+        Tutaminis2 = 55,
+        Tutaminis3 = 56,
+        Tutaminis4 = 57,
+        Tutaminis5 = 58,
+        FlameThrower = 59
+       
+        
     }
 }

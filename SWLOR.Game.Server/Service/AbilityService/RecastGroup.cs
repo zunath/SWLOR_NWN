@@ -178,7 +178,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Frenzied Shout", "Frenz. Shout")]
         FrenziedShout = 85,
         [RecastGroup("Force Death", "Force Death")]
-        ForceDeath = 85,
+        ForceDeath = 85,     
+        [RecastGroup("Tutaminis", "Tutaminis")]
+        Tutaminis = 86,
+        [RecastGroup("Thermal Detonator", "Thermal Detonator")]
+        ThermalDetonator = 87,
     }
 
     public class RecastGroupAttribute: Attribute

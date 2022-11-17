@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
                     StatusEffect.Remove(target, StatusEffectType.Bleed);
                     StatusEffect.Remove(target, StatusEffectType.Poison);
+              
 
                     TakeMedicalSupplies(activator);
 
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
+                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn,  StatusEffectType.FlameThrower))
                     {
                         return "Your target is healthy.";
                     }
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     StatusEffect.Remove(target, StatusEffectType.Poison);
                     StatusEffect.Remove(target, StatusEffectType.Shock);
                     StatusEffect.Remove(target, StatusEffectType.Burn);
+                    StatusEffect.Remove(target, StatusEffectType.FlameThrower);
 
                     TakeMedicalSupplies(activator);
 

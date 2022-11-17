@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
-
+        
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
@@ -484,7 +485,7 @@ namespace SWLOR.Game.Server.Service
         }
         
         public static void ApplyPlayerMovementRate(uint player)
-        {
+        { 
             var movementRate = 1.0f;
             if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
@@ -566,9 +567,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="adjustBy">The amount to adjust by</param>
         public static void AdjustFPRegen(Player entity, int adjustBy)
         {
+           
             // Note: It's possible for FP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.FPRegen += adjustBy;
+
+            
         }
 
         /// <summary>
@@ -594,6 +598,8 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
         {
             entity.Defenses[type] += adjustBy;
+
+        
         }
 
         /// <summary>
@@ -605,7 +611,12 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustEvasion(Player entity, int adjustBy)
         {
             entity.Evasion += adjustBy;
+       
+
         }
+
+        
+
 
         /// <summary>
         /// Modifies a player's attack by a certain amount. Attack affects damage output.
@@ -616,7 +627,18 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustAttack(Player entity, int adjustBy)
         {
             entity.Attack += adjustBy;
+
+
+            
+               
+               
+           
         }
+        
+        
+        
+
+
 
         /// <summary>
         /// Modifies a player's force attack by a certain amount. Force Attack affects damage output.
@@ -627,28 +649,14 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustForceAttack(Player entity, int adjustBy)
         {
             entity.ForceAttack += adjustBy;
-           { 
+
+           
+            
              
-             if (Ability.IsAbilityToggled(entity, AbilityToggleType.ForceStance))
-             {
+           
+            
+      
 
-                var bonus = entity.ForceAttack += adjustBy; 
-
-                var level = Perk.GetEffectivePerkLevel(entity, PerkType.ForceStance);
-                switch (level)
-                {
-                    case 1:
-                        bonus += 2f; 
-                        break;
-                    case 2:
-                        bonus += 3f; 
-                        break;
-                     case 3:
-                        bonus += 4f; 
-                        break;
-                }
-             }
-           }
         }
     
         /// <summary>
@@ -740,6 +748,34 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A modified defense value.</returns>
         private static int CalculateEffectDefense(uint creature, int defense)
         {
+
+
+            { 
+                var willBonus = GetAbilityModifier(AbilityType.Willpower, creature); 
+                            
+             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Tutaminis1))
+             defense += 10 + (willBonus * 1);
+                
+
+             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Tutaminis2))
+             defense += 20 + (willBonus * 2);
+
+
+             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Tutaminis3))
+             defense += 30 + (willBonus * 3);
+
+              
+             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Tutaminis4))
+             defense += 40 + (willBonus * 4);
+
+
+             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Tutaminis5))
+             defense += 50 + (willBonus * 5);
+
+
+
+
+            }
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
                 defense += 20;
 

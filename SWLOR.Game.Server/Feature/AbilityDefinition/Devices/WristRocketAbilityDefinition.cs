@@ -49,10 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
 
-                if (Random.D100(1) <= knockdownChance)
-                {
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                }
+                
             });
         }
 
@@ -70,7 +67,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 8, 0);
+
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier6 = perceptionbonus * 8;
+                    var bonusdamage6 = 8 + permultiplier6;
+                    Impact(activator, target, bonusdamage6, 0);
 
                     Enmity.ModifyEnmity(activator, target, 180);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -91,7 +92,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 12, 30);
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier13 = perceptionbonus * 8;
+                    var bonusdamage13  = 12 + permultiplier13;
+                    Impact(activator, target, bonusdamage13, 30);
 
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -112,7 +116,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 20, 50);
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier26 = perceptionbonus * 16;
+                    var bonusdamage26 = 20 + permultiplier26;
+                    Impact(activator, target, bonusdamage26, 50);
 
                     Enmity.ModifyEnmity(activator, target, 380);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

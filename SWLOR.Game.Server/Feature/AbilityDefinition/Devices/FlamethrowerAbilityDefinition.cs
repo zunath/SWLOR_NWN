@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int burningChance)
+        private void Impact(uint activator, Location targetLocation, int dmg, int flamethrowerchance)
         {
             const float ConeSize = 10f;
 
@@ -63,12 +63,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         ApplyEffectToObject(DurationType.Instant, eDMG, dTarget);
                         ApplyEffectToObject(DurationType.Instant, eVFX, dTarget);
-
-                        if (Random.D100(1) <= burningChance)
-                        {
-                            StatusEffect.Apply(activator, dTarget, StatusEffectType.Burn, 30f);
-                        }
-                    });
+    
+                        StatusEffect.Apply(activator, dTarget, StatusEffectType.FlameThrower, 30f);
+                      
+                    });                   
                 }
 
                 target = GetNextObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -87,6 +85,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
+                    
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier5 = perceptionbonus * 1;
+                    var bonusdamage5 = 6 + permultiplier5;
                     Impact(activator, targetLocation, 6, 0);
                 });
         }
@@ -103,7 +105,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 10, 30);
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier10 = perceptionbonus * 2;
+                    var bonusdamage10 = 8 + permultiplier10;
+                    Impact(activator, targetLocation, bonusdamage10, 30);
                 });
         }
 
@@ -119,7 +124,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 50);
+                    var perceptionbonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var permultiplier10 = perceptionbonus * 3;
+                    var bonusdamage10 = 16 + permultiplier10;
+                    Impact(activator, targetLocation, bonusdamage10, 50);
+                  
                 });
         }
     }

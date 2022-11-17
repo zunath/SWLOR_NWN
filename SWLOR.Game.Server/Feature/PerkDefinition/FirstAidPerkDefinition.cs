@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TreatmentKit1)
 
                 .AddPerkLevel()
-                .Description("Removes bleed, poison, shock, and burn from a single target. Consumes medical supplies on use.")
+                .Description("Removes bleed, poison, shock, burn, and flamethrower burn, from a single target. Consumes medical supplies on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .RequirementCharacterType(CharacterType.Standard)

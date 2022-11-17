@@ -259,7 +259,9 @@
         Rejuvenation = 252,
         FrenziedShout = 253,
         ForceDeath = 254,
-        ForceStance = 255,
+
+        Tutaminis = 255,
+        ThermalDetonator = 256,
         
 
     }

@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
-
+          
+             
          
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);

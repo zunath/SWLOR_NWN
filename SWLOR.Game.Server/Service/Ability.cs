@@ -4,8 +4,10 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -59,6 +61,8 @@ namespace SWLOR.Game.Server.Service
                 Stat.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
+            
+          
         }
         
         /// <summary>
@@ -350,7 +354,7 @@ namespace SWLOR.Game.Server.Service
         {
             var abilityShortName = Stat.GetAbilityNameShort(abilityType);
             var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 1.5;
-            var defenderStat = (GetAbilityScore(defender, abilityType) - 10);
+            var defenderStat = (GetAbilityScore(defender, abilityType) - 10) * 1.5;
             var attackerRoll = d100();
             var totalAttack = attackerRoll + attackerStat;
             var isResisted = totalAttack <= defenderStat + 50;

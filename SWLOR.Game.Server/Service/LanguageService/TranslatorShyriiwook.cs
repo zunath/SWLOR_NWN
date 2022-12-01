@@ -4,8 +4,9 @@ namespace SWLOR.Game.Server.Service.LanguageService
 {
     public class TranslatorShyriiwook : ITranslator
     {
-        public string Translate(string message)
+        public string Translate(string message, int englishChance, out string partiallyScrambled)
         {
+            partiallyScrambled = "";
             var words = message.Split(' ');
 
             for (var i = 0; i < words.Length; ++i)

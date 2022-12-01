@@ -2,6 +2,6 @@
 {
     public interface ITranslator
     {
-        string Translate(string message);
+        string Translate(string message, int englishChance, out string partiallyScrambled);
     }
 }

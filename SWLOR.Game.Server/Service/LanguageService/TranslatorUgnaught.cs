@@ -4,8 +4,9 @@ namespace SWLOR.Game.Server.Service.LanguageService
 {
     public class TranslatorUgnaught : ITranslator
     {
-        public string Translate(string message)
+        public string Translate(string message, int englishChance, out string partiallyScrambled)
         {
+            partiallyScrambled = "";
             var sb = new StringBuilder();
 
             foreach (var ch in message)

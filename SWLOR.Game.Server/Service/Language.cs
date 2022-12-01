@@ -6,6 +6,12 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LanguageService;
+using SWLOR.Game.Server.Service.LanguageService.Bothese;
+using SWLOR.Game.Server.Service.LanguageService.Catharese;
+using SWLOR.Game.Server.Service.LanguageService.Cheunh;
+using SWLOR.Game.Server.Service.LanguageService.Dosh;
+using SWLOR.Game.Server.Service.LanguageService.Huttese;
+using SWLOR.Game.Server.Service.LanguageService.Mandoa;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
@@ -43,10 +49,13 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
+        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet, out string languageText, out bool isMaxRank)
         {
+            isMaxRank = false;
+            languageText = "";
             var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
             var languageSkill = Skill.GetSkillDetails(language);
+
 
             if (GetIsPC(speaker))
             {
@@ -56,6 +65,8 @@ namespace SWLOR.Game.Server.Service
                 var speakerSkillRank = dbSpeaker == null ? 
                     languageSkill.MaxRank : 
                     dbSpeaker.Skills[language].Rank;
+
+
 
                 if (speakerSkillRank != languageSkill.MaxRank)
                 {
@@ -72,6 +83,8 @@ namespace SWLOR.Game.Server.Service
 
                     snippet = split.Aggregate((a, b) => a + " " + b);
                 }
+                else
+                    isMaxRank = true;
             }
 
             if (!GetIsPC(listener) || GetIsDM(listener))
@@ -110,20 +123,29 @@ namespace SWLOR.Game.Server.Service
             if (rank > maxRank)
                 rank = maxRank;
 
+
+            var englishChance = (int)((rank / (float)maxRank) * 100);
+            string textForListener = "";
+
+            languageText = translator.Translate(snippet, englishChance, out textForListener);
+
+                
+            isMaxRank = rank == maxRank;
+
             if (rank == maxRank || speaker == listener)
             {
                 // Guaranteed success - return original.
                 return snippet;
             }
 
-            var textAsForeignLanguage = translator.Translate(snippet);
 
-            if (rank != 0)
+
+            //20221126 Hans: Now the partially comprehended version is created as its translated  
+            if (!(translator is BaseRecursiveLanguageTranslator) && rank != 0)
             {
-                var englishChance = (int)((rank / (float)maxRank) * 100);
 
                 var originalSplit = snippet.Split(' ');
-                var foreignSplit = textAsForeignLanguage.Split(' ');
+                var foreignSplit = languageText.Split(' ');
 
                 var endResult = new StringBuilder();
 
@@ -143,8 +165,9 @@ namespace SWLOR.Game.Server.Service
                     endResult.Append(" ");
                 }
 
-                textAsForeignLanguage = endResult.ToString();
+                textForListener = endResult.ToString();
             }
+            
 
             var now = DateTime.Now.Ticks;
             var lastSkillUpLow = GetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW");
@@ -174,7 +197,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }
 
-            return textAsForeignLanguage;
+            return textForListener;
         }
 
         public static int GetColor(SkillType language)

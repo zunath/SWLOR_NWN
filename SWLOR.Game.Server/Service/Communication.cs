@@ -401,33 +401,53 @@ namespace SWLOR.Game.Server.Service
                 var g = (byte)(color >> 16 & 0xFF);
                 var b = (byte)(color >> 8 & 0xFF);
 
+
+                var langMessageForCombatLog = new StringBuilder();
+
                 if (language != SkillType.Basic)
                 {
                     var languageName = Language.GetName(language);
-                    finalMessage.Append(ColorToken.Custom($"[{languageName}] ", r, g, b));
+                    string cToken = ColorToken.Custom($"[{languageName}] ", r, g, b);
+                    finalMessage.Append(cToken);
+                    langMessageForCombatLog.Append(ColorToken.Custom(GetName(sender), 127, 0, 255));
+                    langMessageForCombatLog.Append(": ");
+                    langMessageForCombatLog.Append(cToken);
                 }
-
+                
                 foreach (var component in chatComponents)
                 {
+                    string languageText = "";
                     var text = component.Text;
+                    var textForCombatLog = component.Text;
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text);
+                        bool maxRank = false;
+                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text, out languageText, out maxRank);
 
                         if (color != 0)
                         {
-                            text = ColorToken.Custom(text, r, g, b);
+                            text = ColorToken.Custom(text, maxRank ? (byte)255 : r, maxRank ? (byte)255 : g, maxRank ? (byte)255 : b);
+                            textForCombatLog = ColorToken.Custom(languageText, r, g, b);
                         }
                     }
 
                     if (component.IsCustomColor)
                     {
-                        text = ColorToken.Custom(text, component.Red, component.Green, component.Blue);
+                        textForCombatLog = text = ColorToken.Custom(text, component.Red, component.Green, component.Blue);
+
+                    }
+                    else if (!component.IsTranslatable)
+                    {
+                        textForCombatLog = ColorToken.Custom(languageText, 240, 240, 240);
                     }
 
                     finalMessage.Append(text);
+                    langMessageForCombatLog.Append(textForCombatLog);
                 }
+
+
+
 
                 // Dispatch the final message - method depends on the original chat channel.
                 // - Shout and party is sent as DMTalk. We do this to get around the restriction that
@@ -461,6 +481,10 @@ namespace SWLOR.Game.Server.Service
                 sender = originalSender;
 
                 ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
+                var msgFCL = langMessageForCombatLog.ToString();
+
+                if(!string.IsNullOrEmpty(msgFCL))
+                    SendMessageToPC(obj, msgFCL);
             }
         }
 

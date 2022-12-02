@@ -20,6 +20,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
+        public bool LanguageInCombatLog
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         public bool SubdualMode
         {
@@ -54,12 +59,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
+            LanguageInCombatLog = dbPlayer.Settings.IsCipherInCombatLogEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHolonetChannel);
+            WatchOnClient(model => model.LanguageInCombatLog);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.ShareLightsaberForceXP);
             WatchOnClient(model => model.DisplayServerResetReminders);
@@ -71,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
-            dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
+            dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel; 
+            dbPlayer.Settings.IsCipherInCombatLogEnabled = LanguageInCombatLog;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
@@ -82,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Post-save actions
             UpdateHolonetSetting();
+            UpdateCombatLogCipherSetting();
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };
@@ -99,6 +108,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateHolonetSetting()
         {
             SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
+        }
+
+        private void UpdateCombatLogCipherSetting()
+        {
+            SetLocalBool(Player, "DISPLAY_CIPHER", LanguageInCombatLog);
         }
     }
 }

@@ -79,6 +79,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player enters the server, set a local bool on their PC representing
+        /// the current state of their language cipher visibility in the combat log.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void LoadLanguageInCombatLogSetting()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+
+            SetLocalBool(player, "DISPLAY_CIPHER", dbPlayer.Settings.IsCipherInCombatLogEnabled);
+        }
+
+
+
+        /// <summary>
         /// When a player focuses the chatbar, set a typing indicator on the player; when
         /// unfocused, remove the indicator.
         /// </summary>
@@ -409,11 +427,13 @@ namespace SWLOR.Game.Server.Service
                     var languageName = Language.GetName(language);
                     string cToken = ColorToken.Custom($"[{languageName}] ", r, g, b);
                     finalMessage.Append(cToken);
-                    langMessageForCombatLog.Append(ColorToken.Custom(GetName(sender), 127, 0, 255));
+                    langMessageForCombatLog.Append(ColorToken.Custom(GetName(sender), 153, 255, 255));
                     langMessageForCombatLog.Append(": ");
                     langMessageForCombatLog.Append(cToken);
                 }
-                
+
+                bool minRank = false;
+
                 foreach (var component in chatComponents)
                 {
                     string languageText = "";
@@ -423,7 +443,7 @@ namespace SWLOR.Game.Server.Service
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
                         bool maxRank = false;
-                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text, out languageText, out maxRank);
+                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text, out languageText, out maxRank, out minRank);
 
                         if (color != 0)
                         {
@@ -483,7 +503,7 @@ namespace SWLOR.Game.Server.Service
                 ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
                 var msgFCL = langMessageForCombatLog.ToString();
 
-                if(!string.IsNullOrEmpty(msgFCL))
+                if(!string.IsNullOrEmpty(msgFCL) && !minRank && GetLocalBool(obj, "DISPLAY_CIPHER"))
                     SendMessageToPC(obj, msgFCL);
             }
         }

@@ -49,9 +49,10 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet, out string languageText, out bool isMaxRank)
+        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet, out string languageText, out bool isMaxRank, out bool isMinRank)
         {
             isMaxRank = false;
+            isMinRank = false;
             languageText = "";
             var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
             var languageSkill = Skill.GetSkillDetails(language);
@@ -138,34 +139,37 @@ namespace SWLOR.Game.Server.Service
                 return snippet;
             }
 
-
+            isMinRank = rank == 0;
 
             //20221126 Hans: Now the partially comprehended version is created as its translated  
-            if (!(translator is BaseRecursiveLanguageTranslator) && rank != 0)
+            if (!(translator is BaseRecursiveLanguageTranslator))
             {
-
-                var originalSplit = snippet.Split(' ');
-                var foreignSplit = languageText.Split(' ');
-
-                var endResult = new StringBuilder();
-
-                // WARNING: We're making the assumption that originalSplit.Length == foreignSplit.Length.
-                // If this assumption changes, the below logic needs to change too.
-                for (var i = 0; i < originalSplit.Length; ++i)
+                textForListener = languageText;
+                if (rank != 0)
                 {
-                    if (Random.Next(100) <= englishChance)
+                    var originalSplit = snippet.Split(' ');
+                    var foreignSplit = languageText.Split(' ');
+
+                    var endResult = new StringBuilder();
+
+                    // WARNING: We're making the assumption that originalSplit.Length == foreignSplit.Length.
+                    // If this assumption changes, the below logic needs to change too.
+                    for (var i = 0; i < originalSplit.Length; ++i)
                     {
-                        endResult.Append(originalSplit[i]);
-                    }
-                    else
-                    {
-                        endResult.Append(foreignSplit[i]);
+                        if (Random.Next(100) <= englishChance)
+                        {
+                            endResult.Append(originalSplit[i]);
+                        }
+                        else
+                        {
+                            endResult.Append(foreignSplit[i]);
+                        }
+
+                        endResult.Append(" ");
                     }
 
-                    endResult.Append(" ");
+                    textForListener = endResult.ToString();
                 }
-
-                textForListener = endResult.ToString();
             }
             
 

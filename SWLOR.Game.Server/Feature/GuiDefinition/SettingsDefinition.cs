@@ -41,7 +41,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddSpacer();
                     })
-                        .SetHeight(30f);
+                        .SetHeight(30f); 
+                    
+                    col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+
+                            row.AddCheckBox()
+                                .SetText("Show Cipher")
+                                .SetTooltip("Shows or hides (partially-)known alien language in the combat log.")
+                                .BindIsChecked(model => model.LanguageInCombatLog);
+
+                            row.AddSpacer();
+                        })
+                         .SetHeight(30f);
 
                     col.AddRow(row =>
                     {

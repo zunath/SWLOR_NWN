@@ -235,6 +235,12 @@ namespace SWLOR.Game.Server.Service
 
             return TokenStart(32, 255, 32) + text + TokenEnd();
         }
+        public static string PlayerNameInChat(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));
+
+            return TokenStart(37, 150, 190) + text + TokenEnd();
+        }
 
         public static string Whisper(string text)
         {
@@ -255,7 +261,6 @@ namespace SWLOR.Game.Server.Service
             var name = GetName(oPC);
             return TokenStart(153, 255, 255) + name + TokenEnd();
         }
-
         ///////////////////////////////////////////////////////////////////////////////
         // _.GetNameNPCColor()
         //

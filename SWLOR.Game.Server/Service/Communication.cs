@@ -503,7 +503,7 @@ namespace SWLOR.Game.Server.Service
                 ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
                 var msgFCL = langMessageForCombatLog.ToString();
 
-                if(!string.IsNullOrEmpty(msgFCL) && !minRank && GetLocalBool(obj, "DISPLAY_CIPHER"))
+                if(!string.IsNullOrEmpty(msgFCL) && !minRank && GetLocalBool(obj, "DISPLAY_CIPHER") && language != SkillType.Basic)
                     SendMessageToPC(obj, msgFCL);
             }
         }

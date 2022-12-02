@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void LanguageCommand()
         {
-            _builder.Create("language")
+            _builder.Create("language", "lang")
                 .Description("Switches the active language. Use /language help for more information.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>

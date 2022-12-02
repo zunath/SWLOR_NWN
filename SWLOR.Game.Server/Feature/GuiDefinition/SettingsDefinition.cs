@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddSpacer();
 
                             row.AddCheckBox()
-                                .SetText("Show Cipher")
+                                .SetText("Show RP Languages")
                                 .SetTooltip("Shows or hides (partially-)known alien language in the combat log.")
                                 .BindIsChecked(model => model.LanguageInCombatLog);
 

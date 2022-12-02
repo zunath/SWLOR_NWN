@@ -14,8 +14,21 @@ namespace SWLOR.Game.Server.Service.LanguageService
         {
             updateDictionaries();
         }
+
+        /// <summary>
+        /// Should this translator instance use the cache based translation algorithm or go through translation every time?
+        /// </summary>
         public bool UseCache = true;
+
+        /// <summary>
+        /// Should this translator instance load the general translations file? 
+        /// For example, Shyriiwook would be implemented with this set to false, as the wookiee would have their own words for everything in that file, being physically unable to pronounce them as the general universe.
+        /// </summary>
         public bool UseGeneralTranslations=true;
+
+        /// <summary>
+        /// Clear the cache, which in its current iteration is merely the last translation. Mainly for debugging and benchmarking purposes now.
+        /// </summary>
         public void ClearCache()
         {
             //20221129 Hans: When using a dicitonary might be better?
@@ -33,6 +46,11 @@ namespace SWLOR.Game.Server.Service.LanguageService
         private string lastTranslation = null;
 
         private Dictionary<string, string>[] _translationsArrayedByLength;
+
+        /// <summary>
+        /// Array of dictionaries, where the index is the length of the words - 1. 
+        /// <example>_translationsArrayedByLengthAccessor[0] will be a dictionary of all keys with length 1, ..., _translationsArrayedByLengthAccessor[n] will be a dicitionary with all keys length n-1</example>
+        /// </summary>
         private Dictionary<string, string>[] _translationsArrayedByLengthAccessor
         {
             get
@@ -47,12 +65,15 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
         }
 
+        /// <summary>
+        /// Loads the dictionaries from the embedded ressource CSVs, the general file being in the LanguageService namespace and the language specific ones being in the .{language} namespaces.
+        /// Notably, there is a different dictionary for every word length in the defining files, to enhance performance. 
+        /// The algorithm will check the dictionary for the longest segments first and once it didnt find any returns for it, it will never check this dictionary again. 
+        /// </summary>
         private void updateDictionaries()
         {
             Dictionary<string, string>[] dictionariesBylengthArrayed = null;
             Dictionary<int, Dictionary<string, string>> dictionariesBylength = new Dictionary<int, Dictionary<string, string>>();
-
-
             using (var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream(string.Format("{0}.LanguageSpecific.csv", this.GetType().Namespace)))
@@ -64,10 +85,9 @@ namespace SWLOR.Game.Server.Service.LanguageService
 
                     var res = line.Split(';');
 
+                    //skipping the header.
                     if (res[2] == "startcon")
                         continue;
-
-
 
                     foreach (var combi in GetCodeCombinations(prepareStringForTranslation(res[1]), prepareStringForTranslation(res[0]), res[2], res[3]))
                     {
@@ -80,6 +100,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         }
                     }
 
+                    //Add the self translating definitions
                     if (res[6] == "1")
                     {
                         foreach (var item in GetCodeCombinations(prepareStringForTranslation(res[0]), res[4], res[5]))
@@ -96,7 +117,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
 
                 }
             }
-
             if (UseGeneralTranslations)
             {
                 using (var stream = Assembly
@@ -110,7 +130,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
 
                         var res = line.Split(';');
 
-
                         //general translations i.e. monikers are added for words which dont have their specific translation in-language (like viscara -> viscara)
                         if (!dictionariesBylength.ContainsKey(res[0].Length))
                             dictionariesBylength.Add(res[0].Length, new Dictionary<string, string>() { [res[0].ToLower()] = res[0].ToLower() });
@@ -119,24 +138,25 @@ namespace SWLOR.Game.Server.Service.LanguageService
                             Dictionary<string, string> dictatlength = dictionariesBylength[res[0].Length];
                             if (!dictatlength.ContainsKey(res[0].ToLower()))
                                 dictatlength.Add(res[0].ToLower(), res[0].ToLower());
-
-                            //for general to overwrite the specific translation
-                            //else
-                            //    dictatlength[res[0]] = res[0];
                         }
                     }
-                    // do something with the CSV
                 }
             }
-
             dictionariesBylengthArrayed = new Dictionary<string, string>[dictionariesBylength.Keys.Max()];
             foreach (var item in dictionariesBylength)
             {
                 dictionariesBylengthArrayed[item.Key - 1] = item.Value;
             }
-
             _translationsArrayedByLength = dictionariesBylengthArrayed;
         }
+
+        ///<param name = "message" > The message to be translated. </ param >
+        ///<param name = "englishChance" > The chance to receive english text instead of the alien language for the comprehension part. </ param >
+        ///<param name = "partiallyScrambled" > The partially comprehended output, partially based on the english chance </ param >
+        ///<returns> The output as complete alien language </returns >
+        /// <summary>
+        /// General translate call that decides between using the cache or not and returns the output to any of its users.
+        /// </summary>
         public string Translate(string message, int englishChance, out string partiallyScrambled)
         {
             if (UseCache)
@@ -145,13 +165,12 @@ namespace SWLOR.Game.Server.Service.LanguageService
             else
             {
                 partiallyScrambled = "";
-                //return _translationsArrayedByLengthAccessor.Length.ToString();
                 var sb = new StringBuilder();
 
                 //Fake the end of the former sentence, to better recognize the start of the new sentence
                 sb.Append(". ");
                 sb.Append(message);
-                //Add " at the end to account for missing punctuation
+                //Add " at the end to account for missing punctuation, i.e. faking proper sentence end with the ending of the input
                 sb.Append("\"");
 
                 string result = sanitizeStringAfterTranslation(translateRecursive(prepareStringForTranslation(sb.ToString()), englishChance, out partiallyScrambled));
@@ -161,13 +180,17 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
         }
 
+        ///<param name = "message" > The message to be translated. </ param >
+        ///<param name = "englishChance" > The chance to receive english text instead of the alien language for the comprehension part. </ param >
+        ///<param name = "partiallyScrambled" > The partially comprehended output, partially based on the english chance </ param >
+        ///<returns> The output as complete alien language </returns >
+        /// <summary>
+        /// Translation call that will refer to the cache first and use the already stored array there for translations before going through the algorithm. 
+        /// When it goes through the algorithm, it will save the result into the cache for successive use.
+        /// </summary>
         private string translateFromCache(string message, int englishChance, out string partiallyScrambled)
         {
-            
-
-            
             string[,] resultArray;
-
             if (lastTranslation == message)
             {
                 resultArray = _translationCache;
@@ -175,6 +198,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
             else
             {
                 var sb = new StringBuilder();
+                //Fake the end of the former sentence, to better recognize the start of the new sentence
                 sb.Append(". ");
                 sb.Append(message);
                 //Add " at the end to account for missing punctuation
@@ -203,8 +227,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
                 _translationCache[message] = resultArray;
             }*/
 
-            
-
             StringBuilder og = new StringBuilder();
             StringBuilder tr = new StringBuilder();
             for (int i = 0; i < resultArray.GetLength(0); i++)
@@ -219,18 +241,26 @@ namespace SWLOR.Game.Server.Service.LanguageService
                     og.Append(resultArray[i, 1]);
                 }
             }
-
             string result = sanitizeStringAfterTranslation(tr.ToString());
             partiallyScrambled = sanitizeStringAfterTranslation(og.ToString());
-
             partiallyScrambled = partiallyScrambled.Substring(2, partiallyScrambled.Length - 3);
             return result.Substring(2, result.Length - 3);
 
         }
 
-
-
-
+        ///<param name = "message" > The message to be translated. </ param >
+        ///<param name = "englishChance" > The chance to receive english text instead of the alien language for the comprehension part. </ param >
+        ///<param name = "partiallyScrambled" > The partially comprehended output, partially based on the english chance </ param >
+        ///<param name = "lastLength" > The current key length that the former method call was at when iterating the dictionaries, so that a dictionary that has no matching keys will only be searched once. </ param >
+        ///<param name = "stateBeforeMatchAfterMatch" > Inform the recursive call whether its for the string infront or behind the former call. This will be used to decide on capitalization. </ param >
+        ///<param name = "oldPiece" > Inform the recursive call which string segment was translated before it. This will be used to decide on capitalization. </ param >
+        ///<returns> The output as complete alien language </returns >
+        /// <summary>
+        /// Recursive translation, that will search the message for any matching segment in its defining dictionary array. 
+        /// Starting with the dictionary with the longest keys, it will iterate through all dicitonaries, until a match is found.
+        /// The stringparts before and after the match will be handed to their own recursive calls of this method. 
+        /// The recursion ends when a call returns itself when the message is null or empty, all whitespaces pr has not found a single match.
+        /// </summary>
         private string translateRecursive(string message, int englishChance, out string partiallyScrambled, int lastLength = -1, int stateBeforeMatchAfterMatch = 0, string oldPiece ="")
         {
             partiallyScrambled = "";
@@ -262,8 +292,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         string afterMatch = originalSnippet.Substring(whereFound + entry.Key.Length);
                         int wherefoundForCap = whereFound;
 
-
-                        //originalSnippet.
                         string stringWhereFound = originalSnippet.Substring(whereFound, match.Length);
                         StringBuilder oSb = new StringBuilder();
                         if (stateBeforeMatchAfterMatch == 2)
@@ -283,7 +311,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
                             charBeforeMatchForCap = oldSnippedForCap[wherefoundForCap - 1];
                         if (wherefoundForCap + match.Length <= oldSnippedForCap.Length - 1)
                             charAfterMatchForCap = oldSnippedForCap[wherefoundForCap + match.Length];
-
 
                         string beforeMatchPartially = "";
                         sb.Append(translateRecursive(beforeMatch, englishChance, out beforeMatchPartially, i, 1, stringWhereFound));
@@ -322,14 +349,11 @@ namespace SWLOR.Game.Server.Service.LanguageService
                                 translated = entry.Value;
                         }
                         sbp.Append(translated);
-
                         string afterMatchPartially = "";
                         sb.Append(translateRecursive(afterMatch, englishChance, out afterMatchPartially, i, 2, stringWhereFound));
                         sbp.Append(afterMatchPartially);
                         partiallyScrambled = sbp.ToString();
                         return sb.ToString();
-
-
                     }
                 }
             }
@@ -337,7 +361,17 @@ namespace SWLOR.Game.Server.Service.LanguageService
             return message;
         }
 
-
+        ///<param name = "message" > The message to be translated. </ param >
+        ///<param name = "lastLength" > The current key length that the former method call was at when iterating the dictionaries, so that a dictionary that has no matching keys will only be searched once. </ param >
+        ///<param name = "stateBeforeMatchAfterMatch" > Inform the recursive call whether its for the string infront or behind the former call. This will be used to decide on capitalization. </ param >
+        ///<param name = "oldPiece" > Inform the recursive call which string segment was translated before it. This will be used to decide on capitalization. </ param >
+        ///<returns> A 2-dimensional array of all the translated segments where [n,0] is the nth english segment and [n,1] is the in-universe language segment </returns >
+        /// <summary>
+        /// Recursive translation, that will search the message for any matching segment in its defining dictionary array. 
+        /// Starting with the dictionary with the longest keys, it will iterate through all dicitonaries, until a match is found.
+        /// The stringparts before and after the match will be handed to their own recursive calls of this method. 
+        /// The recursion ends when a call returns itself when the message is null or empty, all whitespaces pr has not found a single match.
+        /// </summary>
         private string[,] translateRecursiveToCache(string message, int lastLength = -1, int stateBeforeMatchAfterMatch = 0, string oldPiece = "")
         {
             
@@ -357,9 +391,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                 {
                     KeyValuePair<string, string> entry;
                     if (stringContainsDictionaryKey(snippetToLower, _translationsArrayedByLengthAccessor[i], i + 1, out entry))
-
                     {
-
                         int whereFound = snippetToLower.IndexOf(entry.Key);
                         string match = snippetToLower.Substring(whereFound, entry.Key.Length);
                         string beforeMatch = originalSnippet.Substring(0, whereFound);
@@ -387,10 +419,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         if (wherefoundForCap + match.Length <= oldSnippedForCap.Length - 1)
                             charAfterMatchForCap = oldSnippedForCap[wherefoundForCap + match.Length];
 
-
                         string translated = "";
-
-
                         if ((stringWhereFound.Count(x => char.IsLetter(x)) >= 2 && !stringWhereFound.Any(x => char.IsLower(x))) || stringWhereFound.All(x => char.IsUpper(x)) && (char.IsUpper(charBeforeMatchForCap) || char.IsUpper(charAfterMatchForCap)))// ) && (char.IsUpper(beforeMatch.Last()) || char.IsUpper(afterMatch.First())) && !stringWhereFound.Any(x => char.IsLetter(x) && char.IsLower(x)) )
                         {
                             translated = entry.Value.ToUpper();
@@ -402,8 +431,6 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         else
                             translated = entry.Value;
 
-
-
                         var beforeArray = translateRecursiveToCache(beforeMatch, i, 1, stringWhereFound);
                         var afterArray = translateRecursiveToCache(afterMatch, i, 2, stringWhereFound);
                         var resultArray = new string[beforeArray.GetLength(0) + afterArray.GetLength(0) + 1, 2];
@@ -411,20 +438,21 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         Array.Copy(beforeArray, 0, resultArray, 0, beforeArray.Length);
                         Array.Copy(new string[,] { { originalSnippet.Substring(whereFound, match.Length), translated } }, 0, resultArray, beforeArray.Length, 2);
                         Array.Copy(afterArray, 0, resultArray, beforeArray.Length + 2, afterArray.Length);
-
-
                         return resultArray;
-
-
-
                     }
                 }
             }
-            
             return new string[,] { { message, message } };
         }
 
-
+        ///<param name = "snippet" > The snippet looking for a fitting key. </ param >
+        ///<param name = "dict" > The dicitonary to be searched. </ param >
+        ///<param name = "length" > The length of the keys in the dictionary provided. </ param >
+        ///<param name = "result" > The matching KeyValuePair, if one is found. </ param >
+        ///<returns> Bool state whether or not there was a match found </returns >
+        /// <summary>
+        /// Checks a provided string against dictionary keys and returns the match state and the matching key, if there is one.
+        /// </summary>
         private bool stringContainsDictionaryKey(string snippet, Dictionary<string, string> dict, int length, out KeyValuePair<string, string> result)
         {
             result = default(KeyValuePair<string, string>);
@@ -441,6 +469,8 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
             return false;
         }
+
+        ///<returns> The input string capitalized at index. </returns >
         string capitalizeStringAtIndex(string input, int index)
         {
             if (string.IsNullOrEmpty(input))
@@ -451,6 +481,8 @@ namespace SWLOR.Game.Server.Service.LanguageService
             sb.Append(input.Substring(index + 1));
             return sb.ToString();
         }
+
+        ///<returns> The index of the first letter in the input string. </returns >
         int getIndexOfFirstLetter(string input)
         {
             var index = 0;
@@ -463,10 +495,21 @@ namespace SWLOR.Game.Server.Service.LanguageService
             return 0;
         }
 
+        ///<param name = "original" > The english segment to be added as a key </ param >
+        ///<param name = "translation" >The in universe language equivalent </ param >
+        ///<param name = "prefixCode" > The prefix code defined in the csv-file: w, seq, sen, ss, ap, {empty} </ param >
+        ///<param name = "suffixCode" > The suffixCode code defined in the csv-file: ow, w, seq, sen, ss, ap, {empty} </ param >
+        ///<returns> An array of key value pairs to be added to a translation dicitonary </returns >
+        /// <summary>
+        /// This will return an array of all the permutations between the segment definitions and the prefix codes for ease of defining a letter segment that will only be translated at a word ending.
+        /// </summary>
+        /// <example>
+        /// The definition "nar;do;w;w;;;" in the csv-file will result in the permutations ' do ', '-do ', '-do-', ' do-', ' do.', ' do!',.... and so forth, so only a standalone 'do' will be translated as 'nar'. 
+        /// The result will have the same permutations, so ' do!' will turn into ' nar!'. The exception to this is the code 'ap', which will omit the characters in the result and APpend the translation to any preceeding or following words.
+        /// </example>
         private static KeyValuePair<string, string>[] GetCodeCombinations(string original,string translation, string prefixCode, string suffixCode)
         {
             List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
-
             StringBuilder sbOG = new StringBuilder();
             StringBuilder sbTr = new StringBuilder();
             string[,] prefixCodes = getPrefixArray(prefixCode);
@@ -489,6 +532,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
             return result.ToArray();
         }
+        //As above, only for self-translations.
         private static string[] GetCodeCombinations(string original, string prefixCode, string suffixCode)
         {
             List<string> result = new List<string>();
@@ -511,6 +555,15 @@ namespace SWLOR.Game.Server.Service.LanguageService
             return result.ToArray();
         }
 
+        ///<param name = "message" > The english message to be prepared for translation.</ param >
+        ///<returns> The english string prepared for translation </returns >
+        /// <example>
+        /// To support the defining codes, all the spaces within those premutations will need to be doubled. For example, if ';ch;;w;' and ';a;w;w;' are definitions, an ending ch and a single a have their own specific definitons.
+        /// If the signs weren't doubled, the text "such a" would run into a conflict. Either 'ch ' or ' a ' would be translated according to their special definitions, but not both. By doubling the characters from the prefix
+        /// codes, "such a" turns into "such  a", so that both 'ch ' and ' a ' will be translated as defined. After this translation process, it is only important that sanitizeStringAfterTranslation is called, which:
+        /// 1 - removes all the single occurences of ' ' and '-' resulting from the append code definition.
+        /// 2 - turns all the double characters into single characters again.
+        /// </example>
         private string prepareStringForTranslation(string message)
         {
             string prepped = message;
@@ -524,6 +577,11 @@ namespace SWLOR.Game.Server.Service.LanguageService
             return prepped;
         }
 
+        ///<param name = "message" > The message to be sanitized after translation.</ param >
+        ///<returns> The sanitized string</returns >
+        /// <summary>
+        /// See prepareStringForTranslation() for the process and reasoning.
+        /// </summary>
         private string sanitizeStringAfterTranslation(string message)
         {
             string sanitized = message;
@@ -537,6 +595,13 @@ namespace SWLOR.Game.Server.Service.LanguageService
             sanitized = sanitized.Replace("--","-");
             return sanitized;
         }
+
+        ///<param name = "message" > The message to be sanitized after translation.</ param >
+        ///<param name = "chars" > The chars to be removed. </ param >
+        ///<returns> The sanitized string</returns >
+        /// <summary>
+        /// Removes all single, consecutive occurences of the defined chars. See prepareStringForTranslation() for the process and reasoning.
+        /// </summary>
         private string removeSingleOccurence(string message, char[] chars)
         {
             string result = message;
@@ -568,9 +633,11 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
             return result;
         }
+
+        ///<param name = "code" > The code defined in the csv-file. </ param >
+        ///<returns> An array of char segments to be added to segment definitions to satisfy the desired word-starting, etc definitions. </returns >
         private static string[,] getPrefixArray(string code)
         {
-
             //no code specified, take as is
             if (string.IsNullOrEmpty(code))
                 return new string[,] { { "","" } };
@@ -598,6 +665,8 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
         }
 
+        ///<param name = "code" > The code defined in the csv-file. </ param >
+        ///<returns> An array of char segments to be added to segment definitions to satisfy the desired word-ending, etc definitions. </returns >
         private static string[,] getSuffixArray(string code)
         {
 

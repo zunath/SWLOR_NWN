@@ -53,7 +53,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Type(ShipModuleType.CombatLaser)
                 .Texture("iit_ess_004")
                 .Description(description)
-                .RequiresTarget()
                 .MaxDistance(30f)
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)

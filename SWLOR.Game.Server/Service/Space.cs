@@ -1089,26 +1089,20 @@ namespace SWLOR.Game.Server.Service
             var (target, targetShipStatus) = GetCurrentTarget(activator);
             // Check for valid object type if the ship module requires it.
             if (shipModuleDetails.ValidTargetTypes.Count > 0 &&
-                !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)))
+                !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)) &&
+                !(shipModuleDetails.CanTargetSelf && !GetIsObjectValid(target)))
             {
                 SendMessageToPC(activator, "This module cannot be used on that target type.");
                 return;
             }
 
             // Check for a selected target that doesn't have a ship status.
-            if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null)
+            if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null && !shipModuleDetails.CanTargetSelf)
             {
                 SendMessageToPC(activator, "Invalid target.");
                 return;
             }
-
-            // Check for a valid target if the ship module requires it.
-            if (shipModuleDetails.RequiresTarget && (!GetIsObjectValid(target) || targetShipStatus == null))
-            {
-                SendMessageToPC(activator, "Target not selected.");
-                return;
-            }
-
+            
             // Check to ensure activator is within maximum distance.
             var maxDistance = shipModuleDetails.ModuleMaxDistanceAction == null ? 10f : shipModuleDetails.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
             if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
@@ -1116,7 +1110,6 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(activator, $"Target is too far away. Maximum distance: {maxDistance} meters.");
                 return;
             }
-
 
             // Run any custom validation specific to the ship module.
             if (shipModuleDetails.ModuleValidationAction != null)

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleType Type { get; set; }
         public string Texture { get; set; }
         public string Description { get; set; }
-        public bool RequiresTarget { get; set; }
+        public bool CanTargetSelf { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
         public HashSet<ObjectType> ValidTargetTypes { get; set; }

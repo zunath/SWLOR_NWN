@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Texture("iit_ess_040")
                 .Type(ShipModuleType.ShieldRepairer)
+                .CanTargetSelf()
                 .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Creature)
                 .Description(description)

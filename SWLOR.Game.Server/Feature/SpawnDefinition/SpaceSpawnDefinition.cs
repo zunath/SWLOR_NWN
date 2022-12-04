@@ -96,11 +96,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "npc_shuttle")
-                .WithFrequency(5000)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
                 .WithFrequency(200)
                 .RandomlyWalks()
@@ -295,11 +290,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "npc_sithfig")
                 .WithFrequency(25000)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "npc_shuttle")
-                .WithFrequency(2500)
                 .RandomlyWalks()
                 .ReturnsHome()
 

@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_604", "mush_soup", 1, 3);
             BuildItemTask(builder, "agr_tsk_605", "womp_broth", 1, 3);
             BuildItemTask(builder, "agr_tsk_606", "soy_ramen", 1, 3);
-            BuildItemTask(builder, "agr_tsk_607", "surprise_sandwich", 1, 3);
+            BuildItemTask(builder, "agr_tsk_607", "surprise_sandwic", 1, 3);
             BuildItemTask(builder, "agr_tsk_608", "tusken_mball", 1, 3);
             BuildItemTask(builder, "agr_tsk_609", "walnut_cookies", 1, 3);
             BuildItemTask(builder, "agr_tsk_610", "des_herbsoup", 1, 3);

@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("klorslug_meat", 3)
-                .Component("klorslug_claw", 2)
+                .Component("klorslug_tail", 2)
                 .Component("klorslug_innards", 1);
 
             _builder.Create(RecipeType.AppleJuice, SkillType.Agriculture)

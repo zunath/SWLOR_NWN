@@ -12,9 +12,18 @@ namespace SWLOR.Game.Server.Service.LanguageService
     {
         public BaseRecursiveLanguageTranslator()
         {
-            updateDictionaries();
+            UpdateDictionaries();
+        }
+        //For using the Translator externally, to test and implement languages without having to compile.
+        public BaseRecursiveLanguageTranslator(string generalLoc, string specificLoc)
+        {
+            langFileLocation = specificLoc;
+            generalFileLocation = generalLoc;
+            UpdateDictionaries();
         }
 
+        public string langFileLocation = "";
+        public string generalFileLocation = "";
         /// <summary>
         /// Should this translator instance use the cache based translation algorithm or go through translation every time?
         /// </summary>
@@ -59,7 +68,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                     return _translationsArrayedByLength;
                 else
                 {
-                    updateDictionaries();
+                    UpdateDictionaries();
                     return _translationsArrayedByLength;
                 }
             }
@@ -70,14 +79,11 @@ namespace SWLOR.Game.Server.Service.LanguageService
         /// Notably, there is a different dictionary for every word length in the defining files, to enhance performance. 
         /// The algorithm will check the dictionary for the longest segments first and once it didnt find any returns for it, it will never check this dictionary again. 
         /// </summary>
-        private void updateDictionaries()
+        private void updateDictionaries(Stream generalDefinitions, Stream LanguageDefinition)
         {
             Dictionary<string, string>[] dictionariesBylengthArrayed = null;
             Dictionary<int, Dictionary<string, string>> dictionariesBylength = new Dictionary<int, Dictionary<string, string>>();
-            using (var stream = Assembly
-            .GetExecutingAssembly()
-            .GetManifestResourceStream(string.Format("{0}.LanguageSpecific.csv", this.GetType().Namespace)))
-            using (var reader = new StreamReader(stream))
+            using (var reader = new StreamReader(LanguageDefinition))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -119,10 +125,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
             }
             if (UseGeneralTranslations)
             {
-                using (var stream = Assembly
-                .GetExecutingAssembly()
-                .GetManifestResourceStream("SWLOR.Game.Server.Service.LanguageService.GeneralTranslations.csv"))
-                using (var reader = new StreamReader(stream))
+                using (var reader = new StreamReader(generalDefinitions))
                 {
                     string line;
                     while ((line = reader.ReadLine()) != null)
@@ -131,13 +134,13 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         var res = line.Split(';');
 
                         //general translations i.e. monikers are added for words which dont have their specific translation in-language (like viscara -> viscara)
-                        if (!dictionariesBylength.ContainsKey(res[0].Length))
-                            dictionariesBylength.Add(res[0].Length, new Dictionary<string, string>() { [res[0].ToLower()] = res[0].ToLower() });
+                        if (!dictionariesBylength.ContainsKey(prepareStringForTranslation(res[0]).Length))
+                            dictionariesBylength.Add(prepareStringForTranslation(res[0]).Length, new Dictionary<string, string>() { [prepareStringForTranslation(res[0].ToLower())] = prepareStringForTranslation(res[0].ToLower()) });
                         else
                         {
-                            Dictionary<string, string> dictatlength = dictionariesBylength[res[0].Length];
-                            if (!dictatlength.ContainsKey(res[0].ToLower()))
-                                dictatlength.Add(res[0].ToLower(), res[0].ToLower());
+                            Dictionary<string, string> dictatlength = dictionariesBylength[prepareStringForTranslation(res[0]).Length];
+                            if (!dictatlength.ContainsKey(prepareStringForTranslation(res[0].ToLower())))
+                                dictatlength.Add(prepareStringForTranslation(res[0].ToLower()), prepareStringForTranslation(res[0].ToLower()));
                         }
                     }
                 }
@@ -148,6 +151,42 @@ namespace SWLOR.Game.Server.Service.LanguageService
                 dictionariesBylengthArrayed[item.Key - 1] = item.Value;
             }
             _translationsArrayedByLength = dictionariesBylengthArrayed;
+        }
+        //load the dicitonaries from the embedded csv which are compiled
+        private void updateDictionariesFromEmbedded()
+        {
+            using (var langStream = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream(string.Format("{0}.LanguageSpecific.csv", this.GetType().Namespace)))
+            {
+                using (var generalStream = Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream("SWLOR.Game.Server.Service.LanguageService.GeneralTranslations.csv"))
+                {
+                    updateDictionaries(generalStream, langStream);
+                }
+            }
+        }
+        /// <summary>
+        /// Update the dictionaries from any supplied csv file for this translator instance. For external use. Debugging and design purposes.
+        /// </summary>
+        private void updateDictionariesFromCustom()
+        {
+            using (var langStream = File.OpenRead(langFileLocation))
+            {
+                using (var generalStream = File.OpenRead(generalFileLocation))
+                {
+                    updateDictionaries(generalStream, langStream);
+                }
+            }
+        }
+        //Decides on Location from where to load the language definitions, for external usage of the translator for ease of language creation and debugging
+        public void UpdateDictionaries()
+        {
+            if (string.IsNullOrEmpty(langFileLocation) || string.IsNullOrEmpty(generalFileLocation))
+                updateDictionariesFromEmbedded();
+            else
+                updateDictionariesFromCustom();
         }
 
         ///<param name = "message" > The message to be translated. </ param >
@@ -247,7 +286,10 @@ namespace SWLOR.Game.Server.Service.LanguageService
             return result.Substring(2, result.Length - 3);
 
         }
-
+        ///<remarks>
+        ///Does not prevent duplicate chars as defined in getArrayOfCharactersToPreventDoubleOutput().
+        ///!Largely carryover for benchmarking and performance test. The cache method is preferred for implementation.
+        ///</remarks>
         ///<param name = "message" > The message to be translated. </ param >
         ///<param name = "englishChance" > The chance to receive english text instead of the alien language for the comprehension part. </ param >
         ///<param name = "partiallyScrambled" > The partially comprehended output, partially based on the english chance </ param >
@@ -264,6 +306,8 @@ namespace SWLOR.Game.Server.Service.LanguageService
         private string translateRecursive(string message, int englishChance, out string partiallyScrambled, int lastLength = -1, int stateBeforeMatchAfterMatch = 0, string oldPiece ="")
         {
             partiallyScrambled = "";
+            if (_translationsArrayedByLengthAccessor == null)
+                return message;
             if (string.IsNullOrEmpty(message) || message.All(x => x == ' '))
             {
                 partiallyScrambled = message;
@@ -282,11 +326,12 @@ namespace SWLOR.Game.Server.Service.LanguageService
             {
                 if (_translationsArrayedByLengthAccessor[i] != null && snippetToLower.Length >= i + 1)
                 {
+                    int whereFound;
                     KeyValuePair<string, string> entry;
-                    if (stringContainsDictionaryKey(snippetToLower, _translationsArrayedByLengthAccessor[i], i + 1, out entry))
+                    if (stringContainsDictionaryKey(snippetToLower, _translationsArrayedByLengthAccessor[i], i + 1, out entry, out whereFound))
                     {
                         bool success = (Random.Next(100) <= englishChance && englishChance != 0);
-                        int whereFound = snippetToLower.IndexOf(entry.Key);
+                        //int whereFound = snippetToLower.IndexOf(entry.Key);
                         string match = snippetToLower.Substring(whereFound, entry.Key.Length);
                         string beforeMatch = originalSnippet.Substring(0, whereFound);
                         string afterMatch = originalSnippet.Substring(whereFound + entry.Key.Length);
@@ -374,8 +419,14 @@ namespace SWLOR.Game.Server.Service.LanguageService
         /// </summary>
         private string[,] translateRecursiveToCache(string message, int lastLength = -1, int stateBeforeMatchAfterMatch = 0, string oldPiece = "")
         {
-            
-            if (string.IsNullOrEmpty(message) || message.All(x => x == ' '))
+            if (_translationsArrayedByLengthAccessor == null)
+                return new string[,] { { message, message } };
+
+            if(string.IsNullOrEmpty(message))
+            {
+                return new string[0, 2];
+            }
+            if (message.All(x => x == ' '))
             {
                 return new string[,]{ {message, message } };
             }
@@ -387,12 +438,12 @@ namespace SWLOR.Game.Server.Service.LanguageService
 
             for (int i = currentLength; i >= 0; i--)
             {
+                int whereFound;
                 if (_translationsArrayedByLengthAccessor[i] != null && snippetToLower.Length >= i + 1)
                 {
                     KeyValuePair<string, string> entry;
-                    if (stringContainsDictionaryKey(snippetToLower, _translationsArrayedByLengthAccessor[i], i + 1, out entry))
+                    if (stringContainsDictionaryKey(snippetToLower, _translationsArrayedByLengthAccessor[i], i + 1, out entry, out whereFound))
                     {
-                        int whereFound = snippetToLower.IndexOf(entry.Key);
                         string match = snippetToLower.Substring(whereFound, entry.Key.Length);
                         string beforeMatch = originalSnippet.Substring(0, whereFound);
                         string afterMatch = originalSnippet.Substring(whereFound + entry.Key.Length);
@@ -434,9 +485,23 @@ namespace SWLOR.Game.Server.Service.LanguageService
                         var beforeArray = translateRecursiveToCache(beforeMatch, i, 1, stringWhereFound);
                         var afterArray = translateRecursiveToCache(afterMatch, i, 2, stringWhereFound);
                         var resultArray = new string[beforeArray.GetLength(0) + afterArray.GetLength(0) + 1, 2];
+                        int indexTranslated = 0;
+                        int lengthTranslated = translated.Length;
 
+                        //When the cipher definition results in double special characters like '', like definition for z being ' and ied being 'a, zied would turn into ''a. With this, double '' will be prevented
+                        if (beforeArray.Length > 0 && snippetsJoinAtSameCharacter(beforeArray[getIndexOfLastEntryNotEmpty(beforeArray) , 1], translated, getArrayOfCharactersToPreventDoubleOutput()))
+                        {
+                            indexTranslated = 1;
+                            lengthTranslated -= 1;
+                        }
+                        if (afterArray.Length > 0 && lengthTranslated > 0 && snippetsJoinAtSameCharacter(translated, afterArray[getIndexOfFirstEntryNotEmpty(afterArray),1], getArrayOfCharactersToPreventDoubleOutput()))
+                        {
+                            lengthTranslated -= 1;
+                        }
+
+                        bool translationOmitted = lengthTranslated == 0 || indexTranslated + lengthTranslated > translated.Length; 
                         Array.Copy(beforeArray, 0, resultArray, 0, beforeArray.Length);
-                        Array.Copy(new string[,] { { originalSnippet.Substring(whereFound, match.Length), translated } }, 0, resultArray, beforeArray.Length, 2);
+                        Array.Copy(new string[,] { { originalSnippet.Substring(whereFound, match.Length), !translationOmitted ? translated.Substring(indexTranslated, lengthTranslated) : string.Empty } }, 0, resultArray, beforeArray.Length, 2);
                         Array.Copy(afterArray, 0, resultArray, beforeArray.Length + 2, afterArray.Length);
                         return resultArray;
                     }
@@ -449,12 +514,14 @@ namespace SWLOR.Game.Server.Service.LanguageService
         ///<param name = "dict" > The dicitonary to be searched. </ param >
         ///<param name = "length" > The length of the keys in the dictionary provided. </ param >
         ///<param name = "result" > The matching KeyValuePair, if one is found. </ param >
+        ///<param name = "whereFound" > Starting int where the key was found </ param >
         ///<returns> Bool state whether or not there was a match found </returns >
         /// <summary>
         /// Checks a provided string against dictionary keys and returns the match state and the matching key, if there is one.
         /// </summary>
-        private bool stringContainsDictionaryKey(string snippet, Dictionary<string, string> dict, int length, out KeyValuePair<string, string> result)
+        private bool stringContainsDictionaryKey(string snippet, Dictionary<string, string> dict, int length, out KeyValuePair<string, string> result, out int whereFound)
         {
+            whereFound = 0;
             result = default(KeyValuePair<string, string>);
             for (int i = 0; i <= snippet.Length-length; i++)
             {
@@ -464,6 +531,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                 if (success)
                 {
                     result = new KeyValuePair<string, string>(key, value);
+                    whereFound = i;
                     return success;
                 }
             }
@@ -582,7 +650,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
         /// <summary>
         /// See prepareStringForTranslation() for the process and reasoning.
         /// </summary>
-        private string sanitizeStringAfterTranslation(string message)
+        public virtual string sanitizeStringAfterTranslation(string message)
         {
             string sanitized = message;
             sanitized = removeSingleOccurence(message, new char[]{ ' ', '-'});
@@ -632,6 +700,44 @@ namespace SWLOR.Game.Server.Service.LanguageService
                 removed++;
             }
             return result;
+        }
+        private int getIndexOfLastEntryNotEmpty(string[,] array)
+        {
+            for (int i = array.GetLength(0)-1; i >= 0 ; i--)
+            {
+                if (!string.IsNullOrEmpty(array[i, 1]))
+                    return i;
+            }
+            return 0;
+        }
+        private int getIndexOfFirstEntryNotEmpty(string[,] array)
+        {
+            for (int i = 0; i < array.GetLength(0); i++)
+            {
+                if (!string.IsNullOrEmpty(array[i, 1]))
+                    return i;
+            }
+            return 0;
+        }
+
+        //Find if 2 strings would join at the same character, but only if the character is in the defined array
+        private bool snippetsJoinAtSameCharacter(string firstString, string secondString, char[] chars)
+        {
+            if (string.IsNullOrEmpty(firstString) || string.IsNullOrEmpty(secondString))
+                return false;
+
+            foreach (var item in chars)
+            {
+                if (firstString.Last() == item && secondString.First() == item)
+                    return true;
+            }
+            return false;
+        }
+
+        //The standard array of characters to be prevented in the ciphered output. This will prevent any unintended double 's, resulting from the fallback cipher.
+        private char[] getArrayOfCharactersToPreventDoubleOutput()
+        {
+            return new char[]{ '\''};
         }
 
         ///<param name = "code" > The code defined in the csv-file. </ param >

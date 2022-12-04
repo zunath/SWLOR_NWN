@@ -11,7 +11,15 @@ using SWLOR.Game.Server.Service.LanguageService.Catharese;
 using SWLOR.Game.Server.Service.LanguageService.Cheunh;
 using SWLOR.Game.Server.Service.LanguageService.Dosh;
 using SWLOR.Game.Server.Service.LanguageService.Huttese;
+using SWLOR.Game.Server.Service.LanguageService.KelDor;
 using SWLOR.Game.Server.Service.LanguageService.Mandoa;
+using SWLOR.Game.Server.Service.LanguageService.Mirialan;
+using SWLOR.Game.Server.Service.LanguageService.MonCalamarian;
+using SWLOR.Game.Server.Service.LanguageService.Rodese;
+using SWLOR.Game.Server.Service.LanguageService.Togruti;
+using SWLOR.Game.Server.Service.LanguageService.Twileki;
+using SWLOR.Game.Server.Service.LanguageService.Ugnaught;
+using SWLOR.Game.Server.Service.LanguageService.Zabraki;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 

@@ -22,7 +22,15 @@
     <None Remove="Service\LanguageService\Dosh\LanguageSpecific.csv" />
     <None Remove="Service\LanguageService\GeneralTranslations.csv" />
     <None Remove="Service\LanguageService\Huttese\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\KelDor\LanguageSpecific.csv" />
     <None Remove="Service\LanguageService\Mandoa\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Mirialan\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\MonCalamarian\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Rodese\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Togruti\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Twileki\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Ugnaught\LanguageSpecific.csv" />
+    <None Remove="Service\LanguageService\Zabraki\LanguageSpecific.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +40,15 @@
     <EmbeddedResource Include="Service\LanguageService\Dosh\LanguageSpecific.csv" />
     <EmbeddedResource Include="Service\LanguageService\GeneralTranslations.csv" />
     <EmbeddedResource Include="Service\LanguageService\Huttese\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\KelDor\LanguageSpecific.csv" />
     <EmbeddedResource Include="Service\LanguageService\Mandoa\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Mirialan\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\MonCalamarian\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Rodese\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Togruti\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Twileki\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Ugnaught\LanguageSpecific.csv" />
+    <EmbeddedResource Include="Service\LanguageService\Zabraki\LanguageSpecific.csv" />
   </ItemGroup>
 
   <ItemGroup>

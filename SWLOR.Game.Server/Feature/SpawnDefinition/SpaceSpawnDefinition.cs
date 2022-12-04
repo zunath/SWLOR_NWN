@@ -224,11 +224,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "npc_merchant")
-                .WithFrequency(1000)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cap_corvette")
                 .WithFrequency(200)
                 .RandomlyWalks()
@@ -345,11 +340,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "pirate_eleyna")
                 .WithFrequency(15000)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "npc_merchant")
-                .WithFrequency(2500)
                 .RandomlyWalks()
                 .ReturnsHome()
 

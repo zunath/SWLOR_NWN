@@ -30,16 +30,18 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Shear Mite Skin"
+      "0": "Squellbug Skin"
     }
   },
   "ModelPart1": {
@@ -48,7 +50,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 63
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 83
+          "value": 25
         },
         "Param1": {
           "type": "byte",
@@ -81,69 +83,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 35
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 83
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 94
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 35
+          "value": 117
         },
         "Subtype": {
           "type": "word",
@@ -162,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 55
+          "value": 47
         },
         "Param1": {
           "type": "byte",
@@ -224,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ShearMiteSkin"
+    "value": "squellbug_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vdathskinshear"
+    "value": "squellbug_skin"
   }
 }

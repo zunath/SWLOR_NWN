@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 70
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sprantal Bite"
+      "0": "Kwi Tribal Skin"
     }
   },
   "ModelPart1": {
@@ -48,7 +50,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 55
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 66
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -81,11 +83,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 117
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 43
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 43
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 99
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 41
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 50
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -100,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SprantalBite"
+    "value": "kwi_tribal_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vdathbitespranta"
+    "value": "kwi_tribal_skin"
   }
 }

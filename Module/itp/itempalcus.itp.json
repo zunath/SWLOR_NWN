@@ -5454,11 +5454,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chirodactyl Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbitechiro"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal-Crazed Warocas Beak"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "crazedwarocasbk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dragon Turtle Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbiteturtle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Purbole Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbitepurbole"
                     }
                   },
                   {
@@ -5514,6 +5547,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandwormbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shear Mite Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbiteshear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sprantal Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbitespranta"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Squellbug Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbitesquell"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ssurian Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbitessurian"
                     }
                   },
                   {
@@ -5937,253 +6014,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Chirodactyl Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitechiro"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chirodactyl Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinchiro"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dragon Turtle Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbiteturtle"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dragon Turtle Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinturtle"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Droid Probe"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "droidprobe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Guardian Knife"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbiteguard"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Guardian Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinguard"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Shaman Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinshaman"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Shaman's Spear"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbiteshaman"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Tribal Knife"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitetribal"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kwi Tribal Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskintribal"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Purbole Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitepurbole"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Purbole Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinpurbole"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shear Mite Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbiteshear"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shear Mite Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinshear"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sprantal Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitespranta"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sprantal Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinsprant"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Squellbug Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitesquell"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Squellbug Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinsquell"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ssurian Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitessurian"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ssurian Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinssurian"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Swampland Bug Skin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathskinbug"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Swampland Bug Stinger"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbitebug"
                     }
                   }
                 ]
@@ -6915,6 +6750,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chirodactyl Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chirodactyl_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Colicoid Hide"
                     },
                     "RESREF": {
@@ -6970,11 +6816,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dragon Turtle Shell"
+                      "value": "Dragon Turtle Skin"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "dragonturtleshel"
+                      "value": "dragturt_skin"
                     }
                   },
                   {
@@ -7063,6 +6909,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyees"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Guardian Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_guard_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Shaman Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_shaman_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Tribal Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_tribal_skin"
                     }
                   },
                   {
@@ -7289,6 +7168,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Purbole Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "purbole_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Slug Hide"
                     },
                     "RESREF": {
@@ -7382,6 +7272,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "scorchys_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shear Mite Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shear_mite_skin"
                     }
                   },
                   {
@@ -7773,6 +7674,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sprantal Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sprantal_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Squellbug Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "squellbug_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ssurian Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ssurian_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -7788,7 +7722,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "swamplandbugskin"
+                      "value": "swampbug_skin"
                     }
                   },
                   {
@@ -30593,11 +30527,44 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Kwi Guardian Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "vdathbiteguard"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Kwi Tribal Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "vdathbitetribal"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "[NPC] Mandalorian Knife"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "npc_mando_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Swampland Bug Stinger"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "vdathbitebug"
                           }
                         },
                         {
@@ -33599,6 +33566,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "elkspear001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Kwi Shaman's Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbiteshaman"
                     }
                   },
                   {

@@ -30,16 +30,18 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Squellbug Skin"
+      "0": "Swampland Bug Skin"
     }
   },
   "ModelPart1": {
@@ -48,7 +50,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 63
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 75
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -81,42 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 117
         },
         "Subtype": {
           "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 35
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 75
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
           "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 94
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 1
         }
       },
       {
@@ -128,6 +99,37 @@
         "CostTable": {
           "type": "byte",
           "value": 43
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 40
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 99
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 41
         },
         "CostValue": {
           "type": "word",
@@ -143,7 +145,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 98
         },
         "Subtype": {
           "type": "word",
@@ -162,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SquellbugSkin"
+    "value": "swampbug_skin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vdathskinsquell"
+    "value": "swampbug_skin"
   }
 }

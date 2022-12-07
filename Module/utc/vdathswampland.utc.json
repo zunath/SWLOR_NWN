@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3216
+    "value": 1494
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 52.0
+    "value": 58.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 70
+    "value": 235
   },
   "DecayTime": {
     "type": "dword",
@@ -93,7 +93,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathskinbug"
+          "value": "swampbug_skin"
         }
       }
     ]
@@ -162,11 +162,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 70
+    "value": 235
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 38
   },
   "Interruptable": {
     "type": "byte",
@@ -196,7 +196,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 150
+    "value": 435
   },
   "NaturalAC": {
     "type": "byte",
@@ -501,7 +501,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -525,7 +525,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -537,6 +537,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 14
   }
 }

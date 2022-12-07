@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -34,12 +34,12 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kwi Tribal Knife"
+      "0": "[NPC] Kwi Tribal Knife"
     }
   },
   "ModelPart1": {
@@ -56,7 +56,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 63
+    "value": 34
   },
   "Plot": {
     "type": "byte",
@@ -77,7 +77,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 50
+          "value": 60
         },
         "Param1": {
           "type": "byte",
@@ -94,37 +94,6 @@
         "Subtype": {
           "type": "word",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 25
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 4
         }
       },
       {

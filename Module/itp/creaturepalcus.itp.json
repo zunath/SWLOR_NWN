@@ -7418,6 +7418,25 @@
                       "type": "resref",
                       "value": "wook_warrior"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yastin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yastin_fettias"
+                    }
                   }
                 ]
               },

@@ -438,6 +438,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Leggings
+            _builder.Create(RecipeType.ChaosLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("ch_leggings")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Boots
+            _builder.Create(RecipeType.MagusBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("mag_boots")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Boots
+            _builder.Create(RecipeType.ImmortalBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("imm_boots")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
         }
     }
 }

@@ -438,6 +438,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Breastplate
+            _builder.Create(RecipeType.ChaosBreastplate, SkillType.Smithery)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("ch_armor")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Tunic
+            _builder.Create(RecipeType.MagusTunic, SkillType.Smithery)
+                .Category(RecipeCategoryType.Tunic)
+                .Resref("mag_tunic")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Tunic
+            _builder.Create(RecipeType.ImmortalTunic, SkillType.Smithery)
+                .Category(RecipeCategoryType.Tunic)
+                .Resref("imm_tunic")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
         }
     }
 }

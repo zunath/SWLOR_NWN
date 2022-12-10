@@ -85,6 +85,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("elec_high", 2);
+
+            // Chiro Pistol
+            _builder.Create(RecipeType.ChiroPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("chi_pistol")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 10)
+                .Component("chiro_shard", 1);
         }
 
         private void Shurikens()
@@ -154,6 +166,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("hyphae_wood", 1);
+
+            // Chiro Shuriken
+            _builder.Create(RecipeType.ChiroShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("chi_shuriken")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 10)
+                .Component("chiro_shard", 1);
         }
 
         private void Rifles()
@@ -223,6 +247,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_high", 3);
+
+            // Chiro Rifle
+            _builder.Create(RecipeType.ChiroRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("chi_rifle")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 10)
+                .Component("chiro_shard", 1);
         }
     }
 }

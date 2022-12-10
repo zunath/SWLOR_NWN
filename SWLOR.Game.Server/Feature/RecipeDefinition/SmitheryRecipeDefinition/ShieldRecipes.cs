@@ -72,6 +72,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("hyphae_wood", 2);
+
+            // Chaos Shield
+            _builder.Create(RecipeType.ChaosShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("ch_shield")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("hyphae_wood", 10)
+                .Component("chiro_shard", 1);
         }
 
     }

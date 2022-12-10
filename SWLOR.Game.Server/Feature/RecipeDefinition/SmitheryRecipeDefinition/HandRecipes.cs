@@ -438,6 +438,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Bracer
+            _builder.Create(RecipeType.ChaosBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("ch_bracer")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Gloves
+            _builder.Create(RecipeType.MagusGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("mag_gloves")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Gloves
+            _builder.Create(RecipeType.ImmortalGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("imm_gloves")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
         }
     }
 }

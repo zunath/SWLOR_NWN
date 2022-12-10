@@ -16079,51 +16079,6 @@
           "type": "int",
           "value": 101
         }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "IS_DUNGEON"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "MINI_MAP_DISABLED"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "AREA_XP_BONUS_PERCENTAGE"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 10
-        }
       }
     ]
   },
@@ -17199,6 +17154,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1999998539686203
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos Boss"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS_BOSS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottosboss"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7409513592720032
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 75.03343963623047
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.671558678150177
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 41.85453796386719
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
         }
       }
     ]

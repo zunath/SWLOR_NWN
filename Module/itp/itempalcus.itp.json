@@ -27800,6 +27800,182 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: DHAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhlg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dllg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Immortal Belt"
                     },
                     "RESREF": {

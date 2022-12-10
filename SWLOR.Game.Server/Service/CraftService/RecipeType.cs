@@ -1244,5 +1244,22 @@
         ImmortalCap = 3505,
         ImmortalGloves = 3506,
         ImmortalBoots = 3507,
+
+        DHCL005C = 3508,
+        DHBE005C = 3509,
+        DHRG005C = 3510,
+        DHNK005C = 3511,
+        DHAR005C = 3512,
+        DHHL005C = 3513,
+        DHBR005C = 3514,
+        DHLG005C = 3515,
+        DLCL005C = 3516,
+        DLBE005C = 3517,
+        DLRG005C = 3518,
+        DLNK005C = 3519,
+        DLAR005C = 3520,
+        DLHL005C = 3521,
+        DLBR005C = 3522,
+        DLLG005C = 3523,
     }
 }

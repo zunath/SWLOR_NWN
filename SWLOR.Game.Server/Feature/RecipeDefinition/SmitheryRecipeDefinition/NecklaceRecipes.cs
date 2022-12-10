@@ -438,6 +438,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Necklace
+            _builder.Create(RecipeType.ChaosNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("ch_necklace")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Necklace
+            _builder.Create(RecipeType.MagusNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("mag_necklace")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Necklace
+            _builder.Create(RecipeType.ImmortalNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("imm_necklace")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
         }
 
     }

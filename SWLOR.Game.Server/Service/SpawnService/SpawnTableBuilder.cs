@@ -38,10 +38,12 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// Values less than 1 will default to 1.
         /// </summary>
         /// <param name="minutes">The number of minutes before a respawn takes place.</param>
-        public void RespawnDelay(int minutes)
+        public SpawnTableBuilder RespawnDelay(int minutes)
         {
             if (minutes < 1) minutes = 1;
             ActiveTable.RespawnDelayMinutes = minutes;
+
+            return this;
         }
 
         /// <summary>

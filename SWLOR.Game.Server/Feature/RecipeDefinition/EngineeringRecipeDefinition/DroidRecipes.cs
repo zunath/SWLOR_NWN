@@ -914,7 +914,215 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 3)
 				.Component("ref_jasioclase", 2);
 
+            // DHCL-005 C
+            _builder.Create(RecipeType.DHCL005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
 
-		}
-	}
+            // DHBE-005 C
+            _builder.Create(RecipeType.DHBE005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHRG-005 C
+            _builder.Create(RecipeType.DHRG005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHNK-005 C
+            _builder.Create(RecipeType.DHNK005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHAR-005 C
+            _builder.Create(RecipeType.DHAR005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHHL-005 C
+            _builder.Create(RecipeType.DHHL005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHBR-005 C
+            _builder.Create(RecipeType.DHBR005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DHLG-005 C
+            _builder.Create(RecipeType.DHLG005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLCL-005 C
+            _builder.Create(RecipeType.DLCL005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLBE-005 C
+            _builder.Create(RecipeType.DLBE005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLRG-005 C
+            _builder.Create(RecipeType.DLRG005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLNK-005 C
+            _builder.Create(RecipeType.DLNK005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLAR-005 C
+            _builder.Create(RecipeType.DLAR005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLHL-005 C
+            _builder.Create(RecipeType.DLHL005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLBR-005 C
+            _builder.Create(RecipeType.DLBR005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+            // DLLG-005 C
+            _builder.Create(RecipeType.DLLG005C, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg005c")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 20)
+                .Component("ref_jasioclase", 20)
+                .Component("chiro_shard", 1);
+
+
+        }
+    }
 }

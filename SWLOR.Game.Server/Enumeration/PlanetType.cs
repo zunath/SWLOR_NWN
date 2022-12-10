@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Enumeration
             "Dathomir_Orbit",
             "DATHOMIR_LANDING",
             800,
-            false)]
+            true)]
         Dathomir = 64,
     }
 

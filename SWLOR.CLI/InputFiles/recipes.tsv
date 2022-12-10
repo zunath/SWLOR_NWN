@@ -1,16 +1,16 @@
-Engineering		Droid Equipment Blueprints	DHCL001	Cloak	1	DHCL-001	8	1	dhcl001	Cloak	1	elec_ruined	5	ref_veldite	3																	
-Engineering		Droid Equipment Blueprints	DHBE001	Belt	1	DHBE-001	9	1	dhbe001	Belt	1	elec_ruined	5	ref_veldite	3																	
-Engineering		Droid Equipment Blueprints	DHRG001	Ring	1	DHRG-001	1	1	dhrg001	Ring	1	elec_ruined	1	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DHNK001	Necklace	1	DHNK-001	2	1	dhnk001	Necklace	1	elec_ruined	2	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DHAR001	Breastplate	1	DHAR-001	7	1	dhar001	Breastplate	1	elec_ruined	4	ref_veldite	2																	
-Engineering		Droid Equipment Blueprints	DHHL001	Helmet	1	DHHL-001	4	1	dhhl001	Helmet	1	elec_ruined	3	ref_veldite	2																	
-Engineering		Droid Equipment Blueprints	DHBR001	Bracer	1	DHBR-001	3	1	dhbr001	Bracer	1	elec_ruined	2	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DHLG001	Leggings	1	DHLG-001	5	1	dhlg001	Leggings	1	elec_ruined	3	ref_veldite	2																	
-Engineering		Droid Equipment Blueprints	DLCL001	Cloak	1	DLCL-001	8	1	dlcl001	Cloak	1	elec_ruined	5	ref_veldite	3																	
-Engineering		Droid Equipment Blueprints	DLBE001	Belt	1	DLBE-001	9	1	dlbe001	Belt	1	elec_ruined	5	ref_veldite	3																	
-Engineering		Droid Equipment Blueprints	DLRG001	Ring	1	DLRG-001	1	1	dlrg001	Ring	1	elec_ruined	1	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DLNK001	Necklace	1	DLNK-001	2	1	dlnk001	Necklace	1	elec_ruined	2	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DLAR001	Breastplate	1	DLAR-001	7	1	dlar001	Breastplate	1	elec_ruined	4	ref_veldite	2																	
-Engineering		Droid Equipment Blueprints	DLHL001	Helmet	1	DLHL-001	4	1	dlhl001	Helmet	1	elec_ruined	3	ref_veldite	2																	
-Engineering		Droid Equipment Blueprints	DLBR001	Bracer	1	DLBR-001	3	1	dlbr001	Bracer	1	elec_ruined	2	ref_veldite	1																	
-Engineering		Droid Equipment Blueprints	DLLG001	Leggings	1	DLLG-001	5	1	dllg001	Leggings	1	elec_ruined	3	ref_veldite	2																	
+Engineering	recipe_dhcl005c	Droid Equipment Blueprints	DHCL005C	Cloak	5	DHCL-005 C	52	1	dhcl005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhbe005c	Droid Equipment Blueprints	DHBE005C	Belt	5	DHBE-005 C	52	1	dhbe005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhrg005c	Droid Equipment Blueprints	DHRG005C	Ring	5	DHRG-005 C	52	1	dhrg005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhnk005c	Droid Equipment Blueprints	DHNK005C	Necklace	5	DHNK-005 C	52	1	dhnk005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhar005c	Droid Equipment Blueprints	DHAR005C	Breastplate	5	DHAR-005 C	52	1	dhar005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhhl005c	Droid Equipment Blueprints	DHHL005C	Helmet	5	DHHL-005 C	52	1	dhhl005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhbr005c	Droid Equipment Blueprints	DHBR005C	Bracer	5	DHBR-005 C	52	1	dhbr005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dhlg005c	Droid Equipment Blueprints	DHLG005C	Legging	5	DHLG-005 C	52	1	dhlg005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlcl005c	Droid Equipment Blueprints	DLCL005C	Cloak	5	DLCL-005 C	52	1	dlcl005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlbe005c	Droid Equipment Blueprints	DLBE005C	Belt	5	DLBE-005 C	52	1	dlbe005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlrg005c	Droid Equipment Blueprints	DLRG005C	Ring	5	DLRG-005 C	52	1	dlrg005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlnk005c	Droid Equipment Blueprints	DLNK005C	Necklace	5	DLNK-005 C	52	1	dlnk005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlar005c	Droid Equipment Blueprints	DLAR005C	Breastplate	5	DLAR-005 C	52	1	dlar005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlhl005c	Droid Equipment Blueprints	DLHL005C	Helmet	5	DLHL-005 C	52	1	dlhl005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dlbr005c	Droid Equipment Blueprints	DLBR005C	Bracer	5	DLBR-005 C	52	1	dlbr005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															
+Engineering	recipe_dllg005c	Droid Equipment Blueprints	DLLG005C	Legging	5	DLLG-005 C	52	1	dllg005c	Armor	2	elec_high	20	ref_jasioclase	20	chiro_shard	1															

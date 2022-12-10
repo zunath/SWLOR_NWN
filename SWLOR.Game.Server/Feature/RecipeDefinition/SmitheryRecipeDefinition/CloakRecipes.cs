@@ -439,6 +439,45 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Cloak
+            _builder.Create(RecipeType.ChaosCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("ch_cloak")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Cloak
+            _builder.Create(RecipeType.MagusCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("mag_cloak")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Cloak
+            _builder.Create(RecipeType.ImmortalCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("imm_cloak")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 1);
         }
     }
 }

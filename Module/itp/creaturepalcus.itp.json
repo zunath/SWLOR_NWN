@@ -7418,6 +7418,25 @@
                       "type": "resref",
                       "value": "wook_warrior"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yastin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yastin_fettias"
+                    }
                   }
                 ]
               },
@@ -10026,7 +10045,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 127.0
+                      "value": 128.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10058,6 +10077,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathturtle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jungle Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathswampland"
                     }
                   },
                   {
@@ -10178,7 +10216,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 84.0
+                      "value": 64.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10210,25 +10248,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathssurian"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 58.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Swampland Bug"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathswampland"
                     }
                   }
                 ]

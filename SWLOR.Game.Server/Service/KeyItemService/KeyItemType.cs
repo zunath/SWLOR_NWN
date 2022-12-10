@@ -132,6 +132,25 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         MonCalaSharptoothJunglesMap = 59,
         [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sharptooth Caverns Map", true, "Map of the Sharptooth Caverns on Mon Cala.")]
         MonCalaSharptoothCavernsMap = 60,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir Orbit Map", true, "Map of the space surrounding Dathomir.")]
+        DathomirOrbitMap = 61,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Cave Ruins Map", true, "Map of the Cave Ruins on Dathomir.")]
+        DathomirCaveRuinsMap = 62,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Desert Map", true, "Map of the Deserts on Dathomir.")]
+        DathomirDesertMap = 63,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Grottos Map", true, "Map of the Grottos on Dathomir.")]
+        DathomirGrottosMap = 64,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Grotto Caverns Map", true, "Map of the Grotto Caverns on Dathomir.")]
+        DathomirGrottoCavernsMap = 65,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Jungles Map", true, "Map of the Jungles on Dathomir.")]
+        DathomirJunglesMap = 66,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Mountains Map", true, "Map of the Mountain region on Dathomir.")]
+        DathomirMountainsMap = 67,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Ruins Base Map", true, "Map of the Ruins Base on Dathomir.")]
+        DathomirRuinsBaseMap = 68,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Tribes Village Map", true, "Map of the Tribes Village on Dathomir.")]
+        DathomirTribeVillageMap = 69,
     }
 
     public class KeyItemAttribute : Attribute

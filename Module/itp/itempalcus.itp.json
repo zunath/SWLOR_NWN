@@ -2237,6 +2237,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chaos Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ch_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Combat Tunic"
                     },
                     "RESREF": {
@@ -2303,6 +2314,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLAR-001"
                     },
                     "RESREF": {
@@ -2352,6 +2385,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005k"
                     }
                   },
                   {
@@ -2424,6 +2479,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Immortal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imm_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Inquisitor Tunic"
                     },
                     "RESREF": {
@@ -2440,6 +2506,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_justinaarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_heavy_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Hyper Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_hyper_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Light Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_light_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Magus Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mag_tunic"
                     }
                   },
                   {
@@ -2814,6 +2924,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chaos Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ch_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Combat Cap"
                     },
                     "RESREF": {
@@ -2924,6 +3045,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLHL-001"
                     },
                     "RESREF": {
@@ -2973,6 +3116,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlhl005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005k"
                     }
                   },
                   {
@@ -3111,6 +3276,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Immortal Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imm_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Inquisitor Cap"
                     },
                     "RESREF": {
@@ -3138,6 +3314,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keyanzionehood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Hyper Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_hyper_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Light Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_light_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Magus Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mag_cap"
                     }
                   },
                   {
@@ -5320,11 +5540,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Shield"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_shield"
                           }
                         },
                         {
@@ -11012,6 +11254,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Belt"
                           },
                           "RESREF": {
@@ -11078,6 +11331,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBE-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLBE-001"
                           },
                           "RESREF": {
@@ -11127,6 +11402,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlbe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005k"
                           }
                         },
                         {
@@ -11221,11 +11518,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Belt"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_belt"
                           }
                         },
                         {
@@ -11446,6 +11798,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Boots"
                           },
                           "RESREF": {
@@ -11512,6 +11875,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHLG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLLG-001"
                           },
                           "RESREF": {
@@ -11561,6 +11946,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dllg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005k"
                           }
                         },
                         {
@@ -11666,11 +12073,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Boots"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_leg"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_boots"
                           }
                         },
                         {
@@ -11869,6 +12331,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHBR-001"
                           },
                           "RESREF": {
@@ -11924,6 +12397,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBR-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Bracer"
                           },
                           "RESREF": {
@@ -11973,6 +12468,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_bracer"
                           }
                         },
                         {
@@ -12094,6 +12600,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Cloak"
                           },
                           "RESREF": {
@@ -12160,6 +12677,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHCL-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLCL-001"
                           },
                           "RESREF": {
@@ -12209,6 +12748,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlcl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005k"
                           }
                         },
                         {
@@ -12314,6 +12875,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Cloak"
                           },
                           "RESREF": {
@@ -12330,6 +12902,50 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_h_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_cloak"
                           }
                         },
                         {
@@ -12583,6 +13199,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DLBR-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Flesheater Gloves"
                           },
                           "RESREF": {
@@ -12627,11 +13265,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Gloves"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_gloves"
                           }
                         },
                         {
@@ -14459,6 +15141,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cereal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chiro_shard"
                     }
                   },
                   {
@@ -16406,6 +17099,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_cluster_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Green Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grn_shell_shard"
                     }
                   },
                   {
@@ -21109,6 +21813,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Red Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "red_shell_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Refined Arkoxit"
                     },
                     "RESREF": {
@@ -24365,6 +25080,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "White Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "whit_shell_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wild Blood"
                     },
                     "RESREF": {
@@ -24546,6 +25272,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "milk_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yellow Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yell_shell_shard"
                     }
                   },
                   {
@@ -24897,6 +25634,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Necklace"
                           },
                           "RESREF": {
@@ -24963,6 +25711,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLNK-001"
                           },
                           "RESREF": {
@@ -25012,6 +25782,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005k"
                           }
                         },
                         {
@@ -25106,11 +25898,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Necklace"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_necklace"
                           }
                         },
                         {
@@ -25364,6 +26211,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Ring"
                           },
                           "RESREF": {
@@ -25430,6 +26288,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLRG-001"
                           },
                           "RESREF": {
@@ -25479,6 +26359,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlrg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005k"
                           }
                         },
                         {
@@ -25573,11 +26475,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Ring"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_ring"
                           }
                         },
                         {
@@ -27063,6 +28020,589 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Chaos Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbracer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbreast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chlegg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Shield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chshield"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chielec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Great Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chigswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Katar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chikatar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Knife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chiknife"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Longsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chilngswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chipistol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chirifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chishuri"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chispear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chistaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitwinbl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhlg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dllg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imgloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imtunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mggloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgtunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Sith Electroblade"
                     },
                     "RESREF": {
@@ -27222,6 +28762,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Cave Ruins Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_62"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Desert Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_63"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grotto Caverns Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_65"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grottos Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_64"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Jungles Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_66"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Mountains Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_67"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Ruins Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_68"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Tribes Village Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_69"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_61"
                     }
                   },
                   {
@@ -30648,6 +32287,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Knife"
                           },
                           "RESREF": {
@@ -30708,6 +32358,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_knife_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_knife"
                           }
                         },
                         {
@@ -30961,6 +32622,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Great Sword"
                           },
                           "RESREF": {
@@ -31032,6 +32704,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_greatsword_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_greatsword"
                           }
                         },
                         {
@@ -31285,6 +32968,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chiro Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Darth Gravius's Lightsaber"
                           },
                           "RESREF": {
@@ -31488,6 +33193,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_longsword_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_longsword"
                           }
                         },
                         {
@@ -31796,6 +33523,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Katar"
                           },
                           "RESREF": {
@@ -31867,6 +33605,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "pil_joleesaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_katar"
                           }
                         },
                         {
@@ -32369,6 +34118,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_twinelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Delta Staff"
                     },
                     "RESREF": {
@@ -32550,6 +34332,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_twinelec_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_twinelec"
                     }
                   },
                   {
@@ -33660,6 +35475,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Clan Lsu Polearm"
                     },
                     "RESREF": {
@@ -33731,6 +35557,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_spear_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_spear"
                     }
                   },
                   {
@@ -34180,6 +36017,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "CZ-220 Droid Pistol"
                           },
                           "RESREF": {
@@ -34295,6 +36143,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_pistol_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_pistol"
                           }
                         },
                         {
@@ -34559,6 +36418,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Rifle"
                           },
                           "RESREF": {
@@ -34619,6 +36489,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_rifle_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_rifle"
                           }
                         },
                         {
@@ -34835,6 +36716,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Delta Shuriken"
                     },
                     "RESREF": {
@@ -34895,6 +36787,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_shuriken_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_shuriken"
                     }
                   },
                   {

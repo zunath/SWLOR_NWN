@@ -84,6 +84,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("hyphae_wood", 1);
+
+            // Chiro Katar
+            _builder.Create(RecipeType.ChiroKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("chi_katar")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.MartialBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 10)
+                .Component("chiro_shard", 1);
         }
 
         private void Staffs()
@@ -153,6 +166,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
+
+            // Chiro Staff
+            _builder.Create(RecipeType.ChiroStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("chi_staff")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 10)
+                .Component("chiro_shard", 1);
         }
 
     }

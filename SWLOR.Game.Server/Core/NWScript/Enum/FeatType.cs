@@ -1846,5 +1846,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Rejuvenation = 1877,
         FrenziedShout = 1878,
 
+        Screech = 1882,
+        GreaterEarthquake = 1883,
+        FlameBlast = 1884,
+
     }
 }

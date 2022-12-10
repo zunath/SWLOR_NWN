@@ -25634,6 +25634,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Necklace"
                           },
                           "RESREF": {
@@ -25700,6 +25711,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHNK-005 K"
                           },
                           "RESREF": {
@@ -25760,6 +25782,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005c"
                           }
                         },
                         {
@@ -25865,6 +25898,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Necklace"
                           },
                           "RESREF": {
@@ -25903,6 +25947,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "kwi_light_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_necklace"
                           }
                         },
                         {
@@ -26156,6 +26211,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Ring"
                           },
                           "RESREF": {
@@ -26222,6 +26288,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHRG-005 K"
                           },
                           "RESREF": {
@@ -26282,6 +26359,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlrg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005c"
                           }
                         },
                         {
@@ -26387,6 +26475,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Ring"
                           },
                           "RESREF": {
@@ -26425,6 +26524,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "kwi_light_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_ring"
                           }
                         },
                         {

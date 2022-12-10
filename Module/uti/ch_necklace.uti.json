@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 781
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 19
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,18 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 782
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
+    "id": 56640,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,18 +42,19 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 56643,
     "type": "cexolocstring",
     "value": {
-      "0": "Chirodactyl Skin"
+      "0": "Chaos Necklace"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 80
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 21
   },
   "Plot": {
     "type": "byte",
@@ -71,7 +75,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 135
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -102,7 +106,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 135
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -129,11 +133,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 37
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -145,7 +149,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 90
         },
         "Subtype": {
           "type": "word",
@@ -160,11 +164,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 33
         },
         "CostValue": {
           "type": "word",
-          "value": 50
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -176,73 +180,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 100
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 41
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 100
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 98
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 2
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 51
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 105
         }
       }
     ]
@@ -257,10 +199,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "chirodactyl_skin"
+    "value": "ch_necklace"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "chirodactyl_skin"
+    "value": "ch_necklace"
   }
 }

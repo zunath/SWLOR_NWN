@@ -553,7 +553,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DATHOMIR_SWAMPLAND_BUG,100,1"
+          "value": "DATHOMIR_JUNGLE_BUG,100,1"
         }
       },
       {
@@ -568,7 +568,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DATHOMIR_SWAMPLAND_BUG,40,1"
+          "value": "DATHOMIR_JUNGLE_BUG,40,1"
         }
       },
       {
@@ -583,7 +583,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DATHOMIR_SWAMPLAND_BUG_RARES,5,1"
+          "value": "DATHOMIR_JUNGLE_BUG_RARES,5,1"
         }
       }
     ]

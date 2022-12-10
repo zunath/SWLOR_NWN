@@ -19,98 +19,418 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Sprantal();
             Squellbug();
             Ssurian();
-            SwamplandBug();
+            JungleBug();
 
             return _builder.Build();
         }
 
         private void Chirodactyl()
         {
-            _builder.Create("DATHOMIR_CHIRODACTYL");
+            _builder.Create("DATHOMIR_CHIRODACTYL")
+                .AddItem("fiberp_high", 20)
+                .AddItem("lth_high", 20)
+                .AddItem("wild_meat", 10)
+                .AddItem("wild_innards", 10)
+                .AddItem("chiro_shard", 1);
 
-            _builder.Create("DATHOMIR_CHIRODACTYL_RARES");
+            _builder.Create("DATHOMIR_CHIRODACTYL_RARES")
+                .IsRare()
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("chiro_shard", 1, 1, true);
+
+            _builder.Create("DATHOMIR_CHIRODACTYL_GEMS")
+                .AddItem("emerald", 100, 1, true)
+                .AddItem("chiro_shard", 50, 1, true);
+
+            _builder.Create("DATHOMIR_CHIRODACTYL_RECIPES");
         }
 
         private void DragonTurtle()
         {
-            _builder.Create("DATHOMIR_DRAGON_TURTLE");
+            _builder.Create("DATHOMIR_DRAGON_TURTLE")
+                .AddItem("fiberp_high", 1)
+                .AddItem("lth_high", 1)
+                .AddItem("wild_meat", 10)
+                .AddItem("wild_innards", 10);
 
-            _builder.Create("DATHOMIR_DRAGON_TURTLE_RARES");
+            _builder.Create("DATHOMIR_DRAGON_TURTLE_RARES")
+                .IsRare()
+                .AddItem("ruby", 20, 1, true)
+                .AddItem("emerald", 80, 1, true)
+                .AddItem("red_shell_shard", 1, 1, true)
+                .AddItem("whit_shell_shard", 1, 1, true)
+                .AddItem("grn_shell_shard", 1, 1, true)
+                .AddItem("yell_shell_shard", 1, 1, true);
         }
 
         private void KwiGuardian()
         {
-            _builder.Create("DATHOMIR_KWI_GUARDIAN");
+            _builder.Create("DATHOMIR_KWI_GUARDIAN")
+                .AddItem("fiberp_imperfect", 10)
+                .AddItem("fiberp_high", 1)
+                .AddItem("lth_imperfect", 10)
+                .AddItem("lth_high", 1);
 
-            _builder.Create("DATHOMIR_KWI_GUARDIAN_GEAR");
+            _builder.Create("DATHOMIR_KWI_GUARDIAN_GEAR")
+                .AddItem("kwi_knife", 20)
+                .AddItem("kwi_greatsword", 20)
+                .AddItem("kwi_longsword", 20)
+                .AddItem("kwi_katar", 20)
+                .AddItem("kwi_staff", 20)
+                .AddItem("kwi_twinblade", 20)
+                .AddItem("kwi_twinelec", 20)
+                .AddItem("kwi_spear", 20)
+                .AddItem("kwi_pistol", 20)
+                .AddItem("kwi_rifle", 20)
+                .AddItem("kwi_shield", 10)
+                .AddItem("kwi_h_cloak", 10)
+                .AddItem("dhcl005k", 10)
+                .AddItem("dlcl005k", 10)
+                .AddItem("kwi_hyper_cloak", 10)
+                .AddItem("kwi_light_cloak", 10)
+                .AddItem("dhbe005k", 10)
+                .AddItem("dlbe005k", 10)
+                .AddItem("kwi_heavy_belt", 10)
+                .AddItem("kwi_hyper_belt", 10)
+                .AddItem("kwi_light_belt", 10)
+                .AddItem("dhrg005k", 10)
+                .AddItem("dlrg005k", 10)
+                .AddItem("kwi_heavy_ring", 10)
+                .AddItem("kwi_hyper_ring", 10)
+                .AddItem("kwi_light_ring", 10)
+                .AddItem("dhnk005k", 10)
+                .AddItem("dlnk005k", 10)
+                .AddItem("kwi_heavy_neck", 10)
+                .AddItem("kwi_hyper_neck", 10)
+                .AddItem("kwi_light_neck", 10)
+                .AddItem("dhbr005k", 10)
+                .AddItem("kwi_heavy_bracer", 10)
+                .AddItem("dlbr005k", 10)
+                .AddItem("kwi_hyper_gloves", 10)
+                .AddItem("kwi_light_gloves", 10)
+                .AddItem("dhlg005k", 10)
+                .AddItem("dllg005k", 10)
+                .AddItem("kwi_heavy_leg", 10)
+                .AddItem("kwi_hyper_boots", 10)
+                .AddItem("kwi_light_boots", 10);
 
-            _builder.Create("DATHOMIR_KWI_GUARDIAN_GEAR_RARES");
+            _builder.Create("DATHOMIR_KWI_GUARDIAN_GEAR_RARES")
+                .AddItem("kwi_heavy_armor", 1)
+                .AddItem("kwi_hyper_tunic", 1)
+                .AddItem("kwi_light_tunic", 1)
+                .AddItem("dhar005k", 10)
+                .AddItem("dlar005k", 10)
+                .AddItem("dhhl005k", 10)
+                .AddItem("dlhl005k", 10)
+                .AddItem("kwi_heavy_helm", 10)
+                .AddItem("kwi_hyper_cap", 10)
+                .AddItem("kwi_light_cap", 10);
 
-            _builder.Create("DATHOMIR_KWI_GUARDIAN_RARES");
+            _builder.Create("DATHOMIR_KWI_GUARDIAN_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void KwiShaman()
         {
-            _builder.Create("DATHOMIR_KWI_SHAMAN");
+            _builder.Create("DATHOMIR_KWI_SHAMAN")
+                .AddItem("fiberp_imperfect", 10)
+                .AddItem("fiberp_high", 1)
+                .AddItem("lth_imperfect", 10)
+                .AddItem("lth_high", 1)
+                .AddItem("bread_flour", 5);
 
-            _builder.Create("DATHOMIR_KWI_SHAMAN_GEAR");
+            _builder.Create("DATHOMIR_KWI_SHAMAN_GEAR")
+                .AddItem("kwi_knife", 20)
+                .AddItem("kwi_greatsword", 20)
+                .AddItem("kwi_longsword", 20)
+                .AddItem("kwi_katar", 20)
+                .AddItem("kwi_staff", 20)
+                .AddItem("kwi_twinblade", 20)
+                .AddItem("kwi_twinelec", 20)
+                .AddItem("kwi_spear", 20)
+                .AddItem("kwi_pistol", 20)
+                .AddItem("kwi_rifle", 20)
+                .AddItem("kwi_shield", 10)
+                .AddItem("kwi_h_cloak", 10)
+                .AddItem("dhcl005k", 10)
+                .AddItem("dlcl005k", 10)
+                .AddItem("kwi_hyper_cloak", 10)
+                .AddItem("kwi_light_cloak", 10)
+                .AddItem("dhbe005k", 10)
+                .AddItem("dlbe005k", 10)
+                .AddItem("kwi_heavy_belt", 10)
+                .AddItem("kwi_hyper_belt", 10)
+                .AddItem("kwi_light_belt", 10)
+                .AddItem("dhrg005k", 10)
+                .AddItem("dlrg005k", 10)
+                .AddItem("kwi_heavy_ring", 10)
+                .AddItem("kwi_hyper_ring", 10)
+                .AddItem("kwi_light_ring", 10)
+                .AddItem("dhnk005k", 10)
+                .AddItem("dlnk005k", 10)
+                .AddItem("kwi_heavy_neck", 10)
+                .AddItem("kwi_hyper_neck", 10)
+                .AddItem("kwi_light_neck", 10)
+                .AddItem("dhbr005k", 10)
+                .AddItem("kwi_heavy_bracer", 10)
+                .AddItem("dlbr005k", 10)
+                .AddItem("kwi_hyper_gloves", 10)
+                .AddItem("kwi_light_gloves", 10)
+                .AddItem("dhlg005k", 10)
+                .AddItem("dllg005k", 10)
+                .AddItem("kwi_heavy_leg", 10)
+                .AddItem("kwi_hyper_boots", 10)
+                .AddItem("kwi_light_boots", 10);
 
-            _builder.Create("DATHOMIR_KWI_SHAMAN_GEAR_RARES");
+            _builder.Create("DATHOMIR_KWI_SHAMAN_GEAR_RARES")
+                .AddItem("kwi_heavy_armor", 1)
+                .AddItem("kwi_hyper_tunic", 1)
+                .AddItem("kwi_light_tunic", 1)
+                .AddItem("dhar005k", 10)
+                .AddItem("dlar005k", 10)
+                .AddItem("dhhl005k", 10)
+                .AddItem("dlhl005k", 10)
+                .AddItem("kwi_heavy_helm", 10)
+                .AddItem("kwi_hyper_cap", 10)
+                .AddItem("kwi_light_cap", 10);
 
-            _builder.Create("DATHOMIR_KWI_SHAMAN_RARES");
+            _builder.Create("DATHOMIR_KWI_SHAMAN_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void KwiTribal()
         {
-            _builder.Create("DATHOMIR_KWI_TRIBAL");
+            _builder.Create("DATHOMIR_KWI_TRIBAL")
+                .AddItem("fiberp_imperfect", 10)
+                .AddItem("fiberp_high", 1)
+                .AddItem("lth_imperfect", 10)
+                .AddItem("lth_high", 1)
+                .AddItem("bread_flour", 5);
 
-            _builder.Create("DATHOMIR_KWI_TRIBAL_GEAR");
+            _builder.Create("DATHOMIR_KWI_TRIBAL_GEAR")
+                .AddItem("kwi_knife", 20)
+                .AddItem("kwi_greatsword", 20)
+                .AddItem("kwi_longsword", 20)
+                .AddItem("kwi_katar", 20)
+                .AddItem("kwi_staff", 20)
+                .AddItem("kwi_twinblade", 20)
+                .AddItem("kwi_twinelec", 20)
+                .AddItem("kwi_spear", 20)
+                .AddItem("kwi_pistol", 20)
+                .AddItem("kwi_rifle", 20)
+                .AddItem("kwi_shield", 10)
+                .AddItem("kwi_h_cloak", 10)
+                .AddItem("dhcl005k", 10)
+                .AddItem("dlcl005k", 10)
+                .AddItem("kwi_hyper_cloak", 10)
+                .AddItem("kwi_light_cloak", 10)
+                .AddItem("dhbe005k", 10)
+                .AddItem("dlbe005k", 10)
+                .AddItem("kwi_heavy_belt", 10)
+                .AddItem("kwi_hyper_belt", 10)
+                .AddItem("kwi_light_belt", 10)
+                .AddItem("dhrg005k", 10)
+                .AddItem("dlrg005k", 10)
+                .AddItem("kwi_heavy_ring", 10)
+                .AddItem("kwi_hyper_ring", 10)
+                .AddItem("kwi_light_ring", 10)
+                .AddItem("dhnk005k", 10)
+                .AddItem("dlnk005k", 10)
+                .AddItem("kwi_heavy_neck", 10)
+                .AddItem("kwi_hyper_neck", 10)
+                .AddItem("kwi_light_neck", 10)
+                .AddItem("dhbr005k", 10)
+                .AddItem("kwi_heavy_bracer", 10)
+                .AddItem("dlbr005k", 10)
+                .AddItem("kwi_hyper_gloves", 10)
+                .AddItem("kwi_light_gloves", 10)
+                .AddItem("dhlg005k", 10)
+                .AddItem("dllg005k", 10)
+                .AddItem("kwi_heavy_leg", 10)
+                .AddItem("kwi_hyper_boots", 10)
+                .AddItem("kwi_light_boots", 10);
 
-            _builder.Create("DATHOMIR_KWI_TRIBAL_GEAR_RARES");
+            _builder.Create("DATHOMIR_KWI_TRIBAL_GEAR_RARES")
+                .AddItem("kwi_heavy_armor", 1)
+                .AddItem("kwi_hyper_tunic", 1)
+                .AddItem("kwi_light_tunic", 1)
+                .AddItem("dhar005k", 10)
+                .AddItem("dlar005k", 10)
+                .AddItem("dhhl005k", 10)
+                .AddItem("dlhl005k", 10)
+                .AddItem("kwi_heavy_helm", 10)
+                .AddItem("kwi_hyper_cap", 10)
+                .AddItem("kwi_light_cap", 10);
 
-            _builder.Create("DATHOMIR_KWI_TRIBAL_RARES");
+            _builder.Create("DATHOMIR_KWI_TRIBAL_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void Purbole()
         {
-            _builder.Create("DATHOMIR_PURBOLE");
+            _builder.Create("DATHOMIR_PURBOLE")
+                .AddItem("lth_imperfect", 5)
+                .AddItem("lth_high", 10)
+                .AddItem("wild_innards", 10);
 
-            _builder.Create("DATHOMIR_PURBOLE_RARES");
+            _builder.Create("DATHOMIR_PURBOLE_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void ShearMite()
         {
-            _builder.Create("DATHOMIR_SHEAR_MITE");
+            _builder.Create("DATHOMIR_SHEAR_MITE")
+                .AddItem("wild_innards", 10)
+                .AddItem("wild_blood", 2);
 
-            _builder.Create("DATHOMIR_SHEAR_MITE_RARES");
+            _builder.Create("DATHOMIR_SHEAR_MITE_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void Sprantal()
         {
-            _builder.Create("DATHOMIR_SPRANTAL");
+            _builder.Create("DATHOMIR_SPRANTAL")
+                .AddItem("lth_high", 5)
+                .AddItem("lth_imperfect", 10)
+                .AddItem("fiberp_high", 5)
+                .AddItem("fiberp_imperfect", 10);
 
-            _builder.Create("DATHOMIR_SPRANTAL_RARES");
+            _builder.Create("DATHOMIR_SPRANTAL_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void Squellbug()
         {
-            _builder.Create("DATHOMIR_SQUELLBUG");
+            _builder.Create("DATHOMIR_SQUELLBUG")
+                .AddItem("wild_innards", 10)
+                .AddItem("wild_leg", 5)
+                .AddItem("tomato", 1)
+                .AddItem("cultured_butter", 1);
 
-            _builder.Create("DATHOMIR_SQUELLBUG_RARES");
+            _builder.Create("DATHOMIR_SQUELLBUG_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
         private void Ssurian()
         {
-            _builder.Create("DATHOMIR_SSURIAN");
+            _builder.Create("DATHOMIR_SSURIAN")
+                .AddItem("lth_high", 10)
+                .AddItem("lth_imperfect", 5)
+                .AddItem("fiberp_high", 10)
+                .AddItem("fiberp_imperfect", 5);
 
-            _builder.Create("DATHOMIR_SSURIAN_RARES");
+            _builder.Create("DATHOMIR_SSURIAN_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
 
-        private void SwamplandBug()
+        private void JungleBug()
         {
-            _builder.Create("DATHOMIR_SWAMPLAND_BUG");
+            _builder.Create("DATHOMIR_JUNGLE_BUG")
+                .AddItem("wild_meat", 10)
+                .AddItem("herb_x", 5)
+                .AddItem("wild_leg", 2);
 
-            _builder.Create("DATHOMIR_SWAMPLAND_BUG_RARES");
+            _builder.Create("DATHOMIR_JUNGLE_BUG_RARES")
+                .IsRare()
+                .AddItem("ruby", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
         }
     }
 }

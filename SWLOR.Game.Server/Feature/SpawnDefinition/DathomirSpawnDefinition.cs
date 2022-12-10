@@ -127,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("DATHOMIR_GROTTOS_BOSS")
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
-                .WithFrequency(1);
+                .WithFrequency(1)
+                .RespawnDelay(480);
         }
 
         private void MountainCaves()

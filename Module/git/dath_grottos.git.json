@@ -31975,6 +31975,1770 @@
           "type": "float",
           "value": -0.4749999642372131
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 142.8145446777344
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 27.00370788574219
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 114.2357788085938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 27.5988883972168
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.4999995231628418
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 84.45893096923828
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 33.43647003173828
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5440425872802734
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.54748814559397e-013
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 101.943473815918
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 49.826171875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.003476053476333618
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.058794718164731e-022
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.98233413696289
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.10330200195313
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01126718521118164
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 2.465198851149705e-032
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 34.25468444824219
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 52.59111022949219
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.016263961791992
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 31.86922645568848
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 32.96028137207031
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.008692741394042969
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 41.22712707519531
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.23210525512695
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -2.384185791015625e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.605193857299268e-045
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 40.70212554931641
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 18.53802299499512
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.4999985694885254
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 8.407790785948902e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 49.73487091064453
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 29.05294036865234
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.541428310757299e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 149.5964965820313
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 76.84866333007813
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -3.576278686523438e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.821688003622262e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 143.3828582763672
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 86.30241394042969
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.3826870918273926
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.643376007244524e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 136.2368011474609
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 57.59114837646484
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2532167434692383
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.082856621514598e-043
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 57.59170150756836
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.24168395996094
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.009529676288366318
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.163077725389598e-043
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 53.64989852905273
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 113.5121688842773
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4054145812988281
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.503246160812043e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 39.26074600219727
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 115.99365234375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -4.76837158203125e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 9.80908925027372e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.47481727600098
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 127.8997497558594
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 3.576278686523438e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.74532370373175e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.42783927917481
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 150.0632781982422
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.885453550164232e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 7.731325149536133
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 162.0881500244141
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.76837158203125e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.885453550164232e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 11.72610378265381
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 184.6760559082031
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 8.940696716308594e-008
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 7.567011707354012e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.51031494140625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 150.0706176757813
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.005649358034133911
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.885453550164232e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 51.00668334960938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 174.8581237792969
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.08113765716552734
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.605193857299268e-045
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 75.89464569091797
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 181.7756805419922
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.008428215980529785
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 2.382207389352189e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 66.62694549560547
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 171.9617614746094
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.07983899116516113
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 2.522337235784671e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 84.88697814941406
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 182.5226593017578
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4855408668518066
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 101.662353515625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 103.940788269043
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.05298995971679688
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottos"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 108.0370559692383
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 102.1874237060547
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01203060150146484
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos Boss"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS_BOSS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottosboss"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.04906796291470528
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 59.60540771484375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.9987954497337341
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 170.3721466064453
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   }

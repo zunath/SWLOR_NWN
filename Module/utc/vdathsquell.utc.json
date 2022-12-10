@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3430
+    "value": 3428
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 84.0
+    "value": 64.0
   },
   "ClassList": {
     "type": "list",
@@ -557,7 +557,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",

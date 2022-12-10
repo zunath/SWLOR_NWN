@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 127.0
+    "value": 128.0
   },
   "ClassList": {
     "type": "list",
@@ -111,7 +111,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1745
+          "value": 1884
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1883
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1882
         }
       },
       {

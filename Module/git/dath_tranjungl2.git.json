@@ -20362,6 +20362,21 @@
           "type": "int",
           "value": 105
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_TARNISHED_JUNGLES_NORTH_RESOURCES"
+        }
       }
     ]
   },

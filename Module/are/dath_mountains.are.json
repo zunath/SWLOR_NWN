@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Dath"
+    "value": "dath_mountains"
   },
   "Tile_List": {
     "type": "list",
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 14
   },
   "Width": {
     "type": "int",

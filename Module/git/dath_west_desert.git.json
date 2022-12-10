@@ -711,6 +711,21 @@
           "type": "int",
           "value": 102
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_DESERT_WEST_SIDE_RESOURCES"
+        }
       }
     ]
   },

@@ -14806,6 +14806,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chiro_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cinnamon I"
                     },
                     "RESREF": {
@@ -27554,6 +27565,413 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbracer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbreast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chlegg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Shield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chshield"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chielec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Great Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chigswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Katar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chikatar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Knife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chiknife"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Longsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chilngswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chipistol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chirifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chishuri"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chispear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chistaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitwinbl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imgloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imtunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mggloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgtunic"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

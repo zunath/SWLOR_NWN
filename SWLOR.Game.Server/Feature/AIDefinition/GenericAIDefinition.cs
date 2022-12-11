@@ -486,6 +486,28 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.ThrowRock5, target);
             }
 
+            // Force Drain
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain1, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain1, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain2, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain3, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain4, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain5, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain5, target);
+            }
+
             // Force Push
             if (CheckIfCanUseFeat(self, target, FeatType.ForcePush1))
             {

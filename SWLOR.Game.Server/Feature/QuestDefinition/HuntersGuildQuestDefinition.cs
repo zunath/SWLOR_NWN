@@ -157,7 +157,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Tier 5 (Rank 4)
             BuildItemTask("hun_tsk_800", "diamond", 3, 4);
             BuildItemTask("hun_tsk_801", "elec_high", 10, 4);
-            BuildItemTask("hun_tsk_802", "emerald", 6, 3);
+            BuildItemTask("hun_tsk_802", "emerald", 6, 4);
+            BuildKillTask("hun_tsk_803", NPCGroupType.Dathomir_DragonTurtle, 10, 4);
+            BuildKillTask("hun_tsk_804", NPCGroupType.Dathomir_KwiGuardian, 10, 4);
+            BuildKillTask("hun_tsk_805", NPCGroupType.Dathomir_KwiShaman, 10, 4);
+            BuildKillTask("hun_tsk_806", NPCGroupType.Dathomir_KwiTribal, 10, 4);
+            BuildKillTask("hun_tsk_807", NPCGroupType.Dathomir_Purbole, 10, 4);
+            BuildKillTask("hun_tsk_808", NPCGroupType.Dathomir_ShearMite, 10, 4);
+            BuildKillTask("hun_tsk_809", NPCGroupType.Dathomir_Sprantal, 10, 4);
+            BuildKillTask("hun_tsk_810", NPCGroupType.Dathomir_Squellbug, 10, 4);
+            BuildKillTask("hun_tsk_811", NPCGroupType.Dathomir_Ssurian, 10, 4);
+            BuildKillTask("hun_tsk_812", NPCGroupType.Dathomir_SwamplandBug, 10, 4);
 
 
             return _builder.Build();

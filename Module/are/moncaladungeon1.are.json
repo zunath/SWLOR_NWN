@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mon Cala - Sharptooth Jungles - Caves"
+      "0": "Mon Cala - Sharptooth Jungle - Caves"
     }
   },
   "NoRest": {
@@ -8546,7 +8546,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 17
+    "value": 18
   },
   "Width": {
     "type": "int",

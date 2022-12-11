@@ -14861,11 +14861,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bastion Sweeper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bast_sweeper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Beetle Chitin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "beetle_chitin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bibikibo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bibikibo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blindfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blindfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blowfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blowfish"
                     }
                   },
                   {
@@ -14910,6 +14954,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "boncexdryn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bonefish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bonefish"
                     }
                   },
                   {
@@ -15070,6 +15125,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cala Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cala_lobster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carnuinch"
                     },
                     "RESREF": {
@@ -15141,6 +15207,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cereal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cheval Salmon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cheval_salmon"
                     }
                   },
                   {
@@ -15284,6 +15361,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cloves_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cobalt Jellyfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cobalt_jellyfish"
                     }
                   },
                   {
@@ -15972,6 +16060,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Copper Frog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "copper_frog"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Copplan Coolant"
                     },
                     "RESREF": {
@@ -16137,6 +16236,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crayfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crayfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Creamy Butter"
                     },
                     "RESREF": {
@@ -16153,6 +16263,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_bass"
                     }
                   },
                   {
@@ -16313,11 +16434,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dark Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir Oregano"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_x"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Deadmoiselle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "deadmoiselle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Denizanasi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "denizanasi"
                     }
                   },
                   {
@@ -16549,6 +16714,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_fa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fat Greedie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fat_greedie"
                     }
                   },
                   {
@@ -16874,6 +17050,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Forest Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forest_carp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Foul Smelling Meat"
                     },
                     "RESREF": {
@@ -16907,6 +17094,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Frigorifish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frigorifish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Furniture"
                     },
                     "RESREF": {
@@ -16923,6 +17121,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gemstone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Giant Catfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "giant_catfish"
                     }
                   },
                   {
@@ -17061,6 +17270,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Greedie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "greedie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Greel Tree Seeds"
                     },
                     "RESREF": {
@@ -17121,6 +17341,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gunuinch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gurnard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gurnard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hamsi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hamsi"
                     }
                   },
                   {
@@ -17264,6 +17506,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "homogoni_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hoptoad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hoptoad"
                     }
                   },
                   {
@@ -19987,6 +20240,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Istavrit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "istavrit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jade"
                     },
                     "RESREF": {
@@ -20240,6 +20504,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lakerda"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lakerda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lamp Marimo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lamp_marimo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lankky"
                     },
                     "RESREF": {
@@ -20339,11 +20625,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lungfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lungfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Luusntan"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "luusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mackerel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mackerel"
                     }
                   },
                   {
@@ -20625,6 +20933,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moat Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moat_carp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Module Enhancement - Module Bonus I"
                     },
                     "RESREF": {
@@ -20691,6 +21010,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moorish Idol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moorish_idol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moraband Serpent Bile"
                     },
                     "RESREF": {
@@ -20718,6 +21048,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mserp_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Muddy Siredon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "muddy_siredon"
                     }
                   },
                   {
@@ -20856,6 +21197,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nebimonite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nebimonite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nibullan"
                     },
                     "RESREF": {
@@ -20911,11 +21263,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nosteau Herring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nosteau_herring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Obsidian"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "obsidian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ogre Eel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ogre_eel"
                     }
                   },
                   {
@@ -21191,6 +21565,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_pe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Phanauet Newt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "phan_newt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pipira"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pipira"
                     }
                   },
                   {
@@ -21560,6 +21956,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Quus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rainbow Coonlank"
                     },
                     "RESREF": {
@@ -21664,6 +22071,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raivor_tail_bone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ra'Kaznar Shellfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rakaz_shellfish"
                     }
                   },
                   {
@@ -22209,6 +22627,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ruddy Seema"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ruddy_seema"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ruined Electronics"
                     },
                     "RESREF": {
@@ -22451,6 +22880,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Senroh Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shaft"
                     },
                     "RESREF": {
@@ -22467,6 +22907,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shat_beetle_chit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shining Trout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shining_trout"
                     }
                   },
                   {
@@ -23650,6 +24101,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tiger Cod"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_cod"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tilarium Ore"
                     },
                     "RESREF": {
@@ -23666,6 +24128,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tinnuchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tiny Goldfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiny_goldfish"
                     }
                   },
                   {
@@ -23710,6 +24183,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Translucent Salpa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trans_salpa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tricolored Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tricolored_carp"
                     }
                   },
                   {
@@ -24040,6 +24535,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "berry_fruit_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Urchin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "visc_urchin"
                     }
                   },
                   {
@@ -25080,6 +25586,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "White Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "white_lobster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "White Shell Shard"
                     },
                     "RESREF": {
@@ -25245,6 +25762,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yayinbaligi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yayinbaligi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yellow Coonlank"
                     },
                     "RESREF": {
@@ -25261,6 +25789,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_cluster_yellow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yellow Globe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yellow_globe"
                     }
                   },
                   {
@@ -25300,11 +25839,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yorchete"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yorchete"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yuusntan"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "yuusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zafmlug Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zafmlug_bass"
                     }
                   },
                   {

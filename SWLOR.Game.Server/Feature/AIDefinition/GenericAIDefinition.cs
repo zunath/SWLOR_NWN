@@ -32,7 +32,106 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             var lowestHPAllyRace = GetRacialType(lowestHPAlly);
             var allyCount = allies.Count;
             var activeConcentration = Ability.GetActiveConcentration(self).Feat;
-            
+
+            // Benevolence
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence3, lowestHPAlly);
+            }
+
+            // Force Heal
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal1, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal2, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal3, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal4, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal5, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal5, lowestHPAlly);
+            }
+
+            // Medkit
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit4, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit5, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit5, lowestHPAlly);
+            }
+
+            // Kolto Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb3, lowestHPAlly);
+            }
+
+            // Kolto Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade3, lowestHPAlly);
+            }
+
+            // Kolto Recovery
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery1, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery3, lowestHPAlly);
+            }
 
             // Battle Insight
             if (CheckIfCanUseFeat(self, self, FeatType.BattleInsight2, () => allyCount >= 1 && activeConcentration == FeatType.Invalid))
@@ -184,58 +283,16 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.IonGrenade3, target);
             }
 
-            // Kolto Bomb
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoBomb1, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoBomb1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoBomb2, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoBomb2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoBomb3, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoBomb3, lowestHPAlly);
-            }
-
-            // Kolto Grenade
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoGrenade1, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoGrenade1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoGrenade2, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoGrenade2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoGrenade3, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoGrenade3, lowestHPAlly);
-            }
-
-            // Kolto Grenade
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoRecovery1, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoRecovery1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoRecovery2, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoRecovery2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.KoltoRecovery3, () => allyHPPercentage < 100))
-            {
-                return (FeatType.KoltoRecovery3, lowestHPAlly);
-            }
-
             // Smoke Bomb
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.SmokeBomb1, () => allyHPPercentage < 50))
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb1, () => allyHPPercentage < 50))
             {
                 return (FeatType.SmokeBomb1, lowestHPAlly);
             }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.SmokeBomb2, () => allyHPPercentage < 50))
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb2, () => allyHPPercentage < 50))
             {
                 return (FeatType.SmokeBomb2, lowestHPAlly);
             }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.SmokeBomb3, () => allyHPPercentage < 50))
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb3, () => allyHPPercentage < 50))
             {
                 return (FeatType.SmokeBomb3, lowestHPAlly);
             }
@@ -282,42 +339,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.CombatEnhancement3, self);
             }
 
-            // Medkit
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.MedKit1, () => allyHPPercentage < 100))
-            {
-                return (FeatType.MedKit1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.MedKit2, () => allyHPPercentage < 100))
-            {
-                return (FeatType.MedKit2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.MedKit3, () => allyHPPercentage < 100))
-            {
-                return (FeatType.MedKit3, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.MedKit4, () => allyHPPercentage < 100))
-            {
-                return (FeatType.MedKit4, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.MedKit5, () => allyHPPercentage < 100))
-            {
-                return (FeatType.MedKit5, lowestHPAlly);
-            }
-
-            // Resuscitation
-            if(CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Resuscitation1, () => allyHPPercentage <= 0))
-            {
-                return (FeatType.Resuscitation1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Resuscitation2, () => allyHPPercentage <= 0))
-            {
-                return (FeatType.Resuscitation2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Resuscitation3, () => allyHPPercentage <= 0))
-            {
-                return (FeatType.Resuscitation3, lowestHPAlly);
-            }
-
             // Shielding
             if (CheckIfCanUseFeat(self, self, FeatType.Shielding1))
             {
@@ -348,20 +369,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (CheckIfCanUseFeat(self, self, FeatType.StasisField3))
             {
                 return (FeatType.StasisField3, self);
-            }
-
-            // Benevolence
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Benevolence1, () => allyHPPercentage < 100))
-            {
-                return (FeatType.Benevolence1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Benevolence2, () => allyHPPercentage < 100))
-            {
-                return (FeatType.Benevolence2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.Benevolence3, () => allyHPPercentage < 100))
-            {
-                return (FeatType.Benevolence3, lowestHPAlly);
             }
 
             // Creeping Terror
@@ -404,28 +411,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (CheckIfCanUseFeat(self, target, FeatType.ForceSpark3))
             {
                 return (FeatType.ForceSpark3, target);
-            }
-
-            // Throw Lightsaber
-            if (CheckIfCanUseFeat(self, target, FeatType.ThrowLightsaber1))
-            {
-                return (FeatType.ThrowLightsaber1, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.ThrowLightsaber2))
-            {
-                return (FeatType.ThrowLightsaber2, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.ThrowLightsaber3))
-            {
-                return (FeatType.ThrowLightsaber3, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.ThrowLightsaber4))
-            {
-                return (FeatType.ThrowLightsaber4, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.ThrowLightsaber5))
-            {
-                return (FeatType.ThrowLightsaber5, target);
             }
 
             // Force Lightning
@@ -526,28 +511,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.ForcePush4, target);
             }
 
-            // Force Heal
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.ForceHeal1, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
-            {
-                return (FeatType.ForceHeal1, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.ForceHeal2, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
-            {
-                return (FeatType.ForceHeal2, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.ForceHeal3, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
-            {
-                return (FeatType.ForceHeal3, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.ForceHeal4, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
-            {
-                return (FeatType.ForceHeal4, lowestHPAlly);
-            }
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.ForceHeal5, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
-            {
-                return (FeatType.ForceHeal5, lowestHPAlly);
-            }
-
             // Force Inspiration
             if (CheckIfCanUseFeat(self, self, FeatType.ForceInspiration1))
             {
@@ -602,12 +565,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (CheckIfCanUseFeat(self, self, FeatType.SoldiersSpeed))
             {
                 return (FeatType.SoldiersSpeed, self);
-            }
-
-            // Rousing Shout
-            if (CheckIfCanUseFeat(self, lowestHPAlly, FeatType.RousingShout, () => allyHPPercentage <= 0))
-            {
-                return (FeatType.RousingShout, lowestHPAlly);
             }
 
             // Mind Trick

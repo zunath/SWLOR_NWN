@@ -6,12 +6,6 @@ namespace SWLOR.Game.Server.Service.FishingService
 {
     public class FishingLocationDetail
     {
-        private class FishDetail
-        {
-            public FishType Type { get; set; }
-            public int Weight { get; set; }
-        }
-
         private readonly Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> _fishMap = new();
 
         /// <summary>

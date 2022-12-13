@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Service.ItemService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
-        private static Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
+        private static readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";
         public const string RemainingBaitVariable = "REMAINING_BAIT";
@@ -81,8 +82,20 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadFishingLocations()
         {
-            var definition = new FishingLocationDefinition();
-            _fishingLocations = definition.Create();
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IFishingLocationDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
+            {
+                var instance = (IFishingLocationDefinition)Activator.CreateInstance(type);
+                var fishingLocations = instance.Build();
+
+                foreach (var (locationType, locationDetail) in fishingLocations)
+                {
+                    _fishingLocations[locationType] = locationDetail;
+                }
+            }
         }
 
         /// <summary>

@@ -5,19 +5,22 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Fishing
     {
+        private static readonly Dictionary<FishType, FishAttribute> _fish = new();
+        private static readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
         private static readonly Dictionary<FishingBaitType, FishingBaitAttribute> _baits = new();
+
+        private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
+        private static Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";
         public const string RemainingBaitVariable = "REMAINING_BAIT";
@@ -27,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private const string FishingPositionVariableZ = "FISHING_POSITION_Z";
         private const string FishingPointVariable = "FISHING_POINT";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
+        private const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
         public const string FishingRodTag = "FISHING_ROD";
 
         /// <summary>
@@ -34,6 +38,36 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
+        {
+            LoadFish();
+            LoadRods();
+            LoadBaits();
+            LoadFishingLocations();
+        }
+
+        private static void LoadFish()
+        {
+            var fishes = Enum.GetValues(typeof(FishType)).Cast<FishType>();
+            foreach (var fish in fishes)
+            {
+                var fishDetail = fish.GetAttribute<FishType, FishAttribute>();
+                _fish[fish] = fishDetail;
+            }
+        }
+
+        private static void LoadRods()
+        {
+            var rods = Enum.GetValues(typeof(FishingRodType)).Cast<FishingRodType>();
+            foreach (var rod in rods)
+            {
+                var rodDetail = rod.GetAttribute<FishingRodType, FishingRodAttribute>();
+                _rods[rod] = rodDetail;
+
+                _rodsByResref[rodDetail.Resref] = rod;
+            }
+        }
+
+        private static void LoadBaits()
         {
             var baits = Enum.GetValues(typeof(FishingBaitType)).Cast<FishingBaitType>();
             foreach (var bait in baits)
@@ -43,6 +77,12 @@ namespace SWLOR.Game.Server.Service
 
                 _baitsByResref[baitDetail.Resref] = bait;
             }
+        }
+
+        private static void LoadFishingLocations()
+        {
+            var definition = new FishingLocationDefinition();
+            _fishingLocations = definition.Create();
         }
 
         /// <summary>
@@ -168,6 +208,9 @@ namespace SWLOR.Game.Server.Service
                 GetLocalFloat(player, FishingPositionVariableZ)
             );
             var position = GetPosition(player);
+            var locationId = (FishingLocationType)GetLocalInt(fishingPoint, FishingPointLocationVariable);
+            var rod = GetItemInSlot(InventorySlot.RightHand, player);
+            var rodResref = GetResRef(rod);
 
             ClearFishingAttempt(player);
 
@@ -185,6 +228,43 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (!GetIsObjectValid(rod) ||
+                GetTag(rod) != FishingRodTag)
+            {
+                SendMessageToPC(player, "A fishing rod must be equipped.");
+                return;
+            }
+
+            if (locationId == FishingLocationType.Invalid)
+            {
+                SendMessageToPC(player, "Invalid location Id for this fishing point. Please report this with the /bug chat command.");
+                return;
+            }
+
+            if (!_fishingLocations.ContainsKey(locationId))
+            {
+                SendMessageToPC(player, "Valid location Id but no fish are assigned to this point. Please report this with the /bug chat command.");
+                return;
+            }
+
+            if (!_rodsByResref.ContainsKey(rodResref))
+            {
+                SendMessageToPC(player, "Fishing rod is not registered in the system. Please report this with the /bug chat command.");
+                return;
+            }
+
+            var rodType = _rodsByResref[rodResref];
+            var baitType = GetLoadedBait(rod);
+            var locationDetail = _fishingLocations[locationId];
+            var fishType = locationDetail.GetRandomFish(rodType, baitType);
+            var fish = _fish[fishType];
+
+            // todo: determine chance to pull in fish based on fish level vs skill level
+
+            CreateItemOnObject(fish.Resref, player);
+            SendMessageToPC(player, $"You landed a {fish.Name}!");
+
+            // todo: determine fishing location exhaustion
         }
 
         private static void ClearFishingAttempt(uint player)

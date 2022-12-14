@@ -22,7 +22,9 @@ namespace SWLOR.Game.Server.Service.FishingService
                 return FishType.Invalid;
 
             var availableFish = _fishMap[key];
-            var weights = availableFish.Select(s => s.Weight).ToArray();
+            var weights = availableFish
+                    // todo: filter by time of day
+                .Select(s => s.Frequency).ToArray();
             var selectedIndex = Random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
 
@@ -34,24 +36,18 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         /// <param name="rodType">The type of rod to associate with this fish.</param>
         /// <param name="baitType">The type of bait to associate with this fish.</param>
-        /// <param name="fishType">The type of fish to associate.</param>
-        /// <param name="weight">The weighted chance of this fish appearing when this rod and bait type are used.</param>
+        /// <param name="fish">The fish detail to add to the list.</param>
         public void AddFish(
             FishingRodType rodType, 
             FishingBaitType baitType, 
-            FishType fishType,
-            int weight)
+            FishDetail fish)
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);
 
             if (!_fishMap.ContainsKey(key))
                 _fishMap[key] = new List<FishDetail>();
 
-            _fishMap[key].Add(new FishDetail
-            {
-                Type = fishType,
-                Weight = weight
-            });
+            _fishMap[key].Add(fish);
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.FishingService
 {
@@ -115,12 +116,18 @@ namespace SWLOR.Game.Server.Service.FishingService
         public string Name { get; set; }
         public string Resref { get; set; }
         public int Level { get; set; }
+        public ObjectType ObjectType { get; set; }
 
-        public FishAttribute(string name, string resref, int level)
+        public FishAttribute(
+            string name, 
+            string resref, 
+            int level,
+            ObjectType objectType = ObjectType.Item)
         {
             Name = name;
             Resref = resref;
             Level = level;
+            ObjectType = objectType;
         }
     }
 }

@@ -16,9 +16,40 @@ namespace SWLOR.Game.Server.Service.FishingService
             return this;
         }
 
-        public FishingLocationBuilder AddFish()
+        public FishingLocationBuilder AddFish(
+            FishType fishType, 
+            FishingRodType rodType, 
+            FishingBaitType baitType)
         {
-            _activeFishDetail = new FishDetail();
+            _activeFishDetail = new FishDetail
+            {
+                Type = fishType,
+                Frequency = 1,
+                TimeOfDay = FishTimeOfDayType.All
+            };
+
+            _activeDetail.AddFish(rodType, baitType, _activeFishDetail);
+
+            return this;
+        }
+
+        public FishingLocationBuilder Frequency(int frequency)
+        {
+            _activeFishDetail.Frequency = frequency;
+
+            return this;
+        }
+
+        public FishingLocationBuilder DaytimeOnly()
+        {
+            _activeFishDetail.TimeOfDay = FishTimeOfDayType.Daytime;
+
+            return this;
+        }
+
+        public FishingLocationBuilder NighttimeOnly()
+        {
+            _activeFishDetail.TimeOfDay = FishTimeOfDayType.Nighttime;
 
             return this;
         }

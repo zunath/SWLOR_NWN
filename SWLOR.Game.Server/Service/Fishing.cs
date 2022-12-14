@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Service
                 var fishDetail = fish.GetAttribute<FishType, FishAttribute>();
                 _fish[fish] = fishDetail;
             }
+
+            Console.WriteLine($"Loaded {_fish.Count} fish.");
         }
 
         private static void LoadRods()
@@ -66,6 +68,8 @@ namespace SWLOR.Game.Server.Service
 
                 _rodsByResref[rodDetail.Resref] = rod;
             }
+
+            Console.WriteLine($"Loaded {_rods.Count} fishing rods.");
         }
 
         private static void LoadBaits()
@@ -78,6 +82,8 @@ namespace SWLOR.Game.Server.Service
 
                 _baitsByResref[baitDetail.Resref] = bait;
             }
+
+            Console.WriteLine($"Loaded {_baits.Count} fishing baits.");
         }
 
         private static void LoadFishingLocations()
@@ -96,6 +102,8 @@ namespace SWLOR.Game.Server.Service
                     _fishingLocations[locationType] = locationDetail;
                 }
             }
+
+            Console.WriteLine($"Loaded {_fishingLocations.Count} fishing locations.");
         }
 
         /// <summary>

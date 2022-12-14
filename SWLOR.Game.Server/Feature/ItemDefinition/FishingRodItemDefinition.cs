@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         !Fishing.IsItemBait(target))
                         return "Only bait may be selected.";
 
+                    if (GetItemPossessor(target) != user)
+                        return "Bait must be located within your inventory.";
+
                     return string.Empty;
                 })
                 .ApplyAction((user, item, target, location) =>

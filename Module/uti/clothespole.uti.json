@@ -45,7 +45,7 @@
     "id": 14176,
     "type": "cexolocstring",
     "value": {
-      "0": "Composite Fishing Rod"
+      "0": "Clothespole"
     }
   },
   "ModelPart1": {
@@ -114,7 +114,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -149,6 +149,6 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "composite_rod"
+    "value": "clothespole"
   }
 }

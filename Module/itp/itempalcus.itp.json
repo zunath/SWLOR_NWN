@@ -35031,17 +35031,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bamboo Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bamboo_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Staff"
                     },
                     "RESREF": {
@@ -35069,17 +35058,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_y_004"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Butterfly Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "butterfly_rod"
                     }
                   },
                   {
@@ -35163,17 +35141,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Carbon Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "carbon_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Ceramic Staff"
                     },
                     "RESREF": {
@@ -35251,28 +35218,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Clothespole Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "clothespole_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Composite Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "composite_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Delta Staff"
                     },
                     "RESREF": {
@@ -35289,50 +35234,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "del_twinblade"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ebisu Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ebisu_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fastwater Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fastwater_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Glass Fiber Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "glassfiber_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Halcyon Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halcyon_rod"
                     }
                   },
                   {
@@ -35504,17 +35405,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Judge's Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "judge_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Kwi Staff"
                     },
                     "RESREF": {
@@ -35548,17 +35438,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lu Shang's Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "lushang_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Mandalorian Staff"
                     },
                     "RESREF": {
@@ -35586,17 +35465,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_sabstaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Maze Monger Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "mazemonger_rod"
                     }
                   },
                   {
@@ -35834,17 +35702,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tranquility Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tranquility_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Twin Electroblade I"
                     },
                     "RESREF": {
@@ -35905,28 +35762,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_y_001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Willow Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "willow_rod"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yew Fishing Rod"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "yew_rod"
                     }
                   }
                 ]
@@ -36420,6 +36255,182 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "wookshamanstaff"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bamboo Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bamboo_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Butterfly Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "butterfly_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carbon Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "carbon_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Clothespole"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "clothespole"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Composite Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "composite_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ebisu Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ebisu_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Fastwater Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fastwater_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fishing_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Glass Fiber Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "glassfiber_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Halcyon Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "halcyon_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Judge's Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "judge_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lu Shang's Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lushang_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Maze Monger Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mazemong_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tranquility Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tranquility_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Willow Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "willow_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Yew Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "yew_rod"
                           }
                         }
                       ]

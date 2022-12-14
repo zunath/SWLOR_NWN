@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 98
+    "value": 99
   },
   "BaseItem": {
     "type": "int",
-    "value": 50
+    "value": 45
   },
   "Charges": {
     "type": "byte",
@@ -25,8 +25,11 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 14175,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,7 +42,7 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 1544,
+    "id": 14176,
     "type": "cexolocstring",
     "value": {
       "0": "Yew Fishing Rod"
@@ -47,19 +50,19 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 13
+    "value": 61
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 12
+    "value": 61
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 12
+    "value": 61
   },
   "PaletteID": {
     "type": "byte",
-    "value": 46
+    "value": 49
   },
   "Plot": {
     "type": "byte",

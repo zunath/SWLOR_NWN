@@ -7,10 +7,16 @@ namespace SWLOR.Game.Server.Service.FishingService
     public class FishingLocationDetail
     {
         private readonly Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> _fishMap = new();
+        private FishType _defaultFish;
+
+        public FishingLocationDetail()
+        {
+            _defaultFish = FishType.MoatCarp;
+        }
 
         /// <summary>
         /// Retrieves the resref of a random fish given a rod and bait type.
-        /// If no fish can be found, FishType.Invalid will be returned.
+        /// If no fish can be found, the default fish will be returned.
         /// </summary>
         /// <param name="rodType">The type of rod being used.</param>
         /// <param name="baitType">The type of bait being used.</param>
@@ -19,11 +25,29 @@ namespace SWLOR.Game.Server.Service.FishingService
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);
             if (!_fishMap.ContainsKey(key))
-                return FishType.Invalid;
+                return _defaultFish;
 
             var availableFish = _fishMap[key];
+
+            if (GetIsNight())
+            {
+                availableFish = availableFish
+                    .Where(x => x.TimeOfDay == FishTimeOfDayType.All ||
+                                x.TimeOfDay == FishTimeOfDayType.Nighttime)
+                    .ToList();
+            }
+            else if (GetIsDay())
+            {
+                availableFish = availableFish
+                    .Where(x => x.TimeOfDay == FishTimeOfDayType.All ||
+                                x.TimeOfDay == FishTimeOfDayType.Daytime)
+                    .ToList();
+            }
+
+            if (availableFish.Count <= 0)
+                return _defaultFish;
+
             var weights = availableFish
-                    // todo: filter by time of day
                 .Select(s => s.Frequency).ToArray();
             var selectedIndex = Random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
@@ -48,6 +72,16 @@ namespace SWLOR.Game.Server.Service.FishingService
                 _fishMap[key] = new List<FishDetail>();
 
             _fishMap[key].Add(fish);
+        }
+
+        /// <summary>
+        /// Sets the default fish type for this location. There is a small chance
+        /// to catch this default fish even if the user's rod/bait combination doesn't match any other fish criteria.
+        /// </summary>
+        /// <param name="defaultFishType">The type of fish which will be treated as the default</param>
+        public void SetDefaultFish(FishType defaultFishType)
+        {
+            _defaultFish = defaultFishType;
         }
 
     }

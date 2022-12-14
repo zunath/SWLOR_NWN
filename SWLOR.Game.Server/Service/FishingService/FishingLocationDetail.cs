@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         /// <param name="rodType">The type of rod being used.</param>
         /// <param name="baitType">The type of bait being used.</param>
-        /// <returns>The type of fish retrieved.</returns>
-        public FishType GetRandomFish(FishingRodType rodType, FishingBaitType baitType)
+        /// <returns>The type of fish retrieved and whether or not if it was a default fish.</returns>
+        public (FishType, bool) GetRandomFish(FishingRodType rodType, FishingBaitType baitType)
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);
             if (!_fishMap.ContainsKey(key))
-                return _defaultFish;
+                return (_defaultFish, true);
 
             var availableFish = _fishMap[key];
 
@@ -45,14 +45,14 @@ namespace SWLOR.Game.Server.Service.FishingService
             }
 
             if (availableFish.Count <= 0)
-                return _defaultFish;
+                return (_defaultFish, true);
 
             var weights = availableFish
                 .Select(s => s.Frequency).ToArray();
             var selectedIndex = Random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
 
-            return selectedFish.Type;
+            return (selectedFish.Type, false);
         }
 
         /// <summary>

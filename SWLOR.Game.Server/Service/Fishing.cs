@@ -6,10 +6,11 @@ using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -30,6 +31,8 @@ namespace SWLOR.Game.Server.Service
         private const string FishingPositionVariableY = "FISHING_POSITION_Y";
         private const string FishingPositionVariableZ = "FISHING_POSITION_Z";
         private const string FishingPointVariable = "FISHING_POINT";
+        private const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
+        private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
         private const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
         public const string FishingRodTag = "FISHING_ROD";
@@ -140,6 +143,17 @@ namespace SWLOR.Game.Server.Service
             return (FishingBaitType)GetLocalInt(rod, LoadedBaitTypeVariable);
         }
 
+        private static void InitializeFishingPoint(uint fishingPoint)
+        {
+            if (GetLocalBool(fishingPoint, FishingPointInitializedVariable))
+                return;
+
+            var attempts = 50 + Random.Next(30);
+            SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, attempts);
+
+            SetLocalBool(fishingPoint, FishingPointInitializedVariable, true);
+        }
+
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
@@ -166,12 +180,20 @@ namespace SWLOR.Game.Server.Service
                 DelayCommand(0.1f, () => CheckPosition(player, startPosition, attemptId));
             }
 
+            var fishingPoint = OBJECT_SELF;
+            InitializeFishingPoint(fishingPoint);
+
             var player = GetPlaceableLastClickedBy();
             AssignCommand(player, () => ClearAllActions());
 
             var rod = GetItemInSlot(InventorySlot.RightHand, player);
-            var fishingPoint = OBJECT_SELF;
             const float MaxDistance = 10f;
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            {
+                SendMessageToPC(player, "Only players may fish.");
+                return;
+            }
 
             if (Activity.IsBusy(player))
             {
@@ -187,7 +209,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             var baitType = GetLoadedBait(rod);
-            if (baitType == FishingBaitType.Invalid)
+            if (baitType == FishingBaitType.Invalid ||
+                GetLocalInt(rod, RemainingBaitVariable) <= 0)
             {
                 SendMessageToPC(player, "Your fishing rod has no bait loaded. Use the fishing rod and target a bait to load some.");
                 return;
@@ -205,8 +228,10 @@ namespace SWLOR.Game.Server.Service
             SetLocalFloat(player, FishingPositionVariableY, position.Y);
             SetLocalFloat(player, FishingPositionVariableZ, position.Z);
             SetLocalString(player, FishingAttemptVariable, attemptId);
+            SetLocalObject(player, FishingPointVariable, fishingPoint);
 
-            PlayerPlugin.StartGuiTimingBar(player, 6f, "finish_fishing");
+            var fishingDelay = 6 + Random.Next(3);
+            PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
             Activity.SetBusy(player, ActivityStatusType.Fishing);
             Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
@@ -256,6 +281,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var baitType = GetLoadedBait(rod);
+            if (baitType == FishingBaitType.Invalid ||
+                GetLocalInt(rod, RemainingBaitVariable) <= 0)
+            {
+                SendMessageToPC(player, "Your fishing rod has no bait loaded. Use the fishing rod and target a bait to load some.");
+                return;
+            }
+
             if (locationId == FishingLocationType.Invalid)
             {
                 SendMessageToPC(player, "Invalid location Id for this fishing point. Please report this with the /bug chat command.");
@@ -275,17 +308,68 @@ namespace SWLOR.Game.Server.Service
             }
 
             var rodType = _rodsByResref[rodResref];
-            var baitType = GetLoadedBait(rod);
+            var baitDetail = _baits[baitType];
+            var baitName = Cache.GetItemNameByResref(baitDetail.Resref);
             var locationDetail = _fishingLocations[locationId];
-            var fishType = locationDetail.GetRandomFish(rodType, baitType);
+            var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
             var fish = _fish[fishType];
 
-            // todo: determine chance to pull in fish based on fish level vs skill level
+            // Default fish was picked - 80% to not get a bite.
+            if (isDefaultFish)
+            {
+                if (Random.D100(1) <= 80)
+                {
+                    SendMessageToPC(player, "Not even a nibble...");
+                    return;
+                }
+            }
 
-            CreateItemOnObject(fish.Resref, player);
-            SendMessageToPC(player, $"You landed a {fish.Name}!");
+            // We're guaranteed to enter the fishing mini-game from here on.
+            // Go ahead and decrement the bait because one unit needs to be lost for fish attempt.
+            var remainingBait = GetLocalInt(rod, RemainingBaitVariable) - 1;
+            if (remainingBait < 0)
+                remainingBait = 0;
+            SetLocalInt(rod, RemainingBaitVariable, remainingBait);
 
-            // todo: determine fishing location exhaustion
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var skill = dbPlayer.Skills[SkillType.Agriculture].Rank;
+
+            const int BaseChance = 40;
+            var delta = skill - fish.Level;
+            var stat = GetAbilityScore(player, AbilityType.Willpower);
+
+            var chance = BaseChance + delta * 10 + stat * 2;
+            if (Random.D100(1) > chance)
+            {
+                SendMessageToPC(player, ColorToken.Red("You failed to reel the fish in..."));
+            }
+            else
+            {
+                CreateItemOnObject(fish.Resref, player);
+                SendMessageToPC(player, $"You landed a {fish.Name}!");
+            }
+
+            SendMessageToPC(player, $"Bait Remaining: {remainingBait}x {baitName}");
+
+            // Handle fishing point exhaustion
+            var remainingAttempts = GetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable) - 1;
+            if (remainingAttempts <= 0)
+            {
+                // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
+                // Use EffectDeath to ensure that we trigger death processing.
+                SetPlotFlag(fishingPoint, false);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), fishingPoint);
+
+                Messaging.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
+            }
+            else
+            {
+                SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, remainingAttempts);
+            }
+
+            var xp = Skill.GetDeltaXP(delta);
+            Skill.GiveSkillXP(player, SkillType.Agriculture, xp);
         }
 
         private static void ClearFishingAttempt(uint player)

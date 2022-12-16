@@ -13563,6 +13563,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Al'zabi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alzabi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Amphi-Hydrus Blood"
                     },
                     "RESREF": {
@@ -21175,6 +21186,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mercanbaligi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mercanbaligi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Metal Baton Frame"
                     },
                     "RESREF": {
@@ -21191,6 +21213,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "padding_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mhaura"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mhaura"
                     }
                   },
                   {
@@ -21378,6 +21411,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nails"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashmau"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nashmau"
                     }
                   },
                   {
@@ -22852,6 +22896,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "scanner_r_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rhinochimera"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rhinochimera"
                     }
                   },
                   {
@@ -26372,6 +26427,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zafmlug_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zi'tah"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zitah"
                     }
                   },
                   {
@@ -30104,6 +30170,72 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_032"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Bream Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Dorado Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dosushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Ikran Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Octopus Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ocsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Tentacle Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_tesushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Wild Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_wisushi"
                     }
                   },
                   {

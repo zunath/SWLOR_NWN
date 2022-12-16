@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.FishingService
 {
     public class FishingLocationDetail
     {
-        private readonly Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> _fishMap = new();
+        public Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> FishMap { get; } = new();
         private FishType _defaultFish;
 
         public FishingLocationDetail()
@@ -24,10 +24,10 @@ namespace SWLOR.Game.Server.Service.FishingService
         public (FishType, bool) GetRandomFish(FishingRodType rodType, FishingBaitType baitType)
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);
-            if (!_fishMap.ContainsKey(key))
+            if (!FishMap.ContainsKey(key))
                 return (_defaultFish, true);
 
-            var availableFish = _fishMap[key];
+            var availableFish = FishMap[key];
 
             if (GetIsNight())
             {
@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Service.FishingService
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);
 
-            if (!_fishMap.ContainsKey(key))
-                _fishMap[key] = new List<FishDetail>();
+            if (!FishMap.ContainsKey(key))
+                FishMap[key] = new List<FishDetail>();
 
-            _fishMap[key].Add(fish);
+            FishMap[key].Add(fish);
         }
 
         /// <summary>
@@ -83,6 +83,5 @@ namespace SWLOR.Game.Server.Service.FishingService
         {
             _defaultFish = defaultFishType;
         }
-
     }
 }

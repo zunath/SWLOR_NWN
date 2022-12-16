@@ -15,8 +15,13 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <returns>A configured FishingLocationBuilder</returns>
         public FishingLocationBuilder Create(FishingLocationType type)
         {
-            _activeDetail = new FishingLocationDetail();
-            _locations.Add(type, _activeDetail);
+            if (_locations.ContainsKey(type))
+                _activeDetail = _locations[type];
+            else
+            {
+                _activeDetail = new FishingLocationDetail();
+                _locations.Add(type, _activeDetail);
+            }
 
             return this;
         }

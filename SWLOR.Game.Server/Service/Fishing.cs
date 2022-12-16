@@ -102,7 +102,22 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (locationType, locationDetail) in fishingLocations)
                 {
-                    _fishingLocations[locationType] = locationDetail;
+                    if (!_fishingLocations.ContainsKey(locationType))
+                    {
+                        _fishingLocations[locationType] = locationDetail;
+                    }
+                    else
+                    {
+                        var existingLocation = _fishingLocations[locationType];
+                        foreach (var (key, list) in locationDetail.FishMap)
+                        {
+                            if (!existingLocation.FishMap.ContainsKey(key))
+                                existingLocation.FishMap[key] = new List<FishDetail>();
+
+                            existingLocation.FishMap[key].AddRange(list);
+                        }
+                    }
+                    
                 }
             }
 

@@ -109,6 +109,18 @@ namespace SWLOR.Game.Server.Service.FishingService
         RuddySeema = 50,
         [Fish("Frigorifish", "frigorifish", 50)]
         Frigorifish = 51,
+        [Fish("Mercanbaligi", "mercanbaligi", 52)]
+        Mercanbaligi = 52,
+        [Fish("Nashmau", "nashmau", 52)]
+        Nashmau = 53,
+        [Fish("Rhinochimera", "rhinochimera", 52)]
+        Rhinochimera = 54,
+        [Fish("Mhaura", "mhaura", 52)]
+        Mhaura = 55,
+        [Fish("Zi'tah", "zitah", 52)]
+        Zitah = 56,
+        [Fish("Al'zabi", "alzabi", 52)]
+        Alzabi = 57
     }
 
     public class FishAttribute: Attribute

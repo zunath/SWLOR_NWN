@@ -125,6 +125,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines if an item is a fishing rod.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if fishing rod, false otherwise</returns>
+        public static bool IsItemFishingRod(uint item)
+        {
+            var resref = GetResRef(item);
+            return _rodsByResref.ContainsKey(resref);
+        }
+
+        /// <summary>
         /// Determines if an item is a bait item.
         /// </summary>
         /// <param name="item">The item to check</param>

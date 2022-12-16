@@ -241,6 +241,10 @@ namespace SWLOR.Game.Server.Service
             if (tag == "FOOD")
                 return MarketCategoryType.Food;
 
+            // Fishing Rods & Bait
+            if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
+                return MarketCategoryType.Fishing;
+
             return MarketCategoryType.Miscellaneous;
         }
     }

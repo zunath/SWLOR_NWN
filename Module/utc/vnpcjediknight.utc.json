@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 69.0
   },
   "ClassList": {
     "type": "list",
@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 10
         }
       }
     ]
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 240
+    "value": 510
   },
   "DecayTime": {
     "type": "dword",
@@ -273,6 +273,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 20
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 41
         }
       },
@@ -326,7 +340,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 240
+    "value": 510
   },
   "Int": {
     "type": "byte",
@@ -661,7 +675,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",

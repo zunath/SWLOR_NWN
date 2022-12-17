@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area043"
+    "value": "vrotrdantplains"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -6353,7 +6353,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 12
+    "value": 13
   },
   "Width": {
     "type": "int",

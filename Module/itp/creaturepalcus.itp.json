@@ -10,6 +10,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 132
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -41,6 +45,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 128
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -376,6 +384,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 129
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6694
@@ -383,6 +395,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 127
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -414,6 +430,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 126
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -692,6 +712,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 125
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -761,6 +785,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 122
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16778240
@@ -768,6 +796,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 124
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -818,6 +850,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 121
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -887,6 +923,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 123
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16778241
@@ -894,6 +934,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 130
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16808678
@@ -901,6 +945,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 119
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -970,6 +1018,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 118
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -1685,6 +1737,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 131
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 547
@@ -1692,6 +1748,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 120
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16778237
@@ -1711,6 +1771,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 48
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 63235
@@ -1723,6 +1787,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 5
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6695
@@ -1730,6 +1798,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 6
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6696
@@ -1737,6 +1809,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 100
+                    },
                     "LIST": {
                       "type": "list",
                       "value": [
@@ -1787,6 +1863,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 7
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6697
@@ -1794,6 +1874,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 8
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6698
@@ -1801,6 +1885,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 117
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808636
@@ -1808,6 +1896,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 9
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 201
@@ -1815,6 +1907,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 101
+                    },
                     "LIST": {
                       "type": "list",
                       "value": [
@@ -1846,6 +1942,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 102
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808671
@@ -1853,6 +1953,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 103
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808672
@@ -1867,6 +1971,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 107
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -1898,6 +2006,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 20
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -2005,6 +2117,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 21
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6713
@@ -2012,6 +2128,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 22
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6714
@@ -2024,6 +2144,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 34
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6727
@@ -2031,6 +2155,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 35
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6728
@@ -2038,6 +2166,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 36
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6729
@@ -2045,6 +2177,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 37
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6730
@@ -2064,6 +2200,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 14
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6706
@@ -2071,6 +2211,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 15
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6707
@@ -2078,6 +2222,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 16
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6708
@@ -2085,6 +2233,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 17
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6709
@@ -2092,6 +2244,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 18
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6710
@@ -2099,6 +2255,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 19
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 537
@@ -2106,6 +2266,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 50
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 201
@@ -2125,6 +2289,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 104
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808673
@@ -2132,6 +2300,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 10
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6701
@@ -2139,6 +2311,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 105
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808674
@@ -2146,6 +2322,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 106
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808675
@@ -2153,6 +2333,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 11
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6702
@@ -2167,6 +2351,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 49
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 63246
@@ -2174,6 +2362,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 13
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 1592
@@ -2181,6 +2373,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 116
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16808667
@@ -2193,6 +2389,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 23
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6716
@@ -2200,6 +2400,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 108
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808677
@@ -2207,6 +2411,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 24
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6717
@@ -2214,6 +2422,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 25
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6718
@@ -2221,6 +2433,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 47
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6699
@@ -2228,6 +2444,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 26
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6719
@@ -2242,6 +2462,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 109
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16808678
@@ -2249,6 +2473,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 12
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6703
@@ -2261,6 +2489,10 @@
                 "value": [
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 27
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 2058
@@ -2268,6 +2500,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 28
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6722
@@ -2275,6 +2511,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 29
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 201
@@ -2282,6 +2522,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 30
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 2116
@@ -2289,6 +2533,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 31
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6723
@@ -2296,6 +2544,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 32
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 2155
@@ -2303,6 +2555,10 @@
                   },
                   {
                     "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 33
+                    },
                     "LIST": {
                       "type": "list",
                       "value": [
@@ -2448,6 +2704,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 110
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -2650,6 +2910,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 114
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -3137,6 +3401,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 112
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -3415,6 +3683,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 38
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -4035,6 +4307,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 39
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -4130,44 +4406,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "valnpjguard2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 55.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Jedi Temple Guard"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcjediguard1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 70.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Jedi Temple Guard"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "valnpjguard004"
                     }
                   },
@@ -4188,6 +4426,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "valnpjguard005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguard1"
                     }
                   },
                   {
@@ -4408,6 +4684,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 40
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 27
@@ -4415,6 +4695,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 42
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 31
@@ -4422,6 +4706,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 41
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -4529,6 +4817,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 43
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 33
@@ -4536,6 +4828,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 44
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -5582,6 +5878,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal_refugee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lu_shang"
                     }
                   },
                   {
@@ -7151,6 +7466,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 45
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -7752,6 +8071,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 113
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -7802,6 +8125,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 111
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16808682
@@ -7821,6 +8148,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 0
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -8365,6 +8696,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 1
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -9004,6 +9339,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 2
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -9168,6 +9507,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 3
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691
@@ -9175,6 +9518,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 4
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -9498,6 +9845,10 @@
       },
       {
         "__struct_id": 0,
+        "ID": {
+          "type": "byte",
+          "value": 46
+        },
         "LIST": {
           "type": "list",
           "value": [
@@ -9610,6 +9961,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 150
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -9698,6 +10053,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 156
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -9919,6 +10278,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 153
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -10026,6 +10389,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 155
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -10171,6 +10538,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 152
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -10354,6 +10725,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 154
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -10613,6 +10988,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 151
+              },
               "LIST": {
                 "type": "list",
                 "value": [

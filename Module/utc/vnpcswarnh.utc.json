@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 11
+    "value": 70
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
+    "value": 10004
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 22
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.5
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 4
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 40
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 19
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 94
+    "value": 90
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 58
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Comment": {
     "type": "cexostring",
@@ -130,19 +130,19 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 28
   },
   "Conversation": {
     "type": "resref",
-    "value": "yastin_fettias"
+    "value": ""
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 27
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 10
+    "value": 240
   },
   "DecayTime": {
     "type": "dword",
@@ -154,15 +154,17 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sith warriors are legendary combatants, using the Dark Side of the Force to enhance their physical attributes well beyond what is considered natural. At the same time, it has corrupted them to their very core. As time goes on, they become less human and more and embodiment of the same primal emotions that grant them their strength."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -171,7 +173,28 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "spy"
+          "value": "vnpcawar2"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcmwar3"
+        }
+      },
+      {
+        "__struct_id": 32,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcmwar3"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcswar3"
         }
       }
     ]
@@ -183,6 +206,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -208,42 +238,63 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 10
+          "value": 1835
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1089
+          "value": 1733
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 28
+          "value": 1726
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 258
+          "value": 1351
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 32
+          "value": 1832
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 106
+          "value": 1173
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 41
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
         }
       },
       {
@@ -265,7 +316,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Yastin"
+      "0": "Sith Warrior"
     }
   },
   "fortbonus": {
@@ -274,7 +325,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -282,19 +333,19 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 10
+    "value": 240
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 34
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsPC": {
     "type": "byte",
@@ -303,7 +354,7 @@
   "LastName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fettias"
+      "0": ""
     }
   },
   "LawfulChaotic": {
@@ -316,7 +367,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 13
+    "value": 600
   },
   "NaturalAC": {
     "type": "byte",
@@ -328,11 +379,11 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 44
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 10
   },
   "Phenotype": {
     "type": "int",
@@ -344,7 +395,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4284
+    "value": 3655
   },
   "Race": {
     "type": "byte",
@@ -356,15 +407,15 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "nw_c2_default5"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "nw_c2_default6"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "nw_c2_default7"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
@@ -372,39 +423,39 @@
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "nw_c2_default8"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "nw_c2_default3"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "nw_c2_default1"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "nw_c2_defaulte"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "nw_c2_default2"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "nw_c2_defaulta"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "nw_c2_default9"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "nw_c2_defaultb"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "nw_c2_defaultd"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -609,7 +660,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 351
+    "value": 930
   },
   "SpecAbilityList": {
     "type": "list",
@@ -617,11 +668,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 4
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -629,7 +680,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "yastin_fettias"
+    "value": "SithWarrior"
   },
   "Tail_New": {
     "type": "dword",
@@ -641,27 +692,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "yastin_fettias"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1000
-        }
-      }
-    ]
+    "value": "vnpcswarnh"
   },
   "WalkRate": {
     "type": "int",
@@ -677,6 +708,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 22
   }
 }

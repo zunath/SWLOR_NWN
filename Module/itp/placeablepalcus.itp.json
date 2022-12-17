@@ -68199,17 +68199,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Market Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "mkt_dath_term"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Medical Registration Terminal"
                     },
                     "RESREF": {

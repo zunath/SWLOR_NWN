@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 67
         },
         "ClassLevel": {
           "type": "short",
-          "value": 15
+          "value": 40
         }
       }
     ]
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 29
+    "value": 34
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 220
+    "value": 20
   },
   "DecayTime": {
     "type": "dword",
@@ -224,13 +224,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1827
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1835
         }
       },
@@ -245,7 +238,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1731
         }
       },
       {
@@ -259,28 +252,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1353
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1832
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1366
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
         }
       },
       {
@@ -333,7 +305,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 220
+    "value": 20
   },
   "Int": {
     "type": "byte",
@@ -367,7 +339,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 500
   },
   "NaturalAC": {
     "type": "byte",
@@ -668,7 +640,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 158
   },
   "Str": {
     "type": "byte",

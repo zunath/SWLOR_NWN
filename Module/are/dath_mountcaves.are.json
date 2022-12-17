@@ -5579,7 +5579,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 6
   },
   "Width": {
     "type": "int",

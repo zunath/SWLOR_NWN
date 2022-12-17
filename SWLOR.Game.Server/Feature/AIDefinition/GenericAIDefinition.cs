@@ -198,18 +198,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 return (FeatType.ConcussionGrenade3, target);
             }
-            
-            // Furor
-            if (CheckIfCanUseFeat(self, self, FeatType.Furor))
-            {
-                return (FeatType.Furor, self);
-            }
-
-            // Knockdown
-            if (CheckIfCanUseFeat(self, target, FeatType.Knockdown))
-            {
-                return (FeatType.Knockdown, target);
-            }
 
             // Flamethrower
             if (CheckIfCanUseFeat(self, target, FeatType.Flamethrower1))

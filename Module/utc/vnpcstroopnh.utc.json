@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 70
+    "value": 1
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 22
+    "value": 28
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 40
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 23
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 90
+    "value": 1
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 58
+    "value": 1
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 28
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 12
+    "value": 30
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 510
+    "value": 120
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith warriors are legendary combatants, using the Dark Side of the Force to enhance their physical attributes well beyond what is considered natural. At the same time, it has corrupted them to their very core. As time goes on, they become less human and more and embodiment of the same primal emotions that grant them their strength."
+      "0": "The Sith promote competition amongst their ranks, both among the Force Sensitives among their number and their rank and file troops. Those the most merciless, cruel and powerful amongst them are elevated, while those exhibiting softer tendencies are treated like fodder and find death sooner rather than later - often from friendly fire.\n\nThese are the former among them. Clad in finer armor and given access to the newest in Imperial weapons technology as reward for their faithful service to the Sith."
     }
   },
   "Dex": {
@@ -170,31 +170,31 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpchtroop5"
+        }
+      },
+      {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcawar2"
+          "value": "vnpcaelite2"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmwar3"
-        }
-      },
-      {
-        "__struct_id": 32,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "vnpcmwar3"
+          "value": "vnpcrelite3"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcswar3"
+          "value": "vnpcselite3"
         }
       }
     ]
@@ -206,13 +206,6 @@
   "FeatList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1
-        }
-      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -238,35 +231,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1835
+          "value": 1593
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1726
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1351
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1832
+          "value": 1844
         }
       },
       {
@@ -274,27 +246,6 @@
         "Feat": {
           "type": "word",
           "value": 1242
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1173
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 41
         }
       },
       {
@@ -324,13 +275,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Warrior"
+      "0": "Sith Trooper, Honor Guard"
     }
   },
   "fortbonus": {
@@ -339,7 +297,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -347,7 +305,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 510
+    "value": 120
   },
   "Int": {
     "type": "byte",
@@ -364,6 +322,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcmelite3"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -409,7 +387,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3655
+    "value": 4125
   },
   "Race": {
     "type": "byte",
@@ -674,7 +652,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 930
+    "value": 932
   },
   "SpecAbilityList": {
     "type": "list",
@@ -682,11 +660,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 157
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 28
   },
   "Subrace": {
     "type": "cexostring",
@@ -694,7 +672,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithWarrior"
+    "value": "SithTrooperHonorGuard"
   },
   "Tail_New": {
     "type": "dword",
@@ -706,7 +684,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcswar3nh"
+    "value": "vnpcstroopnh"
   },
   "WalkRate": {
     "type": "int",
@@ -722,6 +700,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 28
   }
 }

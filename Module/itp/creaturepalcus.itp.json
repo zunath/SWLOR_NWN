@@ -3694,7 +3694,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 45.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3827,7 +3827,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 70.0
+                      "value": 82.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3846,45 +3846,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Combat Medic"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcsmedic"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 47.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Heavy Gunner"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcshvygun"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3941,26 +3903,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Invader"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcsinvade"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 50.0
+                      "value": 51.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4055,44 +3998,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Officer"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcsofficer"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 50.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Saboteur"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcssabot"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 30.0
                     },
                     "FACTION": {
@@ -4131,6 +4036,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 25.0
                     },
                     "FACTION": {
@@ -4150,7 +4074,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4264,7 +4188,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4302,26 +4226,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 70.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Warmonger"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "valnpcswarmong"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4413,7 +4318,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 65.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4432,7 +4337,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 69.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4451,7 +4356,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 101.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4470,7 +4375,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 93.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4489,7 +4394,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 97.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4508,7 +4413,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 65.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4546,7 +4451,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 97.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4565,7 +4470,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 101.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4584,7 +4489,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 42.0
+                      "value": 45.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4603,7 +4508,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 60.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4641,7 +4546,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 70.0
+                      "value": 82.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4660,7 +4565,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4698,7 +4603,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 45.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4717,7 +4622,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4729,14 +4634,14 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "vnpcssorc3nh"
+                      "value": "vnpcssorcnh"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4748,14 +4653,14 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "vnpcstroop5nh"
+                      "value": "vnpcstroopnh"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 55.0
+                      "value": 56.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4767,7 +4672,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "vnpcswar3nh"
+                      "value": "vnpcswarnh"
                     }
                   }
                 ]
@@ -7513,25 +7418,6 @@
                       "type": "resref",
                       "value": "wook_warrior"
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yastin"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "yastin_fettias"
-                    }
                   }
                 ]
               },
@@ -10140,7 +10026,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 128.0
+                      "value": 127.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10172,25 +10058,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathturtle"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 58.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Jungle Bug"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathswampland"
                     }
                   },
                   {
@@ -10311,7 +10178,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 64.0
+                      "value": 84.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10343,6 +10210,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathssurian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Swampland Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathswampland"
                     }
                   }
                 ]

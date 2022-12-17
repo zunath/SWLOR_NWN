@@ -6310,7 +6310,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 11
+    "value": 8
   },
   "Width": {
     "type": "int",

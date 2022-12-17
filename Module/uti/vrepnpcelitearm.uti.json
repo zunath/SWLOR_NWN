@@ -128,7 +128,7 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 92
+    "value": 93
   },
   "LocalizedName": {
     "id": 12835,
@@ -139,7 +139,7 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 91
+    "value": 60
   },
   "Metal2Color": {
     "type": "byte",

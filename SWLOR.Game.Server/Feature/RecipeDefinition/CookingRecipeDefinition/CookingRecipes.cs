@@ -745,7 +745,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
             // Blackened Hoptoad
             _builder.Create(RecipeType.BlackenedHoptoad, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("blackened_hoptoad")
+                .Resref("b_hoptoad")
                 .Level(25)
                 .Quantity(1)
                 .RequirementPerk(PerkType.CookingRecipes, 3)

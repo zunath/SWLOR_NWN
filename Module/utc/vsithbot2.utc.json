@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 10
         }
       }
     ]
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 4
+    "value": 8
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 95
+    "value": 155
   },
   "DecayTime": {
     "type": "dword",
@@ -125,6 +125,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       },
@@ -171,7 +178,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 95
+    "value": 155
   },
   "Int": {
     "type": "byte",
@@ -237,7 +244,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 150
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -506,7 +513,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",

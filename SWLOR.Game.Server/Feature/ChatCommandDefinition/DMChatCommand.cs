@@ -11,6 +11,10 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
+using SWLOR.Game.Server.Core.NWNX;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Webhook;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -45,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetTag();
             Notes();
             CreatureManager();
+            DMBroadcast();
 
             return _builder.Build();
         }
@@ -815,6 +820,36 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                });
+        }
+
+        private void DMBroadcast()
+        {
+            _builder.Create("bc")
+                .Description("Sends your DM shout to Discord.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    var DMmessage = string.Join(" ", args);
+                    var sender = ChatPlugin.GetSender();
+                    var url = Environment.GetEnvironmentVariable("SWLOR_DMSHOUT_WEBHOOK_URL");
+
+                        for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
+                            ChatPlugin.SendMessage(Core.NWNX.Enum.ChatChannel.DMShout, DMmessage, sender, onlinePlayer);
+
+                        Task.Run(async () =>
+                            {
+                                using (var client = new DiscordWebhookClient(url))
+                            {
+                                var embed = new EmbedBuilder
+                                {
+                                    Description = DMmessage,
+                                    Color = Color.Orange
+                                };
+
+                                await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                            }
+                        });
                 });
         }
     }

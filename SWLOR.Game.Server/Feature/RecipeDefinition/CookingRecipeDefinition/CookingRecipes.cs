@@ -44,6 +44,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("waro_leg", 2)
                 .Component("distilled_water", 1);
 
+            // Roast Carp
+            _builder.Create(RecipeType.RoastCarp, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("roast_carp")
+                .Level(1)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("moat_carp", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SugarCookies, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sugar_cookies")
@@ -55,6 +66,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_flour", 3)
                 .Component("distilled_water", 1);
 
+            // Marimo Stew
+            _builder.Create(RecipeType.MarimoStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("marimo_stew")
+                .Level(2)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("lamp_marimo", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.OrangeJuice, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("orange_juice")
@@ -64,7 +86,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_orange", 3)
                 .Component("distilled_water", 1);
-
 
             _builder.Create(RecipeType.PebbleSoup, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -84,6 +105,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("mynock_wing", 3)
+                .Component("distilled_water", 1);
+
+            // Urchin Sushi
+            _builder.Create(RecipeType.UrchinSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("urchin_sushi")
+                .Level(3)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("visc_urchin", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.Noodles, SkillType.Agriculture)
@@ -107,6 +139,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("kath_meat_1", 3)
                 .Component("v_flour", 2);
 
+            // Blackened Newt
+            _builder.Create(RecipeType.BlackenedNewt, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("blackened_newt")
+                .Level(4)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("phan_newt", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.KinrathMeatBall, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("kinrath_mball")
@@ -116,6 +159,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("kinrath_meat", 3)
                 .Component("kinrath_limb", 2)
+                .Component("distilled_water", 1);
+
+            // Cooked Jellyfish
+            _builder.Create(RecipeType.CookedJellyfish, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_jellyfish")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("cobalt_jellyfish", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.LemonCookies, SkillType.Agriculture)
@@ -150,6 +204,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_orange", 4)
                 .Component("distilled_water", 1);
 
+            // Denzi Treat
+            _builder.Create(RecipeType.DenziTreat, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("denzi_treat")
+                .Level(6)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("denizanasi", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.OrangeAuLait, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("o_aulait")
@@ -160,6 +225,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_orange", 3)
                 .Component("distilled_water", 2)
                 .Component("herb_v", 3);
+
+            // Peeled Crayfish
+            _builder.Create(RecipeType.PeeledCrayfish, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("peeled_crayfish")
+                .Level(7)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("crayfish", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KathBloodBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -172,6 +248,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_v", 2);
 
+            // Peeled Lobster
+            _builder.Create(RecipeType.PeeledLobster, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("peeled_lobster")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("cala_lobster", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.GimpassaSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("g_sandwich")
@@ -183,6 +270,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_v", 3);
 
+
+            // Cooked Bibikibo
+            _builder.Create(RecipeType.CookedBibikibo, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_bibikibo")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("bibikibo", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.GimpassaStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("g_stew")
@@ -192,6 +291,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("gimp_blood", 2)
                 .Component("gimp_meat", 2);
+
+            // Sliced Sardine
+            _builder.Create(RecipeType.SlicedSardine, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sliced_sardine")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 1)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("dath_sardine", 3)
+                .Component("distilled_water", 1);
+
         }
 
         private void Tier2()
@@ -218,6 +329,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("cairnmog_tooth", 2)
                 .Component("distilled_water", 1);
 
+            // Fish Broth
+            _builder.Create(RecipeType.FishBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("fish_broth")
+                .Level(11)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("hamsi", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.ChocolateCookies, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("choco_cookies")
@@ -240,6 +362,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("klorslug_tail", 2)
                 .Component("klorslug_innards", 1);
 
+            // Sardine Ball
+            _builder.Create(RecipeType.SardineBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sardine_ball")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("sen_sardine", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.AppleJuice, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("apple_juice")
@@ -250,6 +383,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_apple", 3)
                 .Component("distilled_water", 1);
 
+            // Ra'Kaznar Special
+            _builder.Create(RecipeType.RaKaznarSpecial, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("rakaz_special")
+                .Level(13)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("rakaz_shellfish", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PeaSoup, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -292,6 +435,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("cairnmog_meat", 3)
                 .Component("b_flour", 2);
 
+            // Maringna
+            _builder.Create(RecipeType.Maringna, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("maringna")
+                .Level(14)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("bast_sweeper", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.NashtahMeatBall, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_mball")
@@ -301,6 +455,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("nashtah_meat", 3)
                 .Component("nashtah_foot", 2)
+                .Component("distilled_water", 1);
+
+            // Cooked Mackerel
+            _builder.Create(RecipeType.CookedMackerel, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_mackerel")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("mackerel", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MysteryCookies, SkillType.Agriculture)
@@ -335,6 +500,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("passion_fruit", 4)
                 .Component("distilled_water", 1);
 
+            // Greedie Stew
+            _builder.Create(RecipeType.GreedieStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("greedie_stew")
+                .Level(16)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("greedie", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.AppleAuLait, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("apple_aulait")
@@ -345,6 +521,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_apple", 3)
                 .Component("distilled_water", 2)
                 .Component("herb_m", 3);
+
+            // Blackened Frog
+            _builder.Create(RecipeType.BlackenedFrog, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("blackened_frog")
+                .Level(17)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("copper_frog", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.RaivorBloodBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -357,6 +544,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_m", 2);
 
+            // Brain Stew
+            _builder.Create(RecipeType.BrainStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("brain_stew")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("yellow_globe", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.NashtahSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_sandwich")
@@ -368,6 +566,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_m", 3);
 
+            // Cooked Siredon
+            _builder.Create(RecipeType.CookedSiredon, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_siredon")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("muddy_siredon", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.NashtahStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_stew")
@@ -377,6 +586,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("nash_blood", 2)
                 .Component("nashtah_meat", 2);
+
+            // Cooked Istavrit
+            _builder.Create(RecipeType.CookedIstavrit, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_istavrit")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("istavrit", 3)
+                .Component("distilled_water", 1);
+
         }
 
         private void Tier3()
@@ -403,6 +624,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("q_tiger_paw", 2)
                 .Component("distilled_water", 1);
 
+            // Cooked Salpa
+            _builder.Create(RecipeType.CookedSalpa, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_salpa")
+                .Level(21)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("trans_salpa", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.AcornCookies, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("acorn_cookies")
@@ -412,6 +644,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("h_acorn", 4)
                 .Component("p_flour", 3)
+                .Component("distilled_water", 1);
+
+            // Herb Quus
+            _builder.Create(RecipeType.HerbQuus, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("herb_quus")
+                .Level(22)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("quus", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PineappleJuice, SkillType.Agriculture)
@@ -445,6 +688,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("aradile_innards", 3)
                 .Component("distilled_water", 1);
 
+            // Carp Sushi
+            _builder.Create(RecipeType.CarpSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("carp_sushi")
+                .Level(23)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("forest_carp", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.RamenNoodles, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ramen_noodles")
@@ -466,6 +720,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("aradile_meat", 3)
                 .Component("p_flour", 2);
 
+            // Goldfish Bowl
+            _builder.Create(RecipeType.GoldfishBowl, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("goldfish_bowl")
+                .Level(24)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tiny_goldfish", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.ByyskMeatBall, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("byysk_mball")
@@ -475,6 +740,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("byysk_meat", 3)
                 .Component("byysk_tail", 2)
+                .Component("distilled_water", 1);
+
+            // Blackened Hoptoad
+            _builder.Create(RecipeType.BlackenedHoptoad, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("b_hoptoad")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("hoptoad", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.CinnaCookies, SkillType.Agriculture)
@@ -510,6 +786,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("veggie_clump", 2);
 
+            // Smoked Salmon
+            _builder.Create(RecipeType.SmokedSalmon, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("smoked_salmon")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("cheval_salmon", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.PineappleAuLait, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pine_aulait")
@@ -520,6 +807,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("s_pineapple", 3)
                 .Component("distilled_water", 2)
                 .Component("herb_c", 3);
+
+            // Deepwater Broth
+            _builder.Create(RecipeType.DeepwaterBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("deep_broth")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("yorchete", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AmphiHydrusBloodBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -532,6 +830,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_c", 2);
 
+            // White Peeled Lobster
+            _builder.Create(RecipeType.WhitePeeledLobster, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("white_p_lobster")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("white_lobster", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SnakeSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("snake_sandwich")
@@ -543,6 +852,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_c", 3);
 
+            // Fat Greedie Stew
+            _builder.Create(RecipeType.FatGreedieStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("fat_greedie_stew")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("fat_greedie", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SnakeStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("snake_stew")
@@ -552,6 +872,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("viper_guts", 2)
                 .Component("viper_meat", 2);
+
+            // Idol Sushi
+            _builder.Create(RecipeType.IdolSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("idol_sushi")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 3)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("moorish_idol", 3)
+                .Component("distilled_water", 1);
         }
 
         private void Tier4()
@@ -578,6 +909,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sand_demon_leg", 2)
                 .Component("distilled_water", 1);
 
+            // Gurnard Stew
+            _builder.Create(RecipeType.GurnardStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("gurnard_stew")
+                .Level(31)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("gurnard", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.GingerCookies, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ging_cookies")
@@ -587,6 +929,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ginger", 4)
                 .Component("r_flour", 3)
+                .Component("distilled_water", 1);
+
+            // Baked Nebimonite
+            _builder.Create(RecipeType.BakedNebimonite, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("baked_nebimon")
+                .Level(32)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("nebimonite", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MelonJuice, SkillType.Agriculture)
@@ -620,6 +973,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("womp_innards", 3)
                 .Component("distilled_water", 1);
 
+            // Tricolored Sushi
+            _builder.Create(RecipeType.TricoloredSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tricolored_sushi")
+                .Level(33)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tricolored_carp", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SoyRamen, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("soy_ramen")
@@ -641,6 +1005,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sanddemon_meat", 3)
                 .Component("r_flour", 2);
 
+            // Fish & Chips
+            _builder.Create(RecipeType.FishChips, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("fish_n_chips")
+                .Level(34)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("blindfish", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.TuskenMeatBall, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tusken_mball")
@@ -650,6 +1025,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tusken_meat", 3)
                 .Component("tusken_bones", 2)
+                .Component("distilled_water", 1);
+
+            // Roast Pipira
+            _builder.Create(RecipeType.RoastPipira, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("roast_pipira")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("pipira", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WalnutCookies, SkillType.Agriculture)
@@ -685,6 +1071,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("cornucopia", 2);
 
+            // Sliced Cod
+            _builder.Create(RecipeType.SlicedCod, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sliced_cod")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("tiger_cod", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.MelonAuLait, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("melon_aulait")
@@ -695,6 +1092,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("melon", 3)
                 .Component("distilled_water", 2)
                 .Component("herb_t", 3);
+
+            // Bonefish Broth
+            _builder.Create(RecipeType.BonefishBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("bonefish_broth")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("bonefish", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TuskenBloodBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -707,6 +1115,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_t", 2);
 
+            // Steamed Catfish
+            _builder.Create(RecipeType.SteamedCatfish, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("steamed_catfish")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("giant_catfish", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SandDemonSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dem_sandwich")
@@ -718,6 +1137,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_t", 3);
 
+            // Cooked Yayinbaligi
+            _builder.Create(RecipeType.CookedYayinbaligi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cooked_yayin")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("yayinbaligi", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.SandDemonStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("demon_stew")
@@ -727,6 +1157,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sand_demon_leg", 2)
                 .Component("sanddemon_meat", 2);
+
+            // Dead Stew
+            _builder.Create(RecipeType.DeadStew, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dead_stew")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("deadmoiselle", 3)
+                .Component("distilled_water", 1);
         }
 
         private void Tier5()
@@ -753,6 +1194,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("wild_leg", 2)
                 .Component("distilled_water", 1);
 
+            // Long Ling Lung
+            _builder.Create(RecipeType.LongLingLung, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("long_ling_lung")
+                .Level(41)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("lungfish", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.WildCookies, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_cookies")
@@ -764,6 +1216,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("bread_flour", 3)
                 .Component("distilled_water", 1);
 
+            // Bass Meuniere
+            _builder.Create(RecipeType.BassMeuniere, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("bass_meuniere")
+                .Level(42)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("dark_bass", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.TomatoJuice, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tomato_juice")
@@ -773,7 +1236,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tomato", 3)
                 .Component("distilled_water", 1);
-
 
             _builder.Create(RecipeType.MisoSoup, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -793,6 +1255,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_innards", 3)
+                .Component("distilled_water", 1);
+
+            // Crystal Sushi
+            _builder.Create(RecipeType.CrystalSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("crystal_sushi")
+                .Level(43)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("crystal_bass", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MisoRamen, SkillType.Agriculture)
@@ -816,6 +1289,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("wild_meat", 3)
                 .Component("bread_flour", 2);
 
+            // Eelectric Soup
+            _builder.Create(RecipeType.EelectricSoup, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("eelectric_soup")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ogre_eel", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.GrandioseMeatBall, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("grand_mball")
@@ -825,6 +1309,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("wild_leg", 2)
+                .Component("distilled_water", 1);
+
+            // Trout Ball
+            _builder.Create(RecipeType.TroutBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("trout_ball")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("shining_trout", 3)
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WizardCookies, SkillType.Agriculture)
@@ -860,6 +1355,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("dried_bonito", 2);
 
+            // Popper Bowl
+            _builder.Create(RecipeType.PopperBowl, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("popper_bowl")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("blowfish", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.TomatoAuLait, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tomato_aulait")
@@ -870,6 +1376,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("tomato", 3)
                 .Component("distilled_water", 2)
                 .Component("herb_x", 3);
+
+            // Pickled Herring
+            _builder.Create(RecipeType.PickledHerring, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("pickled_herring")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("nosteau_herring", 3)
+                .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildBloodBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -882,6 +1399,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_x", 2);
 
+            // Zoni Broth
+            _builder.Create(RecipeType.ZoniBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("zoni_broth")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("lakerda", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.GrandioseSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("grand_sandwich")
@@ -893,6 +1421,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1)
                 .Component("herb_x", 3);
 
+            // Sea Bass Croute
+            _builder.Create(RecipeType.SeaBassCroute, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sea_bass_croute")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("zafmlug_bass", 3)
+                .Component("distilled_water", 1);
+
             _builder.Create(RecipeType.WildStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_stew")
@@ -902,6 +1441,95 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_leg", 2)
                 .Component("wild_meat", 2);
+
+            // Shimmering Broth
+            _builder.Create(RecipeType.ShimmeringBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("shimm_broth")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ruddy_seema", 3)
+                .Component("distilled_water", 1);
+
+            // Rancid Broth
+            _builder.Create(RecipeType.RancidBroth, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("rancid_broth")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("frigorifish", 3)
+                .Component("distilled_water", 1);
+
+            // Bream Sushi
+            _builder.Create(RecipeType.BreamSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("bream_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("mercanbaligi", 6)
+                .Component("distilled_water", 2);
+
+            // Octopus Sushi
+            _builder.Create(RecipeType.OctopusSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("octo_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("nashmau", 6)
+                .Component("distilled_water", 2);
+
+            // Ikran Sushi
+            _builder.Create(RecipeType.IkranSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("ikran_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("rhinochimera", 6)
+                .Component("distilled_water", 2);
+
+            // Wild Sushi
+            _builder.Create(RecipeType.WildSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("wild_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("mhaura", 6)
+                .Component("distilled_water", 2);
+
+            // Tentacle Sushi
+            _builder.Create(RecipeType.TentacleSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("tent_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("zitah", 6)
+                .Component("distilled_water", 2);
+
+            // Dorado Sushi
+            _builder.Create(RecipeType.DoradoSushi, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dorado_sushi")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("alzabi", 6)
+                .Component("distilled_water", 2);
+
         }
     }
 }

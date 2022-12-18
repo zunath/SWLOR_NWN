@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         private const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
         private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
-        private const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
+        public const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
         public const string FishingRodTag = "FISHING_ROD";
 
         /// <summary>
@@ -366,6 +366,11 @@ namespace SWLOR.Game.Server.Service
             var stat = GetAbilityScore(player, AbilityType.Willpower);
 
             var chance = BaseChance + delta * 10 + stat * 2;
+            if (chance > 95)
+                chance = 95;
+            else if (chance < 0)
+                chance = 0;
+
             if (Random.D100(1) > chance)
             {
                 SendMessageToPC(player, ColorToken.Red("You failed to reel the fish in..."));
@@ -394,7 +399,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, remainingAttempts);
             }
 
-            var xp = Skill.GetDeltaXP(delta);
+            var xp = Skill.GetDeltaXP(fish.Level - skill);
             Skill.GiveSkillXP(player, SkillType.Agriculture, xp);
         }
 

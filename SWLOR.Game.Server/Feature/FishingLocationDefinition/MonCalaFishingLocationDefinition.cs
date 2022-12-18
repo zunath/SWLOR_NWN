@@ -101,6 +101,13 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
             _builder
                 .Create(FishingLocationType.MonCalaDacCitySurface)
 
+                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.LittleWorm)
+                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.Meatball)
+                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.LittleWorm)
+                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.Meatball)
+                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.LittleWorm)
+                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.Meatball)
+
                 .AddFish(FishType.CobaltJellyfish, FishingRodType.Carbon, FishingBaitType.DrillCalamary)
                 .AddFish(FishType.CobaltJellyfish, FishingRodType.Carbon, FishingBaitType.SardineBall)
                 .AddFish(FishType.CobaltJellyfish, FishingRodType.Carbon, FishingBaitType.SlicedCod)

@@ -95,7 +95,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_dlar005c", 10)
                 .AddItem("recipe_dlhl005c", 10)
                 .AddItem("recipe_dlbr005c", 10)
-                .AddItem("recipe_dllg005c", 10);
+                .AddItem("recipe_dllg005c", 10)
+                .AddItem("recipe_brsushi", 10)
+                .AddItem("recipe_ocsushi", 10)
+                .AddItem("recipe_iksushi", 10)
+                .AddItem("recipe_wisushi", 10)
+                .AddItem("recipe_tesushi", 10)
+                .AddItem("recipe_dosushi", 10);
         }
 
         private void DragonTurtle()

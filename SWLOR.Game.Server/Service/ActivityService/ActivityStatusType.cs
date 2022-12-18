@@ -7,5 +7,6 @@
         AbilityActivation = 2,
         Resting = 3,
         Quest = 4,
+        Fishing = 5
     }
 }

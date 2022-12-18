@@ -7,7 +7,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class HutlarQuestDefinition: IQuestListDefinition
     {
-        private readonly QuestBuilder builder = new QuestBuilder();
+        private readonly QuestBuilder _builder = new();
+
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             BeatTheByysk();
@@ -15,12 +16,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             HutlarPowerInvestigation();
             StupendousSlugBile();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
         private void BeatTheByysk()
         {
-            builder.Create("beat_byysk", "Beat the Byysk")
+            _builder.Create("beat_byysk", "Beat the Byysk")
 
                 .AddState()
                 .SetStateJournalText("You've agreed to kill fifteen Byysk out in the Qion Tundra. Kill them all!")
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void CullTheTundraThreat()
         {
-            builder.Create("tundra_tiger_threat", "Cull the Tundra Tiger Threat")
+            _builder.Create("tundra_tiger_threat", "Cull the Tundra Tiger Threat")
 
                 .AddState()
                 .SetStateJournalText("Kieun Xorxca wants you to head to Qion Tundra and kill ten tigers. Report back when this is done.")
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void HutlarPowerInvestigation()
         {
-            builder.Create("hut_power_invest", "Hutlar Power Investigation")
+            _builder.Create("hut_power_invest", "Hutlar Power Investigation")
                 .PrerequisiteQuest("beat_byysk")
                 .PrerequisiteQuest("tundra_tiger_threat")
                 .PrerequisiteQuest("stup_slug_bile")
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void StupendousSlugBile()
         {
-            builder.Create("stup_slug_bile", "Stupendious Slug Bile")
+            _builder.Create("stup_slug_bile", "Stupendious Slug Bile")
 
                 .AddState()
                 .SetStateJournalText("Moricho Deine in the Hutlar Outpost has requested you collect five Slug Biles from the Qion Slugs in Qion Tundra. Collect them and give them to him for a reward.")

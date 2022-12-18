@@ -296,6 +296,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dathomir Tribe Village", "Explore Dathomir Tribe Village", true)]
         ExploreDathomirTribeVillage = 109,
+
+        [Achievement("The Legendary Rod", "Completed the quest 'The Legendary Rod'.", true)]
+        TheLegendaryRod = 110,
     }
 
     public class AchievementAttribute: Attribute

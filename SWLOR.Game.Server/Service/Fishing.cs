@@ -83,7 +83,10 @@ namespace SWLOR.Game.Server.Service
                 var baitDetail = bait.GetAttribute<FishingBaitType, FishingBaitAttribute>();
                 _baits[bait] = baitDetail;
 
-                _baitsByResref[baitDetail.Resref] = bait;
+                foreach (var resref in baitDetail.Resrefs)
+                {
+                    _baitsByResref[resref] = bait;
+                }
             }
 
             Console.WriteLine($"Loaded {_baits.Count} fishing baits.");
@@ -335,7 +338,7 @@ namespace SWLOR.Game.Server.Service
 
             var rodType = _rodsByResref[rodResref];
             var baitDetail = _baits[baitType];
-            var baitName = Cache.GetItemNameByResref(baitDetail.Resref);
+            var baitName = Cache.GetItemNameByResref(baitDetail.Resrefs.First());
             var locationDetail = _fishingLocations[locationId];
             var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
             var fish = _fish[fishType];

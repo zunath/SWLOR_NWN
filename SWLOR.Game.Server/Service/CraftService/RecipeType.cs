@@ -614,7 +614,7 @@
         MicrowaveBlack = 1210,
         BarWhite = 1211,
         CouchLeatherBlue = 1212,
-        BenchLeatherCushionBrown = 1213,
+        // 1213 is free
         TablePlasticLarge = 1214,
         TableRoundOak = 1215,
         MetalWallWideLight = 1216,

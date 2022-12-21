@@ -2129,17 +2129,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_keromber", 4)
                 .Component("fiberpl_imperfect", 2);
 
-            // Bench, Leather Cushion (Brown)
-            _builder.Create(RecipeType.BenchLeatherCushionBrown, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0231")
-                .Level(38)
-                .Quantity(1)
-                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
-                .Component("aracia_wood", 4)
-                .Component("lth_imperfect", 6);
-
             // Mirror
             _builder.Create(RecipeType.Mirror, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)

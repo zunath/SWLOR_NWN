@@ -1314,13 +1314,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         CouchLeatherBlue = 230,
-        [Structure("Bench, Leather Cushion (Brown)",
-            "frn_couch_swlr12",
-            "",
-            true,
-            1)]
-        BenchLeatherCushionBrown = 231,
-        //232 open
+        // 231-232 are open
         [Structure("Table, Plastic (Large)",
             "_mdrn_pl_tabplal",
             "",

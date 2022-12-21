@@ -430,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3);
 
             // Pile of Cushions (White)
-            _builder.Create(RecipeType.PileofCushionsWhite, SkillType.Fabrication)
+            _builder.Create(RecipeType.PileOfCushionsWhite, SkillType.Fabrication)
                     .Category(RecipeCategoryType.MiscellaneousFurniture)
                     .Resref("structure_0225")
                  .Level(9)
@@ -930,7 +930,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_flawed", 4);
 
             // Bunk bed (Metal) Grey
-            _builder.Create(RecipeType.BunkbedMetalGrey, SkillType.Fabrication)
+            _builder.Create(RecipeType.BunkBedMetalGrey, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0238")
                 .Level(13)

@@ -1406,7 +1406,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         TelevisionOldModel = 246,
         [Structure("Foyer Chandelier",
-            "ZEP_CI_LGT_003",
+            "zep_ci_lgt_003",
             "",
             true,
             1)]

@@ -8737,6 +8737,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bar - White"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0229"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bathtub "
               },
               "RESREF": {
@@ -8880,6 +8891,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bench, Elegant, Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0258"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bench, Large"
               },
               "RESREF": {
@@ -8968,6 +8990,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bookshelf, Jedi"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0243"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bookshelf, Pedestal (White)"
               },
               "RESREF": {
@@ -9006,6 +9039,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0083"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bunkbed (Metal), Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0238"
               }
             },
             {
@@ -9133,6 +9177,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Dining - Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0262"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Dining - Orange"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0264"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Large (Grey/Red)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0237"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chair, Open Frame (Brown)"
               },
               "RESREF": {
@@ -9171,6 +9248,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0147"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Plinth"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0261"
               }
             },
             {
@@ -9232,6 +9320,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chaise Lounge - Orange"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0259"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chaise Lounge - Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0263"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chandelier"
               },
               "RESREF": {
@@ -9259,6 +9369,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5000"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Coffee Maker"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0227"
               }
             },
             {
@@ -9314,6 +9435,50 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0150"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch Leather - Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0230"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Blanket Cover - Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0260"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Cushion - Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0257"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Leather - Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0241"
               }
             },
             {
@@ -9633,6 +9798,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0161"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Foyer Chandelier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0247"
               }
             },
             {
@@ -10035,6 +10211,138 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Metal Wall, Door, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0248"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Panels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0250"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0256"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0254"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0251"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0244"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0252"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0235"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Panels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0249"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0255"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0253"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Microwave (Black)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0228"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mining Well"
               },
               "RESREF": {
@@ -10167,6 +10475,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Oven"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0226"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Overgrown Pillar"
               },
               "RESREF": {
@@ -10227,6 +10546,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0029"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pile of Cushions (White)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0225"
               }
             },
             {
@@ -10453,6 +10783,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Rug, (Classic Light Brown)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0224"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Rune Pillar"
               },
               "RESREF": {
@@ -10469,6 +10810,39 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0042"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shelves, Warehouse, Full"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0242"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shower, Floor Basin"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0240"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shower, White"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0239"
               }
             },
             {
@@ -10772,6 +11146,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Store Counter (Stained)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0236"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Stuffed Toy, Bantha"
               },
               "RESREF": {
@@ -10805,6 +11190,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Table, Dark, Glass"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0267"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Oval, Centre Leg (Dark)"
               },
               "RESREF": {
@@ -10827,11 +11223,55 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Table, Plastic (Large)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0233"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Polygon Design"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0265"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Round, Glass"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0266"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Round, Low (Blue)"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0206"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Round, Oak"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0234"
               }
             },
             {
@@ -10920,6 +11360,28 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0057"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Television Old Model"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0246"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Television, Big Screen"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0245"
               }
             },
             {

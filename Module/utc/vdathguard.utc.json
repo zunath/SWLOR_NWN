@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 60.0
+    "value": 54.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 660
+    "value": 430
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -95,7 +95,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathskinguard"
+          "value": "kwi_guard_skin"
         }
       }
     ]
@@ -150,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 660
+    "value": 430
   },
   "Int": {
     "type": "byte",
-    "value": 28
+    "value": 24
   },
   "Interruptable": {
     "type": "byte",
@@ -184,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 980
+    "value": 830
   },
   "NaturalAC": {
     "type": "byte",
@@ -489,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 25
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -511,6 +511,86 @@
     "type": "resref",
     "value": "vdathguard"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 42
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_KWI_GUARDIAN,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_KWI_GUARDIAN_GEAR,50,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_KWI_GUARDIAN_GEAR_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_KWI_GUARDIAN_RARES,5,1"
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 4
@@ -525,6 +605,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 20
   }
 }

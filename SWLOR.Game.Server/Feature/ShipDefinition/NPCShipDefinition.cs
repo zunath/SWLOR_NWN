@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
 {
-    public class NPCShipDefinition: IShipListDefinition
+    public class NPCShipDefinition : IShipListDefinition
     {
         private readonly ShipBuilder _builder = new();
         public Dictionary<string, ShipDetail> BuildShips()
@@ -44,6 +44,30 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
+
+            _builder.Create("npc_courier")
+                .ItemResref("npc_courier")
+                .Name("NPC - Courier")
+                .Appearance(AppearanceType.NeutralStriker)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(15)
+                .MaxCapacitor(40)
+                .MaxShield(15)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_turret1")
+                .ItemResref("npc_turret1")
+                .Name("NPC - Mk 1 Defense Turret")
+                .Appearance(AppearanceType.Turret1)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(15)
+                .MaxCapacitor(40)
+                .MaxShield(15)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
         }
 
         private void Tier2()
@@ -68,6 +92,30 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxArmor(30)
                 .MaxCapacitor(70)
                 .MaxShield(25)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_shuttle")
+                .ItemResref("npc_shuttle")
+                .Name("NPC - Shuttle")
+                .Appearance(AppearanceType.VLambda)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(30)
+                .MaxCapacitor(40)
+                .MaxShield(30)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_turret2")
+                .ItemResref("npc_turret2")
+                .Name("NPC - Mk 2 Defense Turret")
+                .Appearance(AppearanceType.Turret1)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(30)
+                .MaxCapacitor(40)
+                .MaxShield(30)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
@@ -98,6 +146,54 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
+
+            _builder.Create("npc_aurek")
+                .ItemResref("npc_aurek")
+                .Name("NPC - Aurek")
+                .Appearance(AppearanceType.RepublicAurek)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(60)
+                .MaxCapacitor(100)
+                .MaxShield(50)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_sithfig")
+                .ItemResref("npc_sithfig")
+                .Name("NPC - Sith Fighter")
+                .Appearance(AppearanceType.SithFighter)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(100)
+                .MaxCapacitor(100)
+                .MaxShield(0)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_freighter")
+                .ItemResref("npc_freighter")
+                .Name("NPC - Freighter")
+                .Appearance(AppearanceType.FreighterSmall)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(60)
+                .MaxCapacitor(40)
+                .MaxShield(40)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_turret3")
+                .ItemResref("npc_turret3")
+                .Name("NPC - Mk 3 Defense Turret")
+                .Appearance(AppearanceType.Turret1)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(60)
+                .MaxCapacitor(40)
+                .MaxShield(40)
+                .ShieldRechargeRate(6)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
         }
 
         private void Tier4()
@@ -105,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
             _builder.Create("NPC_Hammer")
                 .ItemResref("pirate_hammer")
                 .Name("NPC - Hammer")
-                .Appearance(AppearanceType.RepublicHammerhead)
+                .Appearance(AppearanceType.RepublicGunshipC)
                 .RequirePerk(PerkType.Starships, 0)
                 .MaxArmor(60)
                 .MaxCapacitor(65)
@@ -118,6 +214,30 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ItemResref("pirate_drake")
                 .Name("NPC - Drake")
                 .Appearance(AppearanceType.RepublicInfiltratorB)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(75)
+                .MaxCapacitor(75)
+                .MaxShield(60)
+                .ShieldRechargeRate(12)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_bulkf")
+                .ItemResref("npc_bulkf")
+                .Name("NPC - Bulk Freighter")
+                .Appearance(AppearanceType.LargeCargoShip)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(75)
+                .MaxCapacitor(75)
+                .MaxShield(60)
+                .ShieldRechargeRate(12)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_turret4")
+                .ItemResref("npc_turret4")
+                .Name("NPC - Mk 4 Defense Turret")
+                .Appearance(AppearanceType.Turret1)
                 .RequirePerk(PerkType.Starships, 0)
                 .MaxArmor(75)
                 .MaxCapacitor(75)
@@ -150,6 +270,114 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(95)
                 .MaxShield(100)
                 .ShieldRechargeRate(18)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_merchant")
+                .ItemResref("npc_merchant")
+                .Name("NPC - Merchantman")
+                .Appearance(AppearanceType.RepublicForay)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(125)
+                .MaxCapacitor(75)
+                .MaxShield(125)
+                .ShieldRechargeRate(12)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("npc_turret5")
+                .ItemResref("npc_turret5")
+                .Name("NPC - Mk 5 Defense Turret")
+                .Appearance(AppearanceType.Turret1)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(125)
+                .MaxCapacitor(75)
+                .MaxShield(125)
+                .ShieldRechargeRate(12)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_corvette")
+                .ItemResref("cap_corvette")
+                .Name("Foray-Class Blockade Runner")
+                .Appearance(AppearanceType.RepublicForay)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(350)
+                .MaxCapacitor(5000)
+                .MaxShield(200)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_frigate")
+                .ItemResref("cap_frigate")
+                .Name("Praetorian-Class Frigate")
+                .Appearance(AppearanceType.RepublicHammerhead)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(500)
+                .MaxCapacitor(5000)
+                .MaxShield(300)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_cruiser")
+                .ItemResref("cap_cruiser")
+                .Name("Hammerhead-Class Cruiser")
+                .Appearance(AppearanceType.RepublicHammerhead)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(800)
+                .MaxCapacitor(5000)
+                .MaxShield(450)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_hvycrui")
+                .ItemResref("cap_hvycrui")
+                .Name("Interdictor-Class Heavy Cruiser")
+                .Appearance(AppearanceType.SithLeviathan)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(1200)
+                .MaxCapacitor(5000)
+                .MaxShield(700)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_btlcrui")
+                .ItemResref("cap_btlcrui")
+                .Name("Centurion-Class Battlecruiser")
+                .Appearance(AppearanceType.StarDestroyer)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(1800)
+                .MaxCapacitor(5000)
+                .MaxShield(1000)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_btlship")
+                .ItemResref("cap_btlship")
+                .Name("Derriphan-Class Battleship")
+                .Appearance(AppearanceType.StarDestroyer)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(5000)
+                .MaxCapacitor(5000)
+                .MaxShield(0)
+                .ShieldRechargeRate(1)
+                .HighPowerNodes(8)
+                .LowPowerNodes(8);
+
+            _builder.Create("cap_dread")
+                .ItemResref("cap_dread")
+                .Name("Kandosii-Class Dreadnought")
+                .Appearance(AppearanceType.LargeShuttle)
+                .RequirePerk(PerkType.Starships, 0)
+                .MaxArmor(4000)
+                .MaxCapacitor(5000)
+                .MaxShield(2500)
+                .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8);
         }

@@ -526,7 +526,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_CRYSTAL_SPIDER,30,2"
+          "value": "VISCARA_CRYSTAL_SPIDER,100,1"
         }
       },
       {
@@ -556,7 +556,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_CRYSTAL_SPIDER_RARES,5,1"
+          "value": "VISCARA_CRYSTAL_SPIDER_RARES,20,1"
         }
       }
     ]

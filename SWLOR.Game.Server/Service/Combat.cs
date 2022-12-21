@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
+using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -82,6 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderDefense">The defender's defense rating.</param>
         /// <param name="defenderStat">The defender's defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A minimum and maximum damage range</returns>
         public static (int, int) CalculateDamageRange(
             int attackerAttack,
@@ -89,7 +91,8 @@ namespace SWLOR.Game.Server.Service
             int attackerStat,
             int defenderDefense,
             int defenderStat,
-            int critical)
+            int critical,
+            int deltaCap = 0)
         {
             const float RatioMax = 3.625f;
             const float RatioMin = 0.01f;
@@ -98,6 +101,7 @@ namespace SWLOR.Game.Server.Service
                 defenderDefense = 1;
 
             var statDelta = attackerStat - defenderStat;
+            if (deltaCap > 0) Math.Clamp(statDelta, -deltaCap, 8 + deltaCap);
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
 
@@ -116,18 +120,8 @@ namespace SWLOR.Game.Server.Service
             if (critical > 0)
             {
                 minDamage = maxDamage;
-                switch (critical)
-                {
-                    case 2:
-                        maxDamage *= 1.25f;
-                        break;
-                    case 3:
-                        maxDamage *= 1.50f;
-                        break;
-                    case 4:
-                        maxDamage *= 1.75f;
-                        break;
-                }
+                maxDamage *= ((critical - 1) / 4.0f) + 1.0f;
+                Log.Write(LogGroup.Attack, $"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
             }
 
             return ((int)minDamage, (int)maxDamage);
@@ -194,6 +188,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderDefense">The defender's defense rating.</param>
         /// <param name="defenderStat">The defender's defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
+        /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A damage value to apply to the target.</returns>
         public static int CalculateDamage(
             int attackerAttack,
@@ -201,7 +196,8 @@ namespace SWLOR.Game.Server.Service
             int attackerStat,
             int defenderDefense,
             int defenderStat,
-            int critical)
+            int critical,
+            int deltaCap = 0)
         {
             var (minDamage, maxDamage) = CalculateDamageRange(
                 attackerAttack,
@@ -209,7 +205,8 @@ namespace SWLOR.Game.Server.Service
                 attackerStat,
                 defenderDefense,
                 defenderStat,
-                critical);
+                critical,
+                deltaCap);
 
             return (int)Random.NextFloat(minDamage, maxDamage);
         }
@@ -315,15 +312,56 @@ namespace SWLOR.Game.Server.Service
                 case 4:
                     type = ": *miss*";
                     break;
+                case 2:
+                    type = ": *deflect*";
+                    break;
             }
 
-            var attackerName = (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim();
-            var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
-
-            attackerName = Convert.ToBoolean(attacker.m_bPlayerCharacter) ? ColorToken.Custom(attackerName, 153, 255, 255) : ColorToken.Custom(attackerName, 204, 153, 204);
-            defenderName = Convert.ToBoolean(defender.m_bPlayerCharacter) ? ColorToken.Custom(defenderName, 153, 255, 255) : ColorToken.Custom(defenderName, 204, 153, 204);
+            var attackerName = ColorToken.GetNameColorNative(attacker);
+            var defenderName = ColorToken.GetNameColorNative(defender);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by doublehand, Power Attack, and Might scaling.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <param name="weaponType">The BaseItem of the weapon held</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+
+        public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
+        {
+            var bonusDMG = 0;
+
+            bonusDMG += GetDoublehandDMGBonus(attacker) +
+                GetPowerAttackDMGBonus(attacker) +
+                GetMightDMGBonus(attacker, weaponType);
+
+            return bonusDMG;
+        }
+
+        /// <summary>
+        /// Retrieves the DMG bonus granted by Might scaling on Crushing Style Staves and Strong Style Sabers.
+        /// Returns 0 if an invalid weapon is held.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <param name="weaponType">The BaseItem of the weapon held</param>
+        /// <returns>The DMG value or 0 if requirements are not met.</returns>
+
+        public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
+        {
+            var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
+
+            if (Item.StaffBaseItemTypes.Contains(weaponType))
+                return mgtMod * Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle);
+            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
+                return mgtMod / 2;
+            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))
+                return mgtMod / 2;
+
+            return 0;
+
         }
 
         /// <summary>

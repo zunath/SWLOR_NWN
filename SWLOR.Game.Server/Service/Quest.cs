@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -515,6 +516,25 @@ namespace SWLOR.Game.Server.Service
 
             var quest = GetQuestById(questId);
             quest.Advance(player, triggerOrPlaceable);
+        }
+
+        public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)
+        {
+            // 5% credit bonus per social modifier.
+            var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
+
+            // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
+            var guildRelations = 0f;
+            if (isGuildQuest)
+            {
+                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
+                guildRelations = perkLevel * 0.05f;
+            }
+            var amount = baseAmount +
+                         (int)(baseAmount * social) +
+                         (int)(baseAmount * guildRelations);
+
+            return amount;
         }
     }
 }

@@ -239,6 +239,26 @@
         CreepingTerror = 232,
         ForceRage = 233,
         DroidEquipmentBlueprints = 234,
-        ThrowRock = 235
+        ThrowRock = 235,
+        FlurryStyle = 236,
+        CrushingStyle = 237,
+        Duelist = 238,
+        ShieldMaster = 239,
+        WailingBlows = 240,
+        DirtyBlow = 241,
+        ShieldBash = 242,
+        ForceInspiration = 243,
+        Bulwark = 244,
+        RousingShout = 245,
+        Dedication = 246,
+        SoldiersSpeed = 247,
+        SoldiersStrike = 248,
+        Charge = 249,
+        SoldiersPrecision = 250,
+        ShockingShout = 251,
+        Rejuvenation = 252,
+        FrenziedShout = 253,
+
+        FishingRods = 257,
     }
 }

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _4_ResaveNotes: IServerMigration
+    public class _4_ResaveNotes : ServerMigrationBase
     {
         public int Version => 4;
         public void Migrate()

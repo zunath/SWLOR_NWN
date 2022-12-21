@@ -38,11 +38,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dathomir General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "dat_gen_merch"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Dockhand Store"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "dockhand_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fishing Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "fishing_store"
               }
             },
             {

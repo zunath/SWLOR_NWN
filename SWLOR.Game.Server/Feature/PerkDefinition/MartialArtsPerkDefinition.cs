@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.AbilityService;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -33,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             StaffMastery();
             Slam();
             LegSweep();
+            FlurryStyle();
+            CrushingStyle();
 
             return _builder.Build();
         }
@@ -68,26 +71,40 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Inner Strength")
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 1. [Cross Skill]")
+                .Description("Improves critical chance by 5%. [Cross Skill]")
                 .Price(5)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength1)
 
                 .AddPerkLevel()
-                .Description("Improves critical range by 2. [Cross Skill]")
+                .Description("Improves critical chance by 10%. [Cross Skill]")
                 .Price(6)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength2)
 
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
                 .TriggerPurchase((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true);
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true);
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
                 });
         }
 
@@ -123,13 +140,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Katars")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with katars.")
+                .Description("Your accuracy with katars is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusKatars)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with katars.")
+                .Description("Your base damage with katars is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationKatars);
@@ -141,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Katars")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using katars.")
+                .Description("Improves the chance to critically hit with katars by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalKatars);
@@ -282,13 +299,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Staves")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with staves.")
+                .Description("Your accuracy with staves is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.WeaponFocusStaves)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with staves.")
+                .Description("Your base damage with staves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationStaves);
@@ -300,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Staves")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a staff.")
+                .Description("Improves the chance to critically hit with staves by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalStaff);
@@ -433,6 +450,53 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.LegSweep3);
+        }
+
+        private void FlurryStyle()
+        {
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.FlurryStyle)
+                .Name("Flurry Style")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                })
+
+                .AddPerkLevel()
+                .Description("Your staff attacks now use Agility for accuracy and Perception for damage. In addition, you gain an additional attack with staves, but all staff attacks are made with a -10% to-hit penalty.")
+                .Price(1)
+                .RequirementCannotHavePerk(PerkType.CrushingStyle)
+                .GrantsFeat(FeatType.FlurryStyle)
+
+                .AddPerkLevel()
+                .Description("You gain an additional attack with staves, and no longer suffer a to-hit penalty for attacks made with staves.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 35)
+                .GrantsFeat(FeatType.FlurryMastery);
+        }
+        private void CrushingStyle()
+        {
+            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.CrushingStyle)
+                .Name("Crushing Style")
+
+                .AddPerkLevel()
+                .Description("Your attacks with a staff now gain a DMG bonus equal to your MGT modifier. In addition, your critical chance is raised by 15%.")
+                .Price(1)
+                .RequirementCannotHavePerk(PerkType.FlurryStyle)
+                .GrantsFeat(FeatType.CrushingStyle)
+
+                .AddPerkLevel()
+                .Description("Your MGT DMG bonus is increased to twice your MGT modifier, and critical chance is increased by a further 15%.")
+                .Price(4)
+                .RequirementSkill(SkillType.MartialArts, 35)
+                .GrantsFeat(FeatType.CrushingMastery);
         }
 
     }

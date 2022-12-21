@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
@@ -26,6 +27,30 @@ namespace SWLOR.Game.Server.Service
         {
             LoadMarketCategories();
             LoadMarkets();
+        }
+
+        /// <summary>
+        /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void RemoveOldListings()
+        {
+            var query = new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.IsListed), true);
+            var count = (int)DB.SearchCount(query);
+            var listings = DB.Search(query
+                .AddPaging(count, 0));
+            var now = DateTime.UtcNow;
+
+            foreach (var listing in listings)
+            {
+                if (listing.DateListed != null && Math.Abs(now.Subtract((DateTime)listing.DateListed).Days) >= 14)
+                {
+                    listing.IsListed = false;
+
+                    DB.Set(listing);
+                }
+            }
         }
 
         /// <summary>
@@ -211,6 +236,14 @@ namespace SWLOR.Game.Server.Service
             // Structures
             if (Property.GetStructureTypeFromItem(item) != StructureType.Invalid)
                 return MarketCategoryType.Structure;
+
+            // Food
+            if (tag == "FOOD")
+                return MarketCategoryType.Food;
+
+            // Fishing Rods & Bait
+            if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
+                return MarketCategoryType.Fishing;
 
             return MarketCategoryType.Miscellaneous;
         }

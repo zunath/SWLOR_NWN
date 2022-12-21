@@ -805,7 +805,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,40,2"
+          "value": "TATOOINE_TUSKEN_ELITE,100,1"
         }
       },
       {
@@ -836,6 +836,21 @@
         "Value": {
           "type": "cexostring",
           "value": "TATOOINE_TUSKEN_ELITE_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_ELITE,40,1"
         }
       }
     ]

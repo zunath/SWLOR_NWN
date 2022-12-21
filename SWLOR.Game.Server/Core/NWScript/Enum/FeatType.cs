@@ -1820,5 +1820,35 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ThrowRock4 = 1853,
         ThrowRock5 = 1854,
 
+        FlurryStyle = 1855,
+        CrushingStyle = 1856,
+        FlurryMastery = 1857,
+        CrushingMastery = 1858,
+        Duelist = 1859,
+        ShieldMaster = 1860,
+        WailingBlows = 1861,
+        DirtyBlow = 1862,
+        ShieldBash1 = 1863,
+        ShieldBash2 = 1864,
+        ShieldBash3 = 1865,
+        ForceInspiration1 = 1866,
+        ForceInspiration2 = 1867,
+        ForceInspiration3 = 1868,
+        Bulwark = 1869,
+
+        RousingShout = 1870,
+        Dedication = 1871,
+        SoldiersSpeed = 1872,
+        SoldiersStrike = 1873,
+        Charge = 1874,
+        SoldiersPrecision = 1875,
+        ShockingShout = 1876,
+        Rejuvenation = 1877,
+        FrenziedShout = 1878,
+
+        Screech = 1882,
+        GreaterEarthquake = 1883,
+        FlameBlast = 1884,
+
     }
 }

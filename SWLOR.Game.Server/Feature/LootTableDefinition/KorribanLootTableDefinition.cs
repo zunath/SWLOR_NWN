@@ -9,34 +9,37 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
-            Hssiss();
+            Klorslug();
             MorabandSerpent();
             Shyrack();
-            Terentatek();
-            Tukata();
-            SithApprenticeGhost();
+            Wraid();
+            PelkoSwarm();
+            SithApprentice();
 
             SithCryptCrates();
 
             return _builder.Build();
         }
 
-        private void Hssiss()
+        private void Klorslug()
         {
-            _builder.Create("KORRIBAN_HSSISS")
-                .AddItem("lth_ruined", 25)
+            _builder.Create("KORRIBAN_KLORSLUG")
+                .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 15)
-                .AddItem("hssiss_meat", 10)
-                .AddItem("hssiss_tail", 10)
-                .AddItem("hssiss_innards", 5)
-                .AddItem("hssiss_skin2", 2, 1, true);
+                .AddItem("klorslug_meat", 10)
+                .AddItem("klorslug_tail", 10)
+                .AddItem("klorslug_innards", 5);
+
+            _builder.Create("KORRIBAN_KLORSLUG_RARES")
+                .IsRare()
+                .AddItem("klorslug_skin2", 1, 1, true);
         }
 
         private void MorabandSerpent()
         {
             _builder.Create("KORRIBAN_MORABAND_SERPENT")
-                .AddItem("lth_ruined", 10)
-                .AddItem("lth_flawed", 5)
+                .AddItem("lth_ruined", 5)
+                .AddItem("lth_flawed", 10)
                 .AddItem("mserp_meat", 10)
                 .AddItem("mserp_bile", 5)
                 .AddItem("mserp_guts", 5);
@@ -47,37 +50,39 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("KORRIBAN_SHYRACK")
                 .AddItem("lth_flawed", 20)
                 .AddItem("shyrack_wing", 10)
-                .AddItem("shyrack_meat", 50)
+                .AddItem("shyrack_meat", 30)
                 .AddItem("shyrack_tooth", 20);
         }
 
-        private void Terentatek()
+        private void Wraid()
         {
-            _builder.Create("KORRIBAN_TERENTATEK")
-                .AddItem("lth_ruined", 20)
+            _builder.Create("KORRIBAN_WRAID")
                 .AddItem("lth_flawed", 20)
                 .AddItem("lth_good", 5)
-                .AddItem("teren_claw", 10)
-                .AddItem("teren_tusk", 5)
-                .AddItem("teren_tooth", 5)
-                .AddItem("teren_spine", 1, 1, true);
+                .AddItem("wraid_claw2", 10)
+                .AddItem("wraid_scale", 5)
+                .AddItem("wraid_tooth", 5);
+
+            _builder.Create("KORRIBAN_WRAID_RARES")
+                .IsRare()
+                .AddItem("wraid_spine", 1, 1, true);
         }
 
-        private void Tukata()
+        private void PelkoSwarm()
         {
-            _builder.Create("KORRIBAN_TUKATA")
-                .AddItem("lth_ruined", 10)
-                .AddItem("lth_flawed", 2)
-                .AddItem("tukata_fur", 20)
-                .AddItem("tukata_tooth", 20)
-                .AddItem("tukata_meat", 10)
-                .AddItem("tukata_blood", 5);
+            _builder.Create("KORRIBAN_PELKO")
+                .AddItem("lth_ruined", 5)
+                .AddItem("lth_flawed", 10)
+                .AddItem("pelko_chitin", 20)
+                .AddItem("pelko_tooth", 20)
+                .AddItem("pelko_meat", 10)
+                .AddItem("pelko_blood", 5);
         }
 
-        private void SithApprenticeGhost()
+        private void SithApprentice()
         {
             _builder.Create("KORRIBAN_SITH_APPRENTICE")
-                .AddItem("lth_ruined", 20)
+                .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 10)
                 .AddItem("lth_good", 5)
                 .AddItem("sith_longsword", 5)
@@ -90,10 +95,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sith_twinblade", 5)
                 .AddItem("sith_rifle", 5)
                 .AddItem("sith_shuriken", 5)
-                .AddItem("sith_electro", 1)
+                .AddItem("sith_electro", 1);
 
-                .AddItem("abdamaryllia", 2, 1, true)
-                .AddItem("map_56", 10, 1, true)
+            _builder.Create("KORRIBAN_SITH_APPRENTICE_RARES")
+                .IsRare()
+                .AddItem("map_56", 11, 1, true)
+                .AddItem("abdamaryllia", 22, 1, true)
                 .AddItem("recipe_sithlngsd", 1, 1, true)
                 .AddItem("recipe_sithknf", 1, 1, true)
                 .AddItem("recipe_sithtwb", 1, 1, true)

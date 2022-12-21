@@ -559,5 +559,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         Vfx_Ship_Explosion = 838,
         Vfx_Imp_Mirv_Rock2 = 839,
         Vfx_Imp_Mirv_Rock3 = 840,
+        Vfx_Dur_Chat_Bubble = 841,
     }
 }

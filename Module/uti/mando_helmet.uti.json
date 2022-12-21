@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 199
+    "value": 125
   },
   "BaseItem": {
     "type": "int",
@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 200
+    "value": 126
   },
   "Cursed": {
     "type": "byte",
@@ -218,7 +218,7 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Tag": {
     "type": "cexostring",

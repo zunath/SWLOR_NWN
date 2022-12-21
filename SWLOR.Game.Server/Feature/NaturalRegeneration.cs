@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Feature
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
-                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 3;
-                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 3;
+                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
+                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
 
                 if (foodEffect != null)

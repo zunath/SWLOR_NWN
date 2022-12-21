@@ -21,18 +21,25 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 17 EM DMG to your target.", 3, 5f, 12, 17);
             IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 21 EM DMG to your target.", 4, 6f, 15, 21);
             IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 26 EM DMG to your target.", 5, 7f, 18, 26);
+            IonCannon("cap_turbo_1", "Capital Ship Turbolaser I", "Cap Turbo I", "Deals 45 DMG to target every 2.5 rounds.", 5, 15f, 20, 45);
+            IonCannon("cap_turbo_2", "Capital Ship Turbolaser II", "Cap Turbo II", "Deals 45 DMG to target every 1.5 rounds.", 5, 9f, 20, 45);
+            IonCannon("cap_turbo_3", "Capital Ship Turbolaser III", "Cap Turbo III", "Deals 60 DMG to target every 2.5 rounds.", 5, 15f, 20, 60);
+            IonCannon("cap_turbo_4", "Capital Ship Turbolaser IV", "Cap Turbo IV", "Deals 60 DMG to target every 1.5 rounds.", 5, 9f, 20, 60);
+            IonCannon("cap_turbo_5", "Capital Ship Turbolaser V", "Cap Turbo V", "Deals 75 DMG to target every 2.5 rounds.", 5, 15f, 20, 75);
+            IonCannon("cap_turbo_6", "Capital Ship Turbolaser VI", "Cap Turbo VI", "Deals 90 DMG to target every 2.5 rounds.", 5, 15f, 20, 90);
+            IonCannon("cap_turbo_7", "Capital Ship Turbolaser VII", "Cap Turbo VII", "Deals 90 DMG to target every 1.5 rounds.", 5, 9f, 20, 90);
 
             return _builder.Build();
         }
 
         private void IonCannon(
-            string itemTag, 
-            string name, 
-            string shortName, 
-            string description, 
-            int requiredLevel, 
-            float recast, 
-            int capacitor, 
+            string itemTag,
+            string name,
+            string shortName,
+            string description,
+            int requiredLevel,
+            float recast,
+            int capacitor,
             int dmg)
         {
             _builder.Create(itemTag)
@@ -42,7 +49,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture("iit_ess_050")
                 .Description(description)
                 .MaxDistance(40f)
-                .RequiresTarget()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)

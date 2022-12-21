@@ -706,18 +706,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood_fine", 2)
                 .Component("ref_scordspar", 3);
-
-            // Chair Large Grey/Red
-            _builder.Create(RecipeType.ChairLargeGreyRed, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0237")
-                .Level(14)
-                .Quantity(1)
-                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("lth_flawed", 2)
-                .Component("ref_scordspar", 2);
-
+            
             // Brazier, Stone
             _builder.Create(RecipeType.BrazierStone, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)

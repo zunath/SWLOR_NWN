@@ -9463,7 +9463,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Couch, Cushion - Red"
+                "value": "Couch, Cushion, Grey/Red"
               },
               "RESREF": {
                 "type": "resref",
@@ -11370,7 +11370,7 @@
               },
               "RESREF": {
                 "type": "resref",
-                "value": "structure_0246"
+                "value": "structure_0268"
               }
             },
             {

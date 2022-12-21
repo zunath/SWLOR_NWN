@@ -102,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "structure_0246"
+    "value": "structure_0268"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "structure_0246"
+    "value": "structure_0268"
   }
 }

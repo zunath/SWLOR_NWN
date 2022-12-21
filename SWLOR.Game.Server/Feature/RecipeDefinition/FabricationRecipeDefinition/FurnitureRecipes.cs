@@ -1040,7 +1040,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Bathtub
             _builder.Create(RecipeType.Bathtub, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("structure_0232")
+                .Resref("structure_0134")
                 .Level(20)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
@@ -1116,7 +1116,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementPerk(PerkType.FurnitureBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("fiberpl_flawed", 1);
+                .Component("fiberpl_good", 1);
 
             // Female Statue
             _builder.Create(RecipeType.FemaleStatue, SkillType.Fabrication)
@@ -1226,7 +1226,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementPerk(PerkType.FurnitureBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("fiberpl_flawed", 2);
+                .Component("fiberpl_good", 2);
 
             // Urn
             _builder.Create(RecipeType.Urn, SkillType.Fabrication)
@@ -1281,7 +1281,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementPerk(PerkType.FurnitureBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("fiberpl_flawed", 2);
+                .Component("fiberp_good", 2);
 
             // Couch, Cushion, Grey/Red
             _builder.Create(RecipeType.CouchCushionGreyRed, SkillType.Fabrication)
@@ -2620,7 +2620,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Television, Big Screen
             _builder.Create(RecipeType.TelevisionBigScreen, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("structure_0246")
+                .Resref("structure_0245")
                 .Level(48)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 5)
@@ -2664,12 +2664,12 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Couch, Blanket Cover, Red
             _builder.Create(RecipeType.CouchBlanketCoverRed, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("structure_0269")
+                .Resref("structure_0260")
                 .Level(49)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
-                .Component("hyphae_wood", 5)
+                .Component("hyphae_wood", 6)
                 .Component("ref_jasioclase", 3);
 
             // Couch, Wood, Yellow

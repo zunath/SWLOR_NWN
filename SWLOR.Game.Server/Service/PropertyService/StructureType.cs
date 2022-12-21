@@ -1314,7 +1314,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         CouchLeatherBlue = 230,
+
         // 231-232 are open
+
         [Structure("Table, Plastic (Large)",
             "_mdrn_pl_tabplal",
             "",
@@ -1393,12 +1395,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         TelevisionBigScreen = 245,
-        [Structure("Television Old Model",
-            "_mdrn_pl_tvold",
-            "",
-            true,
-            1)]
-        TelevisionOldModel = 246,
+
+        // 246 is open
+
         [Structure("Foyer Chandelier",
             "zep_ci_lgt_003",
             "",
@@ -1525,8 +1524,16 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         TableDarkGlass = 267,
+        [Structure("Television Old Model",
+            "_mdrn_pl_tvold",
+            "",
+            true,
+            1)]
+        TelevisionOldModel = 268,
 
-        // Buildings start here
+
+
+        // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",
             "",

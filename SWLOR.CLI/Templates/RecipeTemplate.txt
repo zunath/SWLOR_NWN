@@ -4,4 +4,4 @@ _builder.Create(RecipeType.%%RECIPEENUMNAME%%, SkillType.%%RECIPESKILL%%)
 	.Resref("%%RESREF%%")
 	.Level(%%LEVEL%%)
 	.Quantity(1)
-	.RequirementPerk(PerkType.%%CATEGORYENUMNAME%%, %%PERKLEVEL%%)%%ENHANCEMENTSLOTS%%%%COMPONENTS%%;
+	.RequirementPerk(PerkType.%%CATEGORYENUMNAME%%, %%PERKLEVEL%%)%%REQUIRESRECIPE%%%%ENHANCEMENTSLOTS%%%%COMPONENTS%%;

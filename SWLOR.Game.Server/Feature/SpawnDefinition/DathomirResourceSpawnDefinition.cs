@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(20)
 
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
@@ -56,6 +59,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
@@ -83,6 +89,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(40)
 
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
@@ -109,6 +118,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(50)
 
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
@@ -134,6 +146,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
@@ -202,6 +217,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
                 .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)

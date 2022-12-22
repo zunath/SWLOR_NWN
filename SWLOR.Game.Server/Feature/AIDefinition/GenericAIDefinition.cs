@@ -32,7 +32,106 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             var lowestHPAllyRace = GetRacialType(lowestHPAlly);
             var allyCount = allies.Count;
             var activeConcentration = Ability.GetActiveConcentration(self).Feat;
-            
+
+            // Benevolence
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence1, lowestHPAlly);
+            }
+
+            // Force Heal
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal5, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal5, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal4, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal3, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal2, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal1, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal1, lowestHPAlly);
+            }
+
+            // Medkit
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit5, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit5, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit4, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit1, lowestHPAlly);
+            }
+
+            // Kolto Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb1, lowestHPAlly);
+            }
+
+            // Kolto Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade1, lowestHPAlly);
+            }
+
+            // Kolto Recovery
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoRecovery1, lowestHPAlly);
+            }
 
             // Battle Insight
             if (CheckIfCanUseFeat(self, self, FeatType.BattleInsight2, () => allyCount >= 1 && activeConcentration == FeatType.Invalid))
@@ -72,6 +171,360 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.ForceStun1, target);
             }
 
+            // Adhesive Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.AdhesiveGrenade3))
+            {
+                return (FeatType.AdhesiveGrenade3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.AdhesiveGrenade2))
+            {
+                return (FeatType.AdhesiveGrenade2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.AdhesiveGrenade1))
+            {
+                return (FeatType.AdhesiveGrenade1, target);
+            }
+
+            // Concussion Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.ConcussionGrenade3))
+            {
+                return (FeatType.ConcussionGrenade3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ConcussionGrenade2))
+            {
+                return (FeatType.ConcussionGrenade2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ConcussionGrenade1))
+            {
+                return (FeatType.ConcussionGrenade1, target);
+            }
+
+            // Flamethrower
+            if (CheckIfCanUseFeat(self, target, FeatType.Flamethrower3))
+            {
+                return (FeatType.Flamethrower3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Flamethrower2))
+            {
+                return (FeatType.Flamethrower2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Flamethrower1))
+            {
+                return (FeatType.Flamethrower1, target);
+            }
+
+            // Flashbang Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.FlashbangGrenade3))
+            {
+                return (FeatType.FlashbangGrenade3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.FlashbangGrenade2))
+            {
+                return (FeatType.FlashbangGrenade2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.FlashbangGrenade1))
+            {
+                return (FeatType.FlashbangGrenade1, target);
+            }
+
+            // Frag Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.FragGrenade3))
+            {
+                return (FeatType.FragGrenade3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.FragGrenade2))
+            {
+                return (FeatType.FragGrenade2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.FragGrenade1))
+            {
+                return (FeatType.FragGrenade1, target);
+            }
+
+            // Gas Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.GasBomb3))
+            {
+                return (FeatType.GasBomb3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.GasBomb2))
+            {
+                return (FeatType.GasBomb2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.GasBomb1))
+            {
+                return (FeatType.GasBomb1, target);
+            }
+
+            // Incendiary Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.IncendiaryBomb3))
+            {
+                return (FeatType.IncendiaryBomb3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.IncendiaryBomb2))
+            {
+                return (FeatType.IncendiaryBomb2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.IncendiaryBomb1))
+            {
+                return (FeatType.IncendiaryBomb1, target);
+            }
+
+            // Ion Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.IonGrenade3))
+            {
+                return (FeatType.IonGrenade3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.IonGrenade2))
+            {
+                return (FeatType.IonGrenade2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.IonGrenade1))
+            {
+                return (FeatType.IonGrenade1, target);
+            }
+
+            // Smoke Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb3, () => allyHPPercentage < 50))
+            {
+                return (FeatType.SmokeBomb3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb2, () => allyHPPercentage < 50))
+            {
+                return (FeatType.SmokeBomb2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.SmokeBomb1, () => allyHPPercentage < 50))
+            {
+                return (FeatType.SmokeBomb1, lowestHPAlly);
+            }
+
+            // Stealth Generator
+            if (CheckIfCanUseFeat(self, self, FeatType.StealthGenerator3, () => hpPercentage < 100))
+            {
+                return (FeatType.StealthGenerator3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StealthGenerator2, () => hpPercentage < 100))
+            {
+                return (FeatType.StealthGenerator2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StealthGenerator1, () => hpPercentage < 100))
+            { 
+                return (FeatType.StealthGenerator1, self);
+            }
+
+            // Deflector Shield
+            if (CheckIfCanUseFeat(self, self, FeatType.DeflectorShield3, () => hpPercentage < 100))
+            {
+                return (FeatType.DeflectorShield3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.DeflectorShield2, () => hpPercentage < 100))
+            {
+                return (FeatType.DeflectorShield2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.DeflectorShield1, () => hpPercentage < 100))
+            {
+                return (FeatType.DeflectorShield1, self);
+            }
+
+            // Combat Enhancement
+            if (CheckIfCanUseFeat(self, self, FeatType.CombatEnhancement3, () => hpPercentage >= 95))
+            {
+                return (FeatType.CombatEnhancement3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CombatEnhancement2, () => hpPercentage >= 95))
+            {
+                return (FeatType.CombatEnhancement2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CombatEnhancement1, () => hpPercentage >= 95))
+            {
+                return (FeatType.CombatEnhancement1, self);
+            }
+
+            // Shielding
+            if (CheckIfCanUseFeat(self, self, FeatType.Shielding4))
+            {
+                return (FeatType.Shielding4, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.Shielding3))
+            {
+                return (FeatType.Shielding3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.Shielding2))
+            {
+                return (FeatType.Shielding2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.Shielding1))
+            {
+                return (FeatType.Shielding1, self);
+            }
+
+            // Stasis Field
+            if (CheckIfCanUseFeat(self, self, FeatType.StasisField3))
+            {
+                return (FeatType.StasisField3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StasisField2))
+            {
+                return (FeatType.StasisField2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StasisField1))
+            {
+                return (FeatType.StasisField1, self);
+            }
+
+            // Creeping Terror
+            if (CheckIfCanUseFeat(self, target, FeatType.CreepingTerror3))
+            {
+                return (FeatType.CreepingTerror3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.CreepingTerror2))
+            {
+                return (FeatType.CreepingTerror2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.CreepingTerror1))
+            {
+                return (FeatType.CreepingTerror1, target);
+            }
+
+            // Disturbance
+            if (CheckIfCanUseFeat(self, target, FeatType.Disturbance3))
+            {
+                return (FeatType.Disturbance3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Disturbance2))
+            {
+                return (FeatType.Disturbance2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Disturbance1))
+            {
+                return (FeatType.Disturbance1, target);
+            }
+
+            // Force Spark
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceSpark3))
+            {
+                return (FeatType.ForceSpark3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceSpark2))
+            {
+                return (FeatType.ForceSpark2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceSpark1))
+            {
+                return (FeatType.ForceSpark1, target);
+            }
+
+            // Force Lightning
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLightning4))
+            {
+                return (FeatType.ForceLightning4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLightning3))
+            {
+                return (FeatType.ForceLightning3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLightning2))
+            {
+                return (FeatType.ForceLightning2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLightning1))
+            {
+                return (FeatType.ForceLightning1, target);
+            }
+
+            // Force Burst
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst4))
+            {
+                return (FeatType.ForceBurst4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst3))
+            {
+                return (FeatType.ForceBurst3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst2))
+            {
+                return (FeatType.ForceBurst2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceBurst1))
+            {
+                return (FeatType.ForceBurst1, target);
+            }
+
+            // Throw Rock
+            if (CheckIfCanUseFeat(self, target, FeatType.ThrowRock5))
+            {
+                return (FeatType.ThrowRock5, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ThrowRock4))
+            {
+                return (FeatType.ThrowRock4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ThrowRock3))
+            {
+                return (FeatType.ThrowRock3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ThrowRock2))
+            {
+                return (FeatType.ThrowRock2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ThrowRock1))
+            {
+                return (FeatType.ThrowRock1, target);
+            }
+
+            // Force Drain
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain5, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain5, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain4, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain3, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain2, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceDrain1, () => activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceDrain1, target);
+            }
+
+            // Force Push
+            if (CheckIfCanUseFeat(self, target, FeatType.ForcePush4))
+            {
+                return (FeatType.ForcePush4, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForcePush3))
+            {
+                return (FeatType.ForcePush3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForcePush2))
+            {
+                return (FeatType.ForcePush2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForcePush1))
+            {
+                return (FeatType.ForcePush1, target);
+            }
+
+            // Force Inspiration
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceInspiration3))
+            {
+                return (FeatType.ForceInspiration3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceInspiration2))
+            {
+                return (FeatType.ForceInspiration2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ForceInspiration1))
+            {
+                return (FeatType.ForceInspiration1, self);
+            }
+            
             // Mind Trick
             if (CheckIfCanUseFeat(self, target, FeatType.MindTrick2, () => activeConcentration == FeatType.Invalid))
             {

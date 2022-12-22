@@ -231,6 +231,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1590
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       },

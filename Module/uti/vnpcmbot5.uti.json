@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 318
+    "value": 13
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -39,20 +39,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 5) Warform Hammer"
+      "0": "(NPC 5) Warform Greatsword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 144
+    "value": 71
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 123
+    "value": 54
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 154
+    "value": 71
   },
   "PaletteID": {
     "type": "byte",
@@ -77,7 +77,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 25
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 30
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -155,7 +155,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 37
         }
       }
     ]
@@ -170,7 +170,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC5WarformHammer"
+    "value": "NPC5WarformGreatsword"
   },
   "TemplateResRef": {
     "type": "resref",

@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 15
         }
       }
     ]
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 11
+    "value": 8
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 210
   },
   "DecayTime": {
     "type": "dword",
@@ -187,7 +187,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrvang1"
+          "value": "vnpcmvang2"
         }
       },
       {
@@ -225,6 +225,13 @@
         "Feat": {
           "type": "word",
           "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
         }
       },
       {
@@ -277,7 +284,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 60
+    "value": 210
   },
   "Int": {
     "type": "byte",
@@ -302,7 +309,7 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "vnpcmvang1"
+          "value": "vnpcrvang1"
         },
         "Repos_PosX": {
           "type": "word",
@@ -632,7 +639,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",

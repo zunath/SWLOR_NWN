@@ -2048,7 +2048,7 @@ namespace SWLOR.Game.Server.Service
                 var targetArea = CreateArea(layout.AreaInstanceResref);
                 RegisterInstance(property.Id, targetArea, property.Layout);
                 
-                SetName(targetArea, property.CustomName);
+                SetName(targetArea, "{PC} " + property.CustomName);
 
                 if (layout.OnSpawnAction != null)
                 {

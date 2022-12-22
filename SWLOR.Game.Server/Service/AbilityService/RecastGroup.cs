@@ -177,6 +177,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rejuvenation = 84,
         [RecastGroup("Frenzied Shout", "Frenz. Shout")]
         FrenziedShout = 85,
+        [RecastGroup("Screech", "Screech")]
+        Screech = 86,
+        [RecastGroup("Flame Blast", "F. Blast")]
+        FlameBlast = 87,
+        [RecastGroup("Greater Earthquake", "G. Quake")]
+        GreaterEarthquake = 88,
     }
 
     public class RecastGroupAttribute: Attribute

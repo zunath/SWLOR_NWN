@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -119,6 +121,77 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             case FoodItemPropertySubType.Duration:
                                 duration += amount * 60f; // 1 minute per duration bonus
                                 break;
+                            case FoodItemPropertySubType.Might:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.Vitality:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.Perception:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Perception, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.Willpower:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Willpower, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.Agility:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Agility, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.Social:
+                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Social, amount), user, duration);
+                                break;
+                            case FoodItemPropertySubType.DefensePhysical:
+                                foodEffect.DefensePhysical += amount;
+                                break;
+                            case FoodItemPropertySubType.DefenseForce:
+                                foodEffect.DefenseForce += amount;
+                                break;
+                            case FoodItemPropertySubType.DefenseFire:
+                                foodEffect.DefenseFire += amount;
+                                break;
+                            case FoodItemPropertySubType.DefensePoison:
+                                foodEffect.DefensePoison += amount;
+                                break;
+                            case FoodItemPropertySubType.DefenseElectrical:
+                                foodEffect.DefenseElectrical += amount;
+                                break;
+                            case FoodItemPropertySubType.DefenseIce:
+                                foodEffect.DefenseIce += amount;
+                                break;
+                            case FoodItemPropertySubType.Evasion:
+                                foodEffect.Evasion += amount;
+                                break;
+                            case FoodItemPropertySubType.ControlSmithery:
+                                foodEffect.Control[SkillType.Smithery] += amount;
+                                break;
+                            case FoodItemPropertySubType.CraftsmanshipSmithery:
+                                foodEffect.Craftsmanship[SkillType.Smithery] += amount;
+                                break;
+                            case FoodItemPropertySubType.ControlEngineering:
+                                foodEffect.Control[SkillType.Engineering] += amount;
+                                break;
+                            case FoodItemPropertySubType.CraftsmanshipEngineering:
+                                foodEffect.Craftsmanship[SkillType.Engineering] += amount;
+                                break;
+                            case FoodItemPropertySubType.ControlFabrication:
+                                foodEffect.Control[SkillType.Fabrication] += amount;
+                                break;
+                            case FoodItemPropertySubType.CraftsmanshipFabrication:
+                                foodEffect.Craftsmanship[SkillType.Fabrication] += amount;
+                                break;
+                            case FoodItemPropertySubType.ControlAgriculture:
+                                foodEffect.Control[SkillType.Agriculture] += amount;
+                                break;
+                            case FoodItemPropertySubType.CraftsmanshipAgriculture:
+                                foodEffect.Craftsmanship[SkillType.Agriculture] += amount;
+                                break;
+                            case FoodItemPropertySubType.Accuracy:
+                                foodEffect.Accuracy += amount;
+                                break;
+                            case FoodItemPropertySubType.Attack:
+                                foodEffect.Attack += amount;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     }
 

@@ -2237,6 +2237,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chaos Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ch_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Combat Tunic"
                     },
                     "RESREF": {
@@ -2303,6 +2314,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHAR-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLAR-001"
                     },
                     "RESREF": {
@@ -2352,6 +2385,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005k"
                     }
                   },
                   {
@@ -2424,6 +2479,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Immortal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imm_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Inquisitor Tunic"
                     },
                     "RESREF": {
@@ -2440,6 +2506,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_justinaarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_heavy_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Hyper Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_hyper_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Light Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_light_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Magus Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mag_tunic"
                     }
                   },
                   {
@@ -2814,6 +2924,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chaos Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ch_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Combat Cap"
                     },
                     "RESREF": {
@@ -2924,6 +3045,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DHHL-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLHL-001"
                     },
                     "RESREF": {
@@ -2973,6 +3116,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlhl005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005 K"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005k"
                     }
                   },
                   {
@@ -3111,6 +3276,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Immortal Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imm_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Inquisitor Cap"
                     },
                     "RESREF": {
@@ -3138,6 +3314,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keyanzionehood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Hyper Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_hyper_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Light Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_light_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Magus Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mag_cap"
                     }
                   },
                   {
@@ -5320,11 +5540,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Shield"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_shield"
                           }
                         },
                         {
@@ -8495,6 +8737,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bar - White"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0229"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bathtub "
               },
               "RESREF": {
@@ -8638,6 +8891,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bench, Elegant, Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0258"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bench, Large"
               },
               "RESREF": {
@@ -8726,6 +8990,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bookshelf, Jedi"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0243"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bookshelf, Pedestal (White)"
               },
               "RESREF": {
@@ -8764,6 +9039,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0083"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bunkbed (Metal), Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0238"
               }
             },
             {
@@ -8891,6 +9177,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Dining - Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0262"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Dining - Orange"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0264"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Large (Grey/Red)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0237"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chair, Open Frame (Brown)"
               },
               "RESREF": {
@@ -8929,6 +9248,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0147"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Plinth"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0261"
               }
             },
             {
@@ -8990,6 +9320,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chaise Lounge - Orange"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0259"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chaise Lounge - Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0263"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chandelier"
               },
               "RESREF": {
@@ -9017,6 +9369,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5000"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Coffee Maker"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0227"
               }
             },
             {
@@ -9072,6 +9435,50 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0150"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch Leather - Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0230"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Blanket Cover - Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0260"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Cushion, Grey/Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0257"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Couch, Leather - Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0241"
               }
             },
             {
@@ -9391,6 +9798,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0161"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Foyer Chandelier"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0247"
               }
             },
             {
@@ -9793,6 +10211,138 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Metal Wall, Door, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0248"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Panels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0250"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0256"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0254"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0251"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0244"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0252"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Light"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0235"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Panels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0249"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Pipes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0255"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Ribbed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0253"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Microwave (Black)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0228"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mining Well"
               },
               "RESREF": {
@@ -9925,6 +10475,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Oven"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0226"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Overgrown Pillar"
               },
               "RESREF": {
@@ -9985,6 +10546,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0029"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pile of Cushions (White)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0225"
               }
             },
             {
@@ -10211,6 +10783,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Rug, (Classic Light Brown)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0224"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Rune Pillar"
               },
               "RESREF": {
@@ -10227,6 +10810,39 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0042"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shelves, Warehouse, Full"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0242"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shower, Floor Basin"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0240"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Shower, White"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0239"
               }
             },
             {
@@ -10530,6 +11146,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Store Counter (Stained)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0236"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Stuffed Toy, Bantha"
               },
               "RESREF": {
@@ -10563,6 +11190,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Table, Dark, Glass"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0267"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Oval, Centre Leg (Dark)"
               },
               "RESREF": {
@@ -10585,11 +11223,55 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Table, Plastic (Large)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0233"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Polygon Design"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0265"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Round, Glass"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0266"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Round, Low (Blue)"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0206"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Round, Oak"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0234"
               }
             },
             {
@@ -10678,6 +11360,28 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0057"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Television Old Model"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0268"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Television, Big Screen"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0245"
               }
             },
             {
@@ -11012,6 +11716,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Belt"
                           },
                           "RESREF": {
@@ -11078,6 +11793,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBE-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBE-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLBE-001"
                           },
                           "RESREF": {
@@ -11127,6 +11864,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlbe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005k"
                           }
                         },
                         {
@@ -11221,11 +11980,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Belt"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_belt"
                           }
                         },
                         {
@@ -11446,6 +12260,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Boots"
                           },
                           "RESREF": {
@@ -11512,6 +12337,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHLG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHLG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLLG-001"
                           },
                           "RESREF": {
@@ -11561,6 +12408,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dllg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005k"
                           }
                         },
                         {
@@ -11666,11 +12535,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Boots"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_leg"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_boots"
                           }
                         },
                         {
@@ -11869,6 +12793,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHBR-001"
                           },
                           "RESREF": {
@@ -11924,6 +12859,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBR-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHBR-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Bracer"
                           },
                           "RESREF": {
@@ -11973,6 +12930,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_bracer"
                           }
                         },
                         {
@@ -12094,6 +13062,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Cloak"
                           },
                           "RESREF": {
@@ -12160,6 +13139,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHCL-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHCL-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLCL-001"
                           },
                           "RESREF": {
@@ -12209,6 +13210,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlcl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005k"
                           }
                         },
                         {
@@ -12314,6 +13337,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Cloak"
                           },
                           "RESREF": {
@@ -12330,6 +13364,50 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_h_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_cloak"
                           }
                         },
                         {
@@ -12583,6 +13661,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DLBR-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBR-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Flesheater Gloves"
                           },
                           "RESREF": {
@@ -12627,11 +13727,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Gloves"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_gloves"
                           }
                         },
                         {
@@ -12875,6 +14019,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aluminum"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Al'zabi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alzabi"
                     }
                   },
                   {
@@ -14179,11 +15334,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bastion Sweeper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bast_sweeper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Beetle Chitin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "beetle_chitin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bibikibo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bibikibo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blindfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blindfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blowfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blowfish"
                     }
                   },
                   {
@@ -14223,11 +15422,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bluetail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bluetail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bluetail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bluetail99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Boncexdryn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "boncexdryn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bonefish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bonefish"
                     }
                   },
                   {
@@ -14388,6 +15620,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cala Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cala_lobster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Calla Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "calla_lure"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Calla Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "calla_lure99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carnuinch"
                     },
                     "RESREF": {
@@ -14459,6 +15724,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cereal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cheval Salmon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cheval_salmon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chiro_shard"
                     }
                   },
                   {
@@ -14591,6 +15878,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cloves_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cobalt Jellyfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cobalt_jellyfish"
                     }
                   },
                   {
@@ -15279,6 +16577,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Copper Frog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "copper_frog"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Copplan Coolant"
                     },
                     "RESREF": {
@@ -15444,6 +16753,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crayfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crayfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crayfish Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crayfish_ball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crayfish Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crayfish_ball99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Creamy Butter"
                     },
                     "RESREF": {
@@ -15460,6 +16802,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_bass"
                     }
                   },
                   {
@@ -15620,11 +16973,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dark Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir Oregano"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "herb_x"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Deadmoiselle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "deadmoiselle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Denizanasi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "denizanasi"
                     }
                   },
                   {
@@ -15735,6 +17132,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "drill"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Drill Calamary"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "drill_calamar99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Drill Calamary"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "drill_calamary"
                     }
                   },
                   {
@@ -15856,6 +17275,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_fa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fat Greedie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fat_greedie"
                     }
                   },
                   {
@@ -16159,6 +17589,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fly Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fly_lure"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fly Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fly_lure99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Force Armor Core"
                     },
                     "RESREF": {
@@ -16175,6 +17627,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "f_armor_segment"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forest Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forest_carp"
                     }
                   },
                   {
@@ -16214,6 +17677,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Frigorifish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frigorifish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Furniture"
                     },
                     "RESREF": {
@@ -16230,6 +17704,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gemstone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Giant Catfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "giant_catfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Giant Shell Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "giantshell_bug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Giant Shell Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "giantshell_bug99"
                     }
                   },
                   {
@@ -16368,6 +17875,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Greedie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "greedie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Greel Tree Seeds"
                     },
                     "RESREF": {
@@ -16412,11 +17930,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Green Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grn_shell_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gunuinch"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "gunuinch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gurnard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gurnard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hamsi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hamsi"
                     }
                   },
                   {
@@ -16560,6 +18111,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "homogoni_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hoptoad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hoptoad"
                     }
                   },
                   {
@@ -19261,6 +20823,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Insect Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "insect_ball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Insect Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "insect_ball99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Intact Warocas Beak"
                     },
                     "RESREF": {
@@ -19277,6 +20861,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "iondeyn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Istavrit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "istavrit"
                     }
                   },
                   {
@@ -19536,6 +21131,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lakerda"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lakerda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lamp Marimo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lamp_marimo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lankky"
                     },
                     "RESREF": {
@@ -19635,11 +21252,121 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Little Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "little_worm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Little Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "little_worm99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lizard Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lizard_lure"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lizard Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lizard_lure99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lufaise Fly"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lufaise_fly"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lufaise Fly"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lufaise_fly99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lugworm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lugworm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lugworm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lugworm99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lungfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lungfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Luusntan"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "luusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mackerel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mackerel"
                     }
                   },
                   {
@@ -19789,6 +21516,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Meatball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "meatball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Meatball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "meatball99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Medcina"
                     },
                     "RESREF": {
@@ -19899,6 +21648,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mercanbaligi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mercanbaligi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Metal Baton Frame"
                     },
                     "RESREF": {
@@ -19915,6 +21675,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "padding_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mhaura"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mhaura"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moat Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moat_carp"
                     }
                   },
                   {
@@ -19987,6 +21769,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moorish Idol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moorish_idol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moraband Serpent Bile"
                     },
                     "RESREF": {
@@ -20014,6 +21807,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mserp_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Muddy Siredon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "muddy_siredon"
                     }
                   },
                   {
@@ -20069,6 +21873,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nails"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nashmau"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nashmau"
                     }
                   },
                   {
@@ -20152,6 +21967,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nebimonite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nebimonite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nibullan"
                     },
                     "RESREF": {
@@ -20207,11 +22033,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nosteau Herring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nosteau_herring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Obsidian"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "obsidian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ogre Eel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ogre_eel"
                     }
                   },
                   {
@@ -20372,6 +22220,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Peeled Crayfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "peeled_crayfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peeled Crayfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "peeled_crayfish9"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pefoate"
                     },
                     "RESREF": {
@@ -20487,6 +22357,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "power_crystal_pe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Phanauet Newt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "phan_newt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pipira"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pipira"
                     }
                   },
                   {
@@ -20856,6 +22748,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Quus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rainbow Coonlank"
                     },
                     "RESREF": {
@@ -20960,6 +22863,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raivor_tail_bone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ra'Kaznar Shellfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rakaz_shellfish"
                     }
                   },
                   {
@@ -21103,6 +23017,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_cluster_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "red_shell_shard"
                     }
                   },
                   {
@@ -21439,6 +23364,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rhinochimera"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rhinochimera"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rifle Barrel"
                     },
                     "RESREF": {
@@ -21455,6 +23391,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "r_flour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Robber Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "robber_rig"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Robber Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "robber_rig99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rogue Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rogue_rig"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rogue Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rogue_rig99"
                     }
                   },
                   {
@@ -21488,6 +23468,17 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 13300
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruddy Seema"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ruddy_seema"
                     }
                   },
                   {
@@ -21543,6 +23534,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ls_hilt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sabiki Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sabiki_rig"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sabiki Rig"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sabiki_rig99"
                     }
                   },
                   {
@@ -21631,6 +23644,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandswimmerleg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sardine Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sardine_ball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sardine Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sardine_ball99"
                     }
                   },
                   {
@@ -21736,6 +23771,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Senroh Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shaft"
                     },
                     "RESREF": {
@@ -21752,6 +23798,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shat_beetle_chit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shell Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shell_bug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shell Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shell_bug99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shining Trout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shining_trout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shrimp Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shrimp_lure"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shrimp Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shrimp_lure99"
                     }
                   },
                   {
@@ -21796,6 +23897,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "silo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sinking Minnow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sinking_minnow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sinking Minnow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sinking_minnow99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sliced Cod"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sliced_cod"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sliced Cod"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sliced_cod99"
                     }
                   },
                   {
@@ -22935,6 +25080,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tiger Cod"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_cod"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tilarium Ore"
                     },
                     "RESREF": {
@@ -22951,6 +25107,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tinnuchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tiny Goldfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiny_goldfish"
                     }
                   },
                   {
@@ -22995,6 +25162,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Translucent Salpa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trans_salpa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tricolored Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tricolored_carp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trout Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trout_ball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trout Ball"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "trout_ball99"
                     }
                   },
                   {
@@ -23325,6 +25536,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "berry_fruit_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Urchin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "visc_urchin"
                     }
                   },
                   {
@@ -24365,6 +26587,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "White Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "white_lobster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "White Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "whit_shell_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wild Blood"
                     },
                     "RESREF": {
@@ -24486,6 +26730,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Worm Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "worm_lure"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worm Lure"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "worm_lure99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wraid Skin"
                     },
                     "RESREF": {
@@ -24519,6 +26785,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yayinbaligi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yayinbaligi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yellow Coonlank"
                     },
                     "RESREF": {
@@ -24541,11 +26818,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yellow Globe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yellow_globe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yellow Milk"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "milk_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yellow Shell Shard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yell_shell_shard"
                     }
                   },
                   {
@@ -24563,11 +26862,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Yorchete"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yorchete"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Yuusntan"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "yuusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zafmlug Bass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zafmlug_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zi'tah"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zitah"
                     }
                   },
                   {
@@ -24897,6 +27229,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Necklace"
                           },
                           "RESREF": {
@@ -24963,6 +27306,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHNK-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLNK-001"
                           },
                           "RESREF": {
@@ -25012,6 +27377,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005k"
                           }
                         },
                         {
@@ -25106,11 +27493,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Necklace"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_necklace"
                           }
                         },
                         {
@@ -25364,6 +27806,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chaos Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ch_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Ring"
                           },
                           "RESREF": {
@@ -25430,6 +27883,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DHRG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLRG-001"
                           },
                           "RESREF": {
@@ -25479,6 +27954,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlrg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005c"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005k"
                           }
                         },
                         {
@@ -25573,11 +28070,66 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Immortal Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "imm_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Inquisitor Ring"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Heavy Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_heavy_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Hyper Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_hyper_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Light Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_light_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Magus Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mag_ring"
                           }
                         },
                         {
@@ -25953,6 +28505,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Baked Nebimonite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "baked_nebimon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Bag"
                     },
                     "RESREF": {
@@ -25964,11 +28527,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bass Meuniere"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bass_meuniere"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blackened Frog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blackened_frog"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blackened Hoptoad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "b_hoptoad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blackened Newt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blackened_newt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bonefish Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bonefish_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Brain Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "brain_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bread"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bream Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bream_sushi"
                     }
                   },
                   {
@@ -26030,6 +28670,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Carp Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "carp_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chocolate Cookies"
                     },
                     "RESREF": {
@@ -26052,6 +28703,116 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cooked Bibikibo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_bibikibo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Crayfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_crayfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Istavrit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_istavrit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Jellyfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_jellyfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Mackerel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_mackerel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Salpa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_salpa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Siredon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_siredon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Yayinbaligi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cooked_yayin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dath Herb Soup"
                     },
                     "RESREF": {
@@ -26063,11 +28824,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dead Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dead_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Deck Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "deckbag"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Deepwater Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "deep_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Denzi Treat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "denzi_treat"
                     }
                   },
                   {
@@ -26096,6 +28890,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dorado Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dorado_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Duskhaven Keycard"
                     },
                     "RESREF": {
@@ -26107,11 +28912,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Eelectric Soup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eelectric_soup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Extra Large Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_ex"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fat Greedie Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fat_greedie_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fish & Chips"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fish_n_chips"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fish Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fish_broth"
                     }
                   },
                   {
@@ -26162,6 +29011,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Goldfish Bowl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "goldfish_bowl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Grandiose Meat Ball"
                     },
                     "RESREF": {
@@ -26184,11 +29044,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Greedie Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "greedie_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Green Curry"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "green_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gurnard Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gurnard_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Herb Quus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Idol Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "idol_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ikran Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ikran_sushi"
                     }
                   },
                   {
@@ -26272,6 +29187,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Long Ling Lung"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "long_ling_lung"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Dog Tags"
                     },
                     "RESREF": {
@@ -26288,6 +29214,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_herbsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Marimo Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "marimo_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Maringna"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "maringna"
                     }
                   },
                   {
@@ -26448,6 +29396,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Octopus Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "octo_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Orange au Lait"
                     },
                     "RESREF": {
@@ -26503,6 +29462,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Peeled Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "peeled_lobster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pickled Herring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pickled_herring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pineapple au Lait"
                     },
                     "RESREF": {
@@ -26519,6 +29500,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pine_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Popper Bowl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "popper_bowl"
                     }
                   },
                   {
@@ -26558,6 +29550,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ra'Kaznar Special"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rakaz_special"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ramen Noodles"
                     },
                     "RESREF": {
@@ -26569,11 +29572,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rancid Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rancid_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Red Curry"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "red_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Roast Carp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "roast_carp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Roast Cod"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "roast_cod"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Roast Pipira"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "roast_pipira"
                     }
                   },
                   {
@@ -26624,11 +29671,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sea Bass Croute"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sea_bass_croute"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shimmering Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shimm_broth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shining Stew"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shining_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sliced Sardine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sliced_sardine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Small Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_sm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smoked Salmon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "smoked_salmon"
                     }
                   },
                   {
@@ -26734,6 +29836,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Steamed Catfish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "steamed_catfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sugar Cookies"
                     },
                     "RESREF": {
@@ -26750,6 +29863,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "surprise_sandwic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tentacle Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tent_sushi"
                     }
                   },
                   {
@@ -26811,6 +29935,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tricolored Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tricolored_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Blood Broth"
                     },
                     "RESREF": {
@@ -26827,6 +29962,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusken_mball"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Urchin Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "urchin_sushi"
                     }
                   },
                   {
@@ -26871,6 +30017,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "White Peeled Lobster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "white_p_lobster"
                     }
                   },
                   {
@@ -26965,6 +30122,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Wild Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wild_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wizard Cookies"
                     },
                     "RESREF": {
@@ -27003,6 +30171,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yellow_curry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zoni Broth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zoni_broth"
                     }
                   }
                 ]
@@ -27059,6 +30238,589 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Bracer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbracer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chbreast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Leggings"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chlegg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chaos Shield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chshield"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chielec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Great Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chigswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Katar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chikatar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Knife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chiknife"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Longsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chilngswd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chipistol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chirifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chishuri"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chispear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chistaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitwinbl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chitelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhlg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DHRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLAR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlar005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBE-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbe005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLBR-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlbr005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLCL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlcl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLHL-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlhl005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLLG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dllg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLNK-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlnk005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: DLRG-005 C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlrg005c"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imgloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Immortal Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_imtunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgboots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Gloves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mggloves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Magus Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mgtunic"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -27222,6 +30984,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Cave Ruins Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_62"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Desert Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_63"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grotto Caverns Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_65"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grottos Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_64"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Jungles Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_66"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Mountains Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_67"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Ruins Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_68"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Tribes Village Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_69"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_61"
                     }
                   },
                   {
@@ -27398,6 +31259,72 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_032"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Bream Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Dorado Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dosushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Ikran Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Octopus Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ocsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Tentacle Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_tesushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Wild Sushi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_wisushi"
                     }
                   },
                   {
@@ -30648,6 +34575,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Knife"
                           },
                           "RESREF": {
@@ -30708,6 +34646,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_knife_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_knife"
                           }
                         },
                         {
@@ -30961,6 +34910,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Great Sword"
                           },
                           "RESREF": {
@@ -31032,6 +34992,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_greatsword_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_greatsword"
                           }
                         },
                         {
@@ -31285,6 +35256,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chiro Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Darth Gravius's Lightsaber"
                           },
                           "RESREF": {
@@ -31488,6 +35481,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_longsword_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_longsword"
                           }
                         },
                         {
@@ -31796,6 +35811,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Katar"
                           },
                           "RESREF": {
@@ -31867,6 +35893,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "pil_joleesaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_katar"
                           }
                         },
                         {
@@ -32369,6 +36406,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_twinelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Delta Staff"
                     },
                     "RESREF": {
@@ -32550,6 +36620,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_twinelec_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_twinelec"
                     }
                   },
                   {
@@ -33374,6 +37477,182 @@
                             "type": "resref",
                             "value": "wookshamanstaff"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bamboo Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bamboo_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Butterfly Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "butterfly_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carbon Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "carbon_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Clothespole"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "clothespole"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Composite Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "composite_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ebisu Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ebisu_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Fastwater Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fastwater_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fishing_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Glass Fiber Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "glassfiber_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Halcyon Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "halcyon_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Judge's Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "judge_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lu Shang's Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lushang_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Maze Monger Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mazemong_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tranquility Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tranquility_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Willow Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "willow_rod"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Yew Fishing Rod"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "yew_rod"
+                          }
                         }
                       ]
                     },
@@ -33660,6 +37939,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Clan Lsu Polearm"
                     },
                     "RESREF": {
@@ -33731,6 +38021,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_spear_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_spear"
                     }
                   },
                   {
@@ -34180,6 +38481,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "CZ-220 Droid Pistol"
                           },
                           "RESREF": {
@@ -34295,6 +38607,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_pistol_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_pistol"
                           }
                         },
                         {
@@ -34559,6 +38882,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Rifle"
                           },
                           "RESREF": {
@@ -34619,6 +38953,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_rifle_5"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_rifle"
                           }
                         },
                         {
@@ -34835,6 +39180,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Delta Shuriken"
                     },
                     "RESREF": {
@@ -34895,6 +39251,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_shuriken_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kwi_shuriken"
                     }
                   },
                   {

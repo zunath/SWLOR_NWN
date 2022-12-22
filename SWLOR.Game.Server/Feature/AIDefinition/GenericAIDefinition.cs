@@ -912,10 +912,28 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.IronShell, self);
             }
 
+            // Screech
+            if (CheckIfCanUseFeat(self, target, FeatType.Screech))
+            {
+                return (FeatType.Screech, self);
+            }
+
+            // Greater Earthquake
+            if (CheckIfCanUseFeat(self, self, FeatType.GreaterEarthquake))
+            {
+                return (FeatType.GreaterEarthquake, target);
+            }
+
             // Earthquake
             if (CheckIfCanUseFeat(self, self, FeatType.Earthquake))
             {
                 return (FeatType.Earthquake, target);
+            }
+
+            // Flame Blast
+            if (CheckIfCanUseFeat(self, target, FeatType.FlameBlast))
+            {
+                return (FeatType.FlameBlast, target);
             }
 
             // Fire Breath

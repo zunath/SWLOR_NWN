@@ -23,14 +23,20 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <summary>
         /// Retrieves the next spawn resref, object type, and AI flags based on the rules for this specific spawn table.
         /// </summary>
-        /// <returns>A tuple containing the object type and resref to spawn.</returns>
-        public (ObjectType, string, AIFlag, List<IAnimator>) GetNextSpawn()
+        /// <returns>The detailed spawn object to spawn.</returns>
+        public SpawnObject GetNextSpawn()
         {
             var selectedObject = SelectRandomSpawnObject();
             if (selectedObject == null)
-                return (ObjectType.All, string.Empty, AIFlag.None, new List<IAnimator>());
+                return new SpawnObject
+                {
+                    Type = ObjectType.All,
+                    Resref = string.Empty,
+                    AIFlags = AIFlag.None,
+                    Animators = new List<IAnimator>()
+                };
 
-            return (selectedObject.Type, selectedObject.Resref, selectedObject.AIFlags, selectedObject.Animators);
+            return selectedObject;
         }
 
         /// <summary>

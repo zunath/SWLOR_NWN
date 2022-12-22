@@ -25,7 +25,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Squellbug Spawn"
+      "0": "Korriban - Squellbug"
     }
   },
   "MapNote": {
@@ -38,7 +38,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 3
+    "value": 0
   },
   "Tag": {
     "type": "cexostring",

@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Saberstaff = 31,
         [MarketCategory("Food", true)]
         Food = 32,
+        [MarketCategory("Fishing", true)]
+        Fishing = 33,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

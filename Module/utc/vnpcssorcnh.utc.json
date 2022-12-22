@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 71
+    "value": 28
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 40
+    "value": 28
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 70.0
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 67
         },
         "ClassLevel": {
           "type": "short",
@@ -122,7 +122,7 @@
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 91
+    "value": 60
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": 34
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 700
+    "value": 20
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Warmongers are those Sith Warriors who have taken the path of warleaders of the Sith Empire. It is they who inspire the troops to acts of depraved cruelty, who direct them toward the most taboo of targets, who stand at the forefront of the tank columns as they barrel down on your cities and make refugees of your people."
+      "0": "Sith Sorcerers are among the most vile of individuals. Using ancient techniques they defile the very nature of reality, twisting the Force itself to serve their ambitions. The strongest among them are known to have a draining effect on those around them, sapping the light itself from the hearts of those who would otherwise oppose them."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 26
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -173,28 +173,28 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcawarmonger"
+          "value": "vnpcasorc2"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmwar4"
+          "value": "vnpcmsorc3"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcswar4"
+          "value": "vnpcssorc3"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -224,13 +224,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1835
         }
       },
@@ -238,21 +231,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1733
+          "value": 1717
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1736
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1170
+          "value": 1731
         }
       },
       {
@@ -266,42 +252,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1353
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1173
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1875
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1873
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1363
+          "value": 1366
         }
       },
       {
@@ -337,7 +288,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Warmonger"
+      "0": "Sith Sorcerer"
     }
   },
   "fortbonus": {
@@ -346,7 +297,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -354,11 +305,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 700
+    "value": 20
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -388,7 +339,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1100
+    "value": 500
   },
   "NaturalAC": {
     "type": "byte",
@@ -400,7 +351,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
@@ -416,7 +367,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 580
   },
   "Race": {
     "type": "byte",
@@ -689,11 +640,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 158
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -701,7 +652,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithWarmonger"
+    "value": "SithSorcerer"
   },
   "Tail_New": {
     "type": "dword",
@@ -713,7 +664,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "valnpcswarmong"
+    "value": "vnpcssorcnh"
   },
   "WalkRate": {
     "type": "int",
@@ -729,6 +680,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 34
   }
 }

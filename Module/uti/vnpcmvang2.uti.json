@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 13
+    "value": 318
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -39,20 +39,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 2) Vanguard Greatsword"
+      "0": "(NPC 2) Vanguard Hammer"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 71
+    "value": 144
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 54
+    "value": 123
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 71
+    "value": 154
   },
   "PaletteID": {
     "type": "byte",
@@ -155,7 +155,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 37
+          "value": 2
         }
       }
     ]
@@ -170,7 +170,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC2VanguardGreatsword"
+    "value": "NPC2VanguardHammer"
   },
   "TemplateResRef": {
     "type": "resref",

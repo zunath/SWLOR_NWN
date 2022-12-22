@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 40
         }
       }
     ]
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 16
+    "value": 17
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 10
   },
   "DecayTime": {
     "type": "dword",
@@ -231,34 +231,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1726
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1353
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1364
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       },
@@ -305,7 +277,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 190
+    "value": 10
   },
   "Int": {
     "type": "byte",
@@ -640,7 +612,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 157
   },
   "Str": {
     "type": "byte",

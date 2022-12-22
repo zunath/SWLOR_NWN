@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10052
+    "value": 10050
   },
   "BodyBag": {
     "type": "byte",
@@ -23,7 +23,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 15
+    "value": 26
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -78,7 +78,7 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
           "value": "vnpcmbot5"
@@ -132,20 +132,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1482
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       },
@@ -168,13 +154,6 @@
         "Feat": {
           "type": "word",
           "value": 46
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1785
         }
       }
     ]
@@ -261,11 +240,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 356
+    "value": 2185
   },
   "Race": {
     "type": "byte",
-    "value": 167
+    "value": 150
   },
   "refbonus": {
     "type": "short",
@@ -534,7 +513,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 157
   },
   "Str": {
     "type": "byte",
@@ -562,7 +541,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -574,6 +553,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 30
+    "value": 22
   }
 }

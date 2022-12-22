@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 50.0
+    "value": 51.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 66
         },
         "ClassLevel": {
           "type": "short",
@@ -138,7 +138,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 12
+    "value": 23
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -187,7 +187,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmvang3"
+          "value": "vnpcrvang3"
         }
       },
       {
@@ -252,34 +252,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1602
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1760
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1766
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       },
@@ -302,13 +274,6 @@
         "Feat": {
           "type": "word",
           "value": 46
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1785
         }
       }
     ]
@@ -358,7 +323,7 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "vnpcrvang3"
+          "value": "vnpcmvang3"
         },
         "Repos_PosX": {
           "type": "word",
@@ -688,7 +653,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 157
   },
   "Str": {
     "type": "byte",

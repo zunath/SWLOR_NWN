@@ -834,7 +834,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dmMessage = string.Join(" ", args);
                     var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
 
-                        for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
+                    for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                             ChatPlugin.SendMessage(ChatChannel.DMShout, dmMessage, user, onlinePlayer);
 
                     Task.Run(async () =>

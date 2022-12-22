@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AIService;
 
 namespace SWLOR.Game.Server.Feature.AIDefinition
 {
@@ -34,7 +32,92 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             var lowestHPAllyRace = GetRacialType(lowestHPAlly);
             var allyCount = allies.Count;
             var activeConcentration = Ability.GetActiveConcentration(self).Feat;
-            
+
+            // Benevolence
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Benevolence1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.Benevolence1, lowestHPAlly);
+            }
+
+            // Force Heal
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal5, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal5, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal4, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal3, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal2, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceHeal1, () => allyHPPercentage <= 100 && activeConcentration == FeatType.Invalid))
+            {
+                return (FeatType.ForceHeal1, lowestHPAlly);
+            }
+
+            // Medkit
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit5, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit5, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit4, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit4, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.MedKit1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.MedKit1, lowestHPAlly);
+            }
+
+            // Kolto Bomb
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoBomb1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoBomb1, lowestHPAlly);
+            }
+
+            // Kolto Grenade
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade3, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade3, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade2, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade2, lowestHPAlly);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.KoltoGrenade1, () => allyHPPercentage < 100))
+            {
+                return (FeatType.KoltoGrenade1, lowestHPAlly);
+            }
 
             // Kolto Recovery
             if (CheckIfCanUseFeat(self, target, FeatType.KoltoRecovery3, () => allyHPPercentage < 100))
@@ -60,16 +143,19 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.BattleInsight1, self);
             }
 
-            foreach (var feat in featTypes)
+            // Throw Saber
+            if (CheckIfCanUseFeat(self, self, FeatType.ThrowLightsaber3))
             {
-                try
-                {
-                    var ability = Ability.GetAbilityDetail(feat);
-                }
-                catch (Exception ex)
-                {
-                    continue;
-                }
+                return (FeatType.ThrowLightsaber3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ThrowLightsaber2))
+            {
+                return (FeatType.ThrowLightsaber2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ThrowLightsaber1))
+            {
+                return (FeatType.ThrowLightsaber1, self);
+            }
 
             // Force Stun
             if (CheckIfCanUseFeat(self, target, FeatType.ForceStun3, () => activeConcentration == FeatType.Invalid))
@@ -221,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.StealthGenerator2, self);
             }
             if (CheckIfCanUseFeat(self, self, FeatType.StealthGenerator1, () => hpPercentage < 100))
-            { 
+            {
                 return (FeatType.StealthGenerator1, self);
             }
 
@@ -438,7 +524,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 return (FeatType.ForceInspiration1, self);
             }
-            
+
             // Mind Trick
             if (CheckIfCanUseFeat(self, target, FeatType.MindTrick2, () => activeConcentration == FeatType.Invalid))
             {
@@ -494,119 +580,308 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 return (FeatType.RiotBlade2, target);
             }
-
-            if (usableFeats.Count == 0)
+            if (CheckIfCanUseFeat(self, target, FeatType.RiotBlade1))
             {
-                return (FeatType.Invalid, OBJECT_INVALID);
+                return (FeatType.RiotBlade1, target);
             }
 
-            // randomize pick from remaining featTypes list
-            var randomFeat = Service.Random.Next(usableFeats.Count);
-            if (Ability.GetAbilityDetail(usableFeats[randomFeat]).IsHostileAbility)
+            // Poison Stab
+            if (CheckIfCanUseFeat(self, self, FeatType.PoisonStab3))
             {
-                return (usableFeats[randomFeat], target);
+                return (FeatType.PoisonStab3, self);
             }
-            else
+            if (CheckIfCanUseFeat(self, self, FeatType.PoisonStab2))
             {
-                return (usableFeats[randomFeat], self);
+                return (FeatType.PoisonStab2, self);
             }
-        }
-
-        /// <summary>
-        /// Checks whether a creature can use a specific feat.
-        /// Verifies whether a creature has the feat, meets the condition, and can use the ability.
-        /// </summary>
-        /// <param name="creature">The creature to check</param>
-        /// <param name="target">The target of the feat</param>
-        /// <param name="feat">The feat to check</param>
-        /// <param name="condition">The custom condition to check</param>
-        /// <returns>true if feat can be used, false otherwise</returns>
-        private static bool CheckIfCanUseFeat(uint creature, uint target, FeatType feat, Func<bool> condition = null)
-        {
-            if (!GetHasFeat(feat, creature)) return false;
-            if (condition != null && !condition()) return false;
-            if (!GetIsObjectValid(target)) return false;
-
-            var targetLocation = GetLocation(target);
-            var abilityDetail = Ability.GetAbilityDetail(feat);
-            var effectiveLevel = Perk.GetEffectivePerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
-            return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
-        }
-
-        private const string CURRENT_WP_VARNAME = "WP_CUR";
-        private const string TOTAL_WP_VARNAME = "WP_NUM";
-        private const string WALK_WAYPOINT_FLAG_VARNAME = "WALKWP_FLAGS";
-        private const string WAYPOINT_PREFIX = "WP_";
-
-        public static void WalkWayPoints(bool run = false)
-        {
-            var self = OBJECT_SELF;
-            var walkWpFlags = GetWalkWpFlag(self);
-            
-            var nearestEnemy = GetNearestCreature(CreatureType.Reputation, (int)ReputationType.Enemy);
-            if (GetIsObjectValid(nearestEnemy) && GetObjectSeen(nearestEnemy)) return;
-
-            if (GetCurrentAction(self) == ActionType.Wait)
-                return;
-
-            // Initialize if necessary
-            if (!walkWpFlags.HasFlag(WalkWpFlag.Initialized))
+            if (CheckIfCanUseFeat(self, self, FeatType.PoisonStab1))
             {
-                InitializeWalkWayPoints();                
+                return (FeatType.PoisonStab1, self);
             }
 
-            // Move to the next waypoint
-            var waypoint = GetNextWalkWayPoint(self);
-            if (GetIsObjectValid(waypoint))
+            // Backstab
+            if (CheckIfCanUseFeat(self, target, FeatType.Backstab3))
             {
-                ClearAllActions();
-                DelayCommand(Random(10), () => { ActionMoveToObject(waypoint, run, 1.0f); });
-                
+                return (FeatType.Backstab3, target);
             }
-        }
-
-        private static void InitializeWalkWayPoints()
-        {
-            var self = OBJECT_SELF;                        
-            var sTag = WAYPOINT_PREFIX + GetTag(self) + "_";
-            var waypoint = GetWaypointByTag(sTag + 1);
-
-            SetLocalInt(self, CURRENT_WP_VARNAME, -1);
-
-            if (!GetIsObjectValid(waypoint)) SetLocalInt(self, TOTAL_WP_VARNAME, -1);
-            else
+            if (CheckIfCanUseFeat(self, target, FeatType.Backstab2))
             {
-                var nNth = 1;
-                while (GetIsObjectValid(waypoint))
-                {
-                    SetLocalObject(self, WAYPOINT_PREFIX + IntToString(nNth), waypoint);
-                    nNth++;
-
-                    waypoint = GetWaypointByTag(sTag + nNth);
-                }
-                nNth--;
-                SetLocalInt(self, TOTAL_WP_VARNAME, nNth);
+                return (FeatType.Backstab2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Backstab1))
+            {
+                return (FeatType.Backstab1, target);
             }
 
-            SetWalkWpFlag(self, WalkWpFlag.Initialized);
-        }
-
-        private static uint GetNextWalkWayPoint(uint self)
-        {
-            var totalWaypoints = GetLocalInt(self, WAYPOINT_PREFIX + "NUM");
-            if (totalWaypoints == 1)
+            // Force Leap
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLeap3))
             {
-                return GetLocalObject(self, WAYPOINT_PREFIX + "1");
+                return (FeatType.ForceLeap3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLeap2))
+            {
+                return (FeatType.ForceLeap2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.ForceLeap1))
+            {
+                return (FeatType.ForceLeap1, target);
             }
 
-            var currentWaypoint = GetLocalInt(self, CURRENT_WP_VARNAME);
-            var walkWpFlags = GetWalkWpFlag(self);
-
-            if (currentWaypoint < 1)
+            // Saber Strike
+            if (CheckIfCanUseFeat(self, self, FeatType.SaberStrike3))
             {
-                currentWaypoint = 1;
+                return (FeatType.SaberStrike3, self);
             }
-            else
+            if (CheckIfCanUseFeat(self, self, FeatType.SaberStrike2))
+            {
+                return (FeatType.SaberStrike2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.SaberStrike1))
+            {
+                return (FeatType.SaberStrike1, self);
+            }
+
+            // Crescent Moon
+            if (CheckIfCanUseFeat(self, self, FeatType.CrescentMoon3))
+            {
+                return (FeatType.CrescentMoon3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CrescentMoon2))
+            {
+                return (FeatType.CrescentMoon2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CrescentMoon1))
+            {
+                return (FeatType.CrescentMoon1, self);
+            }
+
+            // Hard Slash
+            if (CheckIfCanUseFeat(self, target, FeatType.HardSlash3))
+            {
+                return (FeatType.HardSlash3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.HardSlash2))
+            {
+                return (FeatType.HardSlash2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.HardSlash1))
+            {
+                return (FeatType.HardSlash1, target);
+            }
+
+            // Skewer
+            if (CheckIfCanUseFeat(self, self, FeatType.Skewer3))
+            {
+                return (FeatType.Skewer3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.Skewer2))
+            {
+                return (FeatType.Skewer2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.Skewer1))
+            {
+                return (FeatType.Skewer1, self);
+            }
+
+            // Double Thrust
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleThrust3))
+            {
+                return (FeatType.DoubleThrust3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleThrust2))
+            {
+                return (FeatType.DoubleThrust2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleThrust1))
+            {
+                return (FeatType.DoubleThrust1, target);
+            }
+
+
+            // Leg Sweep
+            if (CheckIfCanUseFeat(self, self, FeatType.LegSweep3))
+            {
+                return (FeatType.LegSweep3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.LegSweep2))
+            {
+                return (FeatType.LegSweep2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.LegSweep1))
+            {
+                return (FeatType.LegSweep1, self);
+            }
+
+            // Cross Cut
+            if (CheckIfCanUseFeat(self, target, FeatType.CrossCut3))
+            {
+                return (FeatType.CrossCut3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.CrossCut2))
+            {
+                return (FeatType.CrossCut2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.CrossCut3))
+            {
+                return (FeatType.CrossCut1, target);
+            }
+
+            // Circle Slash
+            if (CheckIfCanUseFeat(self, self, FeatType.CircleSlash3))
+            {
+                return (FeatType.CircleSlash3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CircleSlash2))
+            {
+                return (FeatType.CircleSlash2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.CircleSlash1))
+            {
+                return (FeatType.CircleSlash1, self);
+            }
+
+            // Double Strike
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleStrike3))
+            {
+                return (FeatType.DoubleStrike3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleStrike2))
+            {
+                return (FeatType.DoubleStrike2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleStrike1))
+            {
+                return (FeatType.DoubleStrike1, target);
+            }
+
+            // Electric Fist
+            if (CheckIfCanUseFeat(self, self, FeatType.ElectricFist3))
+            {
+                return (FeatType.ElectricFist3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ElectricFist2))
+            {
+                return (FeatType.ElectricFist2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ElectricFist1))
+            {
+                return (FeatType.ElectricFist1, self);
+            }
+
+            // Striking Cobra
+            if (CheckIfCanUseFeat(self, self, FeatType.StrikingCobra3))
+            {
+                return (FeatType.StrikingCobra3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StrikingCobra2))
+            {
+                return (FeatType.StrikingCobra2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.StrikingCobra1))
+            {
+                return (FeatType.StrikingCobra1, self);
+            }
+
+            // Slam
+            if (CheckIfCanUseFeat(self, target, FeatType.Slam3))
+            {
+                return (FeatType.Slam3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Slam2))
+            {
+                return (FeatType.Slam2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.Slam1))
+            {
+                return (FeatType.Slam1, target);
+            }
+
+            // Spinning Whirl
+            if (CheckIfCanUseFeat(self, target, FeatType.SpinningWhirl3))
+            {
+                return (FeatType.SpinningWhirl3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.SpinningWhirl2))
+            {
+                return (FeatType.SpinningWhirl2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.SpinningWhirl1))
+            {
+                return (FeatType.SpinningWhirl1, target);
+            }
+
+            // Quick Draw
+            if (CheckIfCanUseFeat(self, target, FeatType.QuickDraw3))
+            {
+                return (FeatType.QuickDraw3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.QuickDraw2))
+            {
+                return (FeatType.QuickDraw2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.QuickDraw1))
+            {
+                return (FeatType.QuickDraw1, target);
+            }
+
+            // Double Shot
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleShot3))
+            {
+                return (FeatType.DoubleShot3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleShot2))
+            {
+                return (FeatType.DoubleShot2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.DoubleShot1))
+            {
+                return (FeatType.DoubleShot1, target);
+            }
+
+            // Explosive Toss
+            if (CheckIfCanUseFeat(self, self, FeatType.ExplosiveToss3))
+            {
+                return (FeatType.ExplosiveToss3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ExplosiveToss2))
+            {
+                return (FeatType.ExplosiveToss2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.ExplosiveToss1))
+            {
+                return (FeatType.ExplosiveToss1, self);
+            }
+
+            // Piercing Toss
+            if (CheckIfCanUseFeat(self, target, FeatType.PiercingToss3))
+            {
+                return (FeatType.PiercingToss3, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.PiercingToss2))
+            {
+                return (FeatType.PiercingToss2, target);
+            }
+            if (CheckIfCanUseFeat(self, target, FeatType.PiercingToss1))
+            {
+                return (FeatType.PiercingToss1, target);
+            }
+
+            // Tranquilizer Shot
+            if (CheckIfCanUseFeat(self, self, FeatType.TranquilizerShot3))
+            {
+                return (FeatType.TranquilizerShot3, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.TranquilizerShot2))
+            {
+                return (FeatType.TranquilizerShot2, self);
+            }
+            if (CheckIfCanUseFeat(self, self, FeatType.TranquilizerShot1))
+            {
+                return (FeatType.TranquilizerShot1, self);
+            }
+
+            // Crippling Shot
+            if (CheckIfCanUseFeat(self, self, FeatType.CripplingShot3))
             {
                 return (FeatType.CripplingShot3, self);
             }
@@ -667,23 +942,46 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.FireBreath, target);
             }
 
-            SetLocalInt(self, CURRENT_WP_VARNAME, currentWaypoint);
-            if (currentWaypoint == -1)
-                return OBJECT_INVALID;
+            // Spikes
+            if (CheckIfCanUseFeat(self, target, FeatType.Spikes))
+            {
+                return (FeatType.Spikes, target);
+            }
 
-            return GetLocalObject(self, WAYPOINT_PREFIX + currentWaypoint);
+            // Venom
+            if (CheckIfCanUseFeat(self, target, FeatType.Venom))
+            {
+                return (FeatType.Venom, target);
+            }
+
+            // Talon
+            if (CheckIfCanUseFeat(self, target, FeatType.Talon))
+            {
+                return (FeatType.Talon, target);
+            }
+
+            return (FeatType.Invalid, OBJECT_INVALID);
         }
 
-        public static void SetWalkWpFlag(uint creature, WalkWpFlag flags)
+        /// <summary>
+        /// Checks whether a creature can use a specific feat.
+        /// Verifies whether a creature has the feat, meets the condition, and can use the ability.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <param name="target">The target of the feat</param>
+        /// <param name="feat">The feat to check</param>
+        /// <param name="condition">The custom condition to check</param>
+        /// <returns>true if feat can be used, false otherwise</returns>
+        private static bool CheckIfCanUseFeat(uint creature, uint target, FeatType feat, Func<bool> condition = null)
         {
-            var flagValue = (int)flags;
-            SetLocalInt(creature, WALK_WAYPOINT_FLAG_VARNAME, flagValue);
-        }
+            if (!GetHasFeat(feat, creature)) return false;
+            if (condition != null && !condition()) return false;
+            if (!GetIsObjectValid(target)) return false;
 
-        public static WalkWpFlag GetWalkWpFlag(uint creature)
-        {
-            var flagValue = GetLocalInt(creature, WALK_WAYPOINT_FLAG_VARNAME);
-            return (WalkWpFlag)flagValue;
+            var targetLocation = GetLocation(target);
+            var abilityDetail = Ability.GetAbilityDetail(feat);
+            var effectiveLevel = Perk.GetEffectivePerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
+            return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
         }
 
     }

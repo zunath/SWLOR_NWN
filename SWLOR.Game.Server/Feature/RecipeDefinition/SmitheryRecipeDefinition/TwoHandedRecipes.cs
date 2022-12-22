@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
         }
 
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
         private void TwinBlades()
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
         private void Saberstaffs()
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Training Saberstaff I
             _builder.Create(RecipeType.TrainingSaberstaff1, SkillType.Smithery)

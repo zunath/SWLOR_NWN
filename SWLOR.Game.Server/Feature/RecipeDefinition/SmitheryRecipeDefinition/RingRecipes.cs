@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 20)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Magus Ring
             _builder.Create(RecipeType.MagusRing, SkillType.Smithery)
@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 20)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Immortal Ring
             _builder.Create(RecipeType.ImmortalRing, SkillType.Smithery)
@@ -476,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 20)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
     }

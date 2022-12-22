@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Magus Gloves
             _builder.Create(RecipeType.MagusGloves, SkillType.Smithery)
@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Immortal Gloves
             _builder.Create(RecipeType.ImmortalGloves, SkillType.Smithery)
@@ -476,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
     }
 }

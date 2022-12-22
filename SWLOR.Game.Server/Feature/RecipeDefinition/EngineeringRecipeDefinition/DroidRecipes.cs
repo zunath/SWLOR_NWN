@@ -925,7 +925,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHBE-005 C
             _builder.Create(RecipeType.DHBE005C, SkillType.Engineering)
@@ -938,7 +938,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHRG-005 C
             _builder.Create(RecipeType.DHRG005C, SkillType.Engineering)
@@ -951,7 +951,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHNK-005 C
             _builder.Create(RecipeType.DHNK005C, SkillType.Engineering)
@@ -964,7 +964,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHAR-005 C
             _builder.Create(RecipeType.DHAR005C, SkillType.Engineering)
@@ -977,7 +977,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHHL-005 C
             _builder.Create(RecipeType.DHHL005C, SkillType.Engineering)
@@ -990,7 +990,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHBR-005 C
             _builder.Create(RecipeType.DHBR005C, SkillType.Engineering)
@@ -1003,7 +1003,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DHLG-005 C
             _builder.Create(RecipeType.DHLG005C, SkillType.Engineering)
@@ -1016,7 +1016,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLCL-005 C
             _builder.Create(RecipeType.DLCL005C, SkillType.Engineering)
@@ -1029,7 +1029,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLBE-005 C
             _builder.Create(RecipeType.DLBE005C, SkillType.Engineering)
@@ -1042,7 +1042,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLRG-005 C
             _builder.Create(RecipeType.DLRG005C, SkillType.Engineering)
@@ -1055,7 +1055,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLNK-005 C
             _builder.Create(RecipeType.DLNK005C, SkillType.Engineering)
@@ -1068,7 +1068,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLAR-005 C
             _builder.Create(RecipeType.DLAR005C, SkillType.Engineering)
@@ -1081,7 +1081,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLHL-005 C
             _builder.Create(RecipeType.DLHL005C, SkillType.Engineering)
@@ -1094,7 +1094,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLBR-005 C
             _builder.Create(RecipeType.DLBR005C, SkillType.Engineering)
@@ -1107,7 +1107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // DLLG-005 C
             _builder.Create(RecipeType.DLLG005C, SkillType.Engineering)
@@ -1120,7 +1120,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
 
         }

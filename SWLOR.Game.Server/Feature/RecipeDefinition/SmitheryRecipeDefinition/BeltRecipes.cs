@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Magus Belt
             _builder.Create(RecipeType.MagusBelt, SkillType.Smithery)
@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
             // Immortal Belt
             _builder.Create(RecipeType.ImmortalBelt, SkillType.Smithery)
@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
     }
 }

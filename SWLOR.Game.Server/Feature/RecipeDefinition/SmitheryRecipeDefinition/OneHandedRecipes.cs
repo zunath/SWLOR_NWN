@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
         private void Longswords()
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
         private void Lightsabers()
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_high", 20)
                 .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
 
 
 

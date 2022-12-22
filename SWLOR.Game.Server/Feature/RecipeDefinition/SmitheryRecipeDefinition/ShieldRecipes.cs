@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 20)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
     }

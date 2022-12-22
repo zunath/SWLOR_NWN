@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
         private void Staffs()
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2);
         }
 
     }

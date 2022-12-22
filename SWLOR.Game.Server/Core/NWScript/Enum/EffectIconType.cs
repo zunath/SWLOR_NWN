@@ -132,6 +132,16 @@
         DamageImmunityPositiveDecrease = 127,
         DamageImmunitySonicDecrease = 128,
         Wounding = 129,
-        Food = 130
+        Food = 130,
+        Dash = 131,
+        Shocked = 132,
+        Burning = 133,
+        Charge = 134,
+        Dedication = 135,
+        FrenziedShout = 136,
+        Rejuvenation = 137,
+        SoldiersPrecision = 138,
+        SoldiersSpeed = 139,
+        SoldiersStrike = 140,
     }
 }

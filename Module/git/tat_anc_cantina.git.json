@@ -32361,7 +32361,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.10842708528093e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -32384,7 +32384,7 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32396,7 +32396,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32485,7 +32485,7 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
@@ -32497,7 +32497,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32731,7 +32731,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.10842708528093e-042
                     },
                     "XPosition": {
                       "type": "float",

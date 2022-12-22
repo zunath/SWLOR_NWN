@@ -19,8 +19,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            Lightsaber();
-            Saberstaff();
             UpgradeKit();
             return _builder.Build();
         }
@@ -33,104 +31,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void SetLightsaberLevel(uint item, int level)
         {
             SetLocalInt(item, "LIGHTSABER_UPGRADE_COUNT", level);
-        }
-
-        private void Lightsaber()
-        {
-            _builder.Create("lightsaber")
-                .Delay(12f)
-                .PlaysAnimation(Animation.LoopingGetMid)
-                .MaxDistance(0.0f)
-                .ValidationAction((user, item, target, location) =>
-                {
-                    var itemType = GetBaseItemType(target);
-                    if (itemType != BaseItem.Lightsaber)
-                    {
-                        return "Only other lightsabers may be targeted.";
-                    }
-
-                    if (item == target)
-                    {
-                        return "A different lightsaber must be targeted to form a saberstaff.";
-                    }
-
-                    if (GetLightsaberLevel(item) != GetLightsaberLevel(target))
-                    {
-                        return "Both lightsabers must be the same level to form a saberstaff.";
-                    }
-
-                    if (GetItemPossessor(item) != GetItemPossessor(target))
-                    {
-                        return "Both lightsabers must be in your inventory.";
-                    }
-
-                    return string.Empty;
-                })
-                .ApplyAction((user, lightsaber1, lightsaber2, location) =>
-                {
-                    var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
-                    var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
-
-                    var level = GetLightsaberLevel(lightsaber1);
-                    var saberstaff = CreateItemOnObject("saberstaff", user);
-
-                    // Serialize the individual lightsabers onto the saberstaff
-                    SetLocalString(saberstaff, "LIGHTSABER_1", lightsaber1Serialized);
-                    SetLocalString(saberstaff, "LIGHTSABER_2", lightsaber2Serialized);
-
-                    // Modify the color of the saberstaff to match that of the first lightsaber.
-                    var lightsaber1Color = GetItemAppearance(lightsaber1, ItemAppearanceType.WeaponColor, 0);
-                    var finalSaberstaff = CopyItemAndModify(saberstaff, ItemAppearanceType.WeaponModel, 0, lightsaber1Color, true);
-
-                    // Adjust item properties
-                    var dmgItemPropertyId = DetermineDMGValue(level);
-                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, dmgItemPropertyId);
-                    var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.SaberstaffProficiency, level);
-                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
-                    BiowareXP2.IPSafeAddItemProperty(finalSaberstaff, perkRequirementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
-
-                    // Destroy the original saberstaff, keeping the one we just copied and modified.
-                    DestroyObject(saberstaff);
-
-                    // Destroy the individual lightsabers
-                    DestroyObject(lightsaber1);
-                    DestroyObject(lightsaber2);
-
-                    SendMessageToPC(user, "You combine two lightsabers to form a saberstaff.");
-                });
-        }
-
-        private void Saberstaff()
-        {
-            _builder.Create("saberstaff")
-                .Delay(12f)
-                .PlaysAnimation(Animation.LoopingGetMid)
-                .MaxDistance(0.0f)
-                .ValidationAction((user, item, target, location) =>
-                {
-                    var saber1 = GetLocalString(item, "LIGHTSABER_1");
-                    var saber2 = GetLocalString(item, "LIGHTSABER_2");
-
-                    if (string.IsNullOrWhiteSpace(saber1) ||
-                        string.IsNullOrWhiteSpace(saber2))
-                    {
-                        return "This saberstaff cannot be dismantled.";
-                    }
-
-                    return string.Empty;
-                })
-                .ApplyAction((user, item, target, location) =>
-                {
-                    var saber1 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_1"));
-                    var saber2 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_2"));
-
-                    ObjectPlugin.AcquireItem(user, saber1);
-                    ObjectPlugin.AcquireItem(user, saber2);
-
-                    DestroyObject(item);
-
-                    SendMessageToPC(user, "Your saberstaff has been dismantled into two independent lightsabers.");
-                });
         }
 
         private void UpgradeKit()

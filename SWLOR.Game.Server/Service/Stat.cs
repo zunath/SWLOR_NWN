@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -715,29 +716,85 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check.</param>
         /// <param name="defense">The current defense value which will be modified.</param>
+        /// <param name="type">The type of defense to check.</param>
         /// <returns>A modified defense value.</returns>
-        private static int CalculateEffectDefense(uint creature, int defense)
+        private static int CalculateEffectDefense(uint creature, int defense, CombatDamageType type)
         {
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
-                defense += 20;
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
-                defense += 5;
+            if (type == CombatDamageType.Physical)
+            {
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
+                    defense += 20;
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
-                defense += 10;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
+                    defense += 5;
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
-                defense += 15;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
+                    defense += 10;
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
-                defense += 20;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
+                    defense += 15;
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
-                defense += 10;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
+                    defense += 20;
 
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
-                defense += 20;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
+                    defense += 10;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
+                    defense += 20;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.FrenziedShout))
+                {
+                    var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.FrenziedShout);
+                    if (GetIsObjectValid(source))
+                    {
+                        var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                        var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.FrenziedShout);
+                        switch (perkLevel)
+                        {
+                            case 1:
+                                defense -= sourceSOC;
+                                break;
+                            case 2:
+                                defense -= (int)(sourceSOC * 1.5f);
+                                break;
+                            case 3:
+                                defense -= sourceSOC * 2;
+                                break;
+                        }
+                    }
+                }
+
+                if(foodEffect != null)
+                    defense += foodEffect.DefensePhysical;
+            }
+            else if (type == CombatDamageType.Force)
+            {
+                if (foodEffect != null)
+                    defense += foodEffect.DefenseForce;
+            }
+            else if (type == CombatDamageType.Poison)
+            {
+                if (foodEffect != null)
+                    defense += foodEffect.DefensePoison;
+            }
+            else if (type == CombatDamageType.Fire)
+            {
+                if (foodEffect != null)
+                    defense += foodEffect.DefenseFire;
+            }
+            else if (type == CombatDamageType.Ice)
+            {
+                if (foodEffect != null)
+                    defense += foodEffect.DefenseIce;
+            }
+            else if (type == CombatDamageType.Electrical)
+            {
+                if (foodEffect != null)
+                    defense += foodEffect.DefenseElectrical;
+            }
 
             return defense;
         }
@@ -748,6 +805,35 @@ namespace SWLOR.Game.Server.Service
                 attack += 10;
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage2))
                 attack += 20;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersStrike))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
+                if (GetIsObjectValid(source))
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersStrike);
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            attack += sourceSOC;
+                            break;
+                        case 2:
+                            attack += (int)(sourceSOC * 1.5f);
+                            break;
+                        case 3:
+                            attack += sourceSOC * 2;
+                            break;
+                    }
+                }
+            }
+
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                attack += foodEffect.Attack;
+            }
 
             return attack;
         }
@@ -890,11 +976,7 @@ namespace SWLOR.Game.Server.Service
                 skillLevel = npcStats.Level;
             }
 
-            if (type == CombatDamageType.Physical)
-            {
-                defenseBonus = CalculateEffectDefense(creature, defenseBonus);
-            }
-
+            defenseBonus = CalculateEffectDefense(creature, defenseBonus, type);
             defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return CalculateDefense(defenderStat, skillLevel, defenseBonus);
         }
@@ -997,12 +1079,8 @@ namespace SWLOR.Game.Server.Service
 
                 skillLevel = npcStats.Level;
             }
-
-            if (type == CombatDamageType.Physical)
-            {
-                defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus);
-            }
-
+            
+            defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus, type);
             defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
@@ -1124,13 +1202,21 @@ namespace SWLOR.Game.Server.Service
                 var type = GetEffectType(effect);
                 if (type == EffectTypeScript.AttackIncrease)
                 {
-                    accuracy += 5 * GetEffectInteger(effect, 1);
+                    accuracy += 5 * GetEffectInteger(effect, 0);
                 }
                 else if (type == EffectTypeScript.AttackDecrease)
                 {
-                    accuracy -= 5 * GetEffectInteger(effect, 1);
+                    accuracy -= 5 * GetEffectInteger(effect, 0);
                 }
             }
+
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                accuracy += foodEffect.Accuracy;
+            }
+
+            accuracy += GetSoldierPrecisionAccuracyBonus(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
 
@@ -1143,17 +1229,87 @@ namespace SWLOR.Game.Server.Service
             {
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
-                    accuracy += 5 * effect.GetInteger(1);
+                    accuracy += 5 * effect.GetInteger(0);
                 }
                 else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
                 {
-                    accuracy -= 5 * effect.GetInteger(1);
+                    accuracy -= 5 * effect.GetInteger(0);
                 }
             }
+
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature.m_idSelf, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                accuracy += foodEffect.Accuracy;
+            }
+
+            accuracy += GetSoldierPrecisionAccuracyBonus(creature.m_idSelf);
 
             Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
+        }
+
+        private static int CalculateEffectEvasion(uint creature)
+        {
+            var evasionBonus = 0;
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersSpeed))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
+                if (GetIsObjectValid(source))
+                {
+                    var sourceSOC = GetAbilityScore(creature, AbilityType.Social);
+                    var perkLevel = Perk.GetEffectivePerkLevel(creature, PerkType.SoldiersSpeed);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            evasionBonus += sourceSOC / 2;
+                            break;
+                        case 2:
+                            evasionBonus += sourceSOC;
+                            break;
+                        case 3:
+                            evasionBonus += (int)(sourceSOC * 1.5f);
+                            break;
+                    }
+
+                }
+            }
+            if (foodEffect != null)
+            {
+                evasionBonus += foodEffect.Evasion;
+            }
+
+            return evasionBonus;
+        }
+
+        private static int GetSoldierPrecisionAccuracyBonus(uint creature)
+        {
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersPrecision))
+            {
+                var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersPrecision);
+
+                if (GetIsObjectValid(source))
+                {
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersPrecision);
+
+                    switch (perkLevel)
+                    {
+                        case 1:
+                            return sourceSOC / 2;
+                        case 2:
+                            return sourceSOC;
+                        case 3:
+                            return (int)(sourceSOC * 1.5f);
+                    }
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -1189,6 +1345,8 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
             }
+
+            evasionBonus += CalculateEffectEvasion(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
@@ -1238,6 +1396,8 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
             }
+
+            evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
             return stat * 3 + skillLevel + ac * 5 + evasionBonus;
         }
@@ -1306,7 +1466,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon)
+        /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
+        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1340,10 +1501,21 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.RapidShot);
             }
 
+            static int GetFlurryBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.FlurryStyle);
+            }
+
+            static int GetShieldBonus(uint pc)
+            {
+                return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
+            }
+
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
+            var offHandType = GetBaseItemType(offHandItem);
             var numberOfAttacks = 1;
             var perkType = PerkType.Invalid;
 
@@ -1355,6 +1527,7 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
+                numberOfAttacks += GetFlurryBonus(player);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
@@ -1369,7 +1542,6 @@ namespace SWLOR.Game.Server.Service
             else if (Item.RifleBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.RifleMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
             }
             // One-Handed
             else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
@@ -1402,6 +1574,9 @@ namespace SWLOR.Game.Server.Service
                 perkType = PerkType.SaberstaffMastery;
             }
 
+            if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
+                numberOfAttacks += GetShieldBonus(player);
+
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
@@ -1409,5 +1584,118 @@ namespace SWLOR.Game.Server.Service
             CreaturePlugin.SetBaseAttackBonus(player, bab);
         }
 
+        public static void ApplyCritModifier(uint player, uint rightHandWeapon)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var critMod = 0;
+            var itemType = GetBaseItemType(rightHandWeapon);
+            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
+            if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            {
+                if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
+                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.Duelist);
+            }
+
+            if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
+            {
+                critMod += Perk.GetEffectivePerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+            }
+
+            critMod += Perk.GetEffectivePerkLevel(player, PerkType.InnerStrength);
+
+            CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
+        }
+
+        /// <summary>
+        /// Returns the three-character shortened version of ability names.
+        /// </summary>
+        /// <param name="type">The type of ability to retrieve.</param>
+        /// <returns>A three-character shortened version of the ability name.</returns>
+        public static string GetAbilityNameShort(AbilityType type)
+        {
+            switch (type)
+            {
+                default:
+                case AbilityType.Invalid:
+                    return "INV";
+                case AbilityType.Might:
+                    return "MGT";
+                case AbilityType.Perception:
+                    return "PER";
+                case AbilityType.Vitality:
+                    return "VIT";
+                case AbilityType.Agility:
+                    return "AGI";
+                case AbilityType.Willpower:
+                    return "WIL";
+                case AbilityType.Social:
+                    return "SOC";
+            }
+        }
+
+        /// <summary>
+        /// Calculates the total Control for a player in a given crafting skill.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="craftingSkillType">The skill to check</param>
+        /// <returns>The total control for a player</returns>
+        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
+        public static int CalculateControl(uint player, SkillType craftingSkillType)
+        {
+            var skillDetail = Skill.GetSkillDetails(craftingSkillType);
+            if (!skillDetail.IsShownInCraftMenu)
+                throw new ArgumentException($"Unable to calculate Control because {craftingSkillType} is not a crafting skill.");
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return 0;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var control = dbPlayer.Control.ContainsKey(craftingSkillType)
+                ? dbPlayer.Control[craftingSkillType]
+                : 0;
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                control += foodEffect.Control[craftingSkillType];
+            }
+
+            return control;
+        }
+        /// <summary>
+        /// Calculates the total Craftsmanship for a player in a given crafting skill.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="craftingSkillType">The skill to check</param>
+        /// <returns>The total Craftsmanship for a player</returns>
+        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
+        public static int CalculateCraftsmanship(uint player, SkillType craftingSkillType)
+        {
+            var skillDetail = Skill.GetSkillDetails(craftingSkillType);
+            if (!skillDetail.IsShownInCraftMenu)
+                throw new ArgumentException($"Unable to calculate Craftsmanship because {craftingSkillType} is not a crafting skill.");
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return 0;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var control = dbPlayer.Craftsmanship.ContainsKey(craftingSkillType)
+                ? dbPlayer.Craftsmanship[craftingSkillType]
+                : 0;
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+            if (foodEffect != null)
+            {
+                control += foodEffect.Craftsmanship[craftingSkillType];
+            }
+
+            return control;
+        }
     }
 }

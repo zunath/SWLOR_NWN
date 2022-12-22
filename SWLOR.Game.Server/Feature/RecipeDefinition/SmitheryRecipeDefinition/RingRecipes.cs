@@ -438,6 +438,45 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Ring
+            _builder.Create(RecipeType.ChaosRing, SkillType.Smithery)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("ch_ring")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
+
+            // Magus Ring
+            _builder.Create(RecipeType.MagusRing, SkillType.Smithery)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("mag_ring")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
+
+            // Immortal Ring
+            _builder.Create(RecipeType.ImmortalRing, SkillType.Smithery)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("imm_ring")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 20)
+                .Component("emerald", 20)
+                .Component("chiro_shard", 1);
         }
 
     }

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture("iit_ess_020")
                 .Type(ShipModuleType.HullRepairer)
                 .ValidTargetType(ObjectType.Creature)
+                .CanTargetSelf()
                 .MaxDistance(20f)
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)

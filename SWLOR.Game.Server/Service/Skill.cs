@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -61,6 +62,19 @@ namespace SWLOR.Game.Server.Service
 
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
+
+                // Dedication bonus
+                if (StatusEffect.HasStatusEffect(player, StatusEffectType.Dedication))
+                {
+                    var source = StatusEffect.GetEffectData<uint>(player, StatusEffectType.Dedication);
+
+                    if (GetIsObjectValid(source))
+                    {
+                        var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Dedication);
+                        social = GetAbilityScore(source, AbilityType.Social);
+                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
+                    }
+                }
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);

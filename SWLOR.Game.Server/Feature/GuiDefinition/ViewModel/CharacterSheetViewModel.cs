@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
                 var damageStat = GetAbilityScore(Player, damageAbility);
                 var skillRank = dbPlayer.Skills[skill].Rank;
-                var dmg = Item.GetDMG(item) + Combat.GetDoublehandDMGBonus(Player) + Combat.GetPowerAttackDMGBonus(Player);
+                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(Player, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(Player, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
@@ -481,6 +481,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
             }
+
+            // Flurry Style (Staff)
+            if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
+                GetHasFeat(FeatType.CrushingStyle, Player))
+            {
+                damageStat = AbilityType.Perception;
+                accuracyStatOverride = AbilityType.Agility;
+            } 
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);
@@ -495,33 +503,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride, SkillType.Invalid);
             Evasion = Stat.GetEvasion(Player, SkillType.Invalid);
 
-            var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)
-                ? dbPlayer.Control[SkillType.Smithery]
-                : 0;
-            var engineering = dbPlayer.Control.ContainsKey(SkillType.Engineering)
-                ? dbPlayer.Control[SkillType.Engineering]
-                : 0;
-            var fabrication = dbPlayer.Control.ContainsKey(SkillType.Fabrication)
-                ? dbPlayer.Control[SkillType.Fabrication]
-                : 0;
-            var agriculture = dbPlayer.Control.ContainsKey(SkillType.Agriculture)
-                ? dbPlayer.Control[SkillType.Agriculture]
-                : 0;
+            var smithery = Stat.CalculateControl(Player, SkillType.Smithery);
+            var engineering = Stat.CalculateControl(Player, SkillType.Engineering);
+            var fabrication = Stat.CalculateControl(Player, SkillType.Fabrication);
+            var agriculture = Stat.CalculateControl(Player, SkillType.Agriculture);
 
             Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
 
-            smithery = dbPlayer.Craftsmanship.ContainsKey(SkillType.Smithery)
-                ? dbPlayer.Craftsmanship[SkillType.Smithery]
-                : 0;
-            engineering = dbPlayer.Craftsmanship.ContainsKey(SkillType.Engineering)
-                ? dbPlayer.Craftsmanship[SkillType.Engineering]
-                : 0;
-            fabrication = dbPlayer.Craftsmanship.ContainsKey(SkillType.Fabrication)
-                ? dbPlayer.Craftsmanship[SkillType.Fabrication]
-                : 0;
-            agriculture = dbPlayer.Craftsmanship.ContainsKey(SkillType.Agriculture)
-                ? dbPlayer.Craftsmanship[SkillType.Agriculture]
-                : 0;
+            smithery = Stat.CalculateCraftsmanship(Player, SkillType.Smithery);
+            engineering = Stat.CalculateCraftsmanship(Player, SkillType.Engineering);
+            fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
+            agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
             RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
         }

@@ -524,7 +524,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_VIPER,40,2"
+          "value": "MONCALA_VIPER,100,1"
         }
       },
       {
@@ -540,6 +540,21 @@
         "Value": {
           "type": "int",
           "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_VIPER,40,1"
         }
       }
     ]

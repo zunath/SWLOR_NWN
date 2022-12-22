@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
 {
     public class SpawnTableBuilder
     {
-        private readonly Dictionary<string, SpawnTable> SpawnTables = new Dictionary<string, SpawnTable>();
+        private readonly Dictionary<string, SpawnTable> _spawnTables = new();
 
         private SpawnTable ActiveTable { get; set; }
         private SpawnObject ActiveSpawn { get; set; }
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
                 name = $"Spawn Table {spawnTableId}";
 
             ActiveTable = new SpawnTable(name);
-            SpawnTables[spawnTableId] = ActiveTable;
+            _spawnTables[spawnTableId] = ActiveTable;
 
             return this;
         }
@@ -38,10 +38,12 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// Values less than 1 will default to 1.
         /// </summary>
         /// <param name="minutes">The number of minutes before a respawn takes place.</param>
-        public void RespawnDelay(int minutes)
+        public SpawnTableBuilder RespawnDelay(int minutes)
         {
             if (minutes < 1) minutes = 1;
             ActiveTable.RespawnDelayMinutes = minutes;
+
+            return this;
         }
 
         /// <summary>
@@ -167,12 +169,24 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
+        /// Adds an action to run when this particular spawn is created.
+        /// </summary>
+        /// <param name="action">The action to run when the spawn is created.</param>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder SpawnAction(OnSpawnDelegate action)
+        {
+            ActiveSpawn.OnSpawnActions.Add(action);
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds a dictionary of spawn tables.
         /// </summary>
         /// <returns>A dictionary of spawn tables</returns>
         public Dictionary<string, SpawnTable> Build()
         {
-            return SpawnTables;
+            return _spawnTables;
         }
     }
 }

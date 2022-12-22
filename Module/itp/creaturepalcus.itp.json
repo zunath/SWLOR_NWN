@@ -1029,6 +1029,196 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aurek Strikefighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_aurek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulk Freighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_bulkf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Centurion-Class Battlecruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlcrui"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Courier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_courier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derriphan-Class Battleship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foray-Class Blockade Runner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_corvette"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Freighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_freighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hammerhead-Class Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_cruiser"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Interdictor-Class Heavy Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_hvycrui"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kandosii-Class Dreadnought"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_dread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 16.0
                     },
                     "FACTION": {
@@ -1061,6 +1251,120 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "starship22"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Merchantman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_merchant"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 1 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 2 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 3 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 4 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 5 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret5"
                     }
                   },
                   {
@@ -1105,7 +1409,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1124,7 +1428,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 4.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1143,7 +1447,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1162,7 +1466,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 2.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1181,7 +1485,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 4.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1200,7 +1504,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 2.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1219,7 +1523,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 3.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1238,7 +1542,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 3.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1257,7 +1561,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 1.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1276,7 +1580,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 1.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1308,6 +1612,63 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "player_starship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Praetorian-Class Frigate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_frigate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuttle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_shuttle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_sithfig"
                     }
                   },
                   {
@@ -4045,6 +4406,44 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "valnpjguard004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "valnpjguard2"
                     }
                   },
@@ -4065,6 +4464,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcjediguard1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Master Brokisee Shax"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpcbrokisee"
                     }
                   },
                   {
@@ -4103,6 +4521,158 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcrepelite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcsi4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 82.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Blademaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcswar4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsi3nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Lord"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvadenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorcnh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Honor Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroopnh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswarnh"
                     }
                   }
                 ]
@@ -4581,6 +5151,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dessta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dessta_bocktorb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dockhand"
                     },
                     "RESREF": {
@@ -4928,6 +5517,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wook_female"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishmaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fishmaster"
                     }
                   },
                   {
@@ -5289,6 +5897,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal_refugee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lu_shang"
                     }
                   },
                   {
@@ -6828,6 +7455,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wook_warrior"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yastin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yastin_fettias"
                     }
                   }
                 ]
@@ -9437,7 +10083,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 66.0
+                      "value": 128.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9456,7 +10102,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 93.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9475,7 +10121,26 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 60.0
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jungle Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathswampland"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 54.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9494,7 +10159,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 70.0
+                      "value": 59.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9513,7 +10178,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 43.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9532,7 +10197,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 48.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9551,7 +10216,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 52.0
+                      "value": 47.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9570,7 +10235,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 60.0
+                      "value": 58.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9589,7 +10254,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 50.0
+                      "value": 64.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9608,7 +10273,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 95.0
+                      "value": 99.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9621,25 +10286,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathssurian"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 52.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Swampland Bug"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathswampland"
                     }
                   }
                 ]
@@ -9781,11 +10427,30 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hssiss"
+                      "value": "K'lor'slug"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "korr_hssiss"
+                      "value": "korr_klorslug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Wraid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_wraid"
                     }
                   },
                   {
@@ -9811,6 +10476,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pelko Bug Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pelko"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 8.0
                     },
                     "FACTION": {
@@ -9824,82 +10546,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrack"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 10.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Apprentice Ghost"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sith_ghost"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 10.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Apprentice Ghost"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sith_ghost_male"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Terentatek"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "korr_terentatek"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 6.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tuk'ata"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tukata"
                     }
                   }
                 ]
@@ -10410,7 +11056,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 0.125
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",

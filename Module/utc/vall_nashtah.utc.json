@@ -528,7 +528,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_NASHTAH,40,2"
+          "value": "VISCARA_NASHTAH,100,1"
         }
       },
       {
@@ -544,6 +544,36 @@
         "Value": {
           "type": "int",
           "value": 15
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_NASHTAH,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_NASHTAH_RARES,20,1"
         }
       }
     ]

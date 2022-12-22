@@ -37,6 +37,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SaberStrike();
             ImprovedTwoWeaponFighting();
             StrongStyleLightsaber();
+            Duelist();
+            WailingBlows();
+            ShieldMaster();
+            ShieldBash();
+            Bulwark();
 
             return _builder.Build();
         }
@@ -82,10 +87,168 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
-                .Description("Enables the use of two one-handed weapons at the same time at -20%/-20% to hit. [Cross Skill]")
-                .Price(6)
+                .Description("Enables the use of two one-handed weapons at the same time at -10%/-10% to hit. [Cross Skill]")
+                .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.DualWield);
+        }
+
+        private void WailingBlows()
+        {
+            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.WailingBlows)
+                .Name("Wailing Blows")
+
+                .AddPerkLevel()
+                .Description("While dual-wielding one-handed weapons, you gain 15% critical chance.")
+                .Price(4)
+                .RequirementSkill(SkillType.OneHanded, 25)
+                .GrantsFeat(FeatType.WailingBlows)
+
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                 {
+                     if (slot != InventorySlot.RightHand) return;
+
+                     Stat.ApplyCritModifier(player, item);
+                 })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                });
+        }
+
+        private void Duelist()
+        {
+            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Duelist)
+                .Name("Duelist")
+
+                .AddPerkLevel()
+                .Description("While wielding one-handed weapons with a shield or free hand, you gain 5% to hit and 5% critical chance. [Cross Skill]")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 15)
+                .GrantsFeat(FeatType.Duelist)
+
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                 {
+                     if (slot != InventorySlot.RightHand) return;
+
+                     Stat.ApplyCritModifier(player, item);
+                 })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                });
+        }
+
+        private void ShieldMaster()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldMaster)
+                .Name("Shield Master")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot == InventorySlot.RightHand)
+                    {
+                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                    }
+                    else if (slot == InventorySlot.LeftHand)
+                    {
+                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot == InventorySlot.RightHand)
+                    {
+                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                    }
+                    else if (slot == InventorySlot.LeftHand)
+                    {
+                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                    }
+
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
+                })
+
+                .AddPerkLevel()
+                .Description("While equipped with a shield, you gain an additional attack with your main-hand weapon.")
+                .Price(4)
+                .RequirementSkill(SkillType.OneHanded, 30)
+                .GrantsFeat(FeatType.ShieldMaster);
+        }
+
+        private void ShieldBash()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldBash)
+                .Name("Shield Bash")
+
+                .AddPerkLevel()
+                .Description("Strike an enemy with your shield, dealing 8 DMG and inflicting Dazed for 6 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.OneHanded, 5)
+                .GrantsFeat(FeatType.ShieldBash1)
+
+                .AddPerkLevel()
+                .Description("Strike an enemy with your shield, dealing 16 DMG and inflicting Dazed for 9 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 20)
+                .GrantsFeat(FeatType.ShieldBash2)
+
+                .AddPerkLevel()
+                .Description("Strike an enemy with your shield, dealing 24 DMG and inflicting Dazed for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 35)
+                .GrantsFeat(FeatType.ShieldBash3);
+        }
+
+        private void Bulwark()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Bulwark)
+                .Name("Bulwark")
+
+                .AddPerkLevel()
+                .Description("While equipped with a shield, you automatically attempt to deflect ranged attacks once per round.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 10)
+                .GrantsFeat(FeatType.Bulwark);
         }
 
         private void WeaponFocusVibroblades()
@@ -94,13 +257,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Vibroblades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with vibroblades.")
+                .Description("Your accuracy with vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusVibroblades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with vibroblades.")
+                .Description("Your base damage with vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
@@ -112,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a vibroblade.")
+                .Description("Improves the chance to critically hit with vibroblades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalVibroblades);
@@ -253,13 +416,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Finesse Vibroblades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with finesse vibroblades.")
+                .Description("Your accuracy with finesse vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusFinesseVibroblades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with finesse vibroblades.")
+                .Description("Your base damage with finesse vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
@@ -271,7 +434,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Finesse Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a finesse vibroblade.")
+                .Description("Improves the chance to critically hit with finesse vibroblades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .GrantsFeat(FeatType.ImprovedCriticalFinesseVibroblades);
@@ -412,14 +575,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Lightsabers")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with lightsabers.")
+                .Description("Your accuracy with lightsabers is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.WeaponFocusLightsabers)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with lightsabers.")
+                .Description("Your base damage with lightsabers is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -432,7 +595,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Lightsabers")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a lightsaber.")
+                .Description("Improves the chance to critically hit with lightsabers by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -581,8 +744,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Two Weapon Fighting (One-Handed)")
 
                 .AddPerkLevel()
-                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon. [Cross Skill]")
-                .Price(6)
+                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon, and reduces the two-weapon fighting penalty to 0%/-10%. [Cross Skill]")
+                .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingTwoHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
@@ -603,7 +766,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 
                 .AddPerkLevel()
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .Description("Lightsaber attacks use your Perception stat for accuracy and Might stat for damage while active.")
+                .Description("While active, attacks with a lightsaber use PER to-hit and MGT for damage, and gain bonus damage equal to half your MGT modifier.")
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleLightsaber);
         }

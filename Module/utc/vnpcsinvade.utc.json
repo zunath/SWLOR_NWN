@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 45.0
+    "value": 50.0
   },
   "ClassList": {
     "type": "list",
@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 15
         }
       }
     ]
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 27
+    "value": 35
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 30
+    "value": 105
   },
   "DecayTime": {
     "type": "dword",
@@ -231,6 +231,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1590
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       },
@@ -254,13 +268,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Soldier"
+      "0": "Sith Invader"
     }
   },
   "fortbonus": {
@@ -277,7 +298,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 30
+    "value": 105
   },
   "Int": {
     "type": "byte",
@@ -632,7 +653,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",

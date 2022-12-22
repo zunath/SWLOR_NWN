@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Service
 
             var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation) ?? 3.5f;
             // Distance checks, if necessary for this item.
-            if (maxDistance > 0.0f)
+            if (GetItemPossessor(target) != user && maxDistance > 0.0f)
             {
                 // Target is valid - check distance between objects.
                 if (GetIsObjectValid(target) &&
@@ -535,6 +535,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade,
             BaseItem.Katar,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
@@ -544,6 +545,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Dart,
             BaseItem.Cannon,
             BaseItem.Longbow,
+            BaseItem.Rifle,
         };
 
         /// <summary>
@@ -565,6 +567,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Ring
         };
 
+        /// <summary>
+        /// Retrieves the list of shield base item types.
+        /// </summary>
         public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.LargeShield,

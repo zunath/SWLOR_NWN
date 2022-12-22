@@ -199,7 +199,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The Sith promote competition amongst their ranks, both among the Force Sensitives among their number and their rank and file troops. Those the most merciless, cruel and powerful amongst them are elevated, while those exhibiting softer tendencies are treated like fodder and find death sooner rather than later - often from friendly fire.\n\nThese are the former among them. Clad in finer armor and given access to the newest in Imperial weapons technology as reward for their faithful service to the Sith."
+            "0": ""
           }
         },
         "Dex": {
@@ -900,7 +900,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 5.59118087265602e-043
               },
               "XPosition": {
                 "type": "float",
@@ -1200,7 +1200,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.59118087265602e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",

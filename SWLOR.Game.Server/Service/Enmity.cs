@@ -128,6 +128,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of enmity to adjust by</param>
         public static void ModifyEnmity(uint creature, uint enemy, int amount)
         {
+            // Enmity shouldn't matter if you're dead.
+            if (GetIsDead(creature) || GetIsDead(enemy))
+                return;
+
             // Players cannot be placed on an enmity table against each other.
             if (GetIsPC(creature) && GetIsPC(enemy))
                 return;

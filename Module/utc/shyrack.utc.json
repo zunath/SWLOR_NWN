@@ -521,7 +521,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "KORRIBAN_SHYRACK,40,2"
+          "value": "KORRIBAN_SHYRACK,100,1"
         }
       },
       {
@@ -537,6 +537,21 @@
         "Value": {
           "type": "int",
           "value": 33
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "KORRIBAN_SHYRACK,40,1"
         }
       }
     ]

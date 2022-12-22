@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _3_AddRacialStatsAndGrantRebuild: IServerMigration
+    public class _3_AddRacialStatsAndGrantRebuild: ServerMigrationBase
     {
         public int Version => 3;
         public void Migrate()

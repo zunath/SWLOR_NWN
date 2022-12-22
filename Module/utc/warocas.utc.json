@@ -543,7 +543,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_WAROCAS,75,2"
+          "value": "VISCARA_WAROCAS,100,1"
         }
       },
       {
@@ -559,6 +559,21 @@
         "Value": {
           "type": "cexostring",
           "value": "VISCARA_WAROCAS_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_WAROCAS,50,1"
         }
       }
     ]

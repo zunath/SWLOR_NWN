@@ -39,15 +39,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
             {
-                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT")
+                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT" || GetEffectTag(e) == "FORCE_INSPIRATION")
                 {
                     RemoveEffect(target, e);
                 }
             }
 
-            var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
+            var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;
-            var length = BaseLength + willpowerMod * 30f;
+            var length = BaseLength + willpowerMod * 15f;
 
             var effect = EffectLinkEffects(
                 EffectAbilityIncrease(AbilityType.Might, baseAmount),

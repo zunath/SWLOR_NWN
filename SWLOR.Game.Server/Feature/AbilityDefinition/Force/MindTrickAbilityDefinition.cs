@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick"))
+            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick", AbilityType.Willpower))
             {
                 var effect = EffectConfused();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
@@ -87,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        ApplyMindTrick(activator, targetCreature);
+                        if(GetIsReactionTypeHostile(targetCreature, activator))
+                            ApplyMindTrick(activator, targetCreature);
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

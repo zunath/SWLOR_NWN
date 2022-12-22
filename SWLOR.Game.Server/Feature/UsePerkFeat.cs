@@ -276,26 +276,33 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
-            if (GetIsPC(activator))
+            var executeImpact = ability.ActivationAction == null 
+                ? true
+                : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+
+            if (executeImpact == true)
             {
-                if (activationDelay > 0.0f)
+                if (GetIsPC(activator))
                 {
-                    PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    if (activationDelay > 0.0f)
+                    {
+                        PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    }
                 }
-            }
 
-            Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
+                Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
 
-            // If currently attacking a target, re-attack it after the end of the activation period.
-            // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
-            if (GetCurrentAction(activator) == ActionType.AttackObject)
-            {
-                var attackTarget = GetAttackTarget(activator);
-                DelayCommand(activationDelay + 0.1f, () =>
+                // If currently attacking a target, re-attack it after the end of the activation period.
+                // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
+                if (GetCurrentAction(activator) == ActionType.AttackObject)
                 {
-                    AssignCommand(activator, () => ActionAttack(attackTarget));
-                });
+                    var attackTarget = GetAttackTarget(activator);
+                    DelayCommand(activationDelay + 0.1f, () =>
+                    {
+                        AssignCommand(activator, () => ActionAttack(attackTarget));
+                    });
+                }
             }
         }
 
@@ -325,20 +332,28 @@ namespace SWLOR.Game.Server.Feature
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
             {
-                if (GetLocalString(activator, ActiveAbilityIdName) != abilityId) return;
-
-                // Remove the local variables.
-                DeleteLocalInt(activator, ActiveAbilityName);
-                DeleteLocalString(activator, ActiveAbilityIdName);
-                DeleteLocalInt(activator, ActiveAbilityFeatIdName);
-                DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
-
-                // Notify the activator and nearby players
-                SendMessageToPC(activator, $"Your weapon ability {ability.Name} is no longer queued.");
-
-                if (ability.DisplaysActivationMessage)
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} no longer has weapon ability {ability.Name} readied.");
+                DequeueWeaponAbility(activator, ability.DisplaysActivationMessage);
             });
+        }
+
+        public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
+        {
+
+            string abilityName = GetLocalString(target, ActiveAbilityName);
+            if (string.IsNullOrWhiteSpace(abilityName))
+                return;
+
+            // Remove the local variables.
+            DeleteLocalInt(target, ActiveAbilityName);
+            DeleteLocalString(target, ActiveAbilityIdName);
+            DeleteLocalInt(target, ActiveAbilityFeatIdName);
+            DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
+
+            // Notify the activator and nearby players
+            SendMessageToPC(target, $"Your weapon ability {abilityName} is no longer queued.");
+
+            if (sendMessage)
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityName} readied.");
         }
 
         /// <summary>

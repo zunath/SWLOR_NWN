@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 10
+    "value": 13
   },
   "Width": {
     "type": "int",

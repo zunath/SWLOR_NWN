@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 DB.Set(interior);
 
                 var instance = Property.GetRegisteredInstance(interiorId);
-                SetName(instance.Area, property.CustomName);
+                SetName(instance.Area, "{PC} " + property.CustomName);
             }
         }
 

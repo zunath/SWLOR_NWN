@@ -448,9 +448,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 20)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 2);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Magus Necklace
             _builder.Create(RecipeType.MagusNecklace, SkillType.Smithery)
@@ -461,9 +466,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 20)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 2);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Immortal Necklace
             _builder.Create(RecipeType.ImmortalNecklace, SkillType.Smithery)
@@ -474,9 +484,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 20)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
                 .Component("emerald", 20)
-                .Component("chiro_shard", 2);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
     }

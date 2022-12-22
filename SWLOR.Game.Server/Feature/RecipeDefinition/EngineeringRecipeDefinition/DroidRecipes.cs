@@ -923,8 +923,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHBE-005 C
@@ -936,8 +941,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHRG-005 C
@@ -949,8 +959,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHNK-005 C
@@ -962,8 +977,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHAR-005 C
@@ -975,8 +995,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHHL-005 C
@@ -988,8 +1013,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHBR-005 C
@@ -1001,8 +1031,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DHLG-005 C
@@ -1014,8 +1049,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLCL-005 C
@@ -1027,8 +1067,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLBE-005 C
@@ -1040,8 +1085,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLRG-005 C
@@ -1053,8 +1103,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLNK-005 C
@@ -1066,8 +1121,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLAR-005 C
@@ -1079,8 +1139,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLHL-005 C
@@ -1092,8 +1157,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLBR-005 C
@@ -1105,8 +1175,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
 
             // DLLG-005 C
@@ -1118,11 +1193,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ref_keromber", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_veldite", 5)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
                 .Component("chiro_shard", 2);
-
-
         }
     }
 }

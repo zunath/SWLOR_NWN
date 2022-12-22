@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Feature.AIDefinition;
@@ -507,7 +508,10 @@ namespace SWLOR.Game.Server.Service
             }
             else if (aiFlags.HasFlag(AIFlag.WalkWaypoints))
             {
-                AssignCommand(self, () => { GenericAIDefinition.WalkWayPoints(); });
+                AssignCommand(self, () =>
+                {
+                    WalkWayPoints();
+                });
             }
         }
 
@@ -587,5 +591,124 @@ namespace SWLOR.Game.Server.Service
             var flagValue = GetLocalInt(creature, "AI_FLAGS");
             return (AIFlag) flagValue;
         }
+
+
+
+
+        private const string CurrentWaypointVariable = "WP_CUR";
+        private const string TotalWaypointsVariable = "WP_NUM";
+        private const string WalkWaypointFlagVariable = "WALKWP_FLAGS";
+        private const string WaypointPrefix = "WP_";
+
+        private static void WalkWayPoints(bool run = false)
+        {
+            var self = OBJECT_SELF;
+            var walkWpFlags = GetWalkWpFlag(self);
+
+            var nearestEnemy = GetNearestCreature(CreatureType.Reputation, (int)ReputationType.Enemy);
+            if (GetIsObjectValid(nearestEnemy) && GetObjectSeen(nearestEnemy)) return;
+
+            if (GetCurrentAction(self) == ActionType.Wait)
+                return;
+
+            // Initialize if necessary
+            if (!walkWpFlags.HasFlag(WalkWpFlag.Initialized))
+            {
+                InitializeWalkWayPoints();
+            }
+
+            // Move to the next waypoint
+            var waypoint = GetNextWalkWayPoint(self);
+            if (GetIsObjectValid(waypoint))
+            {
+                ClearAllActions();
+                DelayCommand(Random(10), () => { ActionMoveToObject(waypoint, run, 1.0f); });
+
+            }
+        }
+
+        private static void InitializeWalkWayPoints()
+        {
+            var self = OBJECT_SELF;
+            var sTag = WaypointPrefix + GetTag(self) + "_";
+            var waypoint = GetWaypointByTag(sTag + 1);
+
+            SetLocalInt(self, CurrentWaypointVariable, -1);
+
+            if (!GetIsObjectValid(waypoint)) SetLocalInt(self, TotalWaypointsVariable, -1);
+            else
+            {
+                var nNth = 1;
+                while (GetIsObjectValid(waypoint))
+                {
+                    SetLocalObject(self, WaypointPrefix + IntToString(nNth), waypoint);
+                    nNth++;
+
+                    waypoint = GetWaypointByTag(sTag + nNth);
+                }
+                nNth--;
+                SetLocalInt(self, TotalWaypointsVariable, nNth);
+            }
+
+            SetWalkWpFlag(self, WalkWpFlag.Initialized);
+        }
+
+        private static uint GetNextWalkWayPoint(uint self)
+        {
+            var totalWaypoints = GetLocalInt(self, WaypointPrefix + "NUM");
+            if (totalWaypoints == 1)
+            {
+                return GetLocalObject(self, WaypointPrefix + "1");
+            }
+
+            var currentWaypoint = GetLocalInt(self, CurrentWaypointVariable);
+            var walkWpFlags = GetWalkWpFlag(self);
+
+            if (currentWaypoint < 1)
+            {
+                currentWaypoint = 1;
+            }
+            else
+            {
+                if (walkWpFlags.HasFlag(WalkWpFlag.GoingBackwards))
+                {
+                    currentWaypoint--;
+                    if (currentWaypoint == 0)
+                    {
+                        currentWaypoint = 2;
+                        SetWalkWpFlag(self, walkWpFlags & ~WalkWpFlag.GoingBackwards);
+                    }
+                }
+                else
+                {
+                    currentWaypoint++;
+                    if (currentWaypoint > totalWaypoints)
+                    {
+                        currentWaypoint = totalWaypoints - 1;
+                        SetWalkWpFlag(self, walkWpFlags |= WalkWpFlag.GoingBackwards);
+                    }
+                }
+            }
+
+            SetLocalInt(self, CurrentWaypointVariable, currentWaypoint);
+            if (currentWaypoint == -1)
+                return OBJECT_INVALID;
+
+            return GetLocalObject(self, WaypointPrefix + currentWaypoint);
+        }
+
+        private static void SetWalkWpFlag(uint creature, WalkWpFlag flags)
+        {
+            var flagValue = (int)flags;
+            SetLocalInt(creature, WalkWaypointFlagVariable, flagValue);
+        }
+
+        private static WalkWpFlag GetWalkWpFlag(uint creature)
+        {
+            var flagValue = GetLocalInt(creature, WalkWaypointFlagVariable);
+            return (WalkWpFlag)flagValue;
+        }
+
+
     }
 }

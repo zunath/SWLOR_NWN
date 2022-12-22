@@ -643,7 +643,9 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+
+                var defaultFlags = AIFlag.ReturnHome | AIFlag.WalkWaypoints;
+                AI.SetAIFlag(deserialized, defaultFlags);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
 
@@ -673,7 +675,7 @@ namespace SWLOR.Game.Server.Service
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                if (objectType == ObjectType.Placeable)
+                if (spawnObject.Type == ObjectType.Placeable)
                 {
                     // Randomized resource decay and respawn.
                     // Normal delay plus 12 - 120 minutes from creation.

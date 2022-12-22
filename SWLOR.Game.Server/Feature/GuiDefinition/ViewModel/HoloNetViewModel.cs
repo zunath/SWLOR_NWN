@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, GuiPayloadBase>
     {
+        public string HoloNetText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public const int MaxHoloNetTextLength = 800;
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -16,17 +22,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HoloNetText = string.Empty;
             WatchOnClient(model => model.HoloNetText);
         }
-        public string HoloNetText
-        {
-            get => Get<string>();
-            set
-            {
-                Set(value);
-            }
-        }
 
         public Action OnClickSubmit() => () =>
         {
+            var price = 2500;
+
             if (string.IsNullOrWhiteSpace(HoloNetText))
             {
                 return;
@@ -39,18 +39,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(Player, "Your HoloNet broadcast was too long. Please shorten it to no longer than 600 characters and resubmit the broadcast. For reference, your message was: \"" + message + "\"");
                 return;
             }
-            var area = GetArea(Player);
-            var position = GetPosition(Player);
-
+            
             var url = Environment.GetEnvironmentVariable("SWLOR_HOLONET_WEBHOOK_URL");
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send the HoloNet broadcast because server admin has not specified the 'SWLOR_HOLONET_WEBHOOK_HOST' and 'SWLOR_HOLONET_WEBHOOK_PATH' environment variables."));
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send the HoloNet broadcast because server admin has not specified the 'SWLOR_HOLONET_WEBHOOK_URL' environment variable."));
                 return;
             }
-
-            var price = 100;
 
             if (GetGold(Player) < price)
             {
@@ -58,9 +54,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            else AssignCommand(Player, () => TakeGoldFromCreature(price, Player, true));
+            AssignCommand(Player, () => TakeGoldFromCreature(price, Player, true));
 
-            var authorName = $"{GetName(Player)}";
+            var authorName = GetName(Player);
 
             Task.Run(async () =>
             {
@@ -85,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
             {
-                   SendMessageToPC(onlinePlayer, ColorToken.Custom("A new HoloNet message has been broadcasted by " + authorName + ": ", 0, 180, 255) + ColorToken.White(message));
+                SendMessageToPC(onlinePlayer, ColorToken.Custom("" + authorName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
             }
         };
 

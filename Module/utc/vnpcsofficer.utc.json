@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 28
+    "value": 60
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 50.0
   },
   "ClassList": {
     "type": "list",
@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 34
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 30
+    "value": 9
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 280
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Sith promote competition amongst their ranks, both among the Force Sensitives among their number and their rank and file troops. Those the most merciless, cruel and powerful amongst them are elevated, while those exhibiting softer tendencies are treated like fodder and find death sooner rather than later - often from friendly fire.\n\nThese are the former among them. Clad in finer armor and given access to the newest in Imperial weapons technology as reward for their faithful service to the Sith."
+      "0": "Proud officers of the Sith Empire. These men and women spend their days callously orchestrating foul schemes to supplant the Republic as masters of the galaxy, with the promise of power and riches awaiting them in the aftermath of the bloodshed. "
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 34
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -173,35 +173,35 @@
         "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpchtroop5"
+          "value": "vnpchsithoff"
         }
       },
       {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcaelite2"
+          "value": "vnpcasithoff"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrelite3"
+          "value": "vnpcpofficer"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcselite3"
+          "value": "vnpcsbotspc"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 2
+    "value": 1
   },
   "FeatList": {
     "type": "list",
@@ -245,7 +245,49 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1242
+          "value": 1611
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1602
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1763
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1608
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1873
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1620
         }
       },
       {
@@ -275,20 +317,13 @@
           "type": "word",
           "value": 46
         }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1785
-        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Trooper, Honor Guard"
+      "0": "Sith Officer"
     }
   },
   "fortbonus": {
@@ -305,11 +340,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 280
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -330,7 +365,7 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "vnpcmelite3"
+          "value": "vnpchsith1"
         },
         "Repos_PosX": {
           "type": "word",
@@ -371,7 +406,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 39
+    "value": 38
   },
   "PerceptionRange": {
     "type": "byte",
@@ -387,7 +422,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4125
+    "value": 3560
   },
   "Race": {
     "type": "byte",
@@ -660,11 +695,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",
-    "value": 28
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -672,7 +707,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithTrooperHonorGuard"
+    "value": "SithOfficer"
   },
   "Tail_New": {
     "type": "dword",
@@ -684,7 +719,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcstroopnh"
+    "value": "vnpcsofficer"
   },
   "WalkRate": {
     "type": "int",
@@ -700,6 +735,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 28
+    "value": 20
   }
 }

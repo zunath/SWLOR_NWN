@@ -23,7 +23,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
@@ -119,6 +119,13 @@
         "Feat": {
           "type": "word",
           "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1349
         }
       },
       {
@@ -244,7 +251,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 150
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -513,7 +520,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",

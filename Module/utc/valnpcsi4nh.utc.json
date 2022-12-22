@@ -99,7 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 67
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
@@ -138,7 +138,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 26
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -274,6 +274,13 @@
         "Feat": {
           "type": "word",
           "value": 1242
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
         }
       },
       {
@@ -668,7 +675,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 158
+    "value": 82
   },
   "Str": {
     "type": "byte",

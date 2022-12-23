@@ -102,13 +102,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 455
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 492
         }
       },
@@ -187,7 +180,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 7
+    "value": 14
   },
   "Interruptable": {
     "type": "byte",

@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -25,17 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void Impact(uint activator, uint target, int dmg, int bleedChance, float bleedLength)
         {
             if (GetFactionEqual(activator, target))
@@ -66,13 +55,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 10);
+            Enmity.ModifyEnmity(activator, target, 320);
         }
 
         private void FragGrenade1()
         {
             _builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
                 .Name("Frag Grenade I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
@@ -80,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 3, 0, 0f);
+                        Impact(activator, target, 6, 0, 0f);
                     });
                 });
         }
@@ -94,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
                 .Name("Frag Grenade II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -101,12 +92,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 5, 30, 30f);
+                        Impact(activator, target, 10, 30, 30f);
                     });
                 });
         }
@@ -115,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
                 .Name("Frag Grenade III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)
@@ -122,12 +114,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 8, 50, 60f);
+                        Impact(activator, target, 16, 50, 60f);
                     });
                 });
         }

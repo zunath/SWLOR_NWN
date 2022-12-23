@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -68,5 +68,18 @@ namespace SWLOR.Game.Server.Feature
                 Log.Write(LogGroup.StoreCleanup, $"Store cleaned: {GetName(store)}. Items destroyed: {count}");
             }
         }
+
+        [NWNEventHandler("store_sell_aft")]
+        public static void DestroySoldItem()
+        {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var isSuccessful = EventsPlugin.GetEventData("RESULT") == "1";
+
+            if (!isSuccessful)
+                return;
+
+            DestroyObject(item);
+        }
+
     }
 }

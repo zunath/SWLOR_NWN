@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class EventRegistration
+    public static class EventRegistration
     {
         /// <summary>
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_preload")]
         public static void OnModulePreload()
         {
-            var serverConfig = DB.Get<ModuleCache>("SWLOR") ?? new ModuleCache();
+            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
@@ -49,13 +51,6 @@ namespace SWLOR.Game.Server.Feature
             ExecuteScript("mod_cache", GetModule());
         }
 
-        [NWNEventHandler("mod_load")]
-        public static void StartScheduledEvents()
-        {
-            RunOneSecondPCIntervalEvent();
-            //Scheduler.ScheduleRepeating(RunOneSecondPCIntervalEvent, TimeSpan.FromSeconds(1));
-        }
-
         [NWNEventHandler("mod_heartbeat")]
         public static void ExecuteHeartbeatEvent()
         {
@@ -65,11 +60,21 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// When a player enters the server, hook their event scripts.
+        /// Also add them to a UI processor list.
+        /// </summary>
         [NWNEventHandler("mod_enter")]
-        public static void HookPlayerEvents()
+        public static void EnterServer()
+        {
+            HookPlayerEvents();
+        }
+
+        private static void HookPlayerEvents()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player)) 
+                return;
 
             SetEventScript(player, EventScript.Creature_OnHeartbeat, "pc_heartbeat");
             SetEventScript(player, EventScript.Creature_OnNotice, "pc_perception");
@@ -84,6 +89,7 @@ namespace SWLOR.Game.Server.Feature
             SetEventScript(player, EventScript.Creature_OnUserDefined, "pc_userdef");
             SetEventScript(player, EventScript.Creature_OnBlockedByDoor, "pc_blocked");
         }
+
 
         /// <summary>
         /// Hooks module-wide scripts.
@@ -336,6 +342,10 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_BEFORE", "heal_kit_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_AFTER", "heal_kit_aft");
 
+            // Healing events
+            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_BEFORE", "heal_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_AFTER", "heal_aft");
+
             // Party Action events
             EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_BEFORE", "pty_leave_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_AFTER", "pty_leave_aft");
@@ -530,6 +540,10 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_AFTER", "store_buy_aft");
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_BEFORE", "store_sell_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_AFTER", "store_sell_aft");
+
+            // Input Drop Item Events
+            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_BEFORE", "item_drop_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_AFTER", "item_drop_aft");
         }
 
         /// <summary>
@@ -550,7 +564,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
         }
-        
+
         /// <summary>
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
@@ -562,22 +576,81 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
         }
 
+        private static readonly Dictionary<int, List<uint>> _intervalPlayers = new();
 
         /// <summary>
-        /// Fires an event on every player every second.
-        /// We do it this way so we don't run into a situation
-        /// where we iterate over the player list more than once per second
+        /// Schedules five player processors which fire off at 0.2 second intervals.
+        /// This is done to stagger out the processing overhead of scripts that run on player one-second events.
         /// </summary>
-        private static void RunOneSecondPCIntervalEvent()
+        [NWNEventHandler("mod_load")]
+        public static void ScheduleProcessors()
         {
-            DelayCommand(1f, RunOneSecondPCIntervalEvent);
+            const int GroupCount = 5;
 
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            for (var x = 1; x <= GroupCount; x++)
             {
-                if (!GetIsPC(player) || GetIsDM(player))
-                    continue;
+                var interval = x == 1 ? 0f : 0.2f * (x - 1);
+                var groupId = x;
+                _intervalPlayers[x] = new List<uint>();
+                Scheduler.ScheduleRepeating(() => ProcessIntervalGroup(groupId), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(interval));
+            }
+        }
 
-                ExecuteScript("interval_pc_1s", player);
+        /// <summary>
+        /// When a player joins the server they are added to the processor queue with the
+        /// fewest number of active players.
+        /// DMs are excluded from this.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void ScheduleProcessor()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            AddPlayerToIntervalGroup(player);
+        }
+
+        private static void AddPlayerToIntervalGroup(uint player)
+        {
+            var groupId = 1;
+            var lowestCount = 999;
+            foreach (var (group, players) in _intervalPlayers)
+            {
+                if (players.Count < lowestCount)
+                {
+                    lowestCount = players.Count;
+                    groupId = group;
+                }
+            }
+
+            _intervalPlayers[groupId].Add(player);
+        }
+
+        private static void ProcessIntervalGroup(int intervalGroup)
+        {
+            var players = _intervalPlayers[intervalGroup];
+
+            for (var index = players.Count - 1; index >= 0; index--)
+            {
+                var player = players[index];
+
+                if (GetIsObjectValid(player))
+                {
+                    // It's imperative a script doesn't cause this processor to exit upon error.
+                    try
+                    {
+                        ExecuteScript("interval_pc_1s", player);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+                    }
+                }
+                else
+                {
+                    _intervalPlayers[intervalGroup].Remove(player);
+                }
             }
         }
     }

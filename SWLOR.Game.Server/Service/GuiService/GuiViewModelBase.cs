@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Annotations;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -95,13 +94,37 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].HasEventBeenHooked = false;
             }
 
+            var valueType = typeof(T);
+
+            // The following section is explicitly for applying the workaround
+            // for the Vector issue outlined here: https://github.com/Beamdog/nwn-issues/issues/427
+            // If Beamdog fixes this issue, this section can be removed.
+            var oldMaxSize = 0;
+            var oldListItemVisibility = new GuiBindingList<bool>();
+
+            if (_propertyValues[propertyName].Value != null)
+            {
+                if (
+                    (valueType == typeof(GuiBindingList<string>) ||
+                     valueType == typeof(GuiBindingList<int>) ||
+                     valueType == typeof(GuiBindingList<bool>) ||
+                     valueType == typeof(GuiBindingList<float>) ||
+                     valueType == typeof(GuiBindingList<GuiRectangle>) ||
+                     valueType == typeof(GuiBindingList<GuiVector2>) ||
+                     valueType == typeof(GuiBindingList<GuiColor>)))
+                {
+                    var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
+                    oldMaxSize = list.MaxSize;
+                    oldListItemVisibility = list.ListItemVisibility;
+                }
+            }
+
             // Update the type and value for this entry.
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].Type = typeof(T);
 
             // Binding lists - The ListChanged event must also be hooked in order to raise
             // the OnPropertyChanged event.
-            var valueType = typeof(T);
             if (
                 (valueType == typeof(GuiBindingList<string>) ||
                  valueType == typeof(GuiBindingList<int>) ||
@@ -113,6 +136,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             {
                 var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
                 list.PropertyName = propertyName;
+                list.MaxSize = oldMaxSize;
+                list.ListItemVisibility = oldListItemVisibility;
 
                 list.ListChanged += OnListChanged;
 
@@ -144,13 +169,45 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
             
-            NuiSetBind(Player, WindowToken, propertyName, json);
-
             if (_propertyValues[propertyName].IsGuiList)
             {
-                var list = (IGuiBindingList) value;
-                NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.Count));
+                var list = (IGuiBindingList)_propertyValues[propertyName].Value;
+
+                // List visibility workaround for issue outlined here: https://github.com/Beamdog/nwn-issues/issues/427
+                // This can be removed if Beamdog fixes the Vector error.
+                if (list.ListItemVisibility == null)
+                {
+                    list.ListItemVisibility = new GuiBindingList<bool>();
+                }
+
+                if (list.Count > list.MaxSize)
+                {
+                    for (var x = list.MaxSize; x <= list.Count; x++)
+                    {
+                        list.ListItemVisibility.Add(true);
+                    }
+
+                    list.MaxSize = list.Count;
+                }
+                else if (list.Count < list.MaxSize)
+                {
+                    for (var x = list.Count; x <= list.MaxSize; x++)
+                    {
+                        list.ListItemVisibility[x] = false;
+                    }
+                }
+
+                for (var x = 0; x < list.Count; x++)
+                {
+                    list.ListItemVisibility[x] = true;
+                }
+
+                var visibilities = _converter.ToJson(list.ListItemVisibility);
+                NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.MaxSize));
+                NuiSetBind(Player, WindowToken, propertyName + "_RowVisibility", visibilities);
             }
+
+            NuiSetBind(Player, WindowToken, propertyName, json);
         }
 
         protected GuiWindowType WindowType { get; private set; }
@@ -265,12 +322,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
-
-            // The following two lines work around a NUI issue where the new partial view won't display on screen until the window resizes.
-            // We force a change to the geometry of the window to ensure it redraws appropriately.
-            // If/when a fix is implemented by Beamdog, this can be removed.
-            Geometry.Height += (int)Geometry.Height % 2 == 0 ? 1f : -1f;
-            OnPropertyChanged(nameof(Geometry));
+            
+            ApplyRefreshBugFix();
         }
 
 
@@ -322,5 +375,23 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
+
+        // The following method works around a NUI issue where the new partial view won't display on screen until the window resizes.
+        // We force a change to the geometry of the window to ensure it redraws appropriately.
+        // If/when a fix is implemented by Beamdog, this can be removed.
+        private void ApplyRefreshBugFix()
+        {
+            if (Geometry == null)
+                return;
+
+            Geometry.Height++;
+            NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
+
+            DelayCommand(0.0f, () =>
+            {
+                Geometry.Height--;
+                NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
+            });
+        }
     }
 }

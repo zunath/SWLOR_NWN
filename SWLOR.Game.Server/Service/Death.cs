@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -24,11 +23,8 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_death")]
         public static void OnPlayerDeath()
         {
-
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -41,23 +37,24 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            if (dbPlayer.Settings.IsSubdualModeEnabled)
+            if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
-                SendMessageToPC(player, "You have been subdued.");
-                SetCurrentHitPoints(player, 1);                
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
-                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Perception, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Social, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 10), player, 300f);
-                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 10), player, 300f);
+                var hostilePlayerId = GetObjectUUID(hostile);
+                var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
+                if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
+                {
+                    SendMessageToPC(player, "You have been subdued.");
+                    Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
+                }
             }
             else
             {
-                const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
+                const string RespawnMessage = "You have died. Wait for another player to revive you or respawn to go to your registered medical center.";
                 PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
 
                 WriteAudit(player);
@@ -175,12 +172,30 @@ namespace SWLOR.Game.Server.Service
             else
                 multiplier = 15;
 
+            var social = GetAbilityScore(player, AbilityType.Social);
             var newDebt = dbPlayer.TotalSPAcquired * multiplier;
-            var effectiveMedicalCenterLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel);
-            newDebt -= (int)(newDebt * (effectiveMedicalCenterLevel * 0.05f));
+            var reductionBonus = 0f;
+            reductionBonus += Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
+
+            if (social > 10)
+            {
+                reductionBonus += (social - 10) * 0.03f; // -3% per SOC
+            }
+
+            if (reductionBonus > 0.8f)
+                reductionBonus = 0.8f;
+
+            newDebt -= (int)(newDebt * reductionBonus);
 
             dbPlayer.XPDebt += newDebt;
+
+            const int MaxDebt = 9999999;
+            if (dbPlayer.XPDebt > MaxDebt)
+                dbPlayer.XPDebt = MaxDebt;
+
             DB.Set(dbPlayer);
+
+            SendMessageToPC(player, $"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)");
 
             return dbPlayer.XPDebt;
         }

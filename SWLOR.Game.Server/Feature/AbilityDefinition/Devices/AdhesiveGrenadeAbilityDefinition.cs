@@ -4,10 +4,8 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -25,16 +23,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
         private void Impact(uint activator, uint target, int immobilizeChance, float slowLength)
         {
             if (GetFactionEqual(activator, target))
@@ -50,13 +38,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
             
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 10);
+            Enmity.ModifyEnmity(activator, target, 150);
         }
 
         private void AdhesiveGrenade1()
         {
             _builder.Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -64,12 +53,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 0, 12f);
+                        Impact(activator, target, 0, 4f);
                     });
                 });
         }
@@ -78,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
@@ -85,12 +75,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 30, 12f);
+                        Impact(activator, target, 30, 6f);
                     });
                 });
         }
@@ -99,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.AdhesiveGrenade3, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(7)
@@ -106,12 +97,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 50, 18);
+                        Impact(activator, target, 50, 8f);
                     });
                 });
         }

@@ -447,7 +447,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Rebuild Tokens")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Rebuild Tokens - Can be used to send you to the rebuild area.");
+
+                        row.AddLabel()
+                            .BindText(model => model.RebuildTokens)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                 })
@@ -499,6 +508,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetHeight(32f)
                                         .SetWidth(100f)
                                         .BindOnClicked(model => model.OnClickRecipes());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("HoloCom")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickHoloCom())
+                                        .BindIsEnabled(model => model.IsHolocomEnabled);
                                 });
                                 col2.AddRow(row2 =>
                                 {

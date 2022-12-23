@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -30,8 +30,38 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.Remove(player, StatusEffectType.Rest);
         }
 
+        [NWNEventHandler("mod_enter")]
+        public static void RemoveRestOnLogin()
+        {
+            var player = GetEnteringObject();
+            StatusEffect.Remove(player, StatusEffectType.Rest);
+        }
+
         private void Rest(StatusEffectBuilder builder)
         {
+            void CheckMovement(uint target)
+            {
+                if (!GetIsObjectValid(target) || GetIsDead(target))
+                    return;
+
+                var position = GetPosition(target);
+
+                var originalPosition = Vector3(
+                    GetLocalFloat(target, "REST_POSITION_X"),
+                    GetLocalFloat(target, "REST_POSITION_Y"),
+                    GetLocalFloat(target, "REST_POSITION_Z"));
+
+                // Player has moved since the effect started. Remove it.
+                if (Math.Abs(position.X - originalPosition.X) > 0.1f ||
+                    Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
+                    Math.Abs(position.Z - originalPosition.Z) > 0.1f)
+                {
+                    StatusEffect.Remove(target, StatusEffectType.Rest);
+                }
+
+                DelayCommand(0.5f, () => CheckMovement(target));
+            }
+
             builder.Create(StatusEffectType.Rest)
                 .Name("Rest")
                 .EffectIcon(EffectIconType.Fatigue)
@@ -51,28 +81,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     Activity.SetBusy(target, ActivityStatusType.Resting);
                     Ability.EndConcentrationAbility(target);
+                    
+                    DelayCommand(0.5f, () => CheckMovement(target));
+
+                    ExecuteScript("rest_started", target);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    var position = GetPosition(target);
+                    var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, target);
+                    if (vitalityBonus < 0)
+                        vitalityBonus = 0;
 
-                    var originalPosition = Vector3(
-                        GetLocalFloat(target, "REST_POSITION_X"),
-                        GetLocalFloat(target, "REST_POSITION_Y"),
-                        GetLocalFloat(target, "REST_POSITION_Z"));
-
-                    // Player has moved since the effect started. Remove it.
-                    if(Math.Abs(position.X - originalPosition.X) > 0.1f ||
-                       Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
-                       Math.Abs(position.Z - originalPosition.Z) > 0.1f)
-                    {
-                        StatusEffect.Remove(target, StatusEffectType.Rest);
-                        return;
-                    }
-
-                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Vitality, target);
-                    var stmAmount = 1 + GetAbilityModifier(AbilityType.Perception, target) / 2;
-                    var fpAmount = 1 + GetAbilityModifier(AbilityType.Willpower, target) / 2;
+                    var hpAmount = 1 + vitalityBonus * 7;
+                    var stmAmount = 1 + vitalityBonus * 3;
+                    var fpAmount = 1 + vitalityBonus * 3;
 
                     // Guard against negative ability modifiers - always give at least 1 HP/FP/STM recovery per tick.
                     if (hpAmount < 1)

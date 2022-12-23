@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Core;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         SetPhenoType(PhenoType.Normal, user);
                         SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, user);
-                        CreaturePlugin.SetMovementRate(user, MovementRate.Normal);
+                        CreaturePlugin.SetMovementRate(user, MovementRate.PC);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
@@ -79,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
+                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             }
         }
         /// <summary>
@@ -97,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
+                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             }
         }
         /// <summary>
@@ -117,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
+                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             }
         }
 

@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -61,40 +59,55 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
+            {
+                stat = AbilityType.Might;
+            }
+
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
+            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-                var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-                var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
-                    attack, 
-                    dmg, 
-                    attackerStat, 
-                    defense, 
-                    defenderStat, 
-                    0);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                if (GetIsReactionTypeHostile(creature, activator))
+                {
+                    var attackerStat = GetAbilityScore(activator, stat);
+                    var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
+                        0);
 
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
-                count++;
-            }            
+                    var dTarget = creature;
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
+                    DelayCommand(0.1f, () =>
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
+
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    count++;
+                }
+
+                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
+            }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
         private static void CircleSlash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                 .Name("Circle Slash I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -103,11 +116,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                 .Name("Circle Slash II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -116,11 +129,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                 .Name("Circle Slash III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

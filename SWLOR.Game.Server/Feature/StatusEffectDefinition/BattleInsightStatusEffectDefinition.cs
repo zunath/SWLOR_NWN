@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -24,30 +22,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.BattleInsight1)
                 .Name("Battle Insight I")
                 .EffectIcon(EffectIconType.Dazed)
-                .GrantAction((source, target, length, effectData) =>
+                .CannotReplace(StatusEffectType.BattleInsight2)
+                .TickAction((source, target, effectData) =>
                 {
                     var effect = EffectAttackDecrease(5);
                     effect = EffectLinkEffects(effect, EffectACDecrease(5));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                    ApplyEffectToObject(DurationType.Permanent, effect, source);
+                    ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
-                })
-                .TickAction((source, target, effectData) =>
-                {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
                     {
-                        var effect = EffectAttackIncrease(3);
+                        if (player == source)
+                            continue;
+
+                        effect = EffectAttackIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
-                })
-                .RemoveAction((target, effectData) =>
-                {
-                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight1);
+
+                    Enmity.ModifyEnmityOnAll(source, 80);
+                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
         private void BattleInsight2(StatusEffectBuilder builder)
@@ -55,30 +52,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.BattleInsight2)
                 .Name("Battle Insight II")
                 .EffectIcon(EffectIconType.Dazed)
-                .GrantAction((source, target, length, effectData) =>
+                .Replaces(StatusEffectType.BattleInsight1)
+                .TickAction((source, target, effectData) =>
                 {
                     var effect = EffectAttackDecrease(8);
                     effect = EffectLinkEffects(effect, EffectACDecrease(8));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                    ApplyEffectToObject(DurationType.Permanent, effect, source);
+                    ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
-                })
-                .TickAction((source, target, effectData) =>
-                {
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
                     {
-                        var effect = EffectAttackIncrease(6);
+                        if (player == source)
+                            continue;
+
+                        effect = EffectAttackIncrease(6);
                         effect = EffectLinkEffects(effect, EffectACIncrease(6));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
-                })
-                .RemoveAction((target, effectData) =>
-                {
-                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.BattleInsight2);
+
+                    Enmity.ModifyEnmityOnAll(source, 120);
+                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
     }

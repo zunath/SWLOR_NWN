@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 17.0
+    "value": 18.0
   },
   "ClassList": {
     "type": "list",
@@ -433,7 +433,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 24
   },
   "Interruptable": {
     "type": "byte",
@@ -463,7 +463,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 404
+    "value": 383
   },
   "NaturalAC": {
     "type": "byte",
@@ -797,7 +797,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
@@ -805,14 +805,14 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER,40,2"
+          "value": "TATOOINE_TUSKEN_RAIDER,100,1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "NPC_GROUP"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
@@ -827,7 +827,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
+          "value": "LOOT_TABLE_2"
         },
         "Type": {
           "type": "dword",
@@ -836,6 +836,21 @@
         "Value": {
           "type": "cexostring",
           "value": "TATOOINE_TUSKEN_RAIDER_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_RAIDER,40,1"
         }
       }
     ]

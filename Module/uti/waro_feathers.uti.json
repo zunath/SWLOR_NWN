@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 21
+    "value": 125
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 538
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 21
+    "value": 125
   },
   "Cursed": {
     "type": "byte",
@@ -28,7 +28,7 @@
     "id": 90753,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The main spinal column of a Warocas, or at least what's left of it. Ick."
     }
   },
   "Description": {
@@ -50,7 +50,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 95
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",

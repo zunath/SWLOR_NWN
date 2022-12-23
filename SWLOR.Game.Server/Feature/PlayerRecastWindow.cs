@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.SpaceService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -31,7 +30,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Every second, redraw the window for the player. Window drawn depends on the mode the player is currently in (Character or Space).
         /// </summary>
-        [NWNEventHandler("interval_pc_1s")]
+        //[NWNEventHandler("interval_pc_1s")] // todo: temporarily disabled due to performance reasons.
         public static void DrawGuiElements()
         {
             var player = OBJECT_SELF;
@@ -67,6 +66,9 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var now = DateTime.UtcNow;
 
             var numberOfRecasts = 0;
@@ -122,6 +124,9 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
             if (dbPlayerShip == null)
@@ -154,24 +159,34 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        [NWNEventHandler("interval_pc_1s")]
+        //[NWNEventHandler("interval_pc_1s")] // todo: temporarily disabled due to performance issues
         public static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;
-            if (GetIsDM(player)) return;
+            if (GetIsDM(player) || GetIsDMPossessed(player)) return;
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Retrieval", "RunScript", "Script");
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            ProfilerPlugin.PopPerfScope();
+
+            if (dbPlayer == null)
+                return;
+
             var now = DateTime.UtcNow;
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Iteration", "RunScript", "Script");
             foreach (var (group, dateTime) in dbPlayer.RecastTimes)
             {
                 if (dateTime > now) continue;
 
                 dbPlayer.RecastTimes.Remove(group);
             }
+            ProfilerPlugin.PopPerfScope();
 
+            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Save", "RunScript", "Script");
             DB.Set(dbPlayer);
+            ProfilerPlugin.PopPerfScope();
         }
     }
 }

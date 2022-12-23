@@ -40,6 +40,9 @@ namespace SWLOR.Game.Server.Core
 
         public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
         {
+
+            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
+
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
             coreGameManager.OnSignal += OnSignal;
             coreGameManager.OnServerLoop += OnServerLoop;
@@ -50,11 +53,18 @@ namespace SWLOR.Game.Server.Core
             Log.Register();
             Console.WriteLine("Loggers registered successfully.");
 
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
             Console.WriteLine("Registering scripts...");
             LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");
 
             return retVal;
+        }
+
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
+        {
+            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace());
         }
 
         /// <summary>
@@ -110,7 +120,7 @@ namespace SWLOR.Game.Server.Core
                 {
                     foreach (var action in _conditionalScripts[script])
                     {
-                        ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                        ProfilerPlugin.PushPerfScope(action.Name, "RunScript", "Script");
                         var actionResult = action.Action.Invoke();
                         ProfilerPlugin.PopPerfScope();
 
@@ -129,7 +139,7 @@ namespace SWLOR.Game.Server.Core
                     {
                         try
                         {
-                            ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                            ProfilerPlugin.PushPerfScope(action.Name, "RunScript", "Script");
                             action.Action();
                             ProfilerPlugin.PopPerfScope();
                         }

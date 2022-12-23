@@ -1,16 +1,11 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -82,18 +77,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             // Second attack
             damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
+
+            Enmity.ModifyEnmity(activator, target, 450 * level + damage);
         }
 
         private static void DoubleShot1(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                 .Name("Double Shot I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
-                .HasActivationDelay(0.5f)
-                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -105,12 +102,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                 .Name("Double Shot II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
-                .HasActivationDelay(0.5f)
-                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -122,12 +117,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                 .Name("Double Shot III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
-                .HasActivationDelay(0.5f)
-                .HasMaxRange(30.0f)
                 .RequirementStamina(8)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>

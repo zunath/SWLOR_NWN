@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mon Cala - Coral Isles - Sharptooth Jungle"
+      "0": "Mon Cala - Sharptooth Jungle - South"
     }
   },
   "NoRest": {
@@ -3613,7 +3613,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 81
+          "value": 1
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -4461,7 +4461,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 15
+    "value": 21
   },
   "Width": {
     "type": "int",

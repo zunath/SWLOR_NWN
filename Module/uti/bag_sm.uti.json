@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1000
+    "value": 986
   },
   "Cursed": {
     "type": "byte",
@@ -71,7 +71,7 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 10
+          "value": 15
         },
         "CostValue": {
           "type": "word",
@@ -87,7 +87,38 @@
         },
         "PropertyName": {
           "type": "word",
+          "value": 32
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
           "value": 11
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 81
         },
         "Subtype": {
           "type": "word",
@@ -111,40 +142,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bag_sm"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      }
-    ]
   }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using SWLOR.Game.Server.Core.NWNX.Enum;
+﻿using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -81,17 +80,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Adds a banned CD key. Get via GetPCPublicCDKey
         public static void AddBannedCDKey(string key)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddBannedCDKey");
-            VM.StackPush(key);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXCore.NWNX_PushArgumentString(key);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, "AddBannedCDKey");
         }
 
         /// Removes a banned CD key.
         public static void RemoveBannedCDKey(string key)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveBannedCDKey");
-            VM.StackPush(key);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXCore.NWNX_PushArgumentString(key);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, "RemoveBannedCDKey");
         }
 
         // Adds a banned player name - get via GetPCPlayerName.

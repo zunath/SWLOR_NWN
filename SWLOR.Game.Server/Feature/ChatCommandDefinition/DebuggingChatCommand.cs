@@ -2,10 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -14,8 +11,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly ChatCommandBuilder _builder = new();
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-            MoveDoor();
-            OpenTestWindow();
+            //MoveDoor();
 
             return _builder.Build();
         }
@@ -72,17 +68,5 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, $"{orientationOverride} {sqrtValue}");
                 });
         }
-
-        private void OpenTestWindow()
-        {
-            _builder.Create("testui")
-                .Description("Debugging")
-                .Permissions(AuthorizationLevel.Admin)
-                .Action((user, target, location, args) =>
-                {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Testing);
-                });
-        }
-
     }
 }

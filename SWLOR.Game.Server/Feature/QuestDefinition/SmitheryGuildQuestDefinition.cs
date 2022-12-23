@@ -21,12 +21,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(23, 7)},
-            { 1, new RewardDetails(84, 27)},
-            { 2, new RewardDetails(122, 39)},
-            { 3, new RewardDetails(184, 52)},
-            { 4, new RewardDetails(245, 65)},
-            { 5, new RewardDetails(312, 82)},
+            { 0, new RewardDetails(138, 21)},
+            { 1, new RewardDetails(343, 81)},
+            { 2, new RewardDetails(532, 117)},
+            { 3, new RewardDetails(733, 156)},
+            { 4, new RewardDetails(874, 195)},
+            { 5, new RewardDetails(960, 246)},
         };
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -164,8 +164,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_616", "ar_helmet", 1, 3);
             BuildItemTask(builder, "smth_tsk_617", "ar_bracer", 1, 3);
             BuildItemTask(builder, "smth_tsk_618", "ar_leggings", 1, 3);
-            BuildItemTask(builder, "smth_tsk_619", "gr_gloak", 1, 3);
-            BuildItemTask(builder, "smth_tsk_620", "gr_belt", 1, 3);
+            BuildItemTask(builder, "smth_tsk_619", "gre_cloak", 1, 3);
+            BuildItemTask(builder, "smth_tsk_620", "gre_belt", 1, 3);
             BuildItemTask(builder, "smth_tsk_621", "gr_ring", 1, 3);
             BuildItemTask(builder, "smth_tsk_622", "gr_necklace", 1, 3);
             BuildItemTask(builder, "smth_tsk_623", "gr_tunic", 1, 3);

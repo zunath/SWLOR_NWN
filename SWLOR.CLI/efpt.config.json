@@ -1,0 +1,115 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "SwlorContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "LegacyMigration",
+   "OutputPath": "LegacyMigration",
+   "ProjectRootNamespace": "SWLOR.CLI",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "apartmentbuilding",
+         "ObjectType": 0
+      },
+      {
+         "Name": "area",
+         "ObjectType": 0
+      },
+      {
+         "Name": "association",
+         "ObjectType": 0
+      },
+      {
+         "Name": "attribute",
+         "ObjectType": 0
+      },
+      {
+         "Name": "authorizeddm",
+         "ObjectType": 0
+      },
+      {
+         "Name": "backgrounds",
+         "ObjectType": 0
+      },
+      {
+         "Name": "bank",
+         "ObjectType": 0
+      },
+      {
+         "Name": "bankitem",
+         "ObjectType": 0
+      },
+      {
+         "Name": "baseitemtype",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcguildpoint",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pckeyitem",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcmappin",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcmapprogression",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcobjectvisibility",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcquestitemprogress",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcquestkilltargetprogress",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcqueststatus",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pcskill",
+         "ObjectType": 0
+      },
+      {
+         "Name": "player",
+         "ObjectType": 0
+      },
+      {
+         "Name": "serverconfiguration",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": ".swlor",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}

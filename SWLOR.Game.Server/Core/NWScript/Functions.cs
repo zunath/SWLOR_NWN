@@ -2436,9 +2436,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   character.
         /// </summary>
         public static void ActivatePortal(uint oTarget, string sIPaddress = "", string sPassword = "",
-            string sWaypointTag = "", bool bSeemless = false)
+            string sWaypointTag = "", bool bSeamless = false)
         {
-            VM.StackPush(bSeemless ? 1 : 0);
+            VM.StackPush(bSeamless ? 1 : 0);
             VM.StackPush(sWaypointTag);
             VM.StackPush(sPassword);
             VM.StackPush(sIPaddress);

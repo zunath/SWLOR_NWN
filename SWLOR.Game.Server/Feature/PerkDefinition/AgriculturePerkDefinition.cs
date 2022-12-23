@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Abilities();
             CookingRecipes();
             AgricultureEquipment();
+            FishingRods();
 
             return _builder.Build();
         }
@@ -179,6 +180,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Agriculture, 45)
                 .GrantsFeat(FeatType.AgricultureEquipment5);
+        }
+
+        private void FishingRods()
+        {
+            _builder.Create(PerkCategoryType.Agriculture, PerkType.FishingRods)
+                .Name("Fishing Rods")
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 1 Fishing Rods.")
+                .Price(1)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 2 Fishing Rods.")
+                .Price(1)
+                .RequirementSkill(SkillType.Agriculture, 10)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 3 Fishing Rods.")
+                .Price(1)
+                .RequirementSkill(SkillType.Agriculture, 20)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 4 Fishing Rods.")
+                .Price(1)
+                .RequirementSkill(SkillType.Agriculture, 30)
+
+                .AddPerkLevel()
+                .Description("Grants the ability to equip tier 5 Fishing Rods.")
+                .Price(2)
+                .RequirementSkill(SkillType.Agriculture, 40);
         }
     }
 }

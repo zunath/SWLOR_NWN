@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2000
+    "value": 1986
   },
   "Cursed": {
     "type": "byte",
@@ -71,11 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 10
+          "value": 15
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -87,7 +87,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 11
+          "value": 32
         },
         "Subtype": {
           "type": "word",
@@ -102,27 +102,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 0
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 0
         },
         "Param1": {
           "type": "byte",
-          "value": 255
+          "value": 11
         },
         "Param1Value": {
           "type": "byte",
-          "value": 0
+          "value": 9
         },
         "PropertyName": {
           "type": "word",
-          "value": 15
+          "value": 81
         },
         "Subtype": {
           "type": "word",
-          "value": 335
+          "value": 0
         }
       }
     ]
@@ -142,40 +142,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bag_md"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      }
-    ]
   }
 }

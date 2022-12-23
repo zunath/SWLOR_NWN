@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -83,12 +80,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void Backstab1(AbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -115,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

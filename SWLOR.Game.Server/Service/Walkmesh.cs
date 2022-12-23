@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Entity;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Service
                 BakeArea(area);
             }
             
-            var serverConfig = DB.Get<ModuleCache>("SWLOR") ?? new ModuleCache{ Id = "SWLOR" };
+            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache{ Id = "SWLOR_CACHE" };
             serverConfig.WalkmeshesByArea = _walkmeshesByArea;
             DB.Set(serverConfig);
 
@@ -72,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             if (_bakingRan)
                 return;
 
-            var serverConfig = DB.Get<ModuleCache>("SWLOR");
+            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE");
             _walkmeshesByArea = serverConfig.WalkmeshesByArea;
             Console.WriteLine($"Loaded {_walkmeshesByArea.Count} area walkmeshes.");
         }

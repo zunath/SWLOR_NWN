@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -65,8 +63,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -79,13 +75,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(acLoss), target, 60f);
+
+            RemoveEffectByTag(target, "CROSS_CUT");
+            var breach = TagEffect(EffectACDecrease(acLoss), "CROSS_CUT");
+            ApplyEffectToObject(DurationType.Temporary, breach, target, 60f);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.CrossCut));
+            DelayCommand(0.2f, () =>
+            {
+                AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            });
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void CrossCut1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                 .Name("Cross Cut I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -103,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                 .Name("Cross Cut II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -120,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                 .Name("Cross Cut III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

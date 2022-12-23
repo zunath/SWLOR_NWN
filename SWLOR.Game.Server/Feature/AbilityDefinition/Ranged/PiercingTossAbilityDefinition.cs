@@ -3,14 +3,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -70,8 +68,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
-
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -84,13 +80,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Bleed, duration);
+            if (inflict) 
+                StatusEffect.Apply(activator, target, StatusEffectType.Bleed, duration);
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void PiercingToss1(AbilityBuilder builder)
         {
             builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                 .Name("Piercing Toss I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                 .Name("Piercing Toss II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)
@@ -121,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                 .Name("Piercing Toss III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(15.0f)

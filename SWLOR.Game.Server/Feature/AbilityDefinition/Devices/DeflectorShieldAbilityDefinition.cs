@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
 
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -15,6 +13,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class DeflectorShieldAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private const string Tier1Tag = "ABILITY_DEFLECTOR_SHIELD_1";
+        private const string Tier2Tag = "ABILITY_DEFLECTOR_SHIELD_2";
+        private const string Tier3Tag = "ABILITY_DEFLECTOR_SHIELD_3";
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -25,9 +26,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, float percent, bool affectsParty, float duration)
+        private string Validation(uint target, int tier)
         {
-            ApplyEffect(activator, percent, duration);
+            if (HasMorePowerfulEffect(target, tier,
+                    new(Tier1Tag, 1),
+                    new(Tier2Tag, 2),
+                    new(Tier3Tag, 3)))
+            {
+                return "Your target is already enhanced by a more powerful effect.";
+            }
+
+            return string.Empty;
+        }
+
+        private void Impact(uint activator, float percent, bool affectsParty, float duration, string tag)
+        {
+            ApplyEffect(activator, percent, duration, tag);
             if (affectsParty)
             {
                 var member = GetFirstFactionMember(activator);
@@ -36,22 +50,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     if (member != activator &&
                         GetDistanceBetween(activator, member) <= 10f)
                     {
-                        ApplyEffect(member, percent, duration);
+                        ApplyEffect(member, percent, duration, tag);
                     }
 
                     member = GetNextFactionMember(activator);
                 }
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 45);
+            Enmity.ModifyEnmityOnAll(activator, 220);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
         }
 
-        private void ApplyEffect(uint target, float percent, float duration)
+        private void ApplyEffect(uint target, float percent, float duration, string tag)
         {
+            RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
+
             var maxHP = (int)(GetMaxHitPoints(target) * percent);
             var effect = EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
             effect = EffectLinkEffects(effect, EffectTemporaryHitpoints(maxHP));
+            effect = TagEffect(effect, tag);
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
@@ -61,15 +78,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
                 .Name("Deflector Shield I")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .Level(1)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.15f, false, 180f);
+                    Impact(activator, 0.05f, false, 180f, Tier1Tag);
                 });
         }
 
@@ -77,15 +96,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
                 .Name("Deflector Shield II")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .Level(2)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.30f, false, 300f);
+                    Impact(activator, 0.10f, false, 300f, Tier2Tag);
                 });
         }
 
@@ -93,15 +114,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
                 .Name("Deflector Shield III")
-                .HasRecastDelay(RecastGroup.DeflectorShield, 300f)
+                .Level(3)
+                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(9)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .HasCustomValidation((activator, target, level, location) => Validation(target, 3))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, 0.40f, true, 300f);
+                    Impact(activator, 0.15f, true, 300f, Tier3Tag);
                 });
         }
     }

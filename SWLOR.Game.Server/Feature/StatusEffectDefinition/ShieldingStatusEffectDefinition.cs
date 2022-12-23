@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -20,19 +19,25 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Shielding1)
                 .Name("Shielding I")
-                .EffectIcon(EffectIconType.DamageImmunityIncrease);
+                .EffectIcon(EffectIconType.DamageImmunityIncrease)
+                .CannotReplace(StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4);
 
             _builder.Create(StatusEffectType.Shielding2)
                 .Name("Shielding II")
-                .EffectIcon(EffectIconType.DamageImmunityIncrease);
+                .EffectIcon(EffectIconType.DamageImmunityIncrease)
+                .Replaces(StatusEffectType.Shielding1)
+                .CannotReplace(StatusEffectType.Shielding3, StatusEffectType.Shielding4);
 
             _builder.Create(StatusEffectType.Shielding3)
                 .Name("Shielding III")
-                .EffectIcon(EffectIconType.DamageImmunityIncrease);
+                .EffectIcon(EffectIconType.DamageImmunityIncrease)
+                .Replaces(StatusEffectType.Shielding1, StatusEffectType.Shielding2)
+                .CannotReplace(StatusEffectType.Shielding4);
 
             _builder.Create(StatusEffectType.Shielding4)
                 .Name("Shielding IV")
-                .EffectIcon(EffectIconType.DamageImmunityIncrease);
+                .EffectIcon(EffectIconType.DamageImmunityIncrease)
+                .Replaces(StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3);
         }
     }
 }

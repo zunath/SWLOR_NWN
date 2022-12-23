@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void DroidRares()
         {
             _builder.Create("CZ220_LOOT_DROID_RARES")
+                .IsRare()
                 .AddItem("map_22", 50, 1, true);
         }
 
@@ -90,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void ColicoidExperimentRares()
         {
             _builder.Create("CZ220_LOOT_COLICOID_RARES")
+                .IsRare()
                 .AddItem("bag_dirty", 1, 1, true)
                 .AddItem("map_22", 3, 1, true);
         }

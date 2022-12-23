@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -64,9 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             }
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-
+            
             var attackerStat = GetAbilityModifier(AbilityType.Might, activator);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -81,16 +77,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             if (inflict)
             {
+                UsePerkFeat.DequeueWeaponAbility(target);
                 Ability.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void Skewer1(AbilityBuilder builder)
         {
             builder.Create(FeatType.Skewer1, PerkType.Skewer)
                 .Name("Skewer I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -101,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.Skewer2, PerkType.Skewer)
                 .Name("Skewer II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -111,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.Skewer3, PerkType.Skewer)
                 .Name("Skewer III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

@@ -3,14 +3,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -84,17 +82,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
-            if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Poison, duration);
+            if (inflict) 
+                StatusEffect.Apply(activator, target, StatusEffectType.Poison, duration);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void StrikingCobra1(AbilityBuilder builder)
         {
             builder.Create(FeatType.StrikingCobra1, PerkType.StrikingCobra)
                 .Name("Striking Cobra I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -102,10 +103,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.StrikingCobra2, PerkType.StrikingCobra)
                 .Name("Striking Cobra II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -113,10 +114,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.StrikingCobra3, PerkType.StrikingCobra)
                 .Name("Striking Cobra III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

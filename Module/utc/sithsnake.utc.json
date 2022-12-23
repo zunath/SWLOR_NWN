@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1233
+    "value": 1231
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 107
   },
   "DecayTime": {
     "type": "dword",
@@ -68,11 +68,11 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -81,7 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "mynock_claw"
+          "value": "mora_serpent_bit"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "mora_serp_skin"
         }
       }
     ]
@@ -122,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 100
+    "value": 107
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -156,11 +163,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 105
+    "value": 132
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 8
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -168,7 +175,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 101
+    "value": 155
   },
   "PerceptionRange": {
     "type": "byte",
@@ -490,22 +497,22 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 43
+          "type": "cexostring",
+          "value": "KORRIBAN_MORABAND_SERPENT,100,1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_1"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
@@ -513,7 +520,22 @@
         },
         "Value": {
           "type": "int",
-          "value": 2
+          "value": 34
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "KORRIBAN_MORABAND_SERPENT,40,1"
         }
       }
     ]
@@ -532,6 +554,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 3
+    "value": 18
   }
 }

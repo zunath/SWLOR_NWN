@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This ugnaught seems constantly working on something. Dressed in a sleek black flame retardant suit, and a stunning dusters hat, she is just about ready to build anything. \n\nOn her data pad are blueprints of all different kinds of structures, and furniture alike."
+    }
   },
   "Dex": {
     "type": "byte",
@@ -344,7 +346,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3712
+    "value": 4286
   },
   "Race": {
     "type": "byte",
@@ -609,7 +611,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 928
+    "value": 175
   },
   "SpecAbilityList": {
     "type": "list",

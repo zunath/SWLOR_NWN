@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -16,12 +15,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int dmg)
         {
+            var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
+            var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
+            dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
+
             var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
-                0,
+                attack,
                 dmg, 
-                0, 
+                attackerStat, 
                 defense, 
                 defenderStat, 
                 0);
@@ -33,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 2);
+            ApplyEffect(creature, 4);
         }
 
         [NWNEventHandler("grenade_inc1_hb")]
@@ -42,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 2);
+                ApplyEffect(creature, 4);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -51,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 5);
+            ApplyEffect(creature, 10);
         }
 
         [NWNEventHandler("grenade_inc2_hb")]
@@ -60,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 5);
+                ApplyEffect(creature, 10);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -69,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 8);
+            ApplyEffect(creature, 16);
         }
 
         [NWNEventHandler("grenade_inc3_hb")]
@@ -78,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 8);
+                ApplyEffect(creature, 16);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -91,21 +94,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void IncendiaryBomb1()
         {
             _builder.Create(FeatType.IncendiaryBomb1, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(3)
@@ -113,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -124,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc1_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 30);
+                    Enmity.ModifyEnmityOnAll(activator, 250);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -133,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IncendiaryBomb2, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
@@ -140,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -150,6 +145,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc2_en",
                         "grenade_inc2_hb",
                         40f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -157,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.IncendiaryBomb3, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
@@ -164,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -174,6 +173,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc3_en",
                         "grenade_inc3_hb",
                         60f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 450);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

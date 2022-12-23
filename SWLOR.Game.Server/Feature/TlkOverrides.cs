@@ -1,9 +1,7 @@
-﻿using System;
-using SWLOR.Game.Server.Core;
+﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -43,16 +41,94 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(457, BuildRecommendedButtonText());
 
-            SetTlkOverride(459, "Might improves damage dealt by melee weapons and increases carrying capacity.");
-            SetTlkOverride(460, "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.");
-            SetTlkOverride(461, "Vitality improves your max hit points and reduces damage received.");
-            SetTlkOverride(462, "Willpower improves your force attack, force defense, and max force points.");
-            SetTlkOverride(463, "Agility improves ranged accuracy, evasion, and max stamina.");
-            SetTlkOverride(478, "Social improves your XP gain and leadership capabilities.");
-            
+            SetTlkOverride(459, 
+                "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" + 
+                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Smithery, Gathering\n\n" +
+                "Other Notes:\n\n" +
+                "Improves damage dealt by regular melee weapons.\n" +
+                "Improves damage dealt by heavy melee weapons.\n" + 
+                "Improves damage dealt by throwing weapons.");
+            SetTlkOverride(460, 
+                "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
+                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Ranged, Fabrication, Devices\n\n" + 
+                "Other Notes:\n\n" + 
+                "Improves accuracy of regular melee weapons.\n" + 
+                "Improves accuracy of heavy melee weapons.\n" + 
+                "Improves damage of finesse melee weapons.\n" + 
+                "Improves damage of ranged weapons.");
+            SetTlkOverride(461, 
+                "Vitality improves your max hit points and reduces damage received.\n\n" +
+                "Primary Skills: Armor, Smithery, Engineering\n\n" +
+                "Other Notes:\n\n" +
+                "Increases maximum HP.\n" +
+                "Improves physical defense (reducing damage taken).\n" +
+                "Improves natural HP/FP/STM regen.\n" +
+                "Improves rest recovery.");
+            SetTlkOverride(462,
+                "Willpower improves your force attack, force defense, max force points, and first aid capabilities.\n\n" +
+                "Primary Skills: Force, Fabrication, Agriculture, First Aid\n\n" +
+                "Other Notes:\n\n" +
+                "Increases maximum FP.\n" + 
+                "Improves force defense (reducing damage taken).\n" +
+                "Improves effectiveness of First Aid abilities.\n" +
+                "Improves effectiveness of Force abilities.");
+            SetTlkOverride(463,
+                "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
+                "Primary Skills: One-Handed, Martial Arts, Ranged, Engineering\n\n" +
+                "Other Notes:\n\n" + 
+                "Increases maximum stamina.\n" +
+                "Improves evasion.\n" +
+                "Improves accuracy of finesse weapons.\n" +
+                "Improves accuracy of ranged weapons.\n" +
+                "Improves accuracy of throwing weapons.");
+            SetTlkOverride(478,
+                "Social improves your XP gain and leadership capabilities.\n\n" +
+                "Primary Skills: Leadership, Agriculture\n\n" +
+                "Other Notes:\n\n" + 
+                "Improves guild point acquisition.\n" +
+                "Improves quest credit rewards.\n" + 
+                "Improves XP gain.");
+
+            SetTlkOverride(535, "Credit"); // Gold Piece
+
             SetTlkOverride(1027, "Poison"); // Acid
 
+            SetTlkOverride(3593, "Give credits."); // GP
+            SetTlkOverride(5025, "The Galactic Credit Standard, or simply the 'credit', is the main form of currency throughout the galaxy."); // GP desc
+            SetTlkOverride(6407, "Credits"); // GP
+            SetTlkOverride(7059, "Drop or give credits, etc.");
+
             SetTlkOverride(7099, "Evasion");
+
+            SetTlkOverride(8035, "Resting");
+            SetTlkOverride(8049, "Horrified");
+            SetTlkOverride(8056, "Accuracy Increased");
+            SetTlkOverride(8057, "Accuracy Decreased");
+            SetTlkOverride(8060, "Defense Increased");
+            SetTlkOverride(8061, "Defense Decreased");
+            SetTlkOverride(8062, "Evasion Increased");
+            SetTlkOverride(8063, "Evasion Decreased");
+            SetTlkOverride(8077, "Force Drained");
+
+            SetTlkOverride(58369, "Might Increased");
+            SetTlkOverride(58370, "Might Decreased");
+            SetTlkOverride(58371, "Perception Increased");
+            SetTlkOverride(58372, "Perception Decreased");
+            SetTlkOverride(58373, "Vitality Increased");
+            SetTlkOverride(58374, "Vitality Decreased");
+            SetTlkOverride(58375, "Agility Increased");
+            SetTlkOverride(58376, "Agility Decreased");
+            SetTlkOverride(58377, "Willpower Increased");
+            SetTlkOverride(58378, "Willpower Decreased");
+            SetTlkOverride(58379, "Social Increased");
+            SetTlkOverride(58380, "Social Decreased");
+
+            SetTlkOverride(61619, "Sell <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(61620, "Buy <CUSTOM0> for <CUSTOM1>cr");
+            SetTlkOverride(62489, "Acquired <CUSTOM0> credits");
+            SetTlkOverride(62490, "Lost <CUSTOM0> credits");
+
+            SetTlkOverride(66129, "Premonition");
 
             SetTlkOverride(66751, "Holonet");
             SetTlkOverride(66755, "Comms");
@@ -90,7 +166,11 @@ namespace SWLOR.Game.Server.Feature
 
             foreach (var (_, detail) in Perk.GetAllPerks())
             {
-                foreach (var (_, perkLevel) in detail.PerkLevels)
+                var levelOneFeatDescriptionId = -1;
+                var levelOneSpellDescriptionId = -1;
+                var levelOneDescription = string.Empty;
+
+                foreach (var (level, perkLevel) in detail.PerkLevels)
                 {
                     foreach (var feat in perkLevel.GrantedFeats)
                     {
@@ -135,11 +215,32 @@ namespace SWLOR.Game.Server.Feature
                             recast,
                             perkLevel.Description);
 
+                        if (level == 1)
+                        {
+                            levelOneDescription = description;
+                            levelOneFeatDescriptionId = featDescriptionId;
+                        }
+
                         // Update both the feat and the spell descriptions, if applicable
                         SetTlkOverride(featDescriptionId, description);
 
-                        if(spellDescriptionId > 0)
+                        if (spellDescriptionId > 0)
+                        {
                             SetTlkOverride(spellDescriptionId, description);
+                            levelOneSpellDescriptionId = spellDescriptionId;
+                        }
+                    }
+
+                    // Some perks only grant one feat and improve the effectiveness of that feat on each level.
+                    // For these, we display every perk level on the feat & spell description (if applicable)
+                    if (level > 1 && 
+                        !string.IsNullOrWhiteSpace(levelOneDescription) &&
+                        perkLevel.GrantedFeats.Count <= 0)
+                    {
+                        levelOneDescription += $"\n\nLevel #{level}: {perkLevel.Description}";
+                        SetTlkOverride(levelOneFeatDescriptionId, levelOneDescription);
+                        if(levelOneSpellDescriptionId > 0)
+                            SetTlkOverride(levelOneSpellDescriptionId, levelOneDescription);
                     }
                 }
             }

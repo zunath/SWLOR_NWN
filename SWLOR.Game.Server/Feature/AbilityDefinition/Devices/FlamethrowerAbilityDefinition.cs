@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -10,7 +8,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -39,33 +36,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
+
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        dmg, 
-                        attackerStat, 
-                        defense, 
-                        defenderStat, 
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
                         0);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), target);
-
-                    if (Random.D100(1) <= burningChance)
-                    {
-                        StatusEffect.Apply(activator, target, StatusEffectType.Burn, 30f);
-                    }
-
-                    Enmity.ModifyEnmity(activator, target, 20);
+                    var eDMG = EffectDamage(damage, DamageType.Fire);
+                    Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    var dTarget = target; // Without this, ApplyEffect doesn't actually work. Don't ask why.
 
+                    DelayCommand(0.1f, () =>
+                    {
+                        ApplyEffectToObject(DurationType.Instant, eDMG, dTarget);
+                        ApplyEffectToObject(DurationType.Instant, eVFX, dTarget);
+
+                        if (Random.D100(1) <= burningChance)
+                        {
+                            StatusEffect.Apply(activator, dTarget, StatusEffectType.Burn, 30f);
+                        }
+                    });
                 }
 
                 target = GetNextObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -76,14 +79,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower1, PerkType.Flamethrower)
                 .Name("Flamethrower I")
-                .HasRecastDelay(RecastGroup.Flamethrower, 180f)
+                .Level(1)
+                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 3, 0);
+                    Impact(activator, targetLocation, 6, 0);
                 });
         }
 
@@ -91,14 +95,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower2, PerkType.Flamethrower)
                 .Name("Flamethrower II")
-                .HasRecastDelay(RecastGroup.Flamethrower, 180f)
+                .Level(2)
+                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 5, 30);
+                    Impact(activator, targetLocation, 10, 30);
                 });
         }
 
@@ -106,14 +111,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.Flamethrower3, PerkType.Flamethrower)
                 .Name("Flamethrower III")
-                .HasRecastDelay(RecastGroup.Flamethrower, 180f)
+                .Level(3)
+                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, 50);
+                    Impact(activator, targetLocation, 16, 50);
                 });
         }
     }

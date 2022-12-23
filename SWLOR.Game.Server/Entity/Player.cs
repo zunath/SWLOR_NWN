@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Entity
         private void Init()
         {
             Settings = new PlayerSettings();
+            RacialStat = AbilityType.Invalid;
             BaseStats = new Dictionary<AbilityType, int>
             {
                 {AbilityType.Vitality, 0},
@@ -52,15 +54,12 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = new Dictionary<CombatDamageType, int>
+            Defenses = new Dictionary<CombatDamageType, int>();
+
+            foreach (var type in Combat.GetAllDamageTypes())
             {
-                {CombatDamageType.Physical, 0},
-                {CombatDamageType.Force, 0},
-                {CombatDamageType.Fire, 0},
-                {CombatDamageType.Poison, 0},
-                {CombatDamageType.Electrical, 0},
-                {CombatDamageType.Ice, 0}
-            };
+                Defenses[type] = 0;
+            }
 
             ActiveShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
@@ -81,10 +80,8 @@ namespace SWLOR.Game.Server.Entity
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
-            AbilityPointsByLevel = new Dictionary<int, int>();
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
-            SubdualMode = false;
             AppearanceScale = 1.0f;
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
@@ -105,10 +102,6 @@ namespace SWLOR.Game.Server.Entity
         public int Stamina { get; set; }
         public int TemporaryFoodHP { get; set; }
         public int BAB { get; set; }
-        public int Fortitude { get; set; }
-        public int Reflex { get; set; }
-        public int Will { get; set; }
-        public int CP { get; set; }
 
         [Indexed]
         public string LocationAreaResref { get; set; }
@@ -134,6 +127,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public int DMXPBonus { get; set; }
         public int NumberPerkResetsAvailable { get; set; }
+        public int NumberRebuildsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }
         public bool IsUsingDualPistolMode { get; set; }
@@ -152,11 +146,14 @@ namespace SWLOR.Game.Server.Entity
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
+        public int Evasion { get; set; }
+        public bool RebuildComplete { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }
         public Dictionary<SkillType, int> CPBonus { get; set; }
+        public AbilityType RacialStat { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
@@ -173,12 +170,10 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
-        public Dictionary<int, int> AbilityPointsByLevel { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public Dictionary<AbilityToggleType, bool> AbilityToggles { get; set; }
-        public bool SubdualMode { get; set; }
         public float AppearanceScale { get; set; }
     }
 
@@ -220,16 +215,20 @@ namespace SWLOR.Game.Server.Entity
         public bool DisplayAchievementNotification { get; set; }
         public bool IsHolonetEnabled { get; set; }
         public bool ShowHelmet { get; set; }
+        public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
         public bool IsLightsaberForceShareEnabled { get; set; }
+        public bool DisplayServerResetReminders { get; set; }
 
         public PlayerSettings()
         {
             DisplayAchievementNotification = true;
             ShowHelmet = true;
+            ShowCloak = true;
             IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
             IsLightsaberForceShareEnabled = true;
+            DisplayServerResetReminders = true;
         }
     }
 

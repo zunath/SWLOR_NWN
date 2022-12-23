@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -155,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var playerId = GetObjectUUID(Player);
                     var query = new DBQuery<WorldProperty>()
                         .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                         .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
                     var apartments = DB.Search(query).ToList();
 

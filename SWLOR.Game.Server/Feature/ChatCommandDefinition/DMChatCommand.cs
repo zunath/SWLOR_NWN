@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Faction = SWLOR.Game.Server.Service.Faction;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -19,6 +19,37 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
+        {
+            CopyTargetItem();
+            Day();
+            Night();
+            GetPlot();
+            Kill();
+            Resurrect();
+            SpawnGold();
+            TeleportWaypoint();
+            GetLocalVariable();
+            SetLocalVariable();
+            SetPortrait();
+            SpawnItem();
+            GiveRPXP();
+            ResetPerkCooldown();
+            PlayVFX();
+            ResetAbilityRecastTimers();
+            AdjustFactionStanding();
+            GetFactionStanding();
+            RestartServer();
+            SetXPBonus();
+            GetXPBonus();
+            GetPlayerId();
+            GetTag();
+            Notes();
+            CreatureManager();
+
+            return _builder.Build();
+        }
+
+        private void CopyTargetItem()
         {
             _builder.Create("copyitem")
                 .Description("Copies the targeted item.")
@@ -35,7 +66,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     CopyItem(target, user, true);
                     SendMessageToPC(user, "Item copied successfully.");
                 });
+        }
 
+        private void Day()
+        {
             _builder.Create("day")
                 .Description("Sets the world time to 8 AM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -43,7 +77,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     SetTime(8, 0, 0, 0);
                 });
+        }
 
+        private void Night()
+        {
             _builder.Create("night")
                 .Description("Sets the world time to 8 PM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -51,7 +88,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     SetTime(20, 0, 0, 0);
                 });
+        }
 
+        private void GetPlot()
+        {
             _builder.Create("getplot")
                 .Description("Gets whether an object is marked plot.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -60,7 +100,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, GetPlotFlag(target) ? "Target is marked plot." : "Target is NOT marked plot.");
                 })
                 .RequiresTarget();
+        }
 
+        private void Kill()
+        {
             _builder.Create("kill")
                 .Description("Kills your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -71,29 +114,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                 })
                 .RequiresTarget();
+        }
 
-            _builder.Create("name")
-                .Description("Renames your target.")
-                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Validate((user, args) => args.Length <= 0 ? "Please enter a name. Example: /name My Creature" : string.Empty)
-                .Action((user, target, location, args) =>
-                {
-                    if (GetIsPC(target) || GetIsDM(target))
-                    {
-                        SendMessageToPC(user, "PCs cannot be targeted with this command.");
-                        return;
-                    }
-
-                    var name = string.Empty;
-                    foreach (var arg in args)
-                    {
-                        name += " " + arg;
-                    }
-
-                    SetName(target, name);
-                })
-                .RequiresTarget();
-
+        private void Resurrect()
+        {
             _builder.Create("rez")
                 .Description("Revives you, heals you to full, and restores all FP/STM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -102,14 +126,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     if (GetIsDead(target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectResurrection(), user);
+                        ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
                     }
 
-                    ApplyEffectToObject(DurationType.Instant, EffectHeal(999), user);
-                    Stat.RestoreFP(target, Stat.GetMaxFP(user));
-                    Stat.RestoreStamina(target, Stat.GetMaxStamina(user));
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
+                    Stat.RestoreFP(target, Stat.GetMaxFP(target));
+                    Stat.RestoreStamina(target, Stat.GetMaxStamina(target));
                 });
+        }
 
+        private void SpawnGold()
+        {
             _builder.Create("spawngold")
                 .Description("Spawns gold of a specific quantity on your character. Example: /spawngold 33")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -135,7 +162,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     GiveGoldToCreature(user, quantity);
                 });
+        }
 
+        private void TeleportWaypoint()
+        {
             _builder.Create("tpwp")
                 .Description("Teleports you to a waypoint with a specified tag.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -161,22 +191,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     AssignCommand(user, () => ActionJumpToLocation(GetLocation(wp)));
                 });
-
-            GetLocalVariable();
-            SetLocalVariable();
-            SetPortrait();
-            SpawnItem();
-            GiveRPXP();
-            ResetPerkCooldown();
-            PlayVFX();
-            ResetAbilityRecastTimers();
-            AdjustFactionStanding();
-            GetFactionStanding();
-            RestartServer();
-            SetXPBonus();
-            GetXPBonus();
-
-            return _builder.Build();
         }
 
         private void GetLocalVariable()
@@ -751,6 +765,56 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
+                });
+        }
+
+        private void GetPlayerId()
+        {
+            _builder.Create("playerid")
+                .Description("Gets a player's Id.")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    var playerId = GetObjectUUID(target);
+                    
+                    SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
+                });
+        }
+
+        private void GetTag()
+        {
+            _builder.Create("gettag")
+                .Description("Gets a target's tag.")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    var tag = NWScript.GetTag(target);
+
+                    SendMessageToPC(user, $"Target's tag: {tag}");
+                });
+        }
+
+        private void Notes()
+        {
+            _builder.Create("notes", "note")
+                .Description("Toggles the area notes window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
+                });
+        }
+
+        private void CreatureManager()
+        {
+            _builder.Create("cm")
+                .Description("Toggles the Creature Manager window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
                 });
         }
     }

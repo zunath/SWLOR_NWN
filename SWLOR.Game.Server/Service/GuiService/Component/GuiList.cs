@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
@@ -36,6 +35,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <param name="expression">Expression to target the property.</param>
         public GuiList<T> BindRowCount<TProperty>(Expression<Func<T, TProperty>> expression)
         {
+            foreach (var cell in Template.Elements)
+            {
+                foreach (var element in cell.Elements)
+                {
+                    element.VisibilityOverrideBindName = GuiHelper<T>.GetPropertyName(expression) + "_RowVisibility";
+                }
+            }
+
             RowCountBindName = GuiHelper<T>.GetPropertyName(expression) + "_RowCount";
             return this;
         }

@@ -46,6 +46,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     column.AddRow(row =>
                     {
                         row.AddLabel()
+                            .BindText(model => model.XPDebt)
+                            .SetHeight(20f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                    });
+
+                    column.AddRow(row =>
+                    {
+                        row.AddLabel()
                             .SetText("Skill")
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);

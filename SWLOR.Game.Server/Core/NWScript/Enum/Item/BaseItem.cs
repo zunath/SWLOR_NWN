@@ -103,7 +103,32 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 
         Saberstaff = 511,
         Lightsaber = 512,
+        Electronics1 = 513,
+
+        BaseFuel = 515,
+        Electronics2 = 516,
+        Electronics3 = 517,
+        Electronics4 = 518,
+        Electronics5 = 519,
+        Electronics6 = 520,
+        Electronics7 = 521,
+        Electronics8 = 522,
+        Electronics9 = 523,
 
         Electroblade = 525,
+        MiscMediumStackable = 526,
+        ElectronicsStackable1 = 527,
+        ElectronicsStackable2 = 528,
+        ElectronicsStackable3 = 529,
+        ElectronicsStackable4 = 530,
+        ElectronicsStackable5 = 531,
+        ElectronicsStackable6 = 532,
+        ElectronicsStackable7 = 533,
+        ElectronicsStackable8 = 534,
+        ElectronicsStackable9 = 535,
+        MiscellaneousSmallStackable = 536,
+        TwinElectroBlade = 537,
+        MiscellaneousThinStackable = 538,
+
     }
 }

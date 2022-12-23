@@ -1,0 +1,215 @@
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.SpawnService;
+
+namespace SWLOR.Game.Server.Feature.SpawnDefinition
+{
+    public class DathomirSpawnDefinition: ISpawnListDefinition
+    {
+        private readonly SpawnTableBuilder _builder = new();
+
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
+        {
+            CaveRuins();
+            Desert();
+            DesertWestSide();
+            GrottoCaverns();
+            Grottos();
+            GrottosBoss();
+            MountainCaves();
+            Mountains();
+            RuinBase();
+            TarnishedJungles();
+            TarnishedJunglesNorth();
+            TribeVillage();
+
+            return _builder.Build();
+        }
+
+        private void CaveRuins()
+        {
+            _builder.Create("DATHOMIR_CAVE_RUINS")
+                .AddSpawn(ObjectType.Creature, "vdathguard")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathturtle")
+                .RandomlyWalks()
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Creature, "vdathpurbole")
+                .RandomlyWalks()
+                .WithFrequency(80);
+        }
+
+        private void Desert()
+        {
+            _builder.Create("DATHOMIR_DESERT")
+                .AddSpawn(ObjectType.Creature, "vdathguard")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathturtle")
+                .RandomlyWalks()
+                .WithFrequency(5);
+        }
+
+        private void DesertWestSide()
+        {
+            _builder.Create("DATHOMIR_DESERT_WEST_SIDE")
+                .AddSpawn(ObjectType.Creature, "vdathguard")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void GrottoCaverns()
+        {
+            _builder.Create("DATHOMIR_GROTTO_CAVERNS")
+                .AddSpawn(ObjectType.Creature, "vdathturtle")
+                .RandomlyWalks()
+                .WithFrequency(5)
+                
+                .AddSpawn(ObjectType.Creature, "vdathssurian")
+                .RandomlyWalks()
+                .WithFrequency(100)
+                
+                .AddSpawn(ObjectType.Creature, "vdathpurbole")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void Grottos()
+        {
+            _builder.Create("DATHOMIR_GROTTOS")
+                .AddSpawn(ObjectType.Creature, "vdathssurian")
+                .RandomlyWalks()
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Creature, "vdathsquell")
+                .RandomlyWalks()
+                .WithFrequency(70);
+        }
+
+        private void GrottosBoss()
+        {
+            _builder.Create("DATHOMIR_GROTTOS_BOSS")
+                .AddSpawn(ObjectType.Creature, "vdathchirodac")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(480);
+        }
+
+        private void MountainCaves()
+        {
+            _builder.Create("DATHOMIR_MOUNTAIN_CAVES")
+                .AddSpawn(ObjectType.Creature, "vdathsprantal")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathsquell")
+                .RandomlyWalks()
+                .WithFrequency(100)
+                
+                .AddSpawn(ObjectType.Creature, "vdathssurian")
+                .RandomlyWalks()
+                .WithFrequency(10);
+        }
+
+        private void Mountains()
+        {
+            _builder.Create("DATHOMIR_MOUNTAINS")
+                .AddSpawn(ObjectType.Creature, "vdathsprantal")
+                .RandomlyWalks()
+                .WithFrequency(100)
+                
+                .AddSpawn(ObjectType.Creature, "vdathsquell")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void RuinBase()
+        {
+            _builder.Create("DATHOMIR_RUIN_BASE")
+                .AddSpawn(ObjectType.Creature, "vdathpurbole")
+                .RandomlyWalks()
+                .WithFrequency(80)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Creature, "vdathguard")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void TarnishedJungles()
+        {
+            _builder.Create("DATHOMIR_TARNISHED_JUNGLES")
+                .AddSpawn(ObjectType.Creature, "vdathswampland")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathshear")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void TarnishedJunglesNorth()
+        {
+            _builder.Create("DATHOMIR_TARNISHED_JUNGLES_NORTH")
+                .AddSpawn(ObjectType.Creature, "vdathswampland")
+                .RandomlyWalks()
+                .WithFrequency(100)
+                
+                .AddSpawn(ObjectType.Creature, "vdathshear")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+        private void TribeVillage()
+        {
+            _builder.Create("DATHOMIR_TRIBE_VILLAGE")
+                .AddSpawn(ObjectType.Creature, "vdathguard")
+                .RandomlyWalks()
+                .WithFrequency(100)
+
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100);
+        }
+
+    }
+}

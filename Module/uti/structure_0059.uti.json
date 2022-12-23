@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 100
   },
   "Cursed": {
     "type": "byte",
@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Altar, Hand"
+      "0": "Hand Chair"
     }
   },
   "ModelPart1": {

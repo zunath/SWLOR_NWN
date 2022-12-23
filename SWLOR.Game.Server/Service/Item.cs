@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -55,17 +54,22 @@ namespace SWLOR.Game.Server.Service
 
             // Cache 2da values that we need.  Create a new array for each row, otherwise they
             // end up pointing to the same array object (and get overwritten).
-            foreach (var baseItem in Enum.GetValues(typeof(BaseItem)).Cast<int>())
+            for (var row = 0; row < UtilPlugin.Get2DARowCount("baseitems"); row++)
             {
-                var values = new int[3];
-                var threat = Get2DAString("baseitems", "CritThreat", baseItem);
-                var mult = Get2DAString("baseitems", "CritHitMult", baseItem);
-                var size = Get2DAString("baseitems", "WeaponSize", baseItem);
+                var threatString = Get2DAString("baseitems", "CritThreat", row);
+                var multString = Get2DAString("baseitems", "CritHitMult", row);
+                var sizeString = Get2DAString("baseitems", "WeaponSize", row);
 
-                values[0] = string.IsNullOrEmpty(threat) ? 0 : Int32.Parse(threat);
-                values[1] = string.IsNullOrEmpty(mult) ? 0 : Int32.Parse(mult);
-                values[2] = string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
-                _2daCache[baseItem] = values;
+                var threat = string.IsNullOrWhiteSpace(threatString) ? 1 : Convert.ToInt32(threatString);
+                var mult = string.IsNullOrWhiteSpace(multString) ? 1 : Convert.ToInt32(multString);
+                var size = string.IsNullOrWhiteSpace(sizeString) ? 1 : Convert.ToInt32(sizeString);
+
+                var values = new int[3];
+                values[0] = threat;
+                values[1] = mult;
+                values[2] = size;
+
+                _2daCache[row] = values;
             }
 
             Console.WriteLine($"Loaded {_2daCache.Count} base items.");
@@ -91,8 +95,8 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
 
             // Two-Handed Skills
             _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
@@ -107,7 +111,8 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
 
             // Martial Arts Skills
             _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
@@ -159,8 +164,8 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.ShortSword] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Sickle] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Whip] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
 
             // Two-Handed Skills
             _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
@@ -175,7 +180,8 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
 
             // Martial Arts Skills
             _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;
@@ -314,7 +320,7 @@ namespace SWLOR.Game.Server.Service
 
             var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation) ?? 3.5f;
             // Distance checks, if necessary for this item.
-            if (maxDistance > 0.0f)
+            if (GetItemPossessor(target) != user && maxDistance > 0.0f)
             {
                 // Target is valid - check distance between objects.
                 if (GetIsObjectValid(target) &&
@@ -391,7 +397,16 @@ namespace SWLOR.Game.Server.Service
                     var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
                     if (reducesItemCharge)
                     {
-                        SetItemCharges(item, GetItemCharges(item) - 1);
+                        var charges = GetItemCharges(item) - 1;
+
+                        if (charges <= 0)
+                        {
+                            DestroyObject(item);
+                        }
+                        else 
+                        {
+                            SetItemCharges(item, charges);
+                        }
                     }
                 });
             }
@@ -520,6 +535,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade,
             BaseItem.Katar,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
@@ -529,6 +545,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Dart,
             BaseItem.Cannon,
             BaseItem.Longbow,
+            BaseItem.Rifle,
         };
 
         /// <summary>
@@ -548,6 +565,16 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Gloves,
             BaseItem.Bracer,
             BaseItem.Ring
+        };
+
+        /// <summary>
+        /// Retrieves the list of shield base item types.
+        /// </summary>
+        public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.LargeShield,
+            BaseItem.SmallShield,
+            BaseItem.TowerShield
         };
 
         /// <summary>
@@ -621,6 +648,7 @@ namespace SWLOR.Game.Server.Service
         public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade
         };
 
         /// <summary>
@@ -710,7 +738,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
             BaseItem.QuarterStaff,
-            BaseItem.LightMace,
+            BaseItem.LightMace
         };
 
         /// <summary>
@@ -722,6 +750,23 @@ namespace SWLOR.Game.Server.Service
             BaseItem.CreatureSlashWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureSlashPierceWeapon
+        };
+
+        /// <summary>
+        /// Retrieves the list of Droid base item types.
+        /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
+        /// </summary>
+        public static List<BaseItem> DroidBaseItemTypes { get; } = new List<BaseItem>()
+        {
+            BaseItem.Armor,
+            BaseItem.Helmet,
+            BaseItem.Cloak,
+            BaseItem.Belt,
+            BaseItem.Amulet,
+            BaseItem.Boots,
+            BaseItem.Gloves,
+            BaseItem.Bracer,
+            BaseItem.Ring
         };
 
         /// <summary>
@@ -758,10 +803,12 @@ namespace SWLOR.Game.Server.Service
                 switch (baseItem)
                 {
                     case BaseItem.MiscSmall:
+                    case BaseItem.MiscellaneousSmallStackable:
                     case BaseItem.CraftMaterialSmall:
                         sDefaultIcon = "iit_smlmisc_" + sSimpleModelId;
                         break;
                     case BaseItem.MiscMedium:
+                    case BaseItem.MiscMediumStackable:
                     case BaseItem.CraftMaterialMedium:
                     case BaseItem.CraftBase:
                         sDefaultIcon = "iit_midmisc_" + sSimpleModelId;
@@ -770,6 +817,7 @@ namespace SWLOR.Game.Server.Service
                         sDefaultIcon = "iit_talmisc_" + sSimpleModelId;
                         break;
                     case BaseItem.MiscThin:
+                    case BaseItem.MiscellaneousThinStackable:
                         sDefaultIcon = "iit_thnmisc_" + sSimpleModelId;
                         break;
                 }
@@ -826,7 +874,11 @@ namespace SWLOR.Game.Server.Service
         private static void BuildSingleItemPropertyString(StringBuilder sb, ItemProperty ip)
         {
             var typeId = (int)GetItemPropertyType(ip);
-            var name = GetStringByStrRef(Convert.ToInt32(Get2DAString("itempropdef", "GameStrRef", typeId)));
+            var gameStringRef = Get2DAString("itempropdef", "GameStrRef", typeId);
+            if (string.IsNullOrWhiteSpace(gameStringRef))
+                return;
+
+            var name = GetStringByStrRef(Convert.ToInt32(gameStringRef));
             sb.Append(name);
 
             var subTypeId = GetItemPropertySubType(ip);
@@ -894,6 +946,14 @@ namespace SWLOR.Game.Server.Service
                 return "That item cannot be stored.";
             }
 
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                if (GetItemInSlot((InventorySlot)index, player) == item)
+                {
+                    return "Unequip the item first.";
+                }
+            }
+
             return string.Empty;
         }
 
@@ -921,29 +981,73 @@ namespace SWLOR.Game.Server.Service
             return dmg;
         }
 
-        // The values below are taken from the 2das, and cached on startup in CacheData() above.
-        public static int GetCriticalThreatRange(BaseItem item)
+        /// <summary>
+        /// Retrieves the critical modifier for a given item type.
+        /// The value returned is based on the baseitems.2da file.
+        /// </summary>
+        /// <param name="type">The item type to check</param>
+        /// <returns>The critical modifer value.</returns>
+        public static int GetCriticalModifier(BaseItem type)
         {
-            var range = _2daCache[(int)item][0];
-            Log.Write(LogGroup.Attack, "Threat range for item type " + item + "(" + (int)item + ") is " + range);
-            
-            return range;
-        }
-
-        public static int GetCriticalModifier(BaseItem item)
-        {
-            var mod = _2daCache[(int)item][1];
-            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + item + " is " + mod);
+            var mod = _2daCache[(int)type][1];
+            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + type + " is " + mod);
 
             return mod;
         }
 
-        public static int GetWeaponSize(BaseItem item)
+        /// <summary>
+        /// Reduces an item stack by a specific amount.
+        /// If there are not enough items in the stack to reduce, false will be returned.
+        /// If the stack size of the item will reach 0, the item is destroyed and true will be returned.
+        /// If the stack size will reach a number greater than 0, the item's stack size will be updated and true will be returned.
+        /// </summary>
+        /// <param name="item">The item to adjust</param>
+        /// <param name="reduceBy">The amount to reduce by. Absolute value is used to determine this value.</param>
+        /// <returns>true if successfully reduced or destroyed, false otherwise</returns>
+        public static bool ReduceItemStack(uint item, int reduceBy)
         {
-            var size = _2daCache[(int)item][2];
-            Log.Write(LogGroup.Attack, "Size of item type " + item + " is " + size);
+            var amount = Math.Abs(reduceBy);
+            var stackSize = GetItemStackSize(item);
 
-            return size;
+            // Have to reduce by at least one.
+            if (amount <= 0)
+                return false;
+
+            // Stack size cannot be smaller than the amount we're reducing by.
+            if (stackSize < reduceBy)
+                return false;
+
+            var remaining = stackSize - reduceBy;
+            if (remaining <= 0)
+            {
+                DestroyObject(item);
+                return true;
+            }
+            else
+            {
+                SetItemStackSize(item, remaining);
+                return true;
+            }
         }
+
+        /// <summary>
+        /// Determines if an item is a legacy item.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>true if item is legacy, false otherwise</returns>
+        public static bool IsLegacyItem(uint item)
+        {
+            return GetTag(item) == "LEGACY_ITEM";
+        }
+
+        /// <summary>
+        /// Marks an item as a legacy item.
+        /// </summary>
+        /// <param name="item">The item to mark as legacy.</param>
+        public static void MarkLegacyItem(uint item)
+        {
+            SetTag(item, "LEGACY_ITEM");
+        }
+
     }
 }

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -16,6 +15,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private const string ExplosiveItemResref = "explosives";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
+
+        protected string ExplosiveValidation(uint activator, uint target, int level, Location location)
+        {
+            var activatorPosition = GetPosition(activator);
+            var targetPosition = GetPositionFromLocation(location);
+
+            if (!HasExplosives(activator))
+            {
+                return "You have no explosives.";
+            }
+
+            if (!LineOfSightVector(activatorPosition, targetPosition))
+                return "You cannot see your target.";
+
+            return string.Empty;
+        }
 
         protected static void TakeExplosives(uint activator)
         {
@@ -46,6 +61,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         /// <returns>true if at least one explosives item is found, false otherwise.</returns>
         protected bool HasExplosives(uint activator)
         {
+            if (!GetIsPC(activator))
+                return true;
+
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;
@@ -95,6 +113,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var activatorLocation = GetLocation(activator);
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var dmgBonus = Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+
             DelayCommand(delay, () =>
             {
                 ApplyEffectAtLocation(
@@ -102,6 +124,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     EffectAreaOfEffect(aoe, enterScript, heartbeatScript), 
                     targetLocation, 
                     duration);
+
+                var AOEObject = GetNearestObjectToLocation(targetLocation, ObjectType.AreaOfEffect);
+                if(AOEObject != OBJECT_INVALID)
+                {
+                    SetLocalInt(AOEObject, "DEVICE_ACC", attackerStat);
+                    SetLocalInt(AOEObject, "DEVICE_ATK", attack);
+                    SetLocalInt(AOEObject, "DEVICE_DMG", dmgBonus);
+                }
 
             });
 

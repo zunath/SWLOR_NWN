@@ -14,9 +14,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -96,6 +96,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
+
+        private bool _isInAutoCraftMode;
 
         public string ControlTotal
         {
@@ -384,7 +386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
                 case SkillType.Engineering:
                     _primaryAbility = AbilityType.Vitality;
-                    _secondaryAbility = AbilityType.Perception;
+                    _secondaryAbility = AbilityType.Agility;
 
                     _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;
@@ -420,7 +422,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (secondaryModifier < 0)
                 secondaryModifier = 0;
 
-            _maxCP = (int)(dbPlayer.CP * 0.33f + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
+            var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill) 
+                ? dbPlayer.CPBonus[recipe.Skill] 
+                : 0;
+
+            _maxCP = (int)(cp + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;
@@ -785,13 +791,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're missing some components, clear the serialized component list and the result list.
             if (!hasAllComponents)
             {
-                foreach (var component in _components)
+                DelayCommand(0.1f, () =>
                 {
-                    var item = ObjectPlugin.Deserialize(component);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
+                    foreach (var component in _components)
+                    {
+                        var item = ObjectPlugin.Deserialize(component);
+                        ObjectPlugin.AcquireItem(Player, item);
+                    }
 
-                _components.Clear();
+                    _components.Clear();
+                });
+
                 result.Clear();
             }
 
@@ -898,6 +908,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsAutoCraftEnabled = false;
             IsClosable = false;
+            _isInAutoCraftMode = true;
 
             ApplyImmobility();
         }
@@ -909,12 +920,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
 
             const float BaseChance = 65f;
-            var craftsmanship = dbPlayer.Craftsmanship.ContainsKey(recipe.Skill)
-                ? dbPlayer.Craftsmanship[recipe.Skill]
-                : 0;
-            var control = dbPlayer.Control.ContainsKey(recipe.Skill)
-                ? dbPlayer.Control[recipe.Skill]
-                : 0;
+            var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
+            var control = Stat.CalculateControl(Player, recipe.Skill);
             var recipeLevel = recipe.Level;
             var levelDiff = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var difficultyAdjustment = Craft.GetRecipeLevelDetail(recipeLevel).DifficultyAdjustment;
@@ -946,10 +953,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (Random.NextFloat(1f, 100f) <= chance)
                     {
                         ProcessSuccess();
+                        _isInAutoCraftMode = false;
                     }
                     else
                     {
                         ProcessFailure();
+                        _isInAutoCraftMode = false;
                     }
                 }
                 else
@@ -1003,9 +1012,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var craftsmanship = dbPlayer.Craftsmanship.ContainsKey(recipe.Skill) 
-                ? dbPlayer.Craftsmanship[recipe.Skill]
-                : 0;
+            var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
@@ -1020,9 +1027,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var control = dbPlayer.Control.ContainsKey(recipe.Skill)
-                ? dbPlayer.Control[recipe.Skill]
-                : 0;
+            var control = Stat.CalculateControl(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = delta < 0 
                 ? 1 + 0.05f * delta 
@@ -1044,8 +1049,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return xp;
         }
 
+        private void ApplyProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type &&
+                    (GetItemPropertySubType(property) == -1 || GetItemPropertySubType(property) == subType))
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    RemoveItemProperty(item, property);
+                }
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+            
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
         private void ProcessSuccess()
         {
+            // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
+            if (!IsInCraftMode && !_isInAutoCraftMode)
+                return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
@@ -1055,26 +1086,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var qualityPercent = (float)_quality / (float)_maxQuality; 
 
             // We override the additional gold price field so that players are encouraged to sell their goods to other players rather than selling to an NPC.
-            ItemPlugin.SetAddGoldPieceValue(item, 1);
+            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10) + 1) + 3.5f * recipe.Level));
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
-            foreach (var ip in _itemPropertiesEnhancement1)
+            var allProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2);
+            foreach (var ip in allProperties)
             {
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-                    SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
-                }
-                else
-                {
-                    SendMessageToPC(Player, ColorToken.Red("Enhancement failed to apply."));
-                }
-            }
-            foreach (var ip in _itemPropertiesEnhancement2)
-            {
-                if (Random.D100(1) <= propertyTransferChance)
-                {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                    ApplyProperty(item, ip);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else
@@ -1113,10 +1133,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = _green;
+
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
         private void ProcessFailure()
         {
+            // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
+            if (!IsInCraftMode)
+                return;
+
             var recipe = Craft.GetRecipe(_recipe);
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -1152,6 +1178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _components.Clear();
 
             SwitchToSetUpMode();
+            LoadCraftingState();
             RefreshRecipeStats();
             StatusText = "Failed to craft the item...";
             StatusColor = _red;
@@ -1160,6 +1187,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp);
+
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }
 
         private void HandleAction(
@@ -1225,6 +1254,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(10);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1243,6 +1274,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(30);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1250,7 +1283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickCarefulSynthesis() => () =>
         {
             var chance = _isSteadyHandActive ? 100 : 50;
-            var cpCost = 15;
+            var cpCost = 10;
             if (_venerationStepsRemaining > 0)
             {
                 _venerationStepsRemaining--;
@@ -1261,6 +1294,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var progress = CalculateProgress(80);
                 _progress += progress;
+                if (_progress > _maxProgress)
+                    _progress = _maxProgress;
                 _isSteadyHandActive = false;
             });
         };
@@ -1274,6 +1309,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var quality = CalculateQuality(10);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };
@@ -1286,6 +1323,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var quality = CalculateQuality(30);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };
@@ -1294,10 +1333,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var chance = _isMuscleMemoryActive ? 100 : 50;
 
-            HandleAction("Precise Touch",  chance, 15, 10, () =>
+            HandleAction("Precise Touch",  chance, 10, 10, () =>
             {
                 var quality = CalculateQuality(80);
                 _quality += quality;
+                if (_quality > _maxQuality)
+                    _quality = _maxQuality;
                 _isMuscleMemoryActive = false;
             });
         };

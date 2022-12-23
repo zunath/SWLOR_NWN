@@ -2,12 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -61,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation1, PerkType.Resuscitation)
                 .Name("Resuscitation I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
@@ -72,6 +71,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 0);
+
+                    Enmity.ModifyEnmityOnAll(activator, 800);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation2, PerkType.Resuscitation)
                 .Name("Resuscitation II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
@@ -90,6 +93,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 25);
+
+                    Enmity.ModifyEnmityOnAll(activator, 1400);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -97,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
                 .Name("Resuscitation III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
@@ -108,6 +115,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 50);
+
+                    Enmity.ModifyEnmityOnAll(activator, 2500);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

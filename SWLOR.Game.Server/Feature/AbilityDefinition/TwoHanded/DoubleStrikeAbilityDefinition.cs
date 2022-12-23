@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -61,11 +59,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
+            {
+                stat = AbilityType.Might;
+            }
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var attackerStat = GetAbilityScore(activator, stat);
+            var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
@@ -76,12 +77,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void DoubleStrike1(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                 .Name("Double Strike I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -99,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                 .Name("Double Strike II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -116,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                 .Name("Double Strike III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
 {
@@ -30,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         {
             _builder.Create(FeatType.Dash, PerkType.Dash)
                 .Name("Dash")
+                .HideActivationMessage()
+                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var toggle = !Ability.IsAbilityToggled(target, AbilityToggleType.Dash);

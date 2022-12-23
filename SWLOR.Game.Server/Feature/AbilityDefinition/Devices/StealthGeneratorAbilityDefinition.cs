@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -21,11 +21,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
+        [NWNEventHandler("harvester_used")]
+        [NWNEventHandler("pc_damaged")]
+        public static void ClearInvisibility()
+        {
+            RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
         private void StealthGenerator1()
         {
             _builder.Create(FeatType.StealthGenerator1, PerkType.StealthGenerator)
                 .Name("Stealth Generator I")
-                .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
+                .Level(1)
+                .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.Crouch)
@@ -35,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 30f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 100);
+                    Enmity.ModifyEnmityOnAll(activator, 450);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -44,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.StealthGenerator2, PerkType.StealthGenerator)
                 .Name("Stealth Generator II")
-                .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
+                .Level(2)
+                .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
                 .UsesAnimation(Animation.Crouch)
@@ -54,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 60f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 100);
+                    Enmity.ModifyEnmityOnAll(activator, 750);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -63,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.StealthGenerator3, PerkType.StealthGenerator)
                 .Name("Stealth Generator III")
-                .HasRecastDelay(RecastGroup.StealthGenerator, 180f)
+                .Level(3)
+                .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)
                 .UsesAnimation(Animation.Crouch)
@@ -73,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 120f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 100);
+                    Enmity.ModifyEnmityOnAll(activator, 950);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }

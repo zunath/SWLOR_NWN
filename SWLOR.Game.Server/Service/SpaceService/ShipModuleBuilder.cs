@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 
@@ -197,13 +195,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Indicates this ship module requires a target to use.
+        /// Indicates this ship module can target itself.
         /// Only applicable when dealing with an active ship module.
         /// </summary>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder RequiresTarget()
+        public ShipModuleBuilder CanTargetSelf()
         {
-            _activeShipModule.RequiresTarget = true;
+            _activeShipModule.CanTargetSelf = true;
 
             return this;
         }
@@ -219,6 +217,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             return this;
         }
+
+
 
         /// <summary>
         /// Indicates a player must have the perk at a specific level in order to equip and use it.
@@ -240,6 +240,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
             }
 
             _activeShipModule.RequiredPerks[perkType] = requiredLevel;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Runs an action to determine the maximum distance the ship module can be used.
+        /// </summary>
+        /// <param name="action">The action to run when max distance is calculated.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder MaxDistance(ShipModuleCalculateMaxDistanceDelegate action)
+        {
+            _activeShipModule.ModuleMaxDistanceAction = action;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a static maximum distance the module can be used.
+        /// </summary>
+        /// <param name="distance">The maximum distance in meters the module can be used.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder MaxDistance(float distance)
+        {
+            _activeShipModule.ModuleMaxDistanceAction = (activator, status, target, shipStatus, bonus) => distance;
 
             return this;
         }

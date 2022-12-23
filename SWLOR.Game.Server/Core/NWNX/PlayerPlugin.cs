@@ -3,7 +3,6 @@ using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Stops displaying a timing bar.
         // Runs a script if specified.
-        public static void StopGuiTimingBar(uint creature, string script, int id)
+        private static void StopGuiTimingBar(uint creature, string script, int id)
         {
             var activeId = GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Stops displaying a timing bar.
         // Runs a script if specified.
-        public static void StopGuiTimingBar(uint player, string script)
+        public static void StopGuiTimingBar(uint player, string script = "")
         {
             StopGuiTimingBar(player, script, -1);
         }

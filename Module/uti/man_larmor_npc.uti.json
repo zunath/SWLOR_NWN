@@ -38,7 +38,7 @@
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 3
+    "value": 1
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
@@ -132,16 +132,16 @@
     "id": 12838,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Mandalorian War Hero Armor"
+      "0": "[NPC] Mandalorian War Hero Armor"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 7
+    "value": 95
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 91
+    "value": 135
   },
   "PaletteID": {
     "type": "byte",

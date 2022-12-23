@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Core.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

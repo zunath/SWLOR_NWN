@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This rather strong looking Trandoshan has all sorts of metal cutting, and shaping tools on him. He carries with him a data pad with all sorts of weapon and armor blueprints. "
+    }
   },
   "Dex": {
     "type": "byte",

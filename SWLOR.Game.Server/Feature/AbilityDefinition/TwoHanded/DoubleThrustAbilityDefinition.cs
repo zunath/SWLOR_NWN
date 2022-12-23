@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -62,9 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -77,12 +72,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleThrust));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void DoubleThrust1(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust1, PerkType.DoubleThrust)
                 .Name("Double Thrust I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleThrust2, PerkType.DoubleThrust)
                 .Name("Double Thrust II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -117,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.DoubleThrust3, PerkType.DoubleThrust)
                 .Name("Double Thrust III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

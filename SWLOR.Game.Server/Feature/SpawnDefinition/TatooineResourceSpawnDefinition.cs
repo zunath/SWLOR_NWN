@@ -27,19 +27,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
-                .WithFrequency(5)
+                .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(30)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "patch_veggies4")
                 .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
                 .WithFrequency(40)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
-                .WithFrequency(10)
+                .WithFrequency(20)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
                 .WithFrequency(5);
@@ -54,11 +58,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(10)
 
-                .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(30)
-
-                .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
-                .WithFrequency(40)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);

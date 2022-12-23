@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.ChatCommandService
 {
@@ -108,6 +107,8 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
             {
                 AssignCommand(user, () => ActionPlayAnimation(animation));
             };
+            _currentDetail.EmoteAnimation = animation;
+            _currentDetail.IsEmoteLooping = false;
 
             return this;
         }
@@ -133,6 +134,8 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
 
                 AssignCommand(user, () => ActionPlayAnimation(animation, 1f, duration));
             };
+            _currentDetail.EmoteAnimation = animation;
+            _currentDetail.IsEmoteLooping = true;
 
             return this;
         }

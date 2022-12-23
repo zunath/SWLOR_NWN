@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 10.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -172,13 +172,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "robe_sand_m"
-        }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "item010"
         }
       }
     ]

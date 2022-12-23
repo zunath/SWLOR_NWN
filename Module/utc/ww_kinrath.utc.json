@@ -140,7 +140,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 3
+    "value": 12
   },
   "Interruptable": {
     "type": "byte",
@@ -543,7 +543,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_KINRATH,40,1"
+          "value": "VISCARA_KINRATH,100,1"
         }
       },
       {
@@ -559,6 +559,36 @@
         "Value": {
           "type": "int",
           "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_KINRATH,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_KINRATH_RARES,20,1"
         }
       }
     ]

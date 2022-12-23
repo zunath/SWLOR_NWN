@@ -117,5 +117,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 
         Evasion = 117,
         AbilityRecastReduction = 118,
+        FPRegen = 119,
+        STMRegen = 120,
     }
 }

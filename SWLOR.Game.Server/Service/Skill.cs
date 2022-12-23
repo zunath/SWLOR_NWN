@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -20,7 +18,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
-        public const int SkillCap = 300;
+        public const int SkillCap = 350;
+
+        /// <summary>
+        /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
+        /// </summary>
+        public static int APCap { get; } = SkillCap / 10;
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.
@@ -46,9 +49,9 @@ namespace SWLOR.Game.Server.Service
             if (!ignoreBonuses)
             {
                 // Bonus for positive Social modifier.
-                var social = GetAbilityModifier(AbilityType.Social, player);
+                var social = GetAbilityScore(player, AbilityType.Social);
                 if (social > 0)
-                    bonusPercentage += social * 0.05f;
+                    bonusPercentage += social * 0.025f;
 
                 // Food bonus
                 var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
@@ -59,6 +62,19 @@ namespace SWLOR.Game.Server.Service
 
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
+
+                // Dedication bonus
+                if (StatusEffect.HasStatusEffect(player, StatusEffectType.Dedication))
+                {
+                    var source = StatusEffect.GetEffectData<uint>(player, StatusEffectType.Dedication);
+
+                    if (GetIsObjectValid(source))
+                    {
+                        var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Dedication);
+                        social = GetAbilityScore(source, AbilityType.Social);
+                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
+                    }
+                }
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);
@@ -86,8 +102,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (xp <= 0)
+            {
+                DB.Set(dbPlayer);
                 return;
-
+            }
+            
             var totalRanks = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -104,10 +123,10 @@ namespace SWLOR.Game.Server.Service
                            detail.ContributesToSkillCap &&
                            x.Key != skill &&
                            x.Value.Rank > 0;
-                }).ToList();
+                }).Select(s => s.Key).ToList();
 
             // If player is at the skill cap and no skills are available for decay, exit early.
-            if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+            if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
                 return;
 
             SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
@@ -120,7 +139,7 @@ namespace SWLOR.Game.Server.Service
 
             while (pcSkill.XP >= requiredXP)
             {
-                if (skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+                if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
                     break;
 
                 receivedRankUp = true;
@@ -143,24 +162,50 @@ namespace SWLOR.Game.Server.Service
 
                 dbPlayer.Skills[skill] = pcSkill;
 
-                ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
+                if (details.ContributesToSkillCap)
+                {
+                    ApplyAbilityPoint(player, dbPlayer);
+                }
+                
+                totalRanks = dbPlayer.Skills
+                    .Where(x =>
+                    {
+                        var detail = GetSkillDetails(x.Key);
+                        return detail.ContributesToSkillCap;
+                    })
+                    .Sum(x => x.Value.Rank);
 
                 // If player is at the cap, pick a random skill out of the available decayable skills
                 // reduce its level by 1 and set XP to zero.
-                if (totalRanks >= SkillCap)
+                if (details.ContributesToSkillCap && totalRanks >= SkillCap)
                 {
+                    // Edge case: Part of the number of levels granted cannot be given because
+                    // there are no decayable skills to reduce. All excess XP is lost and we
+                    // no longer need to proceed with increasing the skill rank
+                    if (skillsPossibleToDecay.Count <= 0)
+                    {
+                        dbPlayer.Skills[skill].XP = 0;
+                        break;
+                    }
+
                     var index = Random.Next(skillsPossibleToDecay.Count);
                     var decaySkill = skillsPossibleToDecay[index];
-                    dbPlayer.Skills[decaySkill.Key].XP = 0;
-                    dbPlayer.Skills[decaySkill.Key].Rank--;
+                    dbPlayer.Skills[decaySkill].XP = 0;
+                    dbPlayer.Skills[decaySkill].Rank--;
 
-                    if(!modifiedSkills.Contains(decaySkill.Key))
-                        modifiedSkills.Add(decaySkill.Key);
+                    if(!modifiedSkills.Contains(decaySkill))
+                        modifiedSkills.Add(decaySkill);
 
-                    if (dbPlayer.Skills[decaySkill.Key].Rank <= 0)
+                    if (dbPlayer.Skills[decaySkill].Rank <= 0)
                         skillsPossibleToDecay.Remove(decaySkill);
                 }
+            }
 
+            // Safety check - Any excess XP over the required amount is lost.
+            requiredXP = GetRequiredXP(dbPlayer.Skills[skill].Rank);
+            if (dbPlayer.Skills[skill].XP > requiredXP)
+            {
+                dbPlayer.Skills[skill].XP = 0;
             }
 
             DB.Set(dbPlayer);
@@ -177,39 +222,21 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gives the player an ability point which can be distributed to the attribute of their choice
-        /// from the character menu. Earned at 0.1 points per skill rank.  
+        /// from the character menu. One point is earned per 10 skill ranks
         /// </summary>
         /// <param name="player">The player to receive the AP.</param>
-        /// <param name="rank">The rank attained.</param>
         /// <param name="dbPlayer">The database entity.</param>
-        private static void ApplyAbilityPoint(uint player, int rank, Player dbPlayer)
+        private static void ApplyAbilityPoint(uint player, Player dbPlayer)
         {
-            // Total AP have been earned (300SP = 30AP)
-            if (dbPlayer.TotalAPAcquired >= SkillCap) return;
+            // Total AP have been earned (350SP = 35AP)
+            if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
-            void Apply(int expectedRank, int apLevelMax)
+            if (dbPlayer.TotalSPAcquired % 10 == 0)
             {
-                if (!dbPlayer.AbilityPointsByLevel.ContainsKey(expectedRank))
-                    dbPlayer.AbilityPointsByLevel[expectedRank] = 0;
+                dbPlayer.UnallocatedAP++;
+                dbPlayer.TotalAPAcquired++;
 
-                if (rank == expectedRank &&
-                    dbPlayer.AbilityPointsByLevel[expectedRank] < apLevelMax)
-                {
-                    dbPlayer.TotalAPAcquired++;
-                    dbPlayer.AbilityPointsByLevel[expectedRank]++;
-
-                    if (dbPlayer.TotalAPAcquired % 10 == 0)
-                    {
-                        dbPlayer.UnallocatedAP++;
-
-                        SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
-                    }
-                }
-            }
-
-            for (var level = 1; level <= 50; level++)
-            {
-                Apply(level, 8);
+                SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
             }
         }
 

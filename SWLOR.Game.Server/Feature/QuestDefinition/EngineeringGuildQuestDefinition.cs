@@ -21,12 +21,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(23, 7)},
-            { 1, new RewardDetails(84, 27)},
-            { 2, new RewardDetails(122, 39)},
-            { 3, new RewardDetails(184, 52)},
-            { 4, new RewardDetails(245, 65)},
-            { 5, new RewardDetails(312, 82)},
+            { 0, new RewardDetails(138, 21)},
+            { 1, new RewardDetails(343, 81)},
+            { 2, new RewardDetails(532, 117)},
+            { 3, new RewardDetails(733, 156)},
+            { 4, new RewardDetails(874, 195)},
+            { 5, new RewardDetails(960, 246)},
         };
 
         public Dictionary<string, QuestDetail> BuildQuests()

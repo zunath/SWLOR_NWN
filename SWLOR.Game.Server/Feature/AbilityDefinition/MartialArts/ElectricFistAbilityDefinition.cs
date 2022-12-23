@@ -3,14 +3,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -71,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
@@ -91,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist1, PerkType.ElectricFist)
                 .Name("Electric Fist I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist2, PerkType.ElectricFist)
                 .Name("Electric Fist II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -111,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.ElectricFist3, PerkType.ElectricFist)
                 .Name("Electric Fist III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

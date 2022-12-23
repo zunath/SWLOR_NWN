@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -24,7 +23,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 Skill = skill
             };
             _activeType = type;
-            _recipes[type] = _activeRecipe;
+            _recipes.Add(type, _activeRecipe);
 
             return this;
         }

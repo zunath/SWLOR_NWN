@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -19,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            Harvester("harvest_r_old", 1);
+            Harvester("harvest_r_old", 0);
             Harvester("harvest_r_b", 1);
             Harvester("harvest_r_1", 2);
             Harvester("harvest_r_2", 3);
@@ -27,6 +26,26 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             Harvester("harvest_r_4", 5);
 
             return _builder.Build();
+        }
+
+        /// <summary>
+        /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
+        /// </summary>
+        [NWNEventHandler("spawn_despawn")]
+        public static void CleanupResourcePropPlaceables()
+        {
+            var resource = OBJECT_SELF;
+            DestroyProp(resource);
+        }
+
+        private static void DestroyProp(uint resource)
+        {
+            var prop = GetLocalObject(resource, "RESOURCE_PROP_OBJ");
+            if (GetIsObjectValid(prop))
+            {
+                SetPlotFlag(prop, false);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), prop);
+            }
         }
 
         private void Harvester(string tag, int requiredLevel)
@@ -58,11 +77,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return $"ERROR: Harvesting loot table misconfigured. Please use /bug to report this issue.";
                     }
 
+                    var harvesterLevel = requiredLevel < 1 ? 1 : requiredLevel;
                     var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
-                    if (resourceLevel > requiredLevel)
+                    if (resourceLevel > harvesterLevel)
                     {
-                        var levelName = resourceLevel == 1 ? "basic" : $"level {resourceLevel - 1}";
-                        return $"A {levelName} harvester or higher is required for this resource.";
+                        return $"A level {resourceLevel} harvester or higher is required for this resource.";
                     }
 
                     return string.Empty;
@@ -74,10 +93,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "You lose your target.");
                         return;
                     }
-                    
+
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
                     var lootTable = Loot.GetLootTableByName(lootTableName);
                     var loot = lootTable.GetRandomItem();
+                    var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
 
                     var resourceCount = GetLocalInt(target, "RESOURCE_COUNT");
 
@@ -105,12 +125,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
-                        var prop = GetLocalObject(target, "RESOURCE_PROP_OBJ");
-                        if (GetIsObjectValid(prop))
-                        {
-                            SetPlotFlag(prop, false);
-                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), prop);
-                        }
+                        DestroyProp(target);
                     }
                     else
                     {
@@ -124,12 +139,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var playerId = GetObjectUUID(user);
                         var dbPlayer = DB.Get<Player>(playerId);
                         var dbSkill = dbPlayer.Skills[SkillType.Gathering];
-                        var veinLevel = 10 * (requiredLevel - 1) + 5;
+                        var veinLevel = 10 * (resourceLevel - 1) + 5;
                         var delta = veinLevel - dbSkill.Rank;
                         var deltaXP = Skill.GetDeltaXP(delta);
 
                         Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP);
                     }
+
+                    ExecuteScript("harvester_used", user);
                 });
         }
     }

@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -248,6 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var category = DB.Get<WorldPropertyCategory>(PropertyId);
                 PropertyName = category.Name;
                 CanChangePublicSetting = false;
+                IsPublic = false;
             }
             else
             {
@@ -421,6 +421,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Now handle property permissions
             var dbProperty = DB.Get<WorldProperty>(PropertyId);
+            if (dbProperty == null)
+                return;
+
             var propertyDetail = Property.GetPropertyDetail(dbProperty.PropertyType);
 
             if (propertyDetail.PublicSetting == PropertyPublicType.Adjustable &&

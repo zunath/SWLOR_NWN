@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -42,7 +41,8 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetEnteringObject();
 
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+                return;
 
             var area = OBJECT_SELF;
             var mapKeyItemId = GetLocalInt(area, "MAP_KEY_ITEM_ID");
@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
 
             if (!dbPlayer.MapProgressions.ContainsKey(areaResref))
                 return;

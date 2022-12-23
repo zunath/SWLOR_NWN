@@ -103,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "'Ey there, newcomer! Welcome to the trash compactor. I bet you're ready and raring to get into the galaxy but why don't you look through my supplies first? I'll give you a good deal!"
+            "0": "'Ey there! Just call me Salvatore - Sal for short. \n\nI brought along some items to sell for this trip. You best take a look before we land - there might be something you need!"
           }
         }
       }
@@ -111,7 +111,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 42
+    "value": 43
   },
   "PreventZoomIn": {
     "type": "byte",

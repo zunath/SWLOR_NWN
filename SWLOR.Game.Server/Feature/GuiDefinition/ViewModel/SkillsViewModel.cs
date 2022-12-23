@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -19,6 +18,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SkillType> _viewableSkills = new();
 
         public string AvailableXP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string XPDebt
         {
             get => Get<string>();
             set => Set(value);
@@ -160,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+            XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
             SkillNames = skillNames;
             Levels = levels;
             Titles = titles;
@@ -257,6 +263,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDistributeRPXP() => () =>
         {
+            if (GetResRef(GetArea(Player)) == "char_migration")
+            {
+                FloatingTextStringOnCreature($"XP cannot be distributed in this area.", Player, false);
+                return;
+            }
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var index = NuiGetEventArrayIndex();
@@ -293,6 +305,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
+            XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
 
             var distributeTooltips = new GuiBindingList<string>();
             var distributeToggles = new GuiBindingList<bool>();

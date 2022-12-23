@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.QuestService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             BlastTheMandalorianRangers();
             CoxxionInitiation();
-            DaggersForKrystalle();
+            WeaponsForKrystalle();
             FindCaptainNguth();
             FirstRites();
             HelpTheTalyronFamily();
@@ -32,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             VanquishTheVellenRaiders();
             WarWithTheMandalorianWarriors();
             KathHoundPartCollection();
+            TaxiTerminalRepairs();
 
             return _builder.Build();
         }
@@ -48,8 +48,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You beat up nine Mandalorian Rangers. Return to Orlando Doon in Veles Colony for your reward.")
 
-                .AddGoldReward(200)
-                .AddXPReward(400);
+                .AddGoldReward(1000)
+                .AddXPReward(4000);
         }
 
         private void CoxxionInitiation()
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You located \"L\", gave the appropriate pass phrases and he gave you an old tome. Return the tome to Denam Reyholm and let him know what happened.")
 
-                .AddGoldReward(150)
-                .AddXPReward(400)
+                .AddGoldReward(750)
+                .AddXPReward(4000)
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -86,9 +86,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void DaggersForKrystalle()
+        private void WeaponsForKrystalle()
         {
-            _builder.Create("daggers_crystal", "Daggers for Krystalle")
+            _builder.Create("daggers_crystal", "Weapons for Krystalle")
 
                 .AddState()
                 .SetStateJournalText("Krystalle in Veles Colony needs two basic spears and three basic pistols. Collect them and return them to her.")
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You delivered the spears and pistols to Krystalle. Talk to her for your reward.")
 
-                .AddXPReward(400)
+                .AddXPReward(4000)
                 .AddItemReward("p_crystal_red_qs", 1);
         }
 
@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You found the remains of Captain N'guth. Return to Tal'gar in Veles Colony to report.")
 
-                .AddGoldReward(300)
-                .AddXPReward(400)
+                .AddGoldReward(1500)
+                .AddXPReward(4000)
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -241,8 +241,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Reid Coxxion to notify him the work is done.")
 
-                .AddGoldReward(800)
-                .AddXPReward(600);
+                .AddGoldReward(4000)
+                .AddXPReward(6000);
         }
 
         private void KathHoundHunting()
@@ -256,8 +256,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You killed 7 Kath Hounds in the Viscara Wildlands. Return to Moira Halaz in the Veles Colony for your reward.")
 
-                .AddGoldReward(350)
-                .AddXPReward(300)
+                .AddGoldReward(1750)
+                .AddXPReward(3000)
                 .AddItemReward("map_052", 1);
         }
 
@@ -273,8 +273,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You found the Mandalorian facility but it's locked. Return to Tal'gar and report your findings.")
                 
-                .AddGoldReward(300)
-                .AddXPReward(200);
+                .AddGoldReward(1500)
+                .AddXPReward(2000);
         }
 
         private void MandalorianDogTags()
@@ -289,8 +289,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Speak to Irene Colsstaad for your reward.")
                 
-                .AddXPReward(400)
-                .AddGoldReward(350);
+                .AddXPReward(4000)
+                .AddGoldReward(1750);
         }
 
         private void RepairingCoxxionEquipment()
@@ -303,8 +303,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("jade", 1)
                 .SetStateJournalText("Farah Oersted needs you to collect the following items: Ruined Electronics, Ruined Fiberplast, and Jade. Gather them and give them to her for your reward.")
 
-                .AddGoldReward(800)
-                .AddXPReward(600);
+                .AddGoldReward(8000)
+                .AddXPReward(6000);
         }
 
         private void SlicingTheMandalorianFacility()
@@ -335,8 +335,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Harry Mason needs you to slice six terminals found in the Mandalorian Facility. Obtain the data from each of the terminals and return them to him.")
 
-                .AddGoldReward(550)
-                .AddXPReward(600)
+                .AddGoldReward(2750)
+                .AddXPReward(6000)
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -396,8 +396,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("elec_flawed", 2)
                 .AddCollectItemObjective("agate", 1)
 
-                .AddGoldReward(800)
-                .AddXPReward(800);
+                .AddGoldReward(8000)
+                .AddXPReward(8000);
         }
 
         private void TheMandalorianLeader()
@@ -413,8 +413,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You found and killed the Mandalorian War Hero. Return to Tal'gar to report.")
 
                 .HasRewardSelection()
-                .AddGoldReward(400, false)
-                .AddXPReward(600, false)
+                .AddGoldReward(2000, false)
+                .AddXPReward(6000, false)
                 .AddItemReward("cap_longsword", 1)
                 .AddItemReward("cap_knife", 1)
                 .AddItemReward("cap_gswd", 1)
@@ -425,6 +425,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddItemReward("cap_shuriken", 1)
                 .AddItemReward("cap_twinblade", 1)
                 .AddItemReward("cap_rifle", 1)
+                .AddItemReward("cap_sabstaff", 1)
+                .AddItemReward("cap_eblade", 1)
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -449,8 +451,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You defeated the Coxxion Fleshleader. Return to Reid Coxxion to finish the job.")
 
-                .AddGoldReward(750)
-                .AddXPReward(1200)
+                .AddGoldReward(7500)
+                .AddXPReward(12000)
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -475,8 +477,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You beat up nine Mandalorian Warriors. Return to Orlando Doon in Veles Colony for your reward.")
 
-                .AddGoldReward(200)
-                .AddXPReward(800);
+                .AddGoldReward(1000)
+                .AddXPReward(8000);
         }
 
         private void KathHoundPartCollection()
@@ -491,8 +493,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Speak to Szaan in Veles Colony to retrieve your reward.")
 
-                .AddGoldReward(600)
-                .AddXPReward(400);
+                .AddGoldReward(3000)
+                .AddXPReward(4000);
+        }
+
+        private void TaxiTerminalRepairs()
+        {
+            _builder.Create("taxi_term_repairs", "Taxi Terminal Repairs")
+
+                .AddState()
+                .SetStateJournalText(
+                    "Dessta Bocktorb needs twenty flawed electronics and five units of agate to repair the taxi terminals around Veles Colony. Return to her with these items to collect your reward.")
+                .AddCollectItemObjective("elec_flawed", 20)
+                .AddCollectItemObjective("agate", 5)
+
+                .AddState()
+                .SetStateJournalText("Speak to Dessta Bocktorb for your reward.")
+
+                .AddKeyItemReward(KeyItemType.TaxiHailingDevice);
         }
     }
 }

@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -22,40 +21,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void Impact(uint activator, uint target, int regenAmount)
         {
             if (!GetFactionEqual(activator, target))
                 return;
 
-            ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(regenAmount, 6f), target, 45f);
+            RemoveEffectByTag(target, "kolto_regen"); // Get rid of any regen effects to prevent stacking
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 20);
+            Effect eKolto = EffectRegenerate(regenAmount, 6f);
+            eKolto = TagEffect(eKolto, "kolto_regen");
+
+            ApplyEffectToObject(DurationType.Temporary, eKolto, target, 45f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+            Enmity.ModifyEnmityOnAll(activator, 180);
         }
 
         private void KoltoGrenade1()
         {
             _builder.Create(FeatType.KoltoGrenade1, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(1)
+                .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
@@ -69,14 +65,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoGrenade2, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(3)
+                .RequirementStamina(5)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
@@ -90,14 +87,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoGrenade3, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Grenades, 30f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(5)
+                .RequirementStamina(7)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>

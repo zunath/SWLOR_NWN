@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -79,13 +78,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBleed) StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
+            if (inflictBleed) 
+                StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void HackingBlade1(AbilityBuilder builder)
         {
             builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade)
                 .Name("Hacking Blade I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -96,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade)
                 .Name("Hacking Blade II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -106,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade)
                 .Name("Hacking Blade III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

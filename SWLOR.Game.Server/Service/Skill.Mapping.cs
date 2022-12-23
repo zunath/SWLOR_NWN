@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
@@ -61,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.TwoHanded;
+            _itemToSkillMapping[BaseItem.TwinElectroBlade] = SkillType.TwoHanded;
 
             // Martial Arts Skills
             _itemToSkillMapping[BaseItem.Club] = SkillType.MartialArts;

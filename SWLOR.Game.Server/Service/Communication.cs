@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Communication
     {
+        private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
+        private const int HolonetDelayMinutes = 5;
+
         private class CommunicationComponent
         {
             public string Text { get; set; }
@@ -36,6 +39,30 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
+        /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
+        /// sent to them during the possession.
+        /// </summary>
+        [NWNEventHandler("dm_poss_bef")]
+        [NWNEventHandler("dm_possfull_bef")]
+        public static void OnDMPossess()
+        {
+            var dm = OBJECT_SELF;
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            
+            // Unpossession - Remove the variable
+            if (!GetIsObjectValid(target))
+            {
+                dm = GetMaster(dm);
+                DeleteLocalObject(dm, DMPossessedCreature);
+            }
+            // Possession - Store the variable
+            else
+            {
+                SetLocalObject(dm, DMPossessedCreature, target);
+            }
+        }
+
+        /// <summary>
         /// When a player enters the server, set a local bool on their PC representing
         /// the current state of their holonet visibility.
         /// </summary>
@@ -50,7 +77,35 @@ namespace SWLOR.Game.Server.Service
             
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
-        
+
+        /// <summary>
+        /// When a player focuses the chatbar, set a typing indicator on the player; when
+        /// unfocused, remove the indicator.
+        /// </summary>
+
+        [NWNEventHandler("mod_gui_event")]
+        public static void TypingIndicator()
+        {
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (!GetIsPC(player)) return;
+
+            if(type == GuiEventType.ChatBarFocus)
+            {
+                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
+            } else if (type == GuiEventType.ChatBarUnfocus)
+            {
+                RemoveEffectByTag(player, "typingindicator");
+            }
+        }
+
+        // Register DMFI Voice Command Handler which lives in nwscript land.
+        [NWNEventHandler("mod_chat")]
+        public static void ProcessNativeChatMessage()
+        {
+            ExecuteScriptNWScript("dmfi_onplychat", OBJECT_SELF);
+        }
 
         [NWNEventHandler("on_nwnx_chat")]
         public static void ProcessChatMessage()
@@ -69,14 +124,20 @@ namespace SWLOR.Game.Server.Service
                 channel == ChatChannel.PlayerWhisper ||
                 channel == ChatChannel.PlayerParty ||
                 channel == ChatChannel.PlayerShout;
-
-            var messageToDm = channel == ChatChannel.PlayerDM;
             
-            // Ignore messages on other channels.
-            if (!inCharacterChat && !messageToDm) return;
+            var messageToDm = channel == ChatChannel.PlayerDM;
 
             var sender = ChatPlugin.GetSender();
             var message = ChatPlugin.GetMessage().Trim();
+
+            // if this is a DMFI chat command, exit as ProcessNativeChatMessage has already handled via mod_chat event.
+            if (GetIsDM(sender) && message.Length >= 1 && message.Substring(0, 1) == ".")
+            {                
+                return;
+            }
+
+            // Ignore messages on other channels.
+            if (!inCharacterChat && !messageToDm) return;
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -93,18 +154,10 @@ namespace SWLOR.Game.Server.Service
 
             ChatPlugin.SkipMessage();
 
-            if (channel == ChatChannel.PlayerShout &&
-                GetIsPC(sender) &&
-                !GetIsDM(sender))
+            if (GetIsDead(sender) && !message.StartsWith("/"))
             {
-                var playerId = GetObjectUUID(sender);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (!dbPlayer.Settings.IsHolonetEnabled)
-                {
-                    SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
-                    return;
-                }
+                SendMessageToPC(sender, ColorToken.Red("You cannot speak while dead."));
+                return;
             }
 
             var chatComponents = new List<CommunicationComponent>();
@@ -162,6 +215,36 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (channel == ChatChannel.PlayerShout &&
+                GetIsPC(sender) &&
+                !GetIsDM(sender) &&
+                !GetIsDMPossessed(sender))
+            {
+                var playerId = GetObjectUUID(sender);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (!dbPlayer.Settings.IsHolonetEnabled)
+                {
+                    SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
+                    return;
+                }
+
+                // 5 minute wait in between Holonet messages.
+                var lastHolonet = GetLocalString(sender, "HOLONET_LAST_SEND");
+                var now = DateTime.UtcNow;
+                if (!string.IsNullOrWhiteSpace(lastHolonet))
+                {
+                    var dateTime = DateTime.ParseExact(lastHolonet, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    if (now <= dateTime.AddMinutes(HolonetDelayMinutes))
+                    {
+                        SendMessageToPC(sender, $"Holonet messages may only be sent once per {HolonetDelayMinutes} minutes.");
+                        return;
+                    }
+                }
+
+                SetLocalString(sender, "HOLONET_LAST_SEND", now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            }
+
 
             // Now, depending on the chat channel, we need to build a list of recipients.
             var needsAreaCheck = false;
@@ -177,7 +260,7 @@ namespace SWLOR.Game.Server.Service
             {
                 allPlayersAndDMs.Add(player);
                 
-                if (GetIsDM(player))
+                if (GetIsDM(player) || GetIsDMPossessed(player))
                 {
                     allDMs.Add(player);
                 }
@@ -191,6 +274,7 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannel.PlayerShout)
             {
                 recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, "DISPLAY_HOLONET")));
+                recipients.AddRange(allDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannel.PlayerParty)
@@ -226,11 +310,20 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var player in allPlayersAndDMs)
                 {
-                    if (GetArea(player) == GetArea(sender) &&
-                        GetDistanceBetween(sender, player) <= distanceCheck &&
-                        !recipients.Contains(player))
+                    var target = player;
+                    var possessedNPC = GetLocalObject(player, DMPossessedCreature);
+                    if (GetIsObjectValid(possessedNPC))
                     {
-                        recipients.Add(player);
+                        target = possessedNPC;
+                    }
+                    
+                    var distance = GetDistanceBetween(sender, target);
+
+                    if (GetArea(target) == GetArea(sender) &&
+                        distance <= distanceCheck &&
+                        !recipients.Contains(target))
+                    {
+                        recipients.Add(target);
                     }
                 }
             }
@@ -610,7 +703,7 @@ namespace SWLOR.Game.Server.Service
 
         public static EmoteStyle GetEmoteStyle(uint player)
         {
-            if (GetIsPC(player) && !GetIsDM(player))
+            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);

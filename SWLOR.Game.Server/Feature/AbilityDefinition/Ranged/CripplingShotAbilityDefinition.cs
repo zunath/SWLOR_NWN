@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -50,17 +48,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 case 1:
                     dmg = 12;
-                    duration = 30f;
+                    duration = 12f;
                     if (d2() == 1) inflict = true;
                     break;
                 case 2:
                     dmg = 21;
-                    duration = 60f;
+                    duration = 12f;
                     if (d4() > 1) inflict = true;
                     break;
                 case 3:
                     dmg = 34;
-                    duration = 60f;
+                    duration = 12f;
                     inflict = true;
                     break;
                 default:
@@ -83,13 +81,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
+            if (inflict) 
+                ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(99), target, duration);
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void CripplingShot1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                 .Name("Crippling Shot I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -100,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                 .Name("Crippling Shot II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
@@ -110,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                 .Name("Crippling Shot III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()

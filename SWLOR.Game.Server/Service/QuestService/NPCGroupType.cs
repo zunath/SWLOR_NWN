@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum NPCGroupType
     {
         [NPCGroup("Invalid")]
@@ -65,7 +67,48 @@ namespace SWLOR.Game.Server.Service.QuestService
         [NPCGroup("Qion Slugs")]
         Hutlar_QionSlugs = 29,
         [NPCGroup("Qion Tigers")]
-        Hutlar_QionTigers = 30
+        Hutlar_QionTigers = 30,
+        [NPCGroup("Pelko Bug Swarm")]
+        Korriban_Tukata = 31,
+        [NPCGroup("K'lor'slug")]
+        Korriban_Hssiss = 32,
+        [NPCGroup("Shyrack")]
+        Korriban_Shyrack = 33,
+        [NPCGroup("Moraband Serpent")]
+        Korriban_MorabandSerpent = 34,
+        [NPCGroup("Sith Apprentice")]
+        Korriban_SithApprenticeGhost = 35,
+        [NPCGroup("Wraid")]
+        Korriban_Terentatek = 36,
+        [NPCGroup("Octotench")]
+        MonCala_Octotench = 37,
+        [NPCGroup("Microtench")]
+        MonCala_Microtench = 38,
+        [NPCGroup("Scorchellus")]
+        MonCala_Scorchellus = 39,
+
+        [NPCGroup("Chirodactyl")]
+        Dathomir_Chirodactyl = 40,
+        [NPCGroup("Dragon Turtle")]
+        Dathomir_DragonTurtle = 41,
+        [NPCGroup("Kwi Guardian")]
+        Dathomir_KwiGuardian = 42,
+        [NPCGroup("Kwi Shaman")]
+        Dathomir_KwiShaman = 43,
+        [NPCGroup("Kwi Tribal")]
+        Dathomir_KwiTribal = 44,
+        [NPCGroup("Purbole")]
+        Dathomir_Purbole = 45,
+        [NPCGroup("Shear Mite")]
+        Dathomir_ShearMite = 46,
+        [NPCGroup("Sprantal")]
+        Dathomir_Sprantal = 47,
+        [NPCGroup("Squellbug")]
+        Dathomir_Squellbug = 48,
+        [NPCGroup("Ssurian")]
+        Dathomir_Ssurian = 49,
+        [NPCGroup("Swampland Bug")]
+        Dathomir_SwamplandBug = 50,
     }
 
     public class NPCGroupAttribute : Attribute

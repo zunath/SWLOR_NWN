@@ -10,11 +10,11 @@
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 31
+    "value": 12
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 40
+    "value": 12
   },
   "ArmorPart_LFoot": {
     "type": "byte",
@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 236
+    "value": 50
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -42,15 +42,15 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 42
+    "value": 10
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 31
+    "value": 12
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 40
+    "value": 12
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -74,7 +74,7 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 236
+    "value": 50
   },
   "ArmorPart_Torso": {
     "type": "byte",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 98
+    "value": 116
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 119
+    "value": 97
   },
   "Comment": {
     "type": "cexostring",
@@ -122,7 +122,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 89
+    "value": 117
   },
   "Leather2Color": {
     "type": "byte",

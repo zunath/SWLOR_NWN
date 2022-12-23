@@ -2,12 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -53,24 +51,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            if (!Ability.GetAbilityResisted(activator, target, "Force Push"))
+            if (!Ability.GetAbilityResisted(activator, target, "Force Push", AbilityType.Willpower))
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f + willpowerBonus);
             }
             else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            Enmity.ModifyEnmityOnAll(activator, level * 150);
 
-            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
-            {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-            }
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private static void ForcePush1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForcePush1, PerkType.ForcePush)
                 .Name("Force Push I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(1)
@@ -86,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush2, PerkType.ForcePush)
                 .Name("Force Push II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
@@ -101,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush3, PerkType.ForcePush)
                 .Name("Force Push III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
@@ -116,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForcePush4, PerkType.ForcePush)
                 .Name("Force Push IV")
+                .Level(4)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)

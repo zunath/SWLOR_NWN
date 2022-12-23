@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3000
+    "value": 2986
   },
   "Cursed": {
     "type": "byte",
@@ -71,73 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 10
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 3
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 11
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 3
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 13
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 15
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 335
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 15
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -164,15 +102,15 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 0
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 0
         },
         "Param1": {
           "type": "byte",
-          "value": 255
+          "value": 11
         },
         "Param1Value": {
           "type": "byte",
@@ -180,7 +118,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 109
+          "value": 81
         },
         "Subtype": {
           "type": "word",
@@ -204,40 +142,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bag_lg"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      }
-    ]
   }
 }

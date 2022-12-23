@@ -1,24 +1,22 @@
 ﻿using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Messaging
     {
         /// <summary>
-        /// Sends a message to all nearby players within 10 meters.
+        /// Sends a message to all nearby players within a certain distance.
         /// </summary>
         /// <param name="sender">The sender of the message.</param>
         /// <param name="message">The message to send to all nearby players.</param>
-        public static void SendMessageNearbyToPlayers(uint sender, string message)
+        /// <param name="range">The range, in meters, to deliver the message. Any creatures outside this range will not see the message.</param>
+        public static void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)
         {
-            const float MaxDistance = 10.0f;
-
             SendMessageToPC(sender, message);
 
             int nth = 1;
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
-            while (GetIsObjectValid(nearby) && GetDistanceBetween(sender, nearby) <= MaxDistance)
+            while (GetIsObjectValid(nearby) && GetDistanceBetween(sender, nearby) <= range)
             {
                 if (sender == nearby) continue;
 

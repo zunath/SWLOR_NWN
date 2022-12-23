@@ -411,6 +411,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         // SWLOR Starts Here
 
         TiefighterSM = 870,
+        LargeShuttle = 892,
         SmallCargoShip = 893,
         SmallShuttle3 = 895,
         SmallShuttle4 = 896,
@@ -423,14 +424,37 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SmallCargoShip2 = 894,
         SmallScoutShip = 969,
         SmallFirefly = 973,
+        LargeCorvette = 963,
         BWingSmall = 966,
         FreighterSmall = 967,
         CorvetteSmall = 968,
         VLambda = 2002,
         VEWing = 2003,
+        Skyhopper = 2004,
         VYWing = 2005,
+        Turret1 = 2152,
+        Turret2 = 2153,
+        Turret3 = 2154,
         StarDestroyer = 2169,
         MonCalaCruiser = 2170,
+        TartanCruiser = 2171,
+        DeathStar = 2172,
+        NebulonB = 2173,
+        LargeCargoShip = 2174,
+
+        Bothan = 10000,
+        Chiss = 10001,
+        Zabrak = 10002,
+        Wookiee = 10003,
+        Twilek = 10004,
+        Cyborg = 10005,
+        Cathar = 10006,
+        Trandoshan = 10007,
+        Mirialan = 10008,
+        Echani = 10009,
+        MonCalamari = 10010,
+
+        Ugnaught = 10033,
 
         NeutralDropship = 10054,
         NeutralCondor = 10055,
@@ -473,5 +497,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SithFighter = 10092,
         SithLeviathan = 10093,
 
+        Rodian = 10095,
+        Togruta = 10096,
+        KelDor = 10097,
+        Droid = 10098,
     }
 }

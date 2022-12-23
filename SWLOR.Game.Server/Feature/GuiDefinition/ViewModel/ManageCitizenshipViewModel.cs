@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -88,21 +87,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Election has not started.
             if (dbElection == null)
             {
-                cityDetails.Add($"Next Election [After server restart]: {dbCity.Dates[PropertyDateType.ElectionStart]:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"Next Election [After server restart]:");
+                cityDetails.Add($"    {dbCity.Dates[PropertyDateType.ElectionStart]:yyyy-MM-dd hh:mm:ss}");
             }
             // Election has started and we're in the registration process.
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
                     .AddDays(Property.ElectionRegistrationDays);
-                cityDetails.Add($"Election registrations are currently OPEN to citizens until {openUntil:yyyy-MM-dd hh:mm:ss}.");
+                cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
+                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
             // Election has started and we're in the voting process.
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
                     .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
-                cityDetails.Add($"Election voting is currently OPEN to citizens until {openUntil:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"Election voting is currently OPEN to citizens until:");
+                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
 
 

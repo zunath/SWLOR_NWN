@@ -6,17 +6,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
     {
         [MarketRegion("Invalid", "", false, false, 0.0f)]
         Invalid = 0,
-        [MarketRegion("Viscara", "MARKET_VISCARA", true, true, 0.09f)]
-        Viscara = 1,
-        [MarketRegion("Mon Cala", "MARKET_MON_CALA", true, true, 0.09f)]
-        MonCala = 2,
-        [MarketRegion("Hutlar", "MARKET_HUTLAR", true, true, 0.09f)]
-        Hutlar = 3,
-        [MarketRegion("Tatooine", "MARKET_TATOOINE", true, true, 0.09f)]
-        Tatooine = 4,
-
-        [MarketRegion("Player", "MARKET_PLAYER", true, false, 0.0f)]
-        Player = 99
+        [MarketRegion("Global", "MARKET_GLOBAL", true, true, 0.09f)]
+        Global = 1
     }
 
     public class MarketRegionAttribute : Attribute

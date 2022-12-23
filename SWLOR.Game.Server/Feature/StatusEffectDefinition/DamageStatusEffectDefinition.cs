@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -51,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var decreasedAC = EffectACDecrease(2);
 
                     ApplyEffectToObject(DurationType.Instant, damage, target);
-                    ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 1.0f);
+                    ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 6.0f);
 
                 });
         }
@@ -60,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
-                .EffectIcon(EffectIconType.DamageImmunityElectrical)
+                .EffectIcon(EffectIconType.Shocked)
                 .TickAction((source, target, effectData) =>
                 {
                     var damage = EffectDamage(d4(), DamageType.Electrical);
@@ -74,10 +71,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Tranquilize)
                 .Name("Tranquilize")
-                .EffectIcon(EffectIconType.Stunned)
+                .EffectIcon(EffectIconType.Sleep)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    var effect = EffectDazed();
+                    var effect = EffectSleep();
                     effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.Tranquilize);
 
@@ -93,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.Burn)
                 .Name("Burn")
-                .EffectIcon(EffectIconType.Poison) // todo: need a better icon
+                .EffectIcon(EffectIconType.Burning)
                 .TickAction((source, target, effectData) =>
                 {
                     var amount = Random.Next(2, 4);

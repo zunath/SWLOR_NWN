@@ -25,5 +25,6 @@ namespace SWLOR.Game.Server.Entity
         public string IconResref { get; set; }
         [Indexed]
         public MarketCategoryType Category { get; set; }
+        public DateTime? DateListed { get; set; }
     }
 }

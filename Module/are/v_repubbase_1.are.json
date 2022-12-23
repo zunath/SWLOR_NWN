@@ -329,15 +329,15 @@
         "__struct_id": 1,
         "Tile_AnimLoop1": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_AnimLoop2": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_AnimLoop3": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_Height": {
           "type": "int",
@@ -345,11 +345,11 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 157
+          "value": 156
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 3
+          "value": 4
         },
         "Tile_MainLight2": {
           "type": "byte",
@@ -361,11 +361,11 @@
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 7
+          "value": 2
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -521,23 +521,23 @@
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 4
+          "value": 30
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 14
+          "value": 13
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 1
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 2
+          "value": 0
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 2
+          "value": 0
         }
       },
       {
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 22
+    "value": 25
   },
   "Width": {
     "type": "int",

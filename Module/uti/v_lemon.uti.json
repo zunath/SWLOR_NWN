@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 14
+    "value": 13
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 539
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 14
+    "value": 13
   },
   "Cursed": {
     "type": "byte",

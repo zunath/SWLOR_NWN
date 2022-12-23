@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -14,7 +13,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
@@ -75,8 +73,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
-                    QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
+                    if(ability.DisplaysActivationMessage)
+                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
+                    QueueWeaponAbility(activator, ability, feat);
                 }
             }
             // Concentration abilities are triggered once per tick.
@@ -92,7 +91,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                     {
-                        ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                        ActivateAbility(activator, target, feat, ability, targetLocation);
                     }
                 }
             }
@@ -103,14 +102,16 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if (GetIsObjectValid(target))
                     {
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                        if (ability.DisplaysActivationMessage)
+                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
                     }
                     else
                     {
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                        if (ability.DisplaysActivationMessage)
+                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
                     
-                    ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                    ActivateAbility(activator, target, feat, ability, targetLocation);
                 }
             }
         }
@@ -139,14 +140,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="target">The target of the ability</param>
         /// <param name="feat">The type of feat associated with this ability.</param>
         /// <param name="ability">The ability details</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level</param>
         /// <param name="targetLocation">The targeted location</param>
         private static void ActivateAbility(
             uint activator,
             uint target,
             FeatType feat,
             AbilityDetail ability,
-            int effectivePerkLevel,
             Location targetLocation)
         {
             // Activation delay is increased if player is equipped with heavy or light armor.
@@ -176,7 +175,7 @@ namespace SWLOR.Game.Server.Feature
                     SendMessageToPC(activator, penaltyMessage);
                 }
 
-                var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, effectivePerkLevel) ?? 0.0f;
+                var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
                 return abilityDelay * armorPenalty;
             }
 
@@ -201,7 +200,11 @@ namespace SWLOR.Game.Server.Feature
                 if (ability.ActivationType == AbilityActivationType.Casted &&
                     ability.AnimationType != Animation.Invalid)
                 {
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, delay - 0.2f));
+                    var animationLength = delay - 0.2f;
+                    if (animationLength < 0f)
+                        animationLength = 0f;
+
+                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
                 }
             }
 
@@ -240,7 +243,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
 
                 ApplyRequirementEffects(activator, ability);
-                ability.ImpactAction?.Invoke(activator, target, effectivePerkLevel, targetLocation);
+                ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
@@ -248,12 +251,16 @@ namespace SWLOR.Game.Server.Feature
                     Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
                 }
 
-                // If this is an attack... make the NPC react.
+                // If this is an attack make the NPC react.
                 if (ability.IsHostileAbility)
                 {
-                    if (!GetIsInCombat(target))
+                    if (!GetIsInCombat(target) && !GetIsPC(target))
                     {
-                        AssignCommand(target, () => { ClearAllActions(); ActionAttack(activator); });
+                        AssignCommand(target, () =>
+                        {
+                            ClearAllActions(); 
+                            ActionAttack(activator);
+                        });
                     }
                 }
 
@@ -269,16 +276,34 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
-            if (GetIsPC(activator))
+            var executeImpact = ability.ActivationAction == null 
+                ? true
+                : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+
+            if (executeImpact == true)
             {
-                if (activationDelay > 0.0f)
+                if (GetIsPC(activator))
                 {
-                    PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    if (activationDelay > 0.0f)
+                    {
+                        PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    }
+                }
+
+                Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
+
+                // If currently attacking a target, re-attack it after the end of the activation period.
+                // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
+                if (GetCurrentAction(activator) == ActionType.AttackObject)
+                {
+                    var attackTarget = GetAttackTarget(activator);
+                    DelayCommand(activationDelay + 0.1f, () =>
+                    {
+                        AssignCommand(activator, () => ActionAttack(attackTarget));
+                    });
                 }
             }
-
-            Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
         }
 
         /// <summary>
@@ -290,15 +315,14 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="activator">The creature activating the ability.</param>
         /// <param name="ability">The ability details</param>
         /// <param name="feat">The feat being activated</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level</param>
-        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat, int effectivePerkLevel)
+        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat)
         {
             var abilityId = Guid.NewGuid().ToString();
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
             SetLocalInt(activator, ActiveAbilityName, (int)feat);
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
-            SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, effectivePerkLevel);
+            SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
 
             ApplyRequirementEffects(activator, ability);
 
@@ -308,18 +332,28 @@ namespace SWLOR.Game.Server.Feature
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
             {
-                if (GetLocalString(activator, ActiveAbilityIdName) != abilityId) return;
-
-                // Remove the local variables.
-                DeleteLocalInt(activator, ActiveAbilityName);
-                DeleteLocalString(activator, ActiveAbilityIdName);
-                DeleteLocalInt(activator, ActiveAbilityFeatIdName);
-                DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
-
-                // Notify the activator and nearby players
-                SendMessageToPC(activator, $"Your weapon ability {ability.Name} is no longer queued.");
-                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} no longer has weapon ability {ability.Name} readied.");
+                DequeueWeaponAbility(activator, ability.DisplaysActivationMessage);
             });
+        }
+
+        public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
+        {
+
+            string abilityName = GetLocalString(target, ActiveAbilityName);
+            if (string.IsNullOrWhiteSpace(abilityName))
+                return;
+
+            // Remove the local variables.
+            DeleteLocalInt(target, ActiveAbilityName);
+            DeleteLocalString(target, ActiveAbilityIdName);
+            DeleteLocalInt(target, ActiveAbilityFeatIdName);
+            DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
+
+            // Notify the activator and nearby players
+            SendMessageToPC(target, $"Your weapon ability {abilityName} is no longer queued.");
+
+            if (sendMessage)
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityName} readied.");
         }
 
         /// <summary>
@@ -361,6 +395,33 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetEnteringObject();
 
+            ClearQueuedAbility(player);
+        }
+
+        /// <summary>
+        /// Whenever a player starts resting, clear any queued abilities.
+        /// </summary>
+        [NWNEventHandler("rest_started")]
+        public static void ClearTemporaryQueuedVariablesOnRest()
+        {
+            ClearQueuedAbility(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Whenever a player equips an item, clear any queued abilities.
+        /// </summary>
+        [NWNEventHandler("item_val_bef")]
+        public static void ClearTemporaryQueuedVariablesOnEquip()
+        {
+            ClearQueuedAbility(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Clears the queued ability of a player.
+        /// </summary>
+        /// <param name="player">The player to clear</param>
+        private static void ClearQueuedAbility(uint player)
+        {
             DeleteLocalInt(player, ActiveAbilityName);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);

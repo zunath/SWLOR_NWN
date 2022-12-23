@@ -2,9 +2,13 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.LogService;
+using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
@@ -34,6 +38,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
         {
+
             /*
              * Custom attack logic for SWLOR. Most default NWN logic does not apply.
              * 
@@ -48,10 +53,15 @@ namespace SWLOR.Game.Server.Native
              * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
              */
 
+            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnResolveAttackRoll)}", "RunScript", "Script");
+
             Log.Write(LogGroup.Attack, "Running OnResolveAttackRoll");
             var targetObject = CNWSObject.FromPointer(pTarget);
             if (targetObject == null)
+            {
+                ProfilerPlugin.PopPerfScope();
                 return;
+            }
 
             var attacker = CNWSCreature.FromPointer(thisPtr);
             var attackerStats = attacker.m_pStats;
@@ -67,6 +77,7 @@ namespace SWLOR.Game.Server.Native
                 // Automatically hit non-creature targets.  Do not apply criticals.
                 Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                 pAttackData.m_nAttackResult = 7; // Automatic hit.
+                ProfilerPlugin.PopPerfScope();
                 return;
             }
 
@@ -84,41 +95,19 @@ namespace SWLOR.Game.Server.Native
 
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
             
-            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon);
+            var weaponStyleAbilityOverride = GetWeaponStyleAbilityType(weapon, attacker);
+            var zenMarksmanshipAbilityOverride = GetZenMarksmanshipAbilityType(weapon, attacker);
+            var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, 
+                weaponStyleAbilityOverride == AbilityType.Invalid 
+                    ? zenMarksmanshipAbilityOverride 
+                    : weaponStyleAbilityOverride);
             var defenderEvasion = Stat.GetEvasionNative(defender);
 
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
-            var modifiers = 0;
-
-            // Dual wield penalty.
-            var offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
-            var bDoubleWeapon = 
-                weapon != null && 
-                (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
-
-            if (bDoubleWeapon ||
-                (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 
-                 offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
-            {
-                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
-                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
-                // in to the proficiency perks rather than granting them separately. 
-
-                if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
-                {
-                    // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
-                    modifiers -= 10;
-                    logMessage += "- offhand weapon is unwieldy -";
-                }
-
-                // Apply the base two weapon fighting penalty. 
-                modifiers -= 10;
-                Log.Write(LogGroup.Attack, logMessage);
-            }
+            var accuracyModifiers = 0;
 
             // Defender not targeting the attacker.
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
@@ -141,12 +130,12 @@ namespace SWLOR.Game.Server.Native
             if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
             {
                 Log.Write(LogGroup.Attack, "Defender current target ("+oidTarget +") is not attacker ("+attacker.m_idSelf+"). Assign circumstance bonus");
-                modifiers += 5;
+                accuracyModifiers += 5;
             }
 
             // Weapon focus feats.
-            modifiers += 5 * HasWeaponFocus(attacker, weapon);
-            modifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);
+            accuracyModifiers += 5 * HasWeaponFocus(attacker, weapon);
+            accuracyModifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);
 
             // Range bonuses and penalties.
             if (attackType == (uint)AttackType.Ranged)
@@ -163,38 +152,38 @@ namespace SWLOR.Game.Server.Native
                     // Force powers or point blank shot feat make close range an advantage.
                     if (attacker.m_pStats.HasFeat((ushort)FeatType.PointBlankShot) == 1)
                     {
-                        modifiers += 5;
+                        accuracyModifiers += 5;
                     }
                     else if (weapon != null)
                     {
-                        modifiers -= 20;
+                        accuracyModifiers -= 20;
                     }
                 }
                 else if (range > 40.0f)
                 {
                     if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                     {
-                        modifiers -= 20;
+                        accuracyModifiers -= 20;
                     }
                     else
                     {
-                        modifiers -= 10;
+                        accuracyModifiers -= 10;
                     }
                 }
                 else if (range > 30.0f)
                 {
                     if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                     {
-                        modifiers -= 10;
+                        accuracyModifiers -= 10;
                     }
                     else
                     {
-                        modifiers -= 5;
+                        accuracyModifiers -= 5;
                     }
                 }
                 else if (weapon != null && range > 20.0f && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                 {
-                    modifiers = -5;
+                    accuracyModifiers = -5;
                 }
                 
             }
@@ -232,7 +221,72 @@ namespace SWLOR.Game.Server.Native
             {
                 Log.Write(LogGroup.Attack, "Backstab!  Attacker angle (radians): " + Math.Atan2(attY, attX) + 
                                            ", Defender angle (radians): " + Math.Atan2(defY, defX));
-                modifiers += 30;
+                accuracyModifiers += 30;
+            }
+
+            // Dual wield penalty.
+            var offhand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+            var bDoubleWeapon =
+                weapon != null &&
+                (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
+            int hasITWF = attackerStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting);
+            var percentageModifier = 0;
+
+            if (bDoubleWeapon ||
+                (offhand != null &&
+                 offhand.m_nBaseItem != (uint)BaseItem.LargeShield &&
+                 offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
+                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
+            {
+                // Apply the base two weapon fighting penalty.
+                if(hasITWF == 0 || weapon == offhand) // Main-hand ITWF has no penalty.
+                    percentageModifier -= 10;
+
+                var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + ": " + percentageModifier);
+                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
+                // in to the proficiency perks rather than granting them separately. 
+
+                Log.Write(LogGroup.Attack, logMessage);
+            }
+
+            if (weapon != null)
+            {
+                // Staff Flurry - (-10% TH)
+                if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    attackerStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
+                    attackerStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
+                {
+                    percentageModifier -= 10;
+                    Log.Write(LogGroup.Attack, "Applying Flurry Style I penalty: -10%");
+                }
+
+                // Duelist - (+5% TH)
+                if(attackerStats.HasFeat((ushort)FeatType.Duelist) == 1)
+                    if (Item.OneHandedMeleeItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                        Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                    {
+                        var isDuelistValid = offhand == null || Item.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
+
+                        if (isDuelistValid)
+                        {
+                            percentageModifier += 5;
+                            Log.Write(LogGroup.Attack, "Applying Duelist bonus: +5%");
+                        }
+                    }
+            }
+
+            // Combat Mode - Power Attack (-5 ACC)
+            if (attacker.m_nCombatMode == 2)
+            {
+                accuracyModifiers -= 5;
+                Log.Write(LogGroup.Attack, "Applying Power Attack penalty: -5");
+            }
+            // Combat Mode - Improved Power Attack (-10 ACC)
+            else if (attacker.m_nCombatMode == 3)
+            {
+                accuracyModifiers -= 10;
+                Log.Write(LogGroup.Attack, "Applying Imp. Power Attack penalty: -10");
             }
 
             // End modifiers
@@ -240,21 +294,96 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             var attackRoll = Random.Next(1, 100);
-            var hitRate = Combat.CalculateHitRate(attackerAccuracy + modifiers, defenderEvasion);
+            var hitRate = Combat.CalculateHitRate(attackerAccuracy + accuracyModifiers, defenderEvasion, percentageModifier);
             var isHit = attackRoll <= hitRate;
 
-            Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {modifiers}, defenderEvasion = {defenderEvasion}");
+            Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
             Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
+
+            var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+            var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+            var saberBlock = false;
+            var shieldBlock = false;
+
+            var defenderPER = defender.m_pStats.GetDEXStat();
+            var defenderVIT = defender.m_pStats.GetCONStat();
+
+            if(defenderWeapon != null && (
+                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
+                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
+            {
+                saberBlock = true;
+            }
+
+            // Checking for Bulwark shield reflect - need to have the feat and a shield equipped
+            if (defenderOffhand != null)
+                shieldBlock = defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&
+                    Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
+
+            // Deflect Ranged Attacks
+            var deflected = false;
+
+            if (attackType == (uint)AttackType.Ranged &&            // Ranged Attacks only
+                isHit && defender.GetFlatFooted() == 0 &&           // Only triggers on hits and the defender isn't incapacitated
+                defender.m_pcCombatRound.m_bDeflectArrow == 0 &&    // Can only trigger once per combat round
+                (shieldBlock || saberBlock))                        // Must have either a lightsaber or Bulwark + a shield equipped
+            {
+                var defenderStat = saberBlock ? defenderPER : defenderVIT;
+                if (shieldBlock && saberBlock && (defenderVIT > defenderPER))
+                    defenderStat = defenderVIT;
+
+                defender.m_pcCombatRound.SetDeflectArrow(1);        // We set the Deflect Arrow var to true for this round so it doesn't fire again
+
+                var deflectRoll = Random.Next(1, 100);
+                var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
+                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid 
+                    ? Item.GetWeaponAccuracyAbilityType(baseItemType) 
+                    : weaponStyleAbilityOverride;
+                var attackerStatValue = Stat.GetStatValueNative(attacker, attackerStat);
+
+                var statDelta = Math.Clamp((defenderStat - attackerStatValue) * 5, -50, 75);
+
+                isHit = deflectRoll + statDelta < attackRoll;
+                deflected = !isHit;
+
+                var feedbackString = deflected ? "*success*" : "*failure*";
+                var attackerName = ColorToken.GetNameColorNative(attacker);
+                var defenderName = ColorToken.GetNameColorNative(defender);
+                feedbackString = $"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}";
+
+                attacker.SendFeedbackString(new CExoString(feedbackString));
+                defender.SendFeedbackString(new CExoString(feedbackString));
+                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, statDelta: {statDelta}, attackRoll: {attackRoll} -- Hit: {isHit}");
+            }
 
             // Hit
             if (isHit)
             {
                 var criticalStat = attackType == (uint)AttackType.Ranged
-                    ? attackerStats.m_nIntelligenceBase
-                    : attackerStats.m_nDexterityBase;
+                    ? attackerStats.GetINTStat()
+                    : attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
-                var criticalBonus = HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
-                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.m_nIntelligenceBase, criticalBonus);
+                var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100); // GetCriticalHitRoll() returns the lowest d20 value that results in a crit, so we convert that to % bonus
+                Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
+                criticalBonus += HasImprovedCritical(attacker, weapon) == 1 ? 5 : 0;
+                if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim2) == 1)
+                    criticalBonus += 4;
+                else if (attackerStats.HasFeat((ushort)FeatType.PrecisionAim1) == 1)
+                    criticalBonus += 2;
+
+                if(weapon != null && Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    if(attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
+                    {
+                        criticalBonus += 15;
+                    } 
+                    if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
+                    {
+                        criticalBonus += 15;
+                    }
+                }
+
+                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetINTStat(), criticalBonus);
 
                 // Critical
                 if (criticalRoll <= criticalRate)
@@ -269,10 +398,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         Log.Write(LogGroup.Attack, $"Immune to critical hits");
                         // Immune!
-                        var pData = new CNWCCMessageData();
-                        pData.SetObjectID(0, attacker.m_idSelf);
-                        pData.SetInteger(0, 126); //Critical Hit Immunity Feedback
-                        pAttackData.m_alstPendingFeedback.Add(pData);
+                        var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
+                        attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
                         pAttackData.m_nAttackResult = 1;
                     }
                     else
@@ -291,8 +418,16 @@ namespace SWLOR.Game.Server.Native
             // Miss
             else
             {
-                Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
-                pAttackData.m_nAttackResult = 4;
+                if(deflected)
+                {
+                    Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
+                    pAttackData.m_nAttackResult = 2;
+                } 
+                else
+                {
+                    Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
+                    pAttackData.m_nAttackResult = 4;
+                }
                 pAttackData.m_nMissedBy = 1; // Dunno if this is needed by anything, but filling it out in case.
             }
 
@@ -302,9 +437,9 @@ namespace SWLOR.Game.Server.Native
             attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
             Log.Write(LogGroup.Attack, $"Building combat log message");
-            var message = BuildCombatLogMessage(
-                (attacker.GetFirstName().GetSimple() + " " + attacker.GetLastName().GetSimple()).Trim(),
-                (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim(),
+            var message = Combat.BuildCombatLogMessageNative(
+                attacker,
+                defender,
                 pAttackData.m_nAttackResult,
                 hitRate);
             attacker.SendFeedbackString(new CExoString(message));
@@ -315,32 +450,8 @@ namespace SWLOR.Game.Server.Native
             pAttackData.m_nToHitRoll = 1;
 
             Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
-        }
 
-        private static string BuildCombatLogMessage(
-            string attackerName, 
-            string defenderName, 
-            byte attackResultType,
-            int chanceToHit)
-        {
-            var type = string.Empty;
-
-            switch (attackResultType)
-            {
-                case 1:
-                case 7:
-                    type = ": *hit*";
-                    break;
-                case 3:
-                    type = ": *critical*";
-                    break;
-                case 4:
-                    type = ": *miss*";
-                    break;
-            }
-
-            var coloredAttackerName = ColorToken.Custom(attackerName, 153, 255, 255);
-            return ColorToken.Combat( $"{coloredAttackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+            ProfilerPlugin.PopPerfScope();
         }
 
         private static int HasWeaponFocus(CNWSCreature attacker, CNWSItem weapon)
@@ -577,6 +688,59 @@ namespace SWLOR.Game.Server.Native
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return 1;
 
             return 0;
+        }
+
+        private static AbilityType GetWeaponStyleAbilityType(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (attacker.m_bPlayerCharacter == 0)
+                return AbilityType.Invalid;
+
+            if (weapon == null)
+                return AbilityType.Invalid;
+
+            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+            if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                    return AbilityType.Perception;
+            }
+            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                    return AbilityType.Perception;
+            } 
+            else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
+                    return AbilityType.Agility;
+            }
+
+            return AbilityType.Invalid;
+        }
+
+        private static AbilityType GetZenMarksmanshipAbilityType(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.ZenArchery) == 0)
+                return AbilityType.Invalid;
+
+            var baseItem = (BaseItem)weapon.m_nBaseItem;
+            if (!Item.PistolBaseItemTypes.Contains(baseItem) &&
+                !Item.RifleBaseItemTypes.Contains(baseItem) &&
+                !Item.ThrowingWeaponBaseItemTypes.Contains(baseItem))
+            {
+                return AbilityType.Invalid;
+            }
+
+            var weaponAccuracy = Item.GetWeaponAccuracyAbilityType(baseItem);
+
+            switch (weaponAccuracy)
+            {
+                case AbilityType.Perception when attacker.m_pStats.GetWISStat() > attacker.m_pStats.GetDEXStat():
+                case AbilityType.Agility when attacker.m_pStats.GetWISStat() > attacker.m_pStats.GetINTStat():
+                    return AbilityType.Willpower;
+                default:
+                    return AbilityType.Invalid;
+            }
         }
     }
 }

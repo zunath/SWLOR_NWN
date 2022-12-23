@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -71,7 +70,8 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Katar,
                     BaseItem.Lightsaber,
                     BaseItem.Saberstaff,
-                    BaseItem.Electroblade
+                    BaseItem.Electroblade,
+                    BaseItem.TwinElectroBlade
         };
 
         /// <summary>

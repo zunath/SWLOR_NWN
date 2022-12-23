@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
+        private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+
+        private const int MaxNumberOfAuras = 4;
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
@@ -54,37 +57,12 @@ namespace SWLOR.Game.Server.Service
             // Until then, it can live here.
             _toggleActions[AbilityToggleType.Dash] = (player, isEnabled) =>
             {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
-
-                float rate;
                 string message;
-                switch (level)
-                {
-                    case 1:
-                        rate = 0.10f; // 10%
-                        break;
-                    case 2:
-                        rate = 0.25f; // 25%
-                        break;
-                    default:
-                        rate = 0f; // 0%
-                        break;
-                }
+                message = isEnabled 
+                    ? ColorToken.Green("Dash enabled") 
+                    : ColorToken.Red("Dash disabled");
 
-                if (isEnabled)
-                {
-                    Stat.AdjustPlayerMovementRate(dbPlayer, player, rate);
-                    message = ColorToken.Green("Dash enabled");
-                }
-                else
-                {
-                    Stat.AdjustPlayerMovementRate(dbPlayer, player, -rate);
-                    message = ColorToken.Red("Dash disabled");
-                }
-
-                DB.Set(dbPlayer);
+                Stat.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
         }
@@ -142,8 +120,8 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // Must have at least one level in the perk.
-            if (effectivePerkLevel <= 0)
+            // Must have appropriate levels in the perk to use the ability.
+            if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
             {
                 SendMessageToPC(activator, "You do not meet the prerequisites to use this ability.");
                 return false;
@@ -273,9 +251,18 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (creature, concentrationAbility) in pairs)
             {
-                // Creature is dead or invalid.
+                // Creature/target is dead or invalid.
                 if (!GetIsObjectValid(creature) ||
-                    GetIsDead(creature))
+                    GetIsDead(creature) ||
+                    !GetIsObjectValid(concentrationAbility.Target) ||
+                    GetIsDead(concentrationAbility.Target))
+                {
+                    EndConcentrationAbility(creature);
+                    continue;
+                }
+
+                // Creature and caster are not in the same area.
+                if (GetArea(creature) != GetArea(concentrationAbility.Target))
                 {
                     EndConcentrationAbility(creature);
                     continue;
@@ -289,11 +276,20 @@ namespace SWLOR.Game.Server.Service
                     EndConcentrationAbility(creature);
                     continue;
                 }
-                
-                foreach (var req in ability.Requirements)
+
+                // We don't run after activation actions until the second concentration cycle.
+                // This is because if a player activates a concentration ability 1 second before the cycle,
+                // they get charged for both the activation as well as the concentration cost.
+                // The trade off is some abilities will last longer depending on when the player uses them in the cycle.
+                // I think this is preferable to punishing the player twice though.
+                if (!GetLocalBool(creature, "CONCENTRATION_FIRST_USE"))
                 {
-                    req.AfterActivationAction(creature);
+                    foreach (var req in ability.Requirements)
+                    {
+                        req.AfterActivationAction(creature);
+                    }
                 }
+                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
             }
         }
 
@@ -311,6 +307,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
+            SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
         }
 
         /// <summary>
@@ -343,6 +340,7 @@ namespace SWLOR.Game.Server.Service
                 _activeConcentrationAbilities.Remove(creature);
 
                 SendMessageToPC(creature, "You stop concentrating.");
+                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
             }
         }
 
@@ -353,18 +351,20 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The creature performing the attack</param>
         /// <param name="defender">The creature defending against the attack</param>
         /// <param name="actionName">Name of the action or ability to display in the combat log</param>
-        public static bool GetAbilityResisted(uint attacker, uint defender, string actionName)
+        /// <param name="abilityType">The type of ability to check against.</param>
+        public static bool GetAbilityResisted(uint attacker, uint defender, string actionName, AbilityType abilityType)
         {
-            var attackerWIL = GetAbilityModifier(AbilityType.Willpower, attacker) * 10;
-            var defenderWIL = GetAbilityModifier(AbilityType.Willpower, defender) * 10;
+            var abilityShortName = Stat.GetAbilityNameShort(abilityType);
+            var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 2.5f;
+            var defenderStat = (GetAbilityScore(defender, abilityType) - 10) * 2.5f;
             var attackerRoll = d100();
-            var totalAttack = attackerRoll + attackerWIL;
-            var isResisted = totalAttack <= defenderWIL + 50;
+            var totalAttack = attackerRoll + attackerStat;
+            var isResisted = totalAttack <= defenderStat + 50;
 
-            var operation = attackerWIL < 0 ? "-" : "+";
+            var operation = attackerStat < 0 ? "-" : "+";
             var coloredAttackerName = ColorToken.Custom(GetName(attacker), 153, 255, 255);
             var resistText = isResisted ? "*resist*" : "*success*";
-            var message = ColorToken.Combat($"{coloredAttackerName} inflicts {actionName} on {GetName(defender)} {resistText} [WIL vs WIL] : ({attackerRoll} {operation} {Math.Abs(attackerWIL)} = {totalAttack})");
+            var message = ColorToken.Combat($"{coloredAttackerName} inflicts {actionName} on {GetName(defender)} {resistText} [{abilityShortName} vs {abilityShortName}] : ({attackerRoll} {operation} {Math.Abs(attackerStat)} = {totalAttack})");
 
             SendMessageToPC(attacker, message);
             SendMessageToPC(defender, message);
@@ -417,7 +417,21 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
+            return IsAbilityToggled(playerId, toggleType);
+        }
+
+        /// <summary>
+        /// Retrieves whether  a player has a specific toggle type enabled.
+        /// </summary>
+        /// <param name="playerId">The player Id to check</param>
+        /// <param name="toggleType">The type of toggle to check</param>
+        /// <returns>true if the ability is toggled on, false otherwise</returns>
+        public static bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
+        {
             var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return false;
 
             if (dbPlayer.AbilityToggles == null)
                 dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
@@ -426,6 +440,294 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.AbilityToggles[toggleType] = false;
 
             return dbPlayer.AbilityToggles[toggleType];
+        }
+
+        /// <summary>
+        /// Determines if any ability is toggled by a player.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <returns>true if any ability is toggled, false otherwise</returns>
+        public static bool IsAnyAbilityToggled(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return false;
+
+            if (dbPlayer.AbilityToggles == null)
+                return false;
+
+            foreach (var toggle in dbPlayer.AbilityToggles.Values)
+            {
+                if (toggle)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
+        /// </summary>
+        [NWNEventHandler("item_on_hit")]
+        public static void AddLeadershipCombatPoint()
+        {
+            var player = OBJECT_SELF;
+            var target = GetSpellTargetObject();
+            if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player))
+                return;
+
+            if (GetIsPC(target) || GetIsDM(target))
+                return;
+
+            if (!_playerAuras.ContainsKey(player))
+                return;
+
+            var aura = _playerAuras[player];
+
+            if (aura.Auras.Count <= 0)
+                return;
+
+            CombatPoint.AddCombatPoint(player, target, SkillType.Leadership);
+        }
+
+        private static int GetMaxNumberOfAuras(uint activator)
+        {
+            var social = GetAbilityScore(activator, AbilityType.Social);
+            var count = 1 + (social - 10) / 5;
+
+            if (count > MaxNumberOfAuras)
+                count = MaxNumberOfAuras;
+
+            return count;
+        }
+
+        public static void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsNPCs)
+        {
+            if (!_playerAuras.ContainsKey(activator))
+                _playerAuras.Add(activator, new PlayerAura());
+
+            var aura = _playerAuras[activator];
+
+            // Safety check - ensure the same aura never enters the cache more than once.
+            if (aura.Auras.Exists(x => x.Type == type))
+                return;
+
+            var maxAuras = GetMaxNumberOfAuras(activator);
+            var detail = StatusEffect.GetDetail(type);
+
+            while (aura.Auras.Count >= maxAuras)
+            {
+                var removeType = aura.Auras[0].Type;
+                if (aura.Auras[0].TargetsSelf)
+                {
+                    StatusEffect.Remove(activator, removeType, false);
+                }
+
+                if (aura.Auras[0].TargetsParty)
+                {
+                    foreach (var member in aura.PartyMembersInRange)
+                    {
+                        StatusEffect.Remove(member, removeType, false);
+                    }
+                }
+
+                if (aura.Auras[0].TargetsNPCs)
+                {
+                    foreach (var npc in aura.CreaturesInRange)
+                    {
+                        StatusEffect.Remove(npc, removeType, false);
+                    }
+                }
+
+                aura.Auras.RemoveAt(0);
+            }
+
+            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsNPCs));
+
+            if (targetsSelf)
+            {
+                StatusEffect.Apply(activator, activator, type, 0f, activator);
+            }
+
+            SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
+        }
+
+        public static bool ToggleAura(uint activator, StatusEffectType type)
+        {
+            if (!_playerAuras.ContainsKey(activator))
+                return true;
+
+            // Aura is active and player wants to deactivate it.
+            // Remove it from the list and send a notification message.
+            var aura = _playerAuras[activator];
+            var existing = aura.Auras.FirstOrDefault(x => x.Type == type);
+            if (existing != null)
+            {
+                var statusEffect = StatusEffect.GetDetail(type);
+
+                SendMessageToPC(activator, ColorToken.Red($"Aura '{statusEffect.Name}' deactivated."));
+
+                if (existing.TargetsSelf)
+                {
+                    StatusEffect.Remove(activator, type, false);
+                }
+
+                if (existing.TargetsParty)
+                {
+                    foreach (var member in aura.PartyMembersInRange)
+                    {
+                        StatusEffect.Remove(member, type, false);
+                    }
+                }
+
+                if (existing.TargetsNPCs)
+                {
+                    foreach (var npc in aura.CreaturesInRange)
+                    {
+                        StatusEffect.Remove(npc, type, false);
+                    }
+                }
+
+                _playerAuras[activator].Auras.Remove(existing);
+                return false;
+            }
+
+            return true;
+        }
+
+        private static AreaOfEffect GetAuraAOE(int level)
+        {
+            switch (level)
+            {
+                case 1:
+                    return AreaOfEffect.AuraUpgrade1;
+                case 2:
+                    return AreaOfEffect.AuraUpgrade2;
+                default:
+                    return AreaOfEffect.AuraDefault;
+            }
+        }
+
+        public static void ReapplyPlayerAuraAOE(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            RemoveEffectByTag(player, "AURA_EFFECT");
+            var shoutRangeLevel = Perk.GetEffectivePerkLevel(player, PerkType.ShoutRange);
+
+            AssignCommand(player, () =>
+            {
+                var auraAOE = GetAuraAOE(shoutRangeLevel);
+                var effect = SupernaturalEffect(EffectAreaOfEffect(auraAOE, "aura_enter", string.Empty, "aura_exit"));
+                effect = TagEffect(effect, "AURA_EFFECT");
+                ApplyEffectToObject(DurationType.Permanent, effect, player);
+            });
+        }
+
+        /// <summary>
+        /// When a player enters the server, apply the Aura AOE effect.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void ApplyAuraAOE()
+        {
+            var player = GetEnteringObject();
+            ReapplyPlayerAuraAOE(player);
+        }
+
+        /// <summary>
+        /// Whenever a creature enters the aura, add them to the cache.
+        /// </summary>
+        [NWNEventHandler("aura_enter")]
+        public static void AuraEnter()
+        {
+            var entering = GetEnteringObject();
+            var self = GetAreaOfEffectCreator(OBJECT_SELF);
+
+            if (!_playerAuras.ContainsKey(self))
+                _playerAuras.Add(self, new PlayerAura());
+
+            // Party Members
+            if (GetIsPC(entering) && !GetIsDM(entering) && !GetIsDMPossessed(entering) && GetFactionEqual(self, entering))
+            {
+                if (_playerAuras[self].PartyMembersInRange.Contains(entering))
+                    return;
+
+                _playerAuras[self].PartyMembersInRange.Add(entering);
+
+                foreach (var detail in _playerAuras[self].Auras)
+                {
+                    if (detail.TargetsParty)
+                    {
+                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                    }
+                }
+            }
+
+            // NPCs
+            else if (!GetIsPC(entering) && !GetIsDM(entering))
+            {
+                if (_playerAuras[self].CreaturesInRange.Contains(entering))
+                    return;
+
+                _playerAuras[self].CreaturesInRange.Add(entering);
+
+                foreach (var detail in _playerAuras[self].Auras)
+                {
+                    if (detail.TargetsNPCs)
+                    {
+                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whenever a creature exits the aura, remove it from the cache.
+        /// </summary>
+        [NWNEventHandler("aura_exit")]
+        public static void AuraExit()
+        {
+            var exiting = GetExitingObject();
+            var self = GetAreaOfEffectCreator(OBJECT_SELF);
+
+            if (!_playerAuras.ContainsKey(self))
+                _playerAuras.Add(self, new PlayerAura());
+
+            if (GetIsPC(exiting) && !GetIsDM(exiting) && !GetIsDMPossessed(exiting))
+            {
+                if (!_playerAuras[self].PartyMembersInRange.Contains(exiting))
+                    return;
+
+                _playerAuras[self].PartyMembersInRange.Remove(exiting);
+
+                foreach (var detail in _playerAuras[self].Auras)
+                {
+                    if (detail.TargetsParty)
+                    {
+                        StatusEffect.Remove(exiting, detail.Type, false);
+                    }
+                }
+            }
+
+            else if (!GetIsPC(exiting) && !GetIsDM(exiting))
+            {
+                if (!_playerAuras[self].CreaturesInRange.Contains(exiting))
+                    return;
+
+                _playerAuras[self].CreaturesInRange.Remove(exiting);
+
+                foreach (var detail in _playerAuras[self].Auras)
+                {
+                    if (detail.TargetsNPCs)
+                    {
+                        StatusEffect.Remove(exiting, detail.Type, false);
+                    }
+                }
+            }
         }
     }
 }

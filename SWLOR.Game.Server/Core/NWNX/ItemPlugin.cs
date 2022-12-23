@@ -86,12 +86,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         //
         // [1] When specifying per-part coloring, the value 255 corresponds with the logical
         // function 'clear colour override', which clears the per-part override for that part.
-        public static void SetItemAppearance(uint oItem, int nType, int nIndex, int nValue)
+        public static void SetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex, int nValue)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemAppearance");
             NWNCore.NativeFunctions.nwnxPushInt(nValue);
             NWNCore.NativeFunctions.nwnxPushInt(nIndex);
-            NWNCore.NativeFunctions.nwnxPushInt(nType);
+            NWNCore.NativeFunctions.nwnxPushInt((int)nType);
             NWNCore.NativeFunctions.nwnxPushObject(oItem);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }

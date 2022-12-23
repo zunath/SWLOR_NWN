@@ -956,7 +956,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 15.0
+                      "value": 6.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1029,6 +1029,196 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aurek Strikefighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_aurek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulk Freighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_bulkf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Centurion-Class Battlecruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlcrui"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Courier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_courier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derriphan-Class Battleship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_btlship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foray-Class Blockade Runner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_corvette"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Freighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_freighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hammerhead-Class Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_cruiser"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Interdictor-Class Heavy Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_hvycrui"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kandosii-Class Dreadnought"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_dread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 16.0
                     },
                     "FACTION": {
@@ -1061,6 +1251,120 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "starship22"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Merchantman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_merchant"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 1 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 2 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 3 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 4 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mk. 5 Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_turret5"
                     }
                   },
                   {
@@ -1105,7 +1409,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1124,7 +1428,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 4.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1143,7 +1447,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1162,7 +1466,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 2.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1181,7 +1485,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 4.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1200,7 +1504,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 2.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1219,7 +1523,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 3.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1238,7 +1542,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
+                      "value": 3.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1308,6 +1612,63 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "player_starship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Praetorian-Class Frigate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_frigate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Animals"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuttle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_shuttle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_sithfig"
                     }
                   },
                   {
@@ -1414,30 +1775,6 @@
                 "type": "byte",
                 "value": 48
               },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 9.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Qion Mutation Beast"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "qionmutationbeas"
-                    }
-                  }
-                ]
-              },
               "STRREF": {
                 "type": "dword",
                 "value": 63235
@@ -1530,30 +1867,6 @@
                       "type": "byte",
                       "value": 7
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 2.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tuk'ata"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tukata"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6697
@@ -1587,30 +1900,6 @@
                       "type": "byte",
                       "value": 9
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 0.125
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Shyrack"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shyrack"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 201
@@ -1643,25 +1932,6 @@
                             "type": "resref",
                             "value": "ghostviperking"
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 3.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Moraband Serpent"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sithsnake"
-                          }
                         }
                       ]
                     },
@@ -1686,30 +1956,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 103
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 30.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Dragon Turtle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dragonturtle"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -2058,30 +2304,6 @@
                       "type": "byte",
                       "value": 10
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 2.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Squellbug"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "squellbug"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6701
@@ -2092,30 +2314,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 105
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 11.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Swampland Bug"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "swamplandbug"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -2349,49 +2547,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 32
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 10.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Apprentice Ghost"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_ghost"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
-                            "value": 10.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Apprentice Ghost"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_ghost_male"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -2956,6 +3111,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 21.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sol_mandotrooper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 44.0
                     },
                     "FACTION": {
@@ -3513,6 +3687,619 @@
                 "type": "byte",
                 "value": 38
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Combot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Defensive Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Observation Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Patrol Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Warform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vsithbot5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord-Inquisitor Koyee Isemio"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpckoyee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcsi4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Blademaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcswar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsi3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor, Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsi2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor, Initiate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsi1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Juggernaut"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsvan3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Lord"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder, Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder, Initiate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssnipe2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Scout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssnipe1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssnipe3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer, Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer, Initiate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Elite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Heavy"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsvan1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Honor Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Veteran"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Desperate Fodder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscons1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Imperial Conscript"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscons2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Slave-Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcscons3"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 23
@@ -3523,6 +4310,348 @@
               "ID": {
                 "type": "byte",
                 "value": 39
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Consular"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedicons3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 69.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediknight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 101.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Knight-Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcjwar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 93.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Sage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjedisage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 97.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 97.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpjguard2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcjediguard1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Master Brokisee Shax"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmnpcbrokisee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 42.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Special Forces"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrepelite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcsi4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Blademaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valnpcswar4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsi3nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Lord"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc4nh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsinvadenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorcnh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Honor Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroopnh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswarnh"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",
@@ -3819,25 +4948,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cardmaster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_cardmaster"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 15.0
                     },
                     "FACTION": {
@@ -4003,6 +5113,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "denam_reyholm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dessta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dessta_bocktorb"
                     }
                   },
                   {
@@ -4378,6 +5507,44 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fishmaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fishmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 96.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force Witch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitch001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Frank"
                     },
                     "RESREF": {
@@ -4720,6 +5887,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lu_shang"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Male Bith Musician"
                     },
                     "RESREF": {
@@ -4820,6 +6006,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "maleczerkaranger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "maledroid"
                     }
                   },
                   {
@@ -5092,6 +6297,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Merchant"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nather"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_shopkeeper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -5339,6 +6563,82 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychoticpris005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -5371,25 +6671,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "reid_coxxion"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Droid"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_droid"
                     }
                   },
                   {
@@ -6150,6 +7431,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wook_warrior"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yastin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yastin_fettias"
                     }
                   }
                 ]
@@ -7972,7 +9272,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 10.0
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -8102,7 +9402,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 80.0
+                      "value": 77.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -8205,1265 +9505,6 @@
               "ID": {
                 "type": "byte",
                 "value": 3
-              },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Defender (3/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_70"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Healer (0/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_68"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Light (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_66"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Archangel (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_69"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ark'Neth (5/5)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_89"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Atlantian (1+/1+)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 9.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Avatar"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "avatar"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Avenging Angel (3/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_67"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bear (2/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_35"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beholder (4/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_64"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bone Golem (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_26"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bugbear Berzerker (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bulette (1/6)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_93"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaos Witch (3/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_59"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cougar (4/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_36"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.25
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cow (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_33"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Deekin (1/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_91"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Demon Knight (5/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_81"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 6.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dragon (7/7)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_65"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Druid (2/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_30"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dwarven Defender (1/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Elder Fire Elemental (5/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_9"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.125
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fairy Dragon (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_60"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Feral Rat (2/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_32"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Giant Spider (2/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_6"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.3333333432674408
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.3333333432674408
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Crossbow (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_31"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Shaman (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_23"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Warlord (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_29"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Witchdoctor (2/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_61"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hill Giant (4/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_8"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hook Horror (3/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_62"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Intellect Devourer (1/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_58"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Jysirael (5/5)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_90"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.3333333432674408
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_85"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Chief (3/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_84"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Engineer (0/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_87"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.3333333432674408
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Kamikaze (1/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_86"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Pogostick (0/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_88"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lich (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_27"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.25
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Loremaster (0/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_43"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.25
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Maiden of Paradise (0/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_44"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pain Golem (4/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_45"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Phase Spider (3/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_82"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 7.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pit Fiend (7/7)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_46"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Plague Bearer (2/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_40"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_17"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat King (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_28"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Revenant (5/0)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_83"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saeshen (0/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_92"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sea Hag (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_94"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sewer Rat (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_63"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shadow Assassin (4/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_47"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Archer (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_24"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Warrior (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_48"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spirit Guardian (0/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Steel Guardian (1/5)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.3333333432674408
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Troglodyte (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_95"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Umber Hulk (2/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire (2/2)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_16"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 6.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire Master (5/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_50"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Stag (5/4)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_37"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Wolf (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_52"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Wolf (2/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_34"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie (1/1)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_15"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie Lord (3/3)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d1_card_cr_53"
-                    }
-                  }
-                ]
               },
               "STRREF": {
                 "type": "dword",
@@ -9572,6 +9613,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "revan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 70.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Master Atris"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "atris_jedi"
                     }
                   },
                   {
@@ -9990,6 +10050,231 @@
               "__struct_id": 0,
               "ID": {
                 "type": "byte",
+                "value": 156
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 128.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chirodactyl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathchirodac"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 93.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dragon Turtle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathturtle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jungle Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathswampland"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 54.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathguard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 59.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Shaman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathshaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kwi Tribal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathtribal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Purbole"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathpurbole"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shear Mite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathshear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sprantal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathsprantal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 64.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Squellbug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathsquell"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 99.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ssurian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathssurian"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16860238
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
                 "value": 153
               },
               "LIST": {
@@ -10037,6 +10322,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Mutation Beast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmutationbeas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 10.0
                     },
                     "FACTION": {
@@ -10056,7 +10360,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 9.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10076,6 +10380,155 @@
               "STRREF": {
                 "type": "dword",
                 "value": 16859856
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 155
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "K'lor'slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_klorslug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Wraid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_wraid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moraband Serpent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsnake"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pelko Bug Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pelko"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Possessed Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "s_app_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16860237
               }
             },
             {
@@ -10186,6 +10639,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Microtench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_microtench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Octotench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_octotench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scorchellus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mc_scorchys"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 7.0
                     },
                     "FACTION": {
@@ -10278,7 +10788,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 12.0
+                      "value": 11.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10316,7 +10826,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 17.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10373,7 +10883,45 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Elite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_elite1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 19.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Elite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_elite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10392,7 +10940,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 17.0
+                      "value": 18.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10484,7 +11032,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10492,7 +11040,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Gimpassa"
+                      "value": "Gimpassa Hatchling"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -10516,6 +11064,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kath_hound"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_hunter"
                     }
                   },
                   {
@@ -10554,6 +11121,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_ranger_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Scout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_scout"
                     }
                   },
                   {
@@ -10674,7 +11260,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 8.0
+                      "value": 9.0
                     },
                     "FACTION": {
                       "type": "cexostring",

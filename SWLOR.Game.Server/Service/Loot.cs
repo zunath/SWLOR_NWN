@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -122,6 +120,10 @@ namespace SWLOR.Game.Server.Service
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
+            if (treasureHunterLevel > 0 && table.IsRare)
+            {
+                chance += treasureHunterLevel * 10;
+            }
             for (int x = 1; x <= attempts; x++)
             {
                 if (Random.D100(1) > chance) continue;

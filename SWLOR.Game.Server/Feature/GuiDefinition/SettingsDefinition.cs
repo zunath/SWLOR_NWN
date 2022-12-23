@@ -29,20 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     })
                         .SetHeight(30f);
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-
-                        row.AddCheckBox()
-                            .SetText("Show Helmet")
-                            .SetTooltip("Shows or hides your helmet graphic.")
-                            .BindIsChecked(model => model.DisplayHelmet);
-
-                        row.AddSpacer();
-                    })
-                        .SetHeight(30f);
-
+                    
                     col.AddRow(row =>
                     {
                         row.AddSpacer();
@@ -69,6 +56,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .SetHeight(30f);
 
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Reset Reminders")
+                            .SetTooltip("If enabled, you will receive periodic reminders about automatic server resets.")
+                            .BindIsChecked(model => model.DisplayServerResetReminders);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
+
                     col.AddRow(row =>
                     {
                         row.BindIsVisible(model => model.IsForceSensitive);
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddCheckBox()
                             .SetText("Lightsaber XP Share")
-                            .SetTooltip("If enabled, Force XP will be shared with One-Handed while using a lightsaber in combat.")
+                            .SetTooltip("If enabled, you will gain Force XP when using lightsabers during combat. Skills must be within 5 skill levels for this to take effect.")
                             .BindIsChecked(model => model.ShareLightsaberForceXP);
 
                         row.AddSpacer();

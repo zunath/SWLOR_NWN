@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -468,7 +467,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var propertyIds = DB.Search(permissionQuery)
+            var permissionCount = (int)DB.SearchCount(permissionQuery);
+            var propertyIds = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
                 .Select(s => s.PropertyId)
                 .ToList();
 
@@ -492,9 +492,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
+            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
+            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
+            if (socialBonus > 0.20f)
+                socialBonus = 0.20f;
+            else if (socialBonus < 0f)
+                socialBonus = 0f;
 
-            price -= (int)(price * (starportBonus * 0.05f));
+            var bonuses = starportBonus + socialBonus;
+
+            if (bonuses > 0.90f)
+                bonuses = 0.90f;
+
+            price -= (int)(price * bonuses);
 
             return price;
         }
@@ -805,6 +815,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower1Resref = detail.Texture;
                     LowPower1Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower1Resref = _blank;
+                    LowPower1Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(2)
                     ? ship.Status.LowPowerModules[2]
@@ -814,6 +829,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower2Resref = detail.Texture;
                     LowPower2Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower2Resref = _blank;
+                    LowPower2Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(3)
@@ -825,6 +845,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower3Resref = detail.Texture;
                     LowPower3Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower3Resref = _blank;
+                    LowPower3Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(4)
                     ? ship.Status.LowPowerModules[4]
@@ -834,6 +859,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower4Resref = detail.Texture;
                     LowPower4Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower4Resref = _blank;
+                    LowPower4Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(5)
@@ -845,6 +875,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower5Resref = detail.Texture;
                     LowPower5Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower5Resref = _blank;
+                    LowPower5Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(6)
                     ? ship.Status.LowPowerModules[6]
@@ -854,6 +889,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower6Resref = detail.Texture;
                     LowPower6Tooltip = detail.Name;
+                }
+                else
+                {
+                    LowPower6Resref = _blank;
+                    LowPower6Tooltip = string.Empty;
                 }
 
                 module = ship.Status.LowPowerModules.ContainsKey(7)
@@ -865,6 +905,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower7Resref = detail.Texture;
                     LowPower7Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower7Resref = _blank;
+                    LowPower7Tooltip = string.Empty;
+                }
 
                 module = ship.Status.LowPowerModules.ContainsKey(8)
                     ? ship.Status.LowPowerModules[8]
@@ -875,12 +920,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower8Resref = detail.Texture;
                     LowPower8Tooltip = detail.Name;
                 }
+                else
+                {
+                    LowPower8Resref = _blank;
+                    LowPower8Tooltip = string.Empty;
+                }
 
                 IsBoardShipEnabled = isAtCurrentLocation;
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = currentLocation == OBJECT_INVALID ? "Space" : GetName(currentLocation);
+                ShipLocation = currentLocation == OBJECT_INVALID ? "In Space" : GetName(currentLocation);
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1008,13 +1058,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ThermalDefense = shipDetail.ThermalDefense + bonuses.ThermalDefense,
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
-                        ShieldRechargeRate = shipDetail.ShieldRechargeRate + bonuses.ShieldRechargeRate
+                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate
                     }
                 };
                 DB.Set(ship);
 
                 var instance = Property.GetRegisteredInstance(property.Id);
-                SetName(instance.Area, property.CustomName);
+                SetName(instance.Area, "{PC} " + property.CustomName);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
@@ -1044,6 +1094,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbShip.Status.LowPowerModules.Count > 0)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
+                        return;
+                    }
+
+                    if (dbShip.Status.Hull < dbShip.Status.MaxHull ||
+                        dbShip.Status.Shield < dbShip.Status.MaxShield)
+                    {
+                        FloatingTextStringOnCreature("Please repair your ship fully before unregistering it.", Player, false);
                         return;
                     }
 
@@ -1083,10 +1140,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbShip = DB.Get<PlayerShip>(shipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
-            SetName(instance.Area, ShipName);
 
             dbProperty.CustomName = ShipName;
             DB.Set(dbProperty);
+
+            SetName(instance.Area, "{PC} " + ShipName);
 
             ShipNames[SelectedShipIndex] = ShipName;
         };
@@ -1153,6 +1211,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     item =>
                 {
                     var itemTag = GetTag(item);
+                    if (!Space.IsRegisteredShipModule(itemTag))
+                    {
+                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
+                        return;
+                    }
+
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
 
                     if (!ValidateModuleEquip(dbShip, item))
@@ -1160,7 +1224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (moduleDetails.PowerType != ShipModulePowerType.High)
                     {
-                        SendMessageToPC(Player, "Only high-powered modules may be installed to this slot.");
+                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
                         return;
                     }
 
@@ -1216,6 +1280,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     item =>
                 {
                     var itemTag = GetTag(item);
+                    if (!Space.IsRegisteredShipModule(itemTag))
+                    {
+                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        return;
+                    }
+
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
                     var moduleBonus = Space.GetModuleBonus(item);
 
@@ -1224,7 +1294,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (moduleDetails.PowerType != ShipModulePowerType.Low)
                     {
-                        SendMessageToPC(Player, "Only low-powered modules may be installed to this slot.");
+                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
                         return;
                     }
                     dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule

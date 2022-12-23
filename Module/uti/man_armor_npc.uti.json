@@ -6,19 +6,19 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 106
+    "value": 218
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 75
+    "value": 247
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 75
+    "value": 244
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 245
+    "value": 200
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -26,35 +26,35 @@
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 75
+    "value": 227
   },
   "ArmorPart_LShoul": {
     "type": "byte",
-    "value": 101
+    "value": 249
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 161
+    "value": 231
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 3
+    "value": 100
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 75
+    "value": 232
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 75
+    "value": 247
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 75
+    "value": 244
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 245
+    "value": 200
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -66,19 +66,19 @@
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 75
+    "value": 227
   },
   "ArmorPart_RShoul": {
     "type": "byte",
-    "value": 102
+    "value": 249
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 161
+    "value": 231
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 75
+    "value": 247
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 127
+    "value": 139
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 127
+    "value": 139
   },
   "Comment": {
     "type": "cexostring",
@@ -122,26 +122,26 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 127
+    "value": 139
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 127
+    "value": 139
   },
   "LocalizedName": {
     "id": 12838,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Mandalorian Armor"
+      "0": "[NPC] Mandalorian Armor"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 7
+    "value": 138
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 2
+    "value": 138
   },
   "PaletteID": {
     "type": "byte",

@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             ApplyEffectToObject(DurationType.Instant, EffectHeal(recovery), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
 
-            Enmity.ModifyEnmityOnAll(activator, recovery + 10);
+            Enmity.ModifyEnmityOnAll(activator, 300 + recovery + 10);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
@@ -38,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi1, PerkType.Chi)
                 .Name("Chi I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(1.0f)
                 .RequirementStamina(4)
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi2, PerkType.Chi)
                 .Name("Chi II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(6)
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             _builder.Create(FeatType.Chi3, PerkType.Chi)
                 .Name("Chi III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
                 .HasActivationDelay(3.0f)
                 .RequirementStamina(10)

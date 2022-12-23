@@ -2,12 +2,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 {
     public enum AppearanceArmorColor
     {
-        Leather1,
-        Leather2,
-        Cloth1,
-        Cloth2,
-        Metal1,
-        Metal2,
-        NumColors
+        Leather1 = 0,
+        Leather2 = 1,
+        Cloth1 = 2,
+        Cloth2 = 3,
+        Metal1 = 4,
+        Metal2 = 5,
+        NumColors = 6
     }
 }

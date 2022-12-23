@@ -5,10 +5,8 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service
@@ -50,13 +48,14 @@ namespace SWLOR.Game.Server.Service
             var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
             var languageSkill = Skill.GetSkillDetails(language);
 
-            if (GetIsPC(speaker) && !GetIsDM(speaker))
+            if (GetIsPC(speaker))
             {
                 var playerId = GetObjectUUID(speaker);
                 var dbSpeaker = DB.Get<Player>(playerId);
-
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
-                var speakerSkillRank = dbSpeaker.Skills[language].Rank;
+                var speakerSkillRank = dbSpeaker == null ? 
+                    languageSkill.MaxRank : 
+                    dbSpeaker.Skills[language].Rank;
 
                 if (speakerSkillRank != languageSkill.MaxRank)
                 {
@@ -84,7 +83,9 @@ namespace SWLOR.Game.Server.Service
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             var listenerId = GetObjectUUID(listener);
             var dbListener = DB.Get<Player>(listenerId);
-            var rank = dbListener.Skills[language].Rank;
+            var rank = dbListener == null ? 
+                languageSkill.MaxRank : 
+                dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
             // Check for the Comprehend Speech concentration ability.

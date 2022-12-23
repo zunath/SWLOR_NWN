@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 40
+    "value": 1000
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 40
+    "value": 1000
   },
   "Cursed": {
     "type": "byte",
@@ -100,7 +100,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 60
+          "value": 70
         },
         "Param1": {
           "type": "byte",
@@ -131,7 +131,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 3
         },
         "Param1": {
           "type": "byte",

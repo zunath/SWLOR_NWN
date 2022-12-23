@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -61,8 +59,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -76,12 +72,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 3f);
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void CrescentMoon1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon1, PerkType.CrescentMoon)
                 .Name("Crescent Moon I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrescentMoon2, PerkType.CrescentMoon)
                 .Name("Crescent Moon II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.CrescentMoon3, PerkType.CrescentMoon)
                 .Name("Crescent Moon III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

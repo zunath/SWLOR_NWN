@@ -6,7 +6,6 @@ using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var positionGroup = $"({position.X}, {position.Y}, {position.X})";
             var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             var playerId = GetObjectUUID(Player);
-            var nextReportAllowed = DateTime.UtcNow.AddSeconds(1); // todo: switch this back to minutes after testing is complete
+            var nextReportAllowed = DateTime.UtcNow.AddMinutes(1); 
 
             Task.Run(async () =>
             {

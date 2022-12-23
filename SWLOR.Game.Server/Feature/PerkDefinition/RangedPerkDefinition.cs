@@ -2,157 +2,199 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class RangedPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            RapidShot(builder);
-            RapidReload(builder);
-            ZenMarksmanship(builder);
-            PrecisionAim(builder);
-            PointBlankShot(builder);
-            WeaponFocusPistols(builder);
-            ImprovedCriticalPistols(builder);
-            PistolProficiency(builder);
-            PistolMastery(builder);
-            QuickDraw(builder);
-            DoubleShot(builder);
-            WeaponFocusThrowingWeapons(builder);
-            ImprovedCriticalThrowingWeapons(builder);
-            ThrowingWeaponProficiency(builder);
-            ThrowingWeaponMastery(builder);
-            ExplosiveToss(builder);
-            PiercingToss(builder);
-            WeaponFocusRifles(builder);
-            ImprovedCriticalRifles(builder);
-            RifleProficiency(builder);
-            RifleMastery(builder);
-            TranquilizerShot(builder);
-            CripplingShot(builder);
+            RapidShot();
+            DirtyBlow();
+            RapidReload();
+            PrecisionAim();
+            PointBlankShot();
+            WeaponFocusPistols();
+            ImprovedCriticalPistols();
+            PistolProficiency();
+            PistolMastery();
+            QuickDraw();
+            DoubleShot();
+            WeaponFocusThrowingWeapons();
+            ImprovedCriticalThrowingWeapons();
+            ThrowingWeaponProficiency();
+            ThrowingWeaponMastery();
+            ExplosiveToss();
+            PiercingToss();
+            WeaponFocusRifles();
+            ImprovedCriticalRifles();
+            RifleProficiency();
+            RifleMastery();
+            TranquilizerShot();
+            CripplingShot();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void RapidShot(PerkBuilder builder)
+        private void RapidShot()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidShot)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.RapidShot)
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Gain an extra attack per round when a Ranged weapon is equipped. All attacks within the round suffer a -2 penalty.")
+                .Description("Grants an additional attack with pistols.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .GrantsFeat(FeatType.RapidShot);
+
+                .AddPerkLevel()
+                .Description("Grants an additional attack with pistols, for a total of two attacks.")
+                .Price(5)
+                .RequirementSkill(SkillType.Ranged, 40)
+                
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyAttacksPerRound(player, item);
+                });
         }
 
-        private void RapidReload(PerkBuilder builder)
+        private void DirtyBlow()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.RapidReload)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.DirtyBlow)
+                .Name("Dirty Blow")
+
+                .AddPerkLevel()
+                .Description("While equipped with a pistol or shurikens, your critical chance increases by 10%.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 25)
+                .GrantsFeat(FeatType.DirtyBlow)
+
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    Stat.ApplyCritModifier(player, item);
+                });
+
+
+        }
+
+        private void RapidReload()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RapidReload)
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
-                .Description("You receive the same number of attacks with a rifle as you would if you were using a pistol.")
+                .Description("Rifles can now gain additional attacks per round (via Rifle Mastery). While equipped with a rifle, critical damage is increased by 50%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidReload);
         }
 
-        private void ZenMarksmanship(PerkBuilder builder)
+        private void PrecisionAim()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.ZenMarksmanship)
-                .Name("Zen Marksmanship")
-
-                .AddPerkLevel()
-                .Description("Willpower guides your ranged attacks. If your WIL modifier is higher than PER, it will be used when firing ranged weapons.")
-                .Price(4)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .GrantsFeat(FeatType.ZenArchery);
-        }
-
-        private void PrecisionAim(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
                 .Name("Precision Aim")
 
                 .AddPerkLevel()
-                .Description("Improves critical multiplier by 1.")
-                .Price(5)
+                .Description("Improves critical chance by 2%. [Cross Skill]")
+                .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PrecisionAim1)
 
                 .AddPerkLevel()
-                .Description("Improves critical multiplier by 2.")
-                .Price(6)
+                .Description("Improves critical chance by 4%. [Cross Skill]")
+                .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PrecisionAim2)
-
-                .TriggerPurchase((player, type, level) =>
-                {
-                    CreaturePlugin.SetCriticalMultiplierModifier(player, level, 0, true);
-                })
-                .TriggerRefund((player, type, level) =>
-                {
-                    CreaturePlugin.SetCriticalMultiplierModifier(player, 0, 0, true);
-                });
+                .GrantsFeat(FeatType.PrecisionAim2);
         }
 
-        private void PointBlankShot(PerkBuilder builder)
+        private void PointBlankShot()
         {
-            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
+            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
                 .Name("Point Blank Shot")
 
                 .AddPerkLevel()
-                .Description("Grants +1 to your attack roll and damage when your target is within 15 feet.")
+                .Description("While a target is within 5 meters, you gain +5 accuracy and +1 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.PointBlankShot);
         }
 
-        private void WeaponFocusPistols(PerkBuilder builder)
+        private void WeaponFocusPistols()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
                 .Name("Weapon Focus - Pistols")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with pistols.")
+                .Description("Your accuracy with pistols is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusPistol)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with pistols.")
+                .Description("Your base damage with damage is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
         }
 
-        private void ImprovedCriticalPistols(PerkBuilder builder)
+        private void ImprovedCriticalPistols()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
                 .Name("Improved Critical - Pistols")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a pistol.")
+                .Description("Improves the chance to critically hit with pistols by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalPistol);
         }
 
-        private void PistolProficiency(PerkBuilder builder)
+        private void PistolProficiency()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
                 .Name("Pistol Proficiency")
 
                 .AddPerkLevel()
@@ -185,155 +227,133 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolProficiency5);
         }
 
-        private void PistolMastery(PerkBuilder builder)
+        private void PistolMastery()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
                 .Name("Pistol Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PistolBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Pistol.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Pistol.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery2);
         }
 
-        private void QuickDraw(PerkBuilder builder)
+        private void QuickDraw()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
                 .Name("Quick Draw")
 
                 .AddPerkLevel()
-                .Description("Instantly deals 2.0 DMG to your target.")
+                .Description("Instantly deals 10 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw1)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 4.5 DMG to your target.")
+                .Description("Instantly deals 20 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw2)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 7.0 DMG to your target.")
+                .Description("Instantly deals 30 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw3);
         }
 
-        private void DoubleShot(PerkBuilder builder)
+        private void DoubleShot()
         {
-            builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
+            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
                 .Name("Double Shot")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 1.5 DMG.")
+                .Description("Your next attack deals an additional 8 x 2 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 4.0 DMG.")
+                .Description("Your next attack deals an additional 18 x 2 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 6.5 DMG.")
+                .Description("Your next attack deals an additional 28 x 2 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot3);
         }
 
-        private void WeaponFocusThrowingWeapons(PerkBuilder builder)
+        private void WeaponFocusThrowingWeapons()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
                 .Name("Weapon Focus - Throwing Weapons")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with throwing weapons.")
+                .Description("Your accuracy with throwing weapons is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusThrowingWeapons)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with throwing weapons.")
+                .Description("Your base damage with staves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
         }
 
-        private void ImprovedCriticalThrowingWeapons(PerkBuilder builder)
+        private void ImprovedCriticalThrowingWeapons()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
                 .Name("Improved Critical - Throwing Weapons")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a throwing weapon.")
+                .Description("Improves the chance to critically hit with throwing weapons by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalThrowingWeapons);
         }
 
-        private void ThrowingWeaponProficiency(PerkBuilder builder)
+        private void ThrowingWeaponProficiency()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
                 .Name("Throwing Weapon Proficiency")
 
                 .AddPerkLevel()
@@ -366,155 +386,133 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponProficiency5);
         }
 
-        private void ThrowingWeaponMastery(PerkBuilder builder)
+        private void ThrowingWeaponMastery()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
                 .Name("Throwing Weapon Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Throwing Weapon.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery2);
         }
 
-        private void ExplosiveToss(PerkBuilder builder)
+        private void ExplosiveToss()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
                 .Name("Explosive Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 2.5 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 8 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 6.0 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 16 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 9.5 DMG.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 26 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss3);
         }
 
-        private void PiercingToss(PerkBuilder builder)
+        private void PiercingToss()
         {
-            builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
+            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
                 .Name("Piercing Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2.5 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 12 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 21 DMG and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 9.5 DMG and has a 100% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 34 DMG and has a 100% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss3);
         }
         
-        private void WeaponFocusRifles(PerkBuilder builder)
+        private void WeaponFocusRifles()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
                 .Name("Weapon Focus - Rifles")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with rifles.")
+                .Description("Your accuracy with rifles is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.WeaponFocusRifles)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with rifles.")
+                .Description("Your base damage with rifles is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);
         }
 
-        private void ImprovedCriticalRifles(PerkBuilder builder)
+        private void ImprovedCriticalRifles()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
                 .Name("Improved Critical - Rifles")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a rifles.")
+                .Description("Improves the chance to critically hit with rifles by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
         }
 
-        private void RifleProficiency(PerkBuilder builder)
+        private void RifleProficiency()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
                 .Name("Rifle Proficiency")
 
                 .AddPerkLevel()
@@ -547,78 +545,57 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RifleProficiency5);
         }
 
-        private void RifleMastery(PerkBuilder builder)
+        private void RifleMastery()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
                 .Name("Rifle Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.RifleBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Description("Grants an additional attack when equipped with a rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
+                .RequirementMustHavePerk(PerkType.RapidReload)
                 .GrantsFeat(FeatType.RifleMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Description("Grants an additional attack when equipped with a rifle.")
                 .Price(8)
                 .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery2);
         }
 
-        private void TranquilizerShot(PerkBuilder builder)
+        private void TranquilizerShot()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot")
 
                 .AddPerkLevel()
                 .Description("Your next attack will tranquilize your target for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot1)
 
                 .AddPerkLevel()
@@ -629,32 +606,34 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TranquilizerShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack will tranquilize all creatures within 5 meters of your target for up to 12 seconds. Damage will break the effect prematurely.")
+                .Description("Your next attack will tranquilize up to three creatures in a cone for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot3);
         }
 
-        private void CripplingShot(PerkBuilder builder)
+        private void CripplingShot()
         {
-            builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2.5 DMG and has a 50% chance to inflict Bind for 30 seconds.")
+                .Description("Your next attack deals an additional 12 DMG and has a 50% chance to inflict Bind for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 21 DMG and has a 75% chance to inflict Bind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 9.5 DMG and has a 100% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 34 DMG and has a 100% chance to inflict Bind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)

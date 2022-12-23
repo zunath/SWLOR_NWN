@@ -133,6 +133,56 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WristRocket = 62,
         [RecastGroup("Deflector Shield", "D. Shield")]
         DeflectorShield = 63,
+        [RecastGroup("Provoke", "Provoke")]
+        Provoke = 64,
+        [RecastGroup("Provoke II", "Provoke II")]
+        Provoke2 = 65,
+        [RecastGroup("Premonition", "Premonition")]
+        Premonition = 66,
+        [RecastGroup("Disturbance", "Disturbance")]
+        Disturbance = 67,
+        [RecastGroup("Benevolence", "Benevolence")]
+        Benevolence = 68,
+        [RecastGroup("Force Valor", "F. Valor")]
+        ForceValor = 69,
+        [RecastGroup("Force Spark", "F. Spark")]
+        ForceSpark = 70,
+        [RecastGroup("Creeping Terror", "C. Terror")]
+        CreepingTerror = 71,
+        [RecastGroup("Force Rage", "F. Rage")]
+        ForceRage = 72,
+        [RecastGroup("Furor", "Furor")]
+        Furor = 73,
+        [RecastGroup("Throw Rock", "Throw Rock")]
+        ThrowRock = 74,
+        [RecastGroup("Force Inspiration", "F. Inspiration")]
+        ForceInspiration = 75,
+        [RecastGroup("Shield Bash", "Shield Bash")]
+        ShieldBash = 76,
+        [RecastGroup("Rousing Shout", "R. Shout")]
+        RousingShout = 77,
+        [RecastGroup("Dedication", "Dedication")]
+        Dedication = 78,
+        [RecastGroup("Soldier's Speed", "Sol. Speed")]
+        SoldiersSpeed = 79,
+        [RecastGroup("Soldier's Strike", "Sol. Strike")]
+        SoldiersStrike = 80,
+        [RecastGroup("Charge", "Charge")]
+        Charge = 81,
+        [RecastGroup("Soldier's Precisionn", "Sol. Precision")]
+        SoldiersPrecision = 82,
+        [RecastGroup("Shocking Shout", "Shock. Shout")]
+        ShockingShout = 83,
+        [RecastGroup("Rejuvenation", "Rejuvenation")]
+        Rejuvenation = 84,
+        [RecastGroup("Frenzied Shout", "Frenz. Shout")]
+        FrenziedShout = 85,
+        [RecastGroup("Screech", "Screech")]
+        Screech = 86,
+        [RecastGroup("Flame Blast", "F. Blast")]
+        FlameBlast = 87,
+        [RecastGroup("Greater Earthquake", "G. Quake")]
+        GreaterEarthquake = 88,
     }
 
     public class RecastGroupAttribute: Attribute

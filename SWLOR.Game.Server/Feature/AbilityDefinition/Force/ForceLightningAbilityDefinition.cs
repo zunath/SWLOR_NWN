@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -49,14 +47,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
-            {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-            }
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Willpower);
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(
@@ -76,13 +69,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
             });
+
+            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private static void ForceLightning1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
-                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .Level(1)
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -94,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
-                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .Level(2)
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
@@ -107,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
-                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .Level(3)
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -120,7 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
-                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .Level(4)
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()

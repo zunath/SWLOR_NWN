@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -13,7 +12,6 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -482,6 +480,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?", 
                 () =>
                 {
+
+                    if (GetResRef(GetArea(Player)) == "char_migration")
+                    {
+                        FloatingTextStringOnCreature($"Perks cannot be purchased in this area.", Player, false);
+                        return;
+                    }
+
                     // Refresh data
                     dbPlayer = DB.Get<Player>(playerId);
                     selectedPerk = _filteredPerks[_selectedPerkIndex];
@@ -556,12 +561,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IsBuyEnabled = nextUpgrade != null &&
                                    dbPlayer.UnallocatedSP >= nextUpgrade.Price &&
                                    meetsRequirements;
+
+                    BuyText = nextUpgrade != null
+                        ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
+                        : "Buy Upgrade";
                 });
         };
 
         public Action OnClickRefund() => () =>
         {
-            ShowModal($"You may only refund one perk per 24 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
+            ShowModal($"You may only refund one perk per 12 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -597,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .Where(x => x.Key <= pcPerkLevel)
                         .Sum(x => x.Value.Price);
                     // Update player's DB record.
-                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(12);
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(selectedPerk);
                     dbPlayer.NumberPerkResetsAvailable--;

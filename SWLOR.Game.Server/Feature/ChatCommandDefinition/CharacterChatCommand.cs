@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -22,7 +21,25 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
+            CDKey();
+            Save();
+            Skills();
+            EndCall();
+            Recipes();
+            Perks();
+            DeleteCommand();
+            LanguageCommand();
+            ToggleEmoteStyle();
+            ChangeItemDescription();
+            ConcentrationAbility();
+            Customize();
+            AlwaysWalk();
 
+            return _builder.Build();
+        }
+
+        private void CDKey()
+        {
             _builder.Create("cdkey")
                 .Description("Displays your public CD key.")
                 .Permissions(AuthorizationLevel.All)
@@ -31,7 +48,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var cdKey = GetPCPublicCDKey(user);
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
                 });
+        }
 
+        private void Save()
+        {
             _builder.Create("save")
                 .Description("Manually saves your character. Your character also saves automatically every few minutes.")
                 .Permissions(AuthorizationLevel.Player)
@@ -40,7 +60,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     ExportSingleCharacter(user);
                     SendMessageToPC(user, "Character saved successfully.");
                 });
+        }
 
+        private void Skills()
+        {
             _builder.Create("skills")
                 .Description("Toggles the skills menu.")
                 .Permissions(AuthorizationLevel.Player)
@@ -48,7 +71,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
                 });
+        }
 
+        private void EndCall()
+        {
             _builder.Create("endcall")
                 .Description("Ends your current HoloCom call.")
                 .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -56,15 +82,21 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
                 });
+        }
 
+        private void Recipes()
+        {
             _builder.Create("recipe", "recipes")
                 .Description("Toggles the recipes menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user,  GuiWindowType.Recipes);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Recipes);
                 });
+        }
 
+        private void Perks()
+        {
             _builder.Create("perk", "perks")
                 .Description("Toggles the perks menu.")
                 .Permissions(AuthorizationLevel.Player)
@@ -73,14 +105,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
-            DeleteCommand();
-            LanguageCommand();
-            ToggleEmoteStyle();
-            ChangeItemName();
-            ChangeItemDescription();
-            ConcentrationAbility();
-            
-            return _builder.Build();
         }
 
         private void LanguageCommand()
@@ -93,11 +117,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (args.Length < 1)
                     {
                         return ColorToken.Red("Please enter /language help for more information on how to use this command.");
-                    }
-
-                    if (GetIsDM(user) || GetIsDMPossessed(user))
-                    {
-                        return "DM characters cannot use this chat command.";
                     }
 
                     return string.Empty;
@@ -224,41 +243,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("emotestyle")
                 .Description("Toggles your emote style between regular and novel.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
                     var curStyle = Communication.GetEmoteStyle(user);
                     var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
                     Communication.SetEmoteStyle(user, newStyle);
                     SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
-                });
-        }
-
-        private void ChangeItemName()
-        {
-            _builder.Create("changeitemname", "itemname")
-                .Description("Changes the name of an item in your inventory. Example: /changeitemname New Name")
-                .Permissions(AuthorizationLevel.All)
-                .RequiresTarget()
-                .Action((user, target, location, args) =>
-                {
-                    if (!GetIsObjectValid(target) ||
-                        GetItemPossessor(target) != user ||
-                        GetObjectType(target) != ObjectType.Item)
-                    {
-                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
-                        return;
-                    }
-
-                    var sb = new StringBuilder();
-
-                    foreach (var arg in args)
-                    {
-                        sb.Append(' ').Append(arg);
-                    }
-
-                    SetName(target, sb.ToString());
-                    SendMessageToPC(user, "New name set!");
                 });
         }
 
@@ -318,6 +309,45 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        
+
+        private void Customize()
+        {
+            _builder.Create("customize", "customise")
+                .Description("Opens the appearance editor window.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, null, OBJECT_INVALID, uiTarget);
+                });
+        }
+
+        private void AlwaysWalk()
+        {
+            _builder.Create("alwayswalk", "walk")
+                .Description("Toggles forced walking when moving your character.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, _, _, _) =>
+                {
+                    var wasWalking = GetLocalInt(user, "WALK_TOGGLE") == 1;
+                    PlayerPlugin.SetAlwaysWalk(user, !wasWalking);
+
+                    if (wasWalking)
+                    {
+                        SetLocalInt(user, "WALK_TOGGLE", 0);
+                        SendMessageToPC(user, $"Walk mode {ColorToken.Red("disabled")}.");
+                    } else
+                    {
+                        SetLocalInt(user, "WALK_TOGGLE", 1);
+                        SendMessageToPC(user, $"Walk mode {ColorToken.Green("enabled")}.");
+                    }
+                });
+        }
     }
 }

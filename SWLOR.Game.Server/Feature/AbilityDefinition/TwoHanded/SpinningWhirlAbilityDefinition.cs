@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -61,38 +60,47 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
             {
+                if(GetIsReactionTypeHostile(creature, activator))
+                {
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Might);
+                    var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
+                        0);
 
-                var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-                var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-                var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
-                    attack, 
-                    dmg, 
-                    attackerStat, 
-                    defense, 
-                    defenderStat, 
-                    0);
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 2);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                    var dTarget = creature;
 
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
-                count++;
+                    DelayCommand(0.1f, () =>
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
+
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    count++;
+                }
+                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
             }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
         private static void SpinningWhirl1(AbilityBuilder builder)
         {
             builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -101,11 +109,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -114,11 +122,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
-                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

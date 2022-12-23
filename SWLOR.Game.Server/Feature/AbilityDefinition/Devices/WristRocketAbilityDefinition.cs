@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -55,15 +54,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
                 }
             });
-
-            Enmity.ModifyEnmity(activator, target, 15);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
         }
 
         private void WristRocket1()
         {
             _builder.Create(FeatType.WristRocket1, PerkType.WristRocket)
                 .Name("Wrist Rocket I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.WristRocket, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
@@ -73,7 +70,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 4, 0);
+                    Impact(activator, target, 8, 0);
+
+                    Enmity.ModifyEnmity(activator, target, 180);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.WristRocket2, PerkType.WristRocket)
                 .Name("Wrist Rocket II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.WristRocket, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
@@ -90,7 +91,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 6, 30);
+                    Impact(activator, target, 12, 30);
+
+                    Enmity.ModifyEnmity(activator, target, 280);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -98,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.WristRocket3, PerkType.WristRocket)
                 .Name("Wrist Rocket III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.WristRocket, 60f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(4)
@@ -107,7 +112,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 10, 50);
+                    Impact(activator, target, 20, 50);
+
+                    Enmity.ModifyEnmity(activator, target, 380);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
     }

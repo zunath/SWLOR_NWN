@@ -116,6 +116,41 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         ViscaraSewersMap = 52,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildwoods Map", true, "Map of the Wildwoods.")]
         WildwoodsMap = 53,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban Orbit Map", true, "Map of the space surrounding Korriban.")]
+        KorribanOrbitMap = 54,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Wastelands Map", true, "Map of the wastelands on Korriban.")]
+        KorribanWastelandsMap = 55,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Sith Crypt Map", true, "Map of the Sith crypt on Korriban.")]
+        KorribanSithCryptMap = 56,
+        [KeyItem(KeyItemCategoryType.Maps, "Korriban - Caverns Map", true, "Map of the caverns on Korriban.")]
+        KorribanCavernsMap = 57,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sunkenhead Swamps Map", true, "Map of the Sunkenhead Swamps on Mon Cala.")]
+        MonCalaSunkenhedgeSwampsMap = 58,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sharptooth Jungles Map", true, "Map of the Sharptooth Jungles on Mon Cala.")]
+        MonCalaSharptoothJunglesMap = 59,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Sharptooth Caverns Map", true, "Map of the Sharptooth Caverns on Mon Cala.")]
+        MonCalaSharptoothCavernsMap = 60,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir Orbit Map", true, "Map of the space surrounding Dathomir.")]
+        DathomirOrbitMap = 61,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Cave Ruins Map", true, "Map of the Cave Ruins on Dathomir.")]
+        DathomirCaveRuinsMap = 62,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Desert Map", true, "Map of the Deserts on Dathomir.")]
+        DathomirDesertMap = 63,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Grottos Map", true, "Map of the Grottos on Dathomir.")]
+        DathomirGrottosMap = 64,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Grotto Caverns Map", true, "Map of the Grotto Caverns on Dathomir.")]
+        DathomirGrottoCavernsMap = 65,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Jungles Map", true, "Map of the Jungles on Dathomir.")]
+        DathomirJunglesMap = 66,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Mountains Map", true, "Map of the Mountain region on Dathomir.")]
+        DathomirMountainsMap = 67,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Ruins Base Map", true, "Map of the Ruins Base on Dathomir.")]
+        DathomirRuinsBaseMap = 68,
+        [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Tribes Village Map", true, "Map of the Tribes Village on Dathomir.")]
+        DathomirTribeVillageMap = 69,
     }
 
     public class KeyItemAttribute : Attribute

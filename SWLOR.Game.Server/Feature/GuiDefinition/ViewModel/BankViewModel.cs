@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -159,6 +158,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.RemoveAt(index);
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);
+
+            if (Item.IsLegacyItem(item))
+            {
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    RemoveItemProperty(item, ip);
+                }
+            }
 
             RefreshItemCount();
         };

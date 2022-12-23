@@ -38,11 +38,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dathomir General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "dat_gen_merch"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Dockhand Store"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "dockhand_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fishing Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "fishing_store"
               }
             },
             {
@@ -71,6 +93,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Korriban General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "korr_general"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mon Cala General Store"
               },
               "RESREF": {
@@ -87,6 +120,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "startingitems"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Street Food"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "street_food"
               }
             },
             {
@@ -443,17 +487,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "player_store"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Cards Store"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_store"
                     }
                   }
                 ]

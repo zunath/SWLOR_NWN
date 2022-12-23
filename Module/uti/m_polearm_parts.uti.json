@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 28
+    "value": 125
   },
   "BaseItem": {
     "type": "int",
-    "value": 517
+    "value": 530
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 28
+    "value": 125
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The damaged blade and reinforcements for a Mandalorian war-spear."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -46,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 82
+    "value": 68
   },
   "PaletteID": {
     "type": "byte",

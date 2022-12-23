@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
                 },
                 [PlanetType.Hutlar] = new WeatherClimate
                 {
-                    HeatModifier = -5,
+                    HeatModifier = -8,
                     HumidityModifier = -8,
                     HasSnowStorms = true,
                     FreezingText = "A wave of cold air rolls in, stinging exposed flesh.",
@@ -62,6 +62,17 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     CloudyText = "Clouds build over head, and there is a occasional strong gust of wind.",
                     ColdCloudyText = "The clouds over head build, a cold wind stings exposed flesh. Looks like it is going to snow.",
                     MildText = "It is cold, the sky is clear, and there is a gentle breeze.",
+                    WarmCloudyText = "It is cold."
+                },
+                [PlanetType.Korriban] = new WeatherClimate
+                {
+                    HeatModifier = +3,
+                    HumidityModifier = -5
+                },
+                [PlanetType.Dathomir] = new WeatherClimate
+                {
+                    HeatModifier = -1,
+                    HumidityModifier = +1
                 }
             };
         }

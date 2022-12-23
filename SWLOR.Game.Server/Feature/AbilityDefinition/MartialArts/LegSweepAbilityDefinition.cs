@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -62,11 +61,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            Enmity.ModifyEnmityOnAll(activator, 250 * level);
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var attackerStat  = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            int attackerStat;
+            int attack;
+
+            if(GetHasFeat(FeatType.FlurryStyle, activator))
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+                attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+            } 
+            else
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Might);
+                attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            }
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(
@@ -84,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                 .Name("Leg Sweep I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -94,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                 .Name("Leg Sweep II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -104,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                 .Name("Leg Sweep III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

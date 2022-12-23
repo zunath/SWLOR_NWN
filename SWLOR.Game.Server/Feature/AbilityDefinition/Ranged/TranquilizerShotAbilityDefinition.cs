@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -43,30 +41,34 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            var enmity = level * 300;
             switch (level)
             {
                 case 1:
-                    Enmity.ModifyEnmity(activator, target, 30);
+                    Enmity.ModifyEnmity(activator, target, enmity);
                     StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 12f);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
                 case 2:
-                    Enmity.ModifyEnmity(activator, target, 60);
+                    Enmity.ModifyEnmity(activator, target, enmity);
                     StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 24f);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
                 case 3:
                     var count = 0;
-                    var creature = GetFirstObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                    var creature = GetFirstObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     while (GetIsObjectValid(creature) && count < 3)
                     {
-
-                        Enmity.ModifyEnmity(activator, creature, 30);
+                        if(creature == activator) {
+                            creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                            continue;
+                        }
+                        Enmity.ModifyEnmity(activator, creature, enmity);
                         StatusEffect.Apply(activator, creature, StatusEffectType.Tranquilize, 12f);
                         CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
                         count++;
 
-                        creature = GetNextObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
+                        creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     }
                     break;
                 default:
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
@@ -89,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
@@ -99,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.TranquilizerShot3, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 300f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()

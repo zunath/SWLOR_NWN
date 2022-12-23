@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -71,13 +69,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             {
                 PlaySound("plr_force_flip");
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
+                SetCommandable(false, activator);
             });
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
+            {
+                stat = AbilityType.Might;
+            }
+
+            var attackerStat = GetAbilityScore(activator, stat);
+            var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
@@ -89,10 +93,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
-
+            
             DelayCommand(Delay, () =>
-            {                
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
+            {
+                SetCommandable(true, activator);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
                 AssignCommand(activator, () =>
                 {
@@ -107,12 +112,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void ForceLeap1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -127,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(4)
                 .HasActivationDelay(0.5f)
@@ -141,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(5)
                 .HasActivationDelay(0.5f)

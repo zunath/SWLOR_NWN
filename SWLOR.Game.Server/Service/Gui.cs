@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -185,9 +184,14 @@ namespace SWLOR.Game.Server.Service
         public static void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
+            var uiTarget = player;
+
+            if (GetIsDMPossessed(player))
+                player = GetMaster(player);
+
             var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
-            var windowId = NuiGetWindowId(player, windowToken);
+            var windowId = NuiGetWindowId(uiTarget, windowToken);
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);
@@ -216,10 +220,10 @@ namespace SWLOR.Game.Server.Service
             // Automatically close the window.
             if (GetIsObjectValid(viewModel.TetherObject))
             {
-                if (GetDistanceBetween(player, viewModel.TetherObject) > 5f)
+                if (GetDistanceBetween(uiTarget, viewModel.TetherObject) > 5f)
                 {
-                    TogglePlayerWindow(player, windowType);
-                    SendMessageToPC(player, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
+                    TogglePlayerWindow(uiTarget, windowType);
+                    SendMessageToPC(uiTarget, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
                     return;
                 }
             }
@@ -305,14 +309,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of window to toggle.</param>
         /// <param name="payload">An optional payload to pass to the view model.</param>
         /// <param name="tetherObject">The object the window is tethered to. If specified, the window will automatically close if the player moves more than 5 meters away from it.</param>
+        /// <param name="uiTarget">Useful for DM possessions. Can override the target of the UI to target the proper NPC a DM has possessed.</param>
         public static void TogglePlayerWindow(
             uint player,
             GuiWindowType type,
             GuiPayloadBase payload = null,
-            uint tetherObject = OBJECT_INVALID)
+            uint tetherObject = OBJECT_INVALID,
+            uint uiTarget = OBJECT_INVALID)
         {
-            if (!GetIsPC(player))
+            if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
                 return;
+
+            if (uiTarget == OBJECT_INVALID)
+                uiTarget = player;
 
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
@@ -324,8 +333,8 @@ namespace SWLOR.Game.Server.Service
             {
                 //Console.WriteLine(JsonDump(template.Window));
 
-                playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
+                playerWindow.WindowToken = NuiCreate(uiTarget, template.Window, template.WindowId);
+                playerWindow.ViewModel.Bind(uiTarget, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
             }
             // Otherwise the window must already be open. Close it.
             else
@@ -418,6 +427,27 @@ namespace SWLOR.Game.Server.Service
             {
                 if (IsWindowOpen(player, type))
                     TogglePlayerWindow(player, type);
+            }
+        }
+
+        /// <summary>
+        /// Force closes a specified window, if open on the player's screen.
+        /// This does NOT save the geometry of the window. Typically used for DM-specific functionality.
+        /// </summary>
+        /// <param name="player">The player whose window will close</param>
+        /// <param name="type">The type of window</param>
+        /// <param name="uiTarget">The UI target</param>
+        public static void CloseWindow(uint player, GuiWindowType type, uint uiTarget)
+        {
+            if (uiTarget == OBJECT_INVALID)
+                uiTarget = player;
+
+            if (IsWindowOpen(player, type))
+            {
+                var playerId = GetObjectUUID(uiTarget);
+                var playerWindow = _playerWindows[playerId][type];
+
+                NuiDestroy(player, playerWindow.WindowToken);
             }
         }
 

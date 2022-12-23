@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -46,6 +44,17 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
             Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MediumHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
 
             return _actions;
         }
@@ -125,7 +134,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 DB.Set(interior);
 
                 var instance = Property.GetRegisteredInstance(interiorId);
-                SetName(instance.Area, property.CustomName);
+                SetName(instance.Area, "{PC} " + property.CustomName);
             }
         }
 

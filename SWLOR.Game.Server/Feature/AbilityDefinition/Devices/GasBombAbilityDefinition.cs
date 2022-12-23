@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -17,9 +16,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int dmg)
         {
+            var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
+            var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
+            dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
+
             var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(0, dmg, 0, defense, defenderStat, 0);
+            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }
@@ -28,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature,  2);
+            ApplyEffect(creature,  4);
         }
 
         [NWNEventHandler("grenade_gas1_hb")]
@@ -37,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature,  2);
+                ApplyEffect(creature,  4);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -46,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 6);
+            ApplyEffect(creature, 12);
         }
 
         [NWNEventHandler("grenade_gas2_hb")]
@@ -55,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 6);
+                ApplyEffect(creature, 12);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -64,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         public static void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
-            ApplyEffect(creature, 8);
+            ApplyEffect(creature, 16);
         }
 
         [NWNEventHandler("grenade_gas3_hb")]
@@ -73,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
             {
-                ApplyEffect(creature, 8);
+                ApplyEffect(creature, 16);
                 creature = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
@@ -86,21 +89,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void GasBomb1()
         {
             _builder.Create(FeatType.GasBomb1, PerkType.GasBomb)
                 .Name("Gas Bomb I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
@@ -108,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -119,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas1_hb",
                         18f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 30);
+                    Enmity.ModifyEnmityOnAll(activator, 250);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -128,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.GasBomb2, PerkType.GasBomb)
                 .Name("Gas Bomb II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
@@ -135,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -145,6 +140,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas2_en",
                         "grenade_gas2_hb",
                         30f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -152,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.GasBomb3, PerkType.GasBomb)
                 .Name("Gas Bomb III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(6)
@@ -159,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -169,6 +168,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas3_en",
                         "grenade_gas3_hb",
                         48f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 450);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

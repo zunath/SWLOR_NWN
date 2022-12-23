@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -93,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.BankStyle1)
                 .PropertyType(PropertyType.Bank)
                 .Name("Bank")
-                .StructureLimit(30)
+                .StructureLimit(50)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

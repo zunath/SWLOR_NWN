@@ -67836,6 +67836,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Desert Shrub"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "desert_shrub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Docking Point: <Location>"
                     },
                     "RESREF": {
@@ -67951,6 +67962,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fiberp_bush_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fish_point"
                     }
                   },
                   {
@@ -68182,6 +68204,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_crate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_dath_term"
                     }
                   },
                   {
@@ -68655,6 +68688,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shipguncontrols"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcrypt_box_3"
                     }
                   },
                   {
@@ -74380,1111 +74446,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Angelic Defender (3/4), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_70"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Healer (0/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_68"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Angelic Light (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_66"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Archangel (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_69"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Atlantian (1+/1+), cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Avenging Angel (3/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_67"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bear (2/3), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_35"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beholder (4/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_64"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bone Golem (3/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_26"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bugbear Bezerker (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bulette (1/6), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_93"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaos Witch (3/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_59"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cougar (4/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_36"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cow (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_33"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Demon Knight (5/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_81"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dragon (7/7), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_65"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Druid (2/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_30"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dwarven Defender (1/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Elder Fire Elemental (5/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_9"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fairy Dragon (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_60"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Feral Rat (2/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_32"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Giant Spider (2/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_6"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Crossbow (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_31"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Shaman (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_23"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Warlord (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_29"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Goblin Witchdoctor (2/2), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_61"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hill Giant (4/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_8"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hook Horror (3/1), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_62"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Intellect Devourer (1/3), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_58"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_85"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Chief (3/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_84"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Engineer (0/2), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_87"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Kamikaze (1/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_86"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Kobold Pogostick (0/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_88"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lich (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_27"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Loremaster (0/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_43"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Magic Generator"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Maiden of Paradise (0/2), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_44"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Ark'Neth (5/5), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_89"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Deekin (1/3), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_91"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Jysirael (5/5), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_90"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mythical - Saeshen (0/1), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_92"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pain Golem (4/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_45"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Phase Spider (3/1), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_82"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pit Fiend (7/7), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_46"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Plague Bearer (2/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_40"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Playing Cards"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "playingcards"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_17"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rat King (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_28"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Revenant (5/0), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_83"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rimer Cards Exit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_exit"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sea Hag (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_94"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sewer Rat (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_63"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shadow Assassin (4/1), cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_47"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Archer (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_24"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skeletal Warrior (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_48"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Solar Stone, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_49"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spectate a Rimer Cards Game"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_spectate"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Angelic Choir, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_75"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Armor, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_19"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Assassin, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_12"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Boomerang, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_78"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Counterspell, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_80"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Death Pact, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_41"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Dispel Magic, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_39"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Elixir of Life, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_22"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Energy Disruption, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_76"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Eye of the Beholder, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_77"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Fire Shield, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_71"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Fireball, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_20"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Flux, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_42"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Healing Light, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_13"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Higher Calling, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_96"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Holy Vengeance, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_18"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Life Drain, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_14"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Lightning Bolt, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_21"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Mind Control, cost 1+"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_73"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Mind Over Matter, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_79"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Paralyze, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_38"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Potion of Heroism, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_72"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Power Stream, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_97"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Resurrect, cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_57"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Sabotage, cost 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_25"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Scorched Earth, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_56"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Simulacrum, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_74"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Vortex, cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_55"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Warp Reality, cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_51"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spell - Wrath of the Horde, cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_54"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spirit Guardian (0/4), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Start a Rimer Cards PvP Game"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rimer_pvp"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Steel Guardian (1/5), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Troglodyte (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_95"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Umber Hulk (2/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire (2/2), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_16"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vampire Master (5/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_50"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Stag (5/4), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_37"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "White Wolf (3/3), cost 4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_52"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Wolf (2/1), cost 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_34"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie (1/1), cost 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_15"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zombie Lord (3/3), cost 5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "d_card_53"
                     }
                   }
                 ]
@@ -75573,6 +74539,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Droid Assembly Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "droid_ass_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Engineering Terminal"
                     },
                     "RESREF": {
@@ -75623,6 +74600,17 @@
                       "type": "resref",
                       "value": "smithery_bench"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "train_terminal"
+                    }
                   }
                 ]
               },
@@ -75660,6 +74648,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "apartment_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Character Rebuilder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "char_rebuilder"
                     }
                   },
                   {
@@ -75721,39 +74720,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_hut"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mos Eisley Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_tat"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Station Key Card"
                     },
                     "RESREF": {
@@ -75770,17 +74736,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tele_obj"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Veles Starport: To Ships"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starport_ent_1"
                     }
                   }
                 ]

@@ -4,9 +4,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,6 +22,155 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
         private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
         private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
+
+        private static readonly Dictionary<EffectIconType, List<StatusEffectType>> _effectIconToStatusEffects = new();
+        private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
+        {
+            { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
+            { EffectIconType.AbilityDecreaseSTR, AbilityType.Might },
+            { EffectIconType.AbilityIncreaseDEX, AbilityType.Perception },
+            { EffectIconType.AbilityDecreaseDEX, AbilityType.Perception },
+            { EffectIconType.AbilityIncreaseCON, AbilityType.Vitality },
+            { EffectIconType.AbilityDecreaseCON, AbilityType.Vitality },
+            { EffectIconType.AbilityIncreaseINT, AbilityType.Agility },
+            { EffectIconType.AbilityDecreaseINT, AbilityType.Agility },
+            { EffectIconType.AbilityIncreaseWIS, AbilityType.Willpower },
+            { EffectIconType.AbilityDecreaseWIS, AbilityType.Willpower },
+            { EffectIconType.AbilityIncreaseCHA, AbilityType.Social },
+            { EffectIconType.AbilityDecreaseCHA, AbilityType.Social },
+
+        };
+
+        private static readonly Dictionary<EffectIconType, EffectTypeScript> _effectIconToEffectType = new()
+        {
+            { EffectIconType.Invalid, EffectTypeScript.Invalideffect },
+            { EffectIconType.DamageResistance, EffectTypeScript.DamageResistance },
+            { EffectIconType.Regenerate, EffectTypeScript.Regenerate },
+            { EffectIconType.DamageReduction, EffectTypeScript.DamageReduction },
+            { EffectIconType.TemporaryHitpoints, EffectTypeScript.TemporaryHitpoints },
+            { EffectIconType.Entangle, EffectTypeScript.Entangle },
+            { EffectIconType.Invulnerable, EffectTypeScript.Invulnerable },
+            { EffectIconType.Fatigue, EffectTypeScript.Invalideffect },
+            { EffectIconType.Deaf, EffectTypeScript.Deaf },
+            { EffectIconType.Immunity, EffectTypeScript.Immunity },
+            { EffectIconType.EnemyAttackBonus, EffectTypeScript.EnemyAttackBonus },
+            { EffectIconType.Charmed, EffectTypeScript.Charmed },
+            { EffectIconType.Confused, EffectTypeScript.Confused },
+            { EffectIconType.Frightened, EffectTypeScript.Frightened },
+            { EffectIconType.Dominated, EffectTypeScript.Dominated },
+            { EffectIconType.Paralyze, EffectTypeScript.Paralyze },
+            { EffectIconType.Dazed, EffectTypeScript.Dazed },
+            { EffectIconType.Stunned, EffectTypeScript.Stunned },
+            { EffectIconType.Sleep, EffectTypeScript.Sleep },
+            { EffectIconType.Poison, EffectTypeScript.Poison },
+            { EffectIconType.Disease, EffectTypeScript.Disease },
+            { EffectIconType.Curse, EffectTypeScript.Curse },
+            { EffectIconType.Silence, EffectTypeScript.Silence },
+            { EffectIconType.Turned, EffectTypeScript.Turned },
+            { EffectIconType.Haste, EffectTypeScript.Haste },
+            { EffectIconType.Slow, EffectTypeScript.Slow },
+            { EffectIconType.AbilityIncreaseSTR, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseSTR, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.AttackIncrease, EffectTypeScript.AttackIncrease },
+            { EffectIconType.AttackDecrease, EffectTypeScript.AttackDecrease },
+            { EffectIconType.DamageIncrease, EffectTypeScript.DamageIncrease },
+            { EffectIconType.DamageDecrease, EffectTypeScript.DamageDecrease },
+            { EffectIconType.DamageImmunityIncrease, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.ACIncrease, EffectTypeScript.ACIncrease },
+            { EffectIconType.ACDecrease, EffectTypeScript.ACDecrease },
+            { EffectIconType.MovementSpeedIncrease, EffectTypeScript.MovementSpeedIncrease },
+            { EffectIconType.MovementSpeedDecrease, EffectTypeScript.MovementSpeedDecrease },
+            { EffectIconType.SavingThrowIncrease, EffectTypeScript.SavingThrowDecrease },
+            { EffectIconType.SpellResistanceIncrease, EffectTypeScript.SpellResistanceIncrease },
+            { EffectIconType.SpellResistanceDecrease, EffectTypeScript.SpellResistanceDecrease },
+            { EffectIconType.SkillIncrease, EffectTypeScript.SkillIncrease },
+            { EffectIconType.SkillDecrease, EffectTypeScript.SkillDecrease },
+            { EffectIconType.Invisibility, EffectTypeScript.Invisibility },
+            { EffectIconType.ImprovedInvisibility, EffectTypeScript.ImprovedInvisibility },
+            { EffectIconType.Darkness, EffectTypeScript.Darkness },
+            { EffectIconType.DispelMagicAll, EffectTypeScript.DispelMagicAll },
+            { EffectIconType.ElementalShield, EffectTypeScript.ElementalShield },
+            { EffectIconType.LevelDrain, EffectTypeScript.NegativeLevel },
+            { EffectIconType.Polymorph, EffectTypeScript.Polymorph },
+            { EffectIconType.Sanctuary, EffectTypeScript.Sanctuary },
+            { EffectIconType.TrueSeeing, EffectTypeScript.TrueSeeing },
+            { EffectIconType.SeeInvisibility, EffectTypeScript.SeeInvisible },
+            { EffectIconType.Timestop, EffectTypeScript.Timestop },
+            { EffectIconType.Blindness, EffectTypeScript.Blindness },
+            { EffectIconType.SpellLevelAbsorption, EffectTypeScript.SpellLevelAbsorption },
+            { EffectIconType.DispelMagicBest, EffectTypeScript.DispelMagicBest },
+            { EffectIconType.AbilityIncreaseDEX, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseDEX, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.AbilityIncreaseCON, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseCON, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.AbilityIncreaseINT, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseINT, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.AbilityIncreaseWIS, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseWIS, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.AbilityIncreaseCHA, EffectTypeScript.AbilityIncrease },
+            { EffectIconType.AbilityDecreaseCHA, EffectTypeScript.AbilityDecrease },
+            { EffectIconType.ImmunityAll, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityMind, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityPoison, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDisease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityFear, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityTrap, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityParalysis, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityBlindness, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDeafness, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySlow, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityEntangle, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySilence, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityStun, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySleep, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityCharm, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDominate, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityConfuse, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityCurse, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDazed, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityAbilityDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityAttackDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDamageDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDamageImmunityDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityACDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityMovementSpeedDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySavingThrowDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySpellResistanceDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySkillDecrease, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityKnockdown, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityNegativeLevel, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunitySneakAttack, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityCriticalHit, EffectTypeScript.Immunity },
+            { EffectIconType.ImmunityDeathMagic, EffectTypeScript.Immunity },
+            { EffectIconType.ReflexSaveIncreased, EffectTypeScript.SavingThrowIncrease },
+            { EffectIconType.FortitudeSaveIncreased, EffectTypeScript.SavingThrowIncrease },
+            { EffectIconType.WillSaveIncreased, EffectTypeScript.SavingThrowIncrease },
+            { EffectIconType.Taunted, EffectTypeScript.Invalideffect },
+            { EffectIconType.SpellImmunity, EffectTypeScript.SpellImmunity },
+            { EffectIconType.Etherealness, EffectTypeScript.Ethereal },
+            { EffectIconType.Concealment, EffectTypeScript.Concealment },
+            { EffectIconType.Petrified, EffectTypeScript.Petrify },
+            { EffectIconType.EffectSpellFailure, EffectTypeScript.SpellFailure },
+            { EffectIconType.DamageImmunityMagic, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityAcid, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityCold, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityDivine, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityElectrical, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityFire, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityNegative, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityPositive, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunitySonic, EffectTypeScript.DamageImmunityIncrease },
+            { EffectIconType.DamageImmunityMagicDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityAcidDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityColdDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityDivineDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityElectricalDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityFireDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityNegativeDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunityPositiveDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.DamageImmunitySonicDecrease, EffectTypeScript.DamageImmunityDecrease },
+        };
 
         /// <summary>
         /// When the module loads, cache all status effects.
@@ -43,6 +191,9 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (statusEffectType, detail) in statusEffects)
                 {
                     _statusEffects[statusEffectType] = detail;
+                    if (!_effectIconToStatusEffects.ContainsKey(detail.EffectIconId))
+                        _effectIconToStatusEffects[detail.EffectIconId] = new List<StatusEffectType>();
+                    _effectIconToStatusEffects[detail.EffectIconId].Add(statusEffectType);
                 }
             }
         }
@@ -58,14 +209,17 @@ namespace SWLOR.Game.Server.Service
         /// <param name="length">The amount of time, in seconds, the status effect should last. Set to 0.0f to make it permanent.</param>
         /// <param name="effectData">Effect data used by the effect.</param>
         /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
+        /// <param name="sendApplicationMessage">If true, a message will be sent to nearby players when the status effect is applied.</param>
         public static void Apply(
             uint source, 
             uint target, 
             StatusEffectType statusEffectType, 
             float length, 
             object effectData = null,
-            FeatType concentrationFeatType = FeatType.Invalid)
+            FeatType concentrationFeatType = FeatType.Invalid,
+            bool sendApplicationMessage = true)
         {
+            var statusEffectDetail = _statusEffects[statusEffectType];
             if (!_creaturesWithStatusEffects.ContainsKey(target))
                 _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
 
@@ -73,12 +227,43 @@ namespace SWLOR.Game.Server.Service
                 _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
 
             var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
+            var addIcon = true;
 
             // If the existing status effect will expire later than this, exit early.
-            if (_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
+            if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
+                return;
+
+            // Can't stack - remove the effect then reapply it afterwards.
+            if (!statusEffectDetail.CanStack &&
+                HasStatusEffect(target, statusEffectType))
             {
-                if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
+                Remove(target, statusEffectType, false, false);
+                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
+                addIcon = false;
+            }
+
+            // Remove any status effects this effect overrides.
+            if (statusEffectDetail.ReplacesEffects != null)
+            {
+                foreach (var effect in statusEffectDetail.ReplacesEffects)
+                {
+                    Remove(target, effect, false, false);
+                    addIcon = false;
+                }
+            }
+
+            // Prevent applying the status effect if a more powerful one is already in place.
+            if (statusEffectDetail.CannotReplaceEffects != null)
+            {
+                if (HasStatusEffect(target, statusEffectDetail.CannotReplaceEffects))
+                {
+                    const string Message = "A more powerful effect already exists.";
+                    SendMessageToPC(source, Message);
+
+                    if(source != target)
+                        SendMessageToPC(target, Message);
                     return;
+                }
             }
 
             // Set the group details.
@@ -88,16 +273,18 @@ namespace SWLOR.Game.Server.Service
             _creaturesWithStatusEffects[target][statusEffectType].EffectData = effectData;
 
             // Run the Grant Action, if applicable.
-            var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.AppliedAction?.Invoke(source, target, length, effectData);
 
             // Add the status effect icon if there is one.
-            if (statusEffectDetail.EffectIconId != EffectIconType.Invalid)
+            if (addIcon && statusEffectDetail.EffectIconId != EffectIconType.Invalid)
             {
                 ObjectPlugin.AddIconEffect(target, (int)statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+            if(sendApplicationMessage)
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+
+            Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
 
         /// <summary>
@@ -218,12 +405,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        /// <summary>
-        /// Removes a status effect from a creature.
-        /// </summary>
-        /// <param name="creature">The creature to remove the status effect from.</param>
-        /// <param name="statusEffectType">The type of status effect to remove.</param>
-        public static void Remove(uint creature, StatusEffectType statusEffectType)
+        private static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage, bool removeIcon)
         {
             if (!HasStatusEffect(creature, statusEffectType, true)) return;
 
@@ -233,12 +415,41 @@ namespace SWLOR.Game.Server.Service
             var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.RemoveAction?.Invoke(creature, effectInstance.EffectData);
 
-            if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
+            if (removeIcon && statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
                 ObjectPlugin.RemoveIconEffect(creature, (int)statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
+            if(showMessage)
+                Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
+
+            Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
+        }
+
+        /// <summary>
+        /// Removes a status effect from a creature.
+        /// </summary>
+        /// <param name="creature">The creature to remove the status effect from.</param>
+        /// <param name="statusEffectType">The type of status effect to remove.</param>
+        /// <param name="showMessage">If true, a message will be displayed. Otherwise no message is displayed.</param>
+        public static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage = true)
+        {
+            Remove(creature, statusEffectType, showMessage, true);
+        }
+
+        /// <summary>
+        /// Removes all status effects from a creature.
+        /// </summary>
+        /// <param name="creature">The creature to remove all effects from.</param>
+        public static void RemoveAll(uint creature)
+        {
+            if (!_creaturesWithStatusEffects.ContainsKey(creature))
+                return;
+
+            foreach (var effectType in _creaturesWithStatusEffects[creature].Keys)
+            {
+                Remove(creature, effectType);
+            }
         }
 
         /// <summary>
@@ -291,6 +502,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves a status effect detail by its type.
+        /// </summary>
+        /// <param name="type">The type to search for.</param>
+        /// <returns>A status effect detail</returns>
+        public static StatusEffectDetail GetDetail(StatusEffectType type)
+        {
+            return _statusEffects[type];
+        }
+
+        /// <summary>
         /// Retrieves the effect data associated with a creature's effect.
         /// If creature does not have effect, the default value of T will be returned.
         /// </summary>
@@ -305,6 +526,55 @@ namespace SWLOR.Game.Server.Service
                 return default;
 
             return (T)_creaturesWithStatusEffects[creature][effectType].EffectData;
+        }
+
+        /// <summary>
+        /// Retrieves the effect duration associated with a creature's effect.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="effectTypes">The type(s) of effect.</param>
+        /// <returns>A float time remaining of the status effect</returns>
+        public static int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes)
+        {
+            foreach (var effectType in effectTypes)
+            {
+                if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
+                !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
+                    continue;
+
+                if (_creaturesWithStatusEffects[creature][effectType].Expiration >= DateTime.MaxValue) return 0;
+
+                var effectTimespan = _creaturesWithStatusEffects[creature][effectType].Expiration - DateTime.UtcNow;
+
+                return (int)effectTimespan.TotalSeconds;
+            }
+
+            return 0;
+            
+        }
+
+        public static EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
+        {
+            if (!_effectIconToEffectType.TryGetValue(effectIcon, out EffectTypeScript effectType))
+                return EffectTypeScript.Invalideffect;
+
+            return effectType;
+        }
+
+        public static List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon)
+        {
+            if (!_effectIconToStatusEffects.TryGetValue(effectIcon, out List<StatusEffectType> statusTypes))
+                return new List<StatusEffectType>();
+
+            return statusTypes;
+        }
+
+        public static AbilityType GetAbilityTypeBuffed (EffectIconType effectIcon)
+        {
+            if (!_abilityIncreaseIconType.TryGetValue(effectIcon, out AbilityType abilityType))
+                return AbilityType.Invalid;
+
+            return abilityType;
         }
     }
 }

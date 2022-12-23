@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Service
                     var quest = _quests[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
-                    Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
                         Name = quest.Name,
                         Text = state.JournalText,
@@ -368,12 +368,15 @@ namespace SWLOR.Game.Server.Service
         public static void CloseItemCollector()
         {
             var player = GetLastClosedBy();
-            for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
+            DelayCommand(0.02f, () =>
             {
-                DestroyObject(item);
-            }
+                for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
+                {
+                    DestroyObject(item);
+                }
 
-            DestroyObject(OBJECT_SELF);
+                DestroyObject(OBJECT_SELF);
+            });
 
             Activity.ClearBusy(player);
         }
@@ -406,18 +409,31 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var requiredAmount = dbPlayer.Quests[questId].ItemProgresses[resref];
+            var stackSize = GetItemStackSize(item);
+
             // Decrement the required items and update the DB.
-            dbPlayer.Quests[questId].ItemProgresses[resref]--;
+            if (stackSize > requiredAmount)
+            {
+                dbPlayer.Quests[questId].ItemProgresses[resref] = 0;
+                Item.ReduceItemStack(item, requiredAmount);
+                Item.ReturnItem(player, item);
+            }
+            else
+            {
+                dbPlayer.Quests[questId].ItemProgresses[resref] -= stackSize;
+                Item.ReduceItemStack(item, stackSize);
+            }
+
             DB.Set(dbPlayer);
 
+            // Give the player an update and reduce the item stack.
+            var itemName = Cache.GetItemNameByResref(resref);
+            SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
+            
             // Attempt to advance the quest.
             // If player hasn't completed the other objectives, nothing will happen when this is called.
             AdvanceQuest(player, owner, questId);
-
-            // Give the player an update and destroy the item.
-            var itemName = Cache.GetItemNameByResref(resref);
-            SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
-            DestroyObject(item);
 
             // If no more items are necessary for this quest, force the player to speak with the NPC again.
             var itemsRequired = dbPlayer.Quests[questId].ItemProgresses.Sum(x => x.Value);
@@ -500,6 +516,25 @@ namespace SWLOR.Game.Server.Service
 
             var quest = GetQuestById(questId);
             quest.Advance(player, triggerOrPlaceable);
+        }
+
+        public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)
+        {
+            // 5% credit bonus per social modifier.
+            var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
+
+            // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
+            var guildRelations = 0f;
+            if (isGuildQuest)
+            {
+                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
+                guildRelations = perkLevel * 0.05f;
+            }
+            var amount = baseAmount +
+                         (int)(baseAmount * social) +
+                         (int)(baseAmount * guildRelations);
+
+            return amount;
         }
     }
 }

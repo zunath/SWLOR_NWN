@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Wildlands();
             MandalorianRaiders();
             MandalorianLeader();
+            MandalorianHunter();
+            MandalorianScout();
             WildwoodsLooters();
             WildwoodsKinrath();
             WildwoodsGimpassa();
@@ -33,10 +35,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "warocas")
                 .WithFrequency(40)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "kath_hound")
                 .WithFrequency(70)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void MandalorianRaiders()
@@ -45,18 +49,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "man_warrior_1")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "man_warrior_2")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "man_ranger_1")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "man_ranger_2")
                 .WithFrequency(30)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void MandalorianLeader()
@@ -64,7 +72,26 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_MANDALORIAN_LEADER", "Mandalorian Leader")
                 .AddSpawn(ObjectType.Creature, "man_leader")
                 .WithFrequency(100)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void MandalorianHunter()
+        {
+            _builder.Create("VISCARA_WILDWOODS_MANDO_HUNTER", "Mandalorian Hunter")
+                .AddSpawn(ObjectType.Creature, "man_hunter")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void MandalorianScout()
+        {
+            _builder.Create("VISCARA_WILDWOODS_MANDO_SCOUT", "Mandalorian Scout")
+                .AddSpawn(ObjectType.Creature, "man_scout")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void WildwoodsLooters()
@@ -73,10 +100,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "looter_1")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "looter_2")
                 .WithFrequency(30)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void WildwoodsKinrath()
@@ -84,7 +113,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_WILDWOODS_KINRATH", "Wildwoods Kinrath")
                 .AddSpawn(ObjectType.Creature, "ww_kinrath")
                 .WithFrequency(30)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void WildwoodsGimpassa()
@@ -92,7 +122,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_WILDWOODS_GIMPASSA", "Wildwoods Gimpassa")
                 .AddSpawn(ObjectType.Creature, "ww_gimpassa")
                 .WithFrequency(30)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void ValleyCairnmogs()
@@ -101,14 +132,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vall_nashtah")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "valley_cairnmog")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "valley_cairnmog2")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void CoxxionFlesheaters()
@@ -117,10 +151,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "v_flesheater")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void CoxxionFleshleader()
@@ -128,7 +164,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_COXXION_FLESHLEADER", "Coxxion Fleshleader")
                 .AddSpawn(ObjectType.Creature, "v_fleshleader")
                 .WithFrequency(100)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void DeepMountainRaivors()
@@ -136,10 +173,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_DEEPMOUNTAIN_RAIVORS", "Deep Mountain Raivors")
                 .AddSpawn(ObjectType.Creature, "v_raivor")
                 .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "v_raivor2")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void CrystalSpiders()
@@ -147,7 +187,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_CRYSTAL_SPIDERS", "Crystal Spiders")
                 .AddSpawn(ObjectType.Creature, "crystalspider")
                 .WithFrequency(10)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void Swamplands()
@@ -156,14 +197,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "swampvines")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(20)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void VelesSewers()
@@ -172,10 +216,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "looter_1")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "looter_2")
                 .WithFrequency(30)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
     }

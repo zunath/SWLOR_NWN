@@ -2,9 +2,10 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -43,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CircleSlash();
             DoubleStrike();
             ImprovedTwoWeaponFighting();
+            StrongStyleSaberstaff();
 
             return _builder.Build();
         }
@@ -53,13 +55,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Power Attack")
 
                 .AddPerkLevel()
-                .Description("Grants the Power Attack feat which grants a +1.0 bonus to damage roll at the cost of -5 to attack roll.")
+                .Description("Grants the Power Attack feat which grants a 3 DMG bonus at the cost of -5 to accuracy. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.PowerAttack)
 
                 .AddPerkLevel()
-                .Description("Grants the Improved Power Attack feat which grants a +2.5 bonus to damage roll at the cost of -10 to attack roll.")
+                .Description("Grants the Improved Power Attack feat which grants a 6 DMG bonus at the cost of -10 to accuracy. [Cross Skill]")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -72,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Superior Weapon Focus")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain +5% bonus to all attack rolls.")
+                .Description("Grants an additional 5 accuracy while wielding two-handed weapons.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -85,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Increased Multiplier")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain x1 to all critical hits.")
+                .Description("Increases the maximum critical damage of two-handed weapons by 50%.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -98,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cleave")
 
                 .AddPerkLevel()
-                .Description("Grants a free attack against any opponent who is within melee range when an enemy is killed.")
+                .Description("Grants a free attack against any opponent who is within melee range when an enemy is killed. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 10)
                 .GrantsFeat(FeatType.Cleave);
@@ -110,16 +112,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Heavy Vibroblades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with heavy vibroblades.")
+                .Description("Your accuracy with heavy vibroblades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusHeavyVibroblades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with heavy vibroblades.")
+                .Description("Your base damage with heavy vibroblades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationHeavyVibroblades);
         }
 
@@ -129,10 +130,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Heavy Vibroblades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a heavy vibroblade.")
+                .Description("Improves the chance to critically hit with heavy vibroblades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalHeavyVibroblades);
         }
 
@@ -179,58 +179,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
         }
 
@@ -240,20 +217,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crescent Moon")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 7.0 DMG and inflicts stun for 3 seconds.")
+                .Description("Your next attack deals an additional 12 DMG and inflicts stun for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 8.5 DMG and inflicts stun for 3 seconds.")
+                .Description("Your next attack deals an additional 21 DMG and inflicts stun for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 12.0 DMG and inflicts stun for 3 seconds.")
+                .Description("Your next attack deals an additional 34 DMG and inflicts stun for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -266,19 +244,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hard Slash")
 
                 .AddPerkLevel()
-                .Description("Instantly deals 2.5 DMG to your target.")
+                .Description("Instantly deals 16 DMG to your target.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash1)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 5.0 DMG to your target.")
+                .Description("Instantly deals 24 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 20)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash2)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 7.5 DMG to your target.")
+                .Description("Instantly deals 38 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -291,16 +271,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Polearms")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with polearms.")
+                .Description("Your accuracy with polearms is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusPolearms)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with polearms.")
+                .Description("Your base damage with polearms is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationPolearms);
         }
 
@@ -310,10 +289,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Polearms")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a polearm.")
+                .Description("Improves the chance to critically hit with polearms by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalPolearms);
         }
 
@@ -360,58 +338,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PolearmBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.PolearmBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PolearmBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.PolearmBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Polearm.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery1)
                 
                 .AddPerkLevel()
                 .Description("Grants an additional attack when equipped with a Polearm.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery2);
         }
 
@@ -421,20 +376,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skewer")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 7.0 DMG and has a 45% chance to interrupt the concentration of your target.")
+                .Description("Your next attack deals an additional 12 DMG and has a 45% chance to interrupt the concentration of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 8.5 DMG and has a 75% chance to interrupt the concentration of your target.")
+                .Description("Your next attack deals an additional 21 DMG and has a 75% chance to interrupt the concentration of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 12.0 DMG and has a 100% chance to interrupt the concentration of your target.")
+                .Description("Your next attack deals an additional 34 DMG and has a 100% chance to interrupt the concentration of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -447,20 +403,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Double Thrust")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 1.5 DMG.")
+                .Description("Instantly attacks twice, each for 11 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 4.0 DMG.")
+                .Description("Instantly attacks twice, each for 19 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 6.0 DMG.")
+                .Description("Instantly attacks twice, each for 29 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -473,16 +430,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Twin Blades")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with twin blades.")
+                .Description("Your accuracy with twin blades is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .GrantsFeat(FeatType.WeaponFocusTwinBlades)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with twin blades.")
+                .Description("Your base damage with twin blades is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WeaponSpecializationTwinBlades);
         }
 
@@ -492,10 +448,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Twin Blades")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a twin blades.")
+                .Description("Improves the chance to critically hit with twin blades by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedCriticalTwinBlades);
         }
 
@@ -542,58 +497,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Description("Grants an additional attack while equipped with twin blades.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
                 
                 .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Description("Grants an additional attack while equipped with twin blades.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
@@ -603,19 +535,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spinning Whirl")
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
-                .Price(2)
+                .Description("Attacks up to 3 nearby enemies for 10 DMG each.")
+                .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl1)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
+                .Description("Attacks up to 3 nearby enemies for 18 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl2)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 7.0 DMG each.")
+                .Description("Attacks up to 3 nearby enemies for 28 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -628,20 +562,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cross Cut")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 1.5 DMG. Successful hits reduce your target's Evasion by 2 for 1 minute.")
+                .Description("Instantly attacks twice, each for 8 DMG. Successful hits reduce your target's Evasion by 2 for 1 minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 4.0 DMG. Successful hits reduce your target's Evasion by 4 for 1 minute.")
+                .Description("Instantly attacks twice, each for 17 DMG. Successful hits reduce your target's Evasion by 4 for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 6.5 DMG. Successful hits reduce your target's Evasion by 6 for 1 minute.")
+                .Description("Instantly attacks twice, each for 25 DMG. Successful hits reduce your target's Evasion by 6 for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -654,14 +589,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Focus - Saberstaffs")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with saberstaffs.")
+                .Description("Your accuracy with saberstaves is increased by 5.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.WeaponFocusSaberstaffs)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with saberstaffs.")
+                .Description("Your base damage with saberstaves is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -674,7 +609,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Critical - Saberstaffs")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a saberstaff.")
+                .Description("Improves the chance to critically hit with saberstaves by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -729,44 +664,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    var itemType = GetBaseItemType(item);
-                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
-
+                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = level == 1 ? 6 : 11;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
-                    {
-                        CreaturePlugin.SetBaseAttackBonus(player, 1);
-                    }
+                    Stat.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -790,21 +704,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Circle Slash")
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
+                .Description("Attacks up to 3 nearby enemies for 10 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.CircleSlash1)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
+                .Description("Attacks up to 3 nearby enemies for 18 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.CircleSlash2)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 6.5 DMG each.")
+                .Description("Attacks up to 3 nearby enemies for 28 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -817,21 +731,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Double Strike")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 1.5 DMG.")
+                .Description("Instantly attacks twice, each for 12 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.DoubleStrike1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 4.0 DMG.")
+                .Description("Instantly attacks twice, each for 21 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.DoubleStrike2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 6.0 DMG.")
+                .Description("Instantly attacks twice, each for 29 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -844,11 +758,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Two Weapon Fighting (Two-Handed)")
 
                 .AddPerkLevel()
-                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon.")
-                .Price(6)
+                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon, and reduces the two-weapon fighting penalty to 0%/-10%. [Cross Skill]")
+                .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 40)
                 .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingOneHanded)
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
+        }
+
+        private void StrongStyleSaberstaff()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.StrongStyleSaberstaff)
+                .Name("Strong Style (Saberstaff)")
+                .TriggerRefund((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
+                })
+
+                .AddPerkLevel()
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .Description("Saberstaff attacks use your Perception stat for accuracy and Might stat for damage while active. Additionally, your saberstaff damage is increased by your MGT modifier while active.")
+                .Price(1)
+                .GrantsFeat(FeatType.StrongStyleSaberstaff);
         }
     }
 }

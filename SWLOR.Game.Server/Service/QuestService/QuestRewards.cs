@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -48,20 +47,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public void GiveReward(uint player)
         {
-            // 5% credit bonus per social modifier.
-            var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
-
-            // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
-            var guildRelations = 0f;
-            if (IsGuildQuest)
-            {
-                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
-                guildRelations = perkLevel * 0.05f;
-            }
-
-            var amount = Amount + 
-                         (int)(Amount * social) +
-                         (int)(Amount * guildRelations);
+            var amount = Quest.CalculateQuestGoldReward(player, IsGuildQuest, Amount);
             GiveGoldToCreature(player, amount);
         }
     }
@@ -103,15 +89,12 @@ namespace SWLOR.Game.Server.Service.QuestService
             _quantity = quantity;
             IsSelectable = isSelectable;
 
-            var tempStorage = GetObjectByTag("TEMP_QUEST_ITEM_STORAGE");
-            var tempItem = CreateItemOnObject(resref, tempStorage, quantity);
-            var name = GetName(tempItem);
-            DestroyObject(tempItem, 0.1f);
+            var itemName = Cache.GetItemNameByResref(resref);
 
             if (_quantity > 1)
-                MenuName = _quantity + "x " + name;
+                MenuName = _quantity + "x " + itemName;
             else
-                MenuName = name;
+                MenuName = itemName;
         }
 
         public void GiveReward(uint player)

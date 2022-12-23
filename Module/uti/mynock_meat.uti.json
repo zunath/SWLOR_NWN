@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 10
+    "value": 63
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 526
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 10
+    "value": 63
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Stringy and sinewy meat of a Mynock. Smells faintly of burnt electronics."
+    }
   },
   "Description": {
     "type": "cexolocstring",

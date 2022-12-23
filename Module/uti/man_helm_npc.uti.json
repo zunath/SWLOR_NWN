@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 103
+    "value": 138
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 103
+    "value": 137
   },
   "Comment": {
     "type": "cexostring",
@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -48,7 +48,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 103
+    "value": 25
   },
   "Leather2Color": {
     "type": "byte",
@@ -58,20 +58,20 @@
     "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Mandalorian Helmet"
+      "0": "[NPC] Mandalorian Helmet"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 7
+    "value": 138
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 91
+    "value": 139
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 51
+    "value": 113
   },
   "PaletteID": {
     "type": "byte",

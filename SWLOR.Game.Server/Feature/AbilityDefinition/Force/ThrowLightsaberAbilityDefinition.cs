@@ -5,13 +5,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -77,11 +75,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
             {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                 var damage = Combat.CalculateDamage(
@@ -92,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     defenderStat, 
                     0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
+                Enmity.ModifyEnmity(activator, target, damage + 200 * level);
             });
                         
             // apply to next nearest creature in the spellcylinder
@@ -104,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        CombatPoint.AddCombatPoint(activator, nearby, SkillType.Force, 3);
                         var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(
@@ -115,6 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                             defenderStat, 
                             0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
+                        CombatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
+                        Enmity.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });
 
                     count++;
@@ -122,19 +122,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 nearby = GetNextObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -143,12 +142,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -157,12 +156,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

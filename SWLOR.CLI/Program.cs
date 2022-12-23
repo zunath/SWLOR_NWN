@@ -9,6 +9,9 @@ namespace SWLOR.CLI
         private static readonly LanguageBuilder _languageBuilder = new();
         private static readonly ModulePacker _modulePacker = new();
         private static readonly StructureItemCreator _structureItemCreator = new();
+        private static readonly EnhancementItemBuilder _enhancementItemBuilder = new();
+        private static readonly RecipeCodeBuilder _recipeCodeBuilder = new();
+        private static readonly AdHocTool _adHocTool = new();
 
         static void Main(string[] args)
         {
@@ -17,7 +20,13 @@ namespace SWLOR.CLI
             // Set up the options.
             var placeableOption = app.Option(
                 "-$|-c |--placeable",
-                "Generates uti files in json format for all of the entries found in placeables.2da.",
+                "Generates utp files in json format for all of the entries found in placeables.2da.",
+                CommandOptionType.NoValue
+            );
+
+            var enhancementOption = app.Option(
+                "-$|-e |--enhancement",
+                "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
                 CommandOptionType.NoValue
             );
 
@@ -45,9 +54,19 @@ namespace SWLOR.CLI
                 CommandOptionType.SingleValue
             );
 
+            var recipeOption = app.Option(
+                "-$|-r |--recipe",
+                "Generates code file for all of the recipes in the recipes.tsv file.",
+                CommandOptionType.NoValue);
+
             var structureOption = app.Option(
                 "-$|-s |--structure",
                 "Generates uti files in json format for all of the StructureType.cs enum values.",
+                CommandOptionType.NoValue);
+
+            var adHocToolOption = app.Option(
+                "-$|-a |--adhoc",
+                "Ad-hoc code testing.",
                 CommandOptionType.NoValue);
 
             app.HelpOption("-? | -h | --help");
@@ -57,6 +76,11 @@ namespace SWLOR.CLI
                 if (placeableOption.HasValue())
                 {
                     _placeableBuilder.Process();
+                }
+
+                if (enhancementOption.HasValue())
+                {
+                    _enhancementItemBuilder.Process();
                 }
 
                 if (hakBuilderOption.HasValue())
@@ -79,9 +103,19 @@ namespace SWLOR.CLI
                     _modulePacker.UnpackModule(moduleUnpackOption.Value());
                 }
 
+                if (recipeOption.HasValue())
+                {
+                    _recipeCodeBuilder.Process();
+                }
+
                 if (structureOption.HasValue())
                 {
                     _structureItemCreator.Process();
+                }
+
+                if (adHocToolOption.HasValue())
+                {
+                    _adHocTool.Process();
                 }
 
                 return 0;

@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -395,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(apartment);
 
                 var instance = Property.GetRegisteredInstance(apartment.Id);
-                SetName(instance.Area, CustomName);
+                SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
                 InstructionColor = _green;
@@ -428,6 +427,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Extending your lease by {days} {dayWord} will cost {price} credits. Your new lease will extend to {newLeaseDateText} (UTC). Are you sure you want to extend your lease?",
                 () =>
                 {
+                    if (price > GetGold(Player))
+                    {
+                        Instruction = $"Insufficient credits!";
+                        InstructionColor = _red;
+                        return;
+                    }
+
+                    AssignCommand(Player, () => TakeGoldFromCreature(price, Player, true));
+
                     apartment = GetApartment();
                     apartment.Dates[PropertyDateType.Lease] = newLeaseDate;
 

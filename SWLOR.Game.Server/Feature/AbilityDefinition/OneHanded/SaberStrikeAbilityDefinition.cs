@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -68,11 +66,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            var stat = AbilityType.Perception;
+            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
+            {
+                stat = AbilityType.Might;
+            }
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var attackerStat = GetAbilityScore(activator, stat);
+            var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
@@ -83,17 +84,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
+
+            
+            if (inflict)
+            {
+                RemoveEffectByTag(target, "SABER_STRIKE");
+                var eBreach = TagEffect(EffectACDecrease(2), "SABER_STRIKE");
+                ApplyEffectToObject(DurationType.Temporary, eBreach, target, breachTime);
+            }
+            
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void SaberStrike1(AbilityBuilder builder)
         {
             builder.Create(FeatType.SaberStrike1, PerkType.SaberStrike)
                 .Name("Saber Strike I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(3)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -102,10 +116,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike2, PerkType.SaberStrike)
                 .Name("Saber Strike II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(5)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -114,10 +128,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
                 .Name("Saber Strike III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(8)
-                .IsCastedAbility()
-                .IsHostileAbility()
+                .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

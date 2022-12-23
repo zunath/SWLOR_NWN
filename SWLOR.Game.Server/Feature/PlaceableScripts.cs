@@ -1,11 +1,9 @@
 ﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -126,6 +124,42 @@ namespace SWLOR.Game.Server.Feature
             // creature at 1.6 scale (0.6 above standard) should be Z-transformed by -0.3.
             float fScale = GetObjectVisualTransform(user, ObjectVisualTransform.Scale) - 1.0f;
             SetObjectVisualTransform(user, ObjectVisualTransform.TranslateZ, (-fScale) / 2.0f);           
+        }
+
+        /// <summary>
+        /// Whenever a player purchases a rebuild from the training terminal,
+        /// make them spend a rebuild token and send them to the rebuild area.
+        /// </summary>
+        [NWNEventHandler("buy_rebuild")]
+        public static void PurchaseRebuild()
+        {
+            var player = GetPCSpeaker();
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            {
+                SendMessageToPC(player, $"Only players may use this terminal.");
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer.NumberRebuildsAvailable <= 0)
+            {
+                SendMessageToPC(player, ColorToken.Red($"You do not have any rebuild tokens."));
+                return;
+            }
+
+            dbPlayer.NumberRebuildsAvailable--;
+
+            DB.Set(dbPlayer);
+
+            var waypoint = GetWaypointByTag("REBUILD_LANDING");
+            var location = GetLocation(waypoint);
+            AssignCommand(player, () => ClearAllActions());
+            AssignCommand(player, () => JumpToLocation(location));
+
+            SendMessageToPC(player, $"Remaining rebuild tokens: {dbPlayer.NumberRebuildsAvailable}");
         }
     }
 }

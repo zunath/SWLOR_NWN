@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -62,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
@@ -76,14 +73,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.QuickDraw));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void QuickDraw1(AbilityBuilder builder)
         {
             builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                 .Name("Quick Draw I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
-                .HasActivationDelay(0.5f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -96,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                 .Name("Quick Draw II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
-                .HasActivationDelay(0.5f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
@@ -110,8 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                 .Name("Quick Draw III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
-                .HasActivationDelay(0.5f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()

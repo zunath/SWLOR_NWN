@@ -1,10 +1,8 @@
 ﻿using System;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using static SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition

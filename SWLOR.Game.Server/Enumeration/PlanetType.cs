@@ -55,7 +55,21 @@ namespace SWLOR.Game.Server.Enumeration
             "CZ220_LANDING",
             100,
             true)]
-        CZ220 = 16
+        CZ220 = 16,
+        [Planet("Korriban",
+            "Korriban - ",
+            "Korriban_Orbit",
+            "KORRIBAN_LANDING",
+            500,
+            true)]
+        Korriban = 32,
+        [Planet("Dathomir",
+            "Dathomir - ",
+            "Dathomir_Orbit",
+            "DATHOMIR_LANDING",
+            800,
+            true)]
+        Dathomir = 64,
     }
 
     public class PlanetAttribute : Attribute

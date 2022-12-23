@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Texture("iit_ess_084")
                 .Type(ShipModuleType.MiningLaser)
+                .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Placeable)
                 .Description($"Mines targets up to tier {requiredLevel}.")
                 .PowerType(ShipModulePowerType.High)
@@ -75,14 +76,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
+
                         // Safety check - if another player pulls all of the ore from the asteroid, give an error message.
-                        if (!GetIsObjectValid(target))
+                        if (!GetIsObjectValid(target) || remainingUnits <= 0)
                         {
                             SendMessageToPC(activator, "Your target has been fully mined.");
                             return;
                         }
-
-                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
                         // Perk & module bonuses
                         var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
@@ -98,7 +99,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)
                         {
-                            DestroyObject(target);
+                            // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
+                            // Use EffectDeath to ensure that we trigger death processing.
+                            SetPlotFlag(target, false);
+                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
+
                             SendMessageToPC(activator, $"{GetName(target)} has been fully mined.");
                         }
                         // Update remaining units.
@@ -112,6 +117,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             var item = lootTable.GetRandomItem();
                             CreateItemOnObject(item.Resref, activator);
+                        }
+
+                        if (GetIsPC(activator) && !GetIsDM(activator) && !GetIsDMPossessed(activator))
+                        {
+                            var playerId = GetObjectUUID(activator);
+                            var dbPlayer = DB.Get<Player>(playerId);
+                            var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
+                            var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
+                            var delta = asteroidLevel - rank;
+                            var xp = Skill.GetDeltaXP(delta);
+
+                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                 });

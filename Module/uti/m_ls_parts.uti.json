@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 26
+    "value": 125
   },
   "BaseItem": {
     "type": "int",
-    "value": 517
+    "value": 530
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 26
+    "value": 125
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Emitters and reinforcements designed for a Mandalorian electro-blade."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,12 +43,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Lightsaber Parts"
+      "0": "Mandalorian Electroblade Parts"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 82
+    "value": 213
   },
   "PaletteID": {
     "type": "byte",

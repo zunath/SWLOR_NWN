@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban - Wasteland"
+      "0": "Korriban - Wastelands - North"
     }
   },
   "NoRest": {
@@ -42614,7 +42614,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 117
+          "value": 189
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 11
+    "value": 16
   },
   "Width": {
     "type": "int",

@@ -1,0 +1,310 @@
+Armor	Improved Cotton I	imp_cotton_1	5	Store	30	Control - Smithery	2
+Armor	Improved Cotton II	imp_cotton_2	15	Store	40	Control - Smithery	4
+Armor	Improved Cotton III	imp_cotton_3	25	Store	50	Control - Smithery	6
+Armor	Improved Cotton IV	imp_cotton_4	35	Store	60	Control - Smithery	8
+Armor	Improved Cotton V	imp_cotton_5	45	Store	70	Control - Smithery	10
+Armor	Improved Linen I	imp_linen_1	5	Store	30	Control - Engineering	2
+Armor	Improved Linen II	imp_linen_2	15	Store	40	Control - Engineering	4
+Armor	Improved Linen III	imp_linen_3	25	Store	50	Control - Engineering	6
+Armor	Improved Linen IV	imp_linen_4	35	Store	60	Control - Engineering	8
+Armor	Improved Linen V	imp_linen_5	45	Store	70	Control - Engineering	10
+Armor	Improved Hemp I	imp_hemp_1	5	Store	30	Control - Fabrication	2
+Armor	Improved Hemp II	imp_hemp_2	15	Store	40	Control - Fabrication	4
+Armor	Improved Hemp III	imp_hemp_3	25	Store	50	Control - Fabrication	6
+Armor	Improved Hemp IV	imp_hemp_4	35	Store	60	Control - Fabrication	8
+Armor	Improved Hemp V	imp_hemp_5	45	Store	70	Control - Fabrication	10
+Armor	Improved Sisal I	imp_sisal_1	5	Store	30	Control - Agriculture	2
+Armor	Improved Sisal II	imp_sisal_2	15	Store	40	Control - Agriculture	4
+Armor	Improved Sisal III	imp_sisal_3	25	Store	50	Control - Agriculture	6
+Armor	Improved Sisal IV	imp_sisal_4	35	Store	60	Control - Agriculture	8
+Armor	Improved Sisal V	imp_sisal_5	45	Store	70	Control - Agriculture	10
+Armor	Improved Chaugaine I	imp_chaug_1	5	Store	30	Craftsmanship - Smithery	2
+Armor	Improved Chaugaine II	imp_chaug_2	15	Store	40	Craftsmanship - Smithery	4
+Armor	Improved Chaugaine III	imp_chaug_3	25	Store	50	Craftsmanship - Smithery	6
+Armor	Improved Chaugaine IV	imp_chaug_4	35	Store	60	Craftsmanship - Smithery	8
+Armor	Improved Chaugaine V	imp_chaug_5	45	Store	70	Craftsmanship - Smithery	10
+Armor	Improved Chromafiber I	imp_chromaf_1	5	Store	30	Craftsmanship - Engineering	2
+Armor	Improved Chromafiber II	imp_chromaf_2	15	Store	40	Craftsmanship - Engineering	4
+Armor	Improved Chromafiber III	imp_chromaf_3	25	Store	50	Craftsmanship - Engineering	6
+Armor	Improved Chromafiber IV	imp_chromaf_4	35	Store	60	Craftsmanship - Engineering	8
+Armor	Improved Chromafiber V	imp_chromaf_5	45	Store	70	Craftsmanship - Engineering	10
+Armor	Improved Durafiber I	imp_duraf_1	5	Store	30	Craftsmanship - Fabrication	2
+Armor	Improved Durafiber II	imp_duraf_2	15	Store	40	Craftsmanship - Fabrication	4
+Armor	Improved Durafiber III	imp_duraf_3	25	Store	50	Craftsmanship - Fabrication	6
+Armor	Improved Durafiber IV	imp_duraf_4	35	Store	60	Craftsmanship - Fabrication	8
+Armor	Improved Durafiber V	imp_duraf_5	45	Store	70	Craftsmanship - Fabrication	10
+Armor	Improved Duranex I	imp_duranex_1	5	Store	30	Craftsmanship - Agriculture	2
+Armor	Improved Duranex II	imp_duranex_2	15	Store	40	Craftsmanship - Agriculture	4
+Armor	Improved Duranex III	imp_duranex_3	25	Store	50	Craftsmanship - Agriculture	6
+Armor	Improved Duranex IV	imp_duranex_4	35	Store	60	Craftsmanship - Agriculture	8
+Armor	Improved Duranex V	imp_duranex_5	45	Store	70	Craftsmanship - Agriculture	10
+Armor	Improved Elastex I	imp_elastex_1	5	Store	40	Defense - Physical	1
+Armor	Improved Elastex II	imp_elastex_2	15	Store	50	Defense - Physical	2
+Armor	Improved Elastex III	imp_elastex_3	25	Store	60	Defense - Physical	3
+Armor	Improved Elastex IV	imp_elastex_4	35	Store	70	Defense - Physical	4
+Armor	Improved Elastex V	imp_elastex_5	45	Store	80	Defense - Physical	5
+Armor	Improved Gemweb I	imp_gemweb_1	5	Store	40	Defense - Force	1
+Armor	Improved Gemweb II	imp_gemweb_2	15	Store	50	Defense - Force	2
+Armor	Improved Gemweb III	imp_gemweb_3	25	Store	60	Defense - Force	3
+Armor	Improved Gemweb IV	imp_gemweb_4	35	Store	70	Defense - Force	4
+Armor	Improved Gemweb V	imp_gemweb_5	45	Store	80	Defense - Force	5
+Armor	Improved Polyfiber I	imp_poly_1	5	Store	30	Defense - Poison	2
+Armor	Improved Polyfiber II	imp_poly_2	15	Store	40	Defense - Poison	4
+Armor	Improved Polyfiber III	imp_poly_3	25	Store	50	Defense - Poison	6
+Armor	Improved Polyfiber IV	imp_poly_4	35	Store	60	Defense - Poison	8
+Armor	Improved Polyfiber V	imp_poly_5	45	Store	70	Defense - Poison	10
+Armor	Flame Retardant I	flame_ret_1	5	Store	30	Defense - Fire	2
+Armor	Flame Retardant II	flame_ret_2	15	Store	40	Defense - Fire	4
+Armor	Flame Retardant III	flame_ret_3	25	Store	50	Defense - Fire	6
+Armor	Flame Retardant IV	flame_ret_4	35	Store	60	Defense - Fire	8
+Armor	Flame Retardant V	flame_ret_5	45	Store	70	Defense - Fire	10
+Armor	Improved Insulation I	imp_insul_1	5	Store	30	Defense - Ice	2
+Armor	Improved Insulation II	imp_insul_2	15	Store	40	Defense - Ice	4
+Armor	Improved Insulation III	imp_insul_3	25	Store	50	Defense - Ice	6
+Armor	Improved Insulation IV	imp_insul_4	35	Store	60	Defense - Ice	8
+Armor	Improved Insulation V	imp_insul_5	45	Store	70	Defense - Ice	10
+Armor	Improved Grounding I	imp_ground_1	5	Store	30	Defense - Electrical	2
+Armor	Improved Grounding II	imp_ground_2	15	Store	40	Defense - Electrical	4
+Armor	Improved Grounding III	imp_ground_3	25	Store	50	Defense - Electrical	6
+Armor	Improved Grounding IV	imp_ground_4	35	Store	60	Defense - Electrical	8
+Armor	Improved Grounding V	imp_ground_5	45	Store	70	Defense - Electrical	10
+Armor	Improved Scintathread I	imp_scint_1	5	Store	40	Evasion	1
+Armor	Improved Scintathread II	imp_scint_2	15	Store	50	Evasion	2
+Armor	Improved Scintathread III	imp_scint_3	25	Store	60	Evasion	3
+Armor	Improved Scintathread IV	imp_scint_4	35	Store	70	Evasion	4
+Armor	Improved Scintathread V	imp_scint_5	45	Store	80	Evasion	5
+Armor	Improved Synthatex I	imp_syntha_1	5	Store	30	FP	2
+Armor	Improved Synthatex II	imp_syntha_2	15	Store	40	FP	3
+Armor	Improved Synthatex III	imp_syntha_3	25	Store	50	FP	4
+Armor	Improved Synthatex IV	imp_syntha_4	35	Store	60	FP	5
+Armor	Improved Synthatex V	imp_syntha_5	45	Store	70	FP	6
+Armor	Improved Synthmesh I	imp_synthmesh_1	5	Store	30	HP	2
+Armor	Improved Synthmesh II	imp_synthmesh_2	15	Store	40	HP	3
+Armor	Improved Synthmesh III	imp_synthmesh_3	25	Store	50	HP	4
+Armor	Improved Synthmesh IV	imp_synthmesh_4	35	Store	60	HP	5
+Armor	Improved Synthmesh V	imp_synthmesh_5	45	Store	70	HP	6
+Armor	Improved Synthcloth I	imp_synthcl_1	5	Store	40	Recast Reduction	1
+Armor	Improved Synthcloth II	imp_synthcl_2	15	Store	50	Recast Reduction	2
+Armor	Improved Synthcloth III	imp_synthcl_3	25	Store	60	Recast Reduction	3
+Armor	Improved Synthcloth IV	imp_synthcl_4	35	Store	70	Recast Reduction	4
+Armor	Improved Synthcloth V	imp_synthcl_5	45	Store	80	Recast Reduction	5
+Armor	Improved Zoosha Fabric I	imp_zoosh_1	5	Store	30	STM	2
+Armor	Improved Zoosha Fabric II	imp_zoosh_2	15	Store	40	STM	3
+Armor	Improved Zoosha Fabric III	imp_zoosh_3	25	Store	50	STM	4
+Armor	Improved Zoosha Fabric IV	imp_zoosh_4	35	Store	60	STM	5
+Armor	Improved Zoosha Fabric V	imp_zoosh_5	45	Store	70	STM	6
+Weapon	Improved Desh I	imp_desh_1	5	Store	40	Attack Bonus	1
+Weapon	Improved Desh II	imp_desh_2	15	Store	50	Attack Bonus	2
+Weapon	Improved Desh III	imp_desh_3	25	Store	60	Attack Bonus	3
+Weapon	Improved Desh IV	imp_desh_4	35	Store	70	Attack Bonus	4
+Weapon	Improved Desh V	imp_desh_5	45	Store	80	Attack Bonus	5
+Weapon	Improved Flexsteel I	imp_flex_1	5	Store	30	Control - Smithery	1
+Weapon	Improved Flexsteel II	imp_flex_2	15	Store	40	Control - Smithery	2
+Weapon	Improved Flexsteel III	imp_flex_3	25	Store	50	Control - Smithery	3
+Weapon	Improved Flexsteel IV	imp_flex_4	35	Store	60	Control - Smithery	4
+Weapon	Improved Flexsteel V	imp_flex_5	45	Store	70	Control - Smithery	5
+Weapon	Improved Steelhide I	imp_steelhide_1	5	Store	30	Control - Engineering	1
+Weapon	Improved Steelhide II	imp_steelhide_2	15	Store	40	Control - Engineering	2
+Weapon	Improved Steelhide III	imp_steelhide_3	25	Store	50	Control - Engineering	3
+Weapon	Improved Steelhide IV	imp_steelhide_4	35	Store	60	Control - Engineering	4
+Weapon	Improved Steelhide V	imp_steelhide_5	45	Store	70	Control - Engineering	5
+Weapon	Improved Steelfab I	imp_steelfab_1	5	Store	30	Control - Fabrication	1
+Weapon	Improved Steelfab II	imp_steelfab_2	15	Store	40	Control - Fabrication	2
+Weapon	Improved Steelfab III	imp_steelfab_3	25	Store	50	Control - Fabrication	3
+Weapon	Improved Steelfab IV	imp_steelfab_4	35	Store	60	Control - Fabrication	4
+Weapon	Improved Steelfab V	imp_steelfab_5	45	Store	70	Control - Fabrication	5
+Weapon	Improved Plasteel I	imp_plasteel_1	5	Store	30	Control - Agriculture	1
+Weapon	Improved Plasteel II	imp_plasteel_2	15	Store	40	Control - Agriculture	2
+Weapon	Improved Plasteel III	imp_plasteel_3	25	Store	50	Control - Agriculture	3
+Weapon	Improved Plasteel IV	imp_plasteel_4	35	Store	60	Control - Agriculture	4
+Weapon	Improved Plasteel V	imp_plasteel_5	45	Store	70	Control - Agriculture	5
+Weapon	Improved Neutronium I	imp_neutro_1	5	Store	30	Craftsmanship - Smithery	1
+Weapon	Improved Neutronium II	imp_neutro_2	15	Store	40	Craftsmanship - Smithery	2
+Weapon	Improved Neutronium III	imp_neutro_3	25	Store	50	Craftsmanship - Smithery	3
+Weapon	Improved Neutronium IV	imp_neutro_4	35	Store	60	Craftsmanship - Smithery	4
+Weapon	Improved Neutronium V	imp_neutro_5	45	Store	70	Craftsmanship - Smithery	5
+Weapon	Improved Lommite I	imp_lommite_1	5	Store	30	Craftsmanship - Engineering	1
+Weapon	Improved Lommite II	imp_lommite_2	15	Store	40	Craftsmanship - Engineering	2
+Weapon	Improved Lommite III	imp_lommite_3	25	Store	50	Craftsmanship - Engineering	3
+Weapon	Improved Lommite IV	imp_lommite_4	35	Store	60	Craftsmanship - Engineering	4
+Weapon	Improved Lommite V	imp_lommite_5	45	Store	70	Craftsmanship - Engineering	5
+Weapon	Improved Carvanium I	imp_carvan_1	5	Store	30	Craftsmanship - Fabrication	1
+Weapon	Improved Carvanium II	imp_carvan_2	15	Store	40	Craftsmanship - Fabrication	2
+Weapon	Improved Carvanium III	imp_carvan_3	25	Store	50	Craftsmanship - Fabrication	3
+Weapon	Improved Carvanium IV	imp_carvan_4	35	Store	60	Craftsmanship - Fabrication	4
+Weapon	Improved Carvanium V	imp_carvan_5	45	Store	70	Craftsmanship - Fabrication	5
+Weapon	Improved Zersium I	imp_zersium_1	5	Store	30	Craftsmanship - Agriculture	1
+Weapon	Improved Zersium II	imp_zersium_2	15	Store	40	Craftsmanship - Agriculture	2
+Weapon	Improved Zersium III	imp_zersium_3	25	Store	50	Craftsmanship - Agriculture	3
+Weapon	Improved Zersium IV	imp_zersium_4	35	Store	60	Craftsmanship - Agriculture	4
+Weapon	Improved Zersium V	imp_zersium_5	45	Store	70	Craftsmanship - Agriculture	5
+Weapon	Improved Meleenium I	imp_melee_1	5	Store	40	DMG - Physical	1
+Weapon	Improved Meleenium II	imp_melee_2	15	Store	50	DMG - Physical	2
+Weapon	Improved Meleenium III	imp_melee_3	25	Store	60	DMG - Physical	3
+Weapon	Improved Meleenium IV	imp_melee_4	35	Store	70	DMG - Physical	4
+Weapon	Improved Meleenium V	imp_melee_5	45	Store	80	DMG - Physical	5
+Weapon	Improved Molytex I	imp_molytex_1	5	Store	40	DMG - Force	1
+Weapon	Improved Molytex II	imp_molytex_2	15	Store	50	DMG - Force	2
+Weapon	Improved Molytex III	imp_molytex_3	25	Store	60	DMG - Force	3
+Weapon	Improved Molytex IV	imp_molytex_4	35	Store	70	DMG - Force	4
+Weapon	Improved Molytex V	imp_molytex_5	45	Store	80	DMG - Force	5
+Weapon	Improved Laminasteel I	imp_lamina_1	5	Store	30	DMG - Poison	2
+Weapon	Improved Laminasteel II	imp_lamina_2	15	Store	40	DMG - Poison	4
+Weapon	Improved Laminasteel III	imp_lamina_3	25	Store	50	DMG - Poison	6
+Weapon	Improved Laminasteel IV	imp_lamina_4	35	Store	60	DMG - Poison	8
+Weapon	Improved Laminasteel V	imp_lamina_5	45	Store	70	DMG - Poison	10
+Weapon	Improved Quadranium I	imp_quadran_1	5	Store	30	DMG - Fire	2
+Weapon	Improved Quadranium II	imp_quadran_2	15	Store	40	DMG - Fire	4
+Weapon	Improved Quadranium III	imp_quadran_3	25	Store	50	DMG - Fire	6
+Weapon	Improved Quadranium IV	imp_quadran_4	35	Store	60	DMG - Fire	8
+Weapon	Improved Quadranium V	imp_quadran_5	45	Store	70	DMG - Fire	10
+Weapon	Improved Duranium I	imp_duranium_1	5	Store	30	DMG - Ice	2
+Weapon	Improved Duranium II	imp_duranium_2	15	Store	40	DMG - Ice	4
+Weapon	Improved Duranium III	imp_duranium_3	25	Store	50	DMG - Ice	6
+Weapon	Improved Duranium IV	imp_duranium_4	35	Store	60	DMG - Ice	8
+Weapon	Improved Duranium V	imp_duranium_5	45	Store	70	DMG - Ice	10
+Weapon	Improved Ultrachrome I	imp_ultrachr_1	5	Store	30	DMG - Electrical	2
+Weapon	Improved Ultrachrome II	imp_ultrachr_2	15	Store	40	DMG - Electrical	4
+Weapon	Improved Ultrachrome III	imp_ultrachr_3	25	Store	50	DMG - Electrical	6
+Weapon	Improved Ultrachrome IV	imp_ultrachr_4	35	Store	60	DMG - Electrical	8
+Weapon	Improved Ultrachrome V	imp_ultrachr_5	45	Store	70	DMG - Electrical	10
+Weapon	Improved Phrik I	imp_phrik_1	5	Store	40	Evasion	1
+Weapon	Improved Phrik II	imp_phrik_2	15	Store	50	Evasion	2
+Weapon	Improved Phrik III	imp_phrik_3	25	Store	60	Evasion	3
+Weapon	Improved Phrik IV	imp_phrik_4	35	Store	70	Evasion	4
+Weapon	Improved Phrik V	imp_phrik_5	45	Store	80	Evasion	5
+Weapon	Improved Agrinium I	imp_agrinium_1	5	Store	30	FP	2
+Weapon	Improved Agrinium II	imp_agrinium_2	15	Store	40	FP	3
+Weapon	Improved Agrinium III	imp_agrinium_3	25	Store	50	FP	4
+Weapon	Improved Agrinium IV	imp_agrinium_4	35	Store	60	FP	5
+Weapon	Improved Agrinium V	imp_agrinium_5	45	Store	70	FP	6
+Weapon	Improved Electrum I	imp_electrum_1	5	Store	30	HP	2
+Weapon	Improved Electrum II	imp_electrum_2	15	Store	40	HP	3
+Weapon	Improved Electrum III	imp_electrum_3	25	Store	50	HP	4
+Weapon	Improved Electrum IV	imp_electrum_4	35	Store	60	HP	5
+Weapon	Improved Electrum V	imp_electrum_5	45	Store	70	HP	6
+Weapon	Improved Kelsh I	imp_kelsh_1	5	Store	30	STM	2
+Weapon	Improved Kelsh II	imp_kelsh_2	15	Store	40	STM	3
+Weapon	Improved Kelsh III	imp_kelsh_3	25	Store	50	STM	4
+Weapon	Improved Kelsh IV	imp_kelsh_4	35	Store	60	STM	5
+Weapon	Improved Kelsh V	imp_kelsh_5	45	Store	70	STM	6
+Structure	Steel Rods	steel_rods_1	5	Store	40	Structure Bonus	1
+Structure	Balanced Steel Rods	steel_rods_2	15	Store	50	Structure Bonus	2
+Structure	Reinforced Steel Rods	steel_rods_3	25	Store	60	Structure Bonus	3
+Structure	High Quality Steel Rods	steel_rods_4	35	Store	70	Structure Bonus	4
+Structure	Pristine Steel Rods	steel_rods_5	45	Store	80	Structure Bonus	5
+Cooking	Allspice I	allspice_1	5	Store	30	Duration	1
+Cooking	Allspice II	allspice_2	15	Store	40	Duration	2
+Cooking	Allspice III	allspice_3	25	Store	50	Duration	3
+Cooking	Allspice IV	allspice_4	35	Store	60	Duration	4
+Cooking	Allspice V	allspice_5	45	Store	70	Duration	5
+Cooking	Cayenne I	cayenne_1	5	Store	40	FP	3
+Cooking	Cayenne II	cayenne_2	15	Store	50	FP	6
+Cooking	Cayenne III	cayenne_3	25	Store	60	FP	9
+Cooking	Cayenne IV	cayenne_4	35	Store	70	FP	12
+Cooking	Cayenne V	cayenne_5	45	Store	80	FP	15
+Cooking	Cinnamon I	cinnamon_1	5	Store	40	FP Regen	1
+Cooking	Cinnamon II	cinnamon_2	15	Store	50	FP Regen	2
+Cooking	Cinnamon III	cinnamon_3	25	Store	60	FP Regen	3
+Cooking	Cinnamon IV	cinnamon_4	35	Store	70	FP Regen	4
+Cooking	Cinnamon V	cinnamon_5	45	Store	80	FP Regen	5
+Cooking	Cumin I	cumin_1	5	Store	40	HP	2
+Cooking	Cumin II	cumin_2	15	Store	50	HP	4
+Cooking	Cumin III	cumin_3	25	Store	60	HP	6
+Cooking	Cumin IV	cumin_4	35	Store	70	HP	8
+Cooking	Cumin V	cumin_5	45	Store	80	HP	10
+Cooking	Paprika I	paprika_1	5	Store	40	HP Regen	1
+Cooking	Paprika II	paprika_2	15	Store	50	HP Regen	2
+Cooking	Paprika III	paprika_3	25	Store	60	HP Regen	3
+Cooking	Paprika IV	paprika_4	35	Store	70	HP Regen	4
+Cooking	Paprika V	paprika_5	45	Store	80	HP Regen	5
+Cooking	Turmeric I	turmeric_1	5	Store	40	Recast Reduction	1
+Cooking	Turmeric II	turmeric_2	15	Store	50	Recast Reduction	2
+Cooking	Turmeric III	turmeric_3	25	Store	60	Recast Reduction	3
+Cooking	Turmeric IV	turmeric_4	35	Store	70	Recast Reduction	4
+Cooking	Turmeric V	turmeric_5	45	Store	80	Recast Reduction	5
+Cooking	Fennel Seed I	fennel_seed_1	5	Store	30	Rest Regen	2
+Cooking	Fennel Seed II	fennel_seed_2	15	Store	40	Rest Regen	4
+Cooking	Fennel Seed III	fennel_seed_3	25	Store	50	Rest Regen	6
+Cooking	Fennel Seed IV	fennel_seed_4	35	Store	60	Rest Regen	8
+Cooking	Fennel Seed V	fennel_seed_5	45	Store	70	Rest Regen	10
+Cooking	Coriander I	coriander_1	5	Store	40	STM	3
+Cooking	Coriander II	coriander_2	15	Store	50	STM	6
+Cooking	Coriander III	coriander_3	25	Store	60	STM	9
+Cooking	Coriander IV	coriander_4	35	Store	70	STM	12
+Cooking	Coriander V	coriander_5	45	Store	80	STM	15
+Cooking	Cloves I	cloves_1	5	Store	40	STM Regen	1
+Cooking	Cloves II	cloves_2	15	Store	50	STM Regen	2
+Cooking	Cloves III	cloves_3	25	Store	60	STM Regen	3
+Cooking	Cloves IV	cloves_4	35	Store	70	STM Regen	4
+Cooking	Cloves V	cloves_5	45	Store	80	STM Regen	5
+Cooking	Anise I	anise_1	5	Store	30	XP Bonus	5
+Cooking	Anise II	anise_2	15	Store	40	XP Bonus	10
+Cooking	Anise III	anise_3	25	Store	50	XP Bonus	15
+Cooking	Anise IV	anise_4	35	Store	60	XP Bonus	20
+Cooking	Anise V	anise_5	45	Store	70	XP Bonus	25
+Starship	Improved Plasticrete I	imp_plastcr_1	5	Store	30	Accuracy	1
+Starship	Improved Plasticrete II	imp_plastcr_2	15	Store	40	Accuracy	2
+Starship	Improved Plasticrete III	imp_plastcr_3	25	Store	50	Accuracy	3
+Starship	Improved Plasticrete IV	imp_plastcr_4	35	Store	60	Accuracy	4
+Starship	Improved Plasticrete V	imp_plastcr_5	45	Store	70	Accuracy	5
+Starship	Improved Ferroceramic I	imp_ferro_1	5	Store	30	Armor	1
+Starship	Improved Ferroceramic II	imp_ferro_2	15	Store	40	Armor	2
+Starship	Improved Ferroceramic III	imp_ferro_3	25	Store	50	Armor	3
+Starship	Improved Ferroceramic IV	imp_ferro_4	35	Store	60	Armor	4
+Starship	Improved Ferroceramic V	imp_ferro_5	45	Store	70	Armor	5
+Starship	Improved Sturdiplast I	imp_stplast_1	5	Store	30	Capacitor	1
+Starship	Improved Sturdiplast II	imp_stplast_2	15	Store	40	Capacitor	2
+Starship	Improved Sturdiplast III	imp_stplast_3	25	Store	50	Capacitor	3
+Starship	Improved Sturdiplast IV	imp_stplast_4	35	Store	60	Capacitor	4
+Starship	Improved Sturdiplast V	imp_stplast_5	45	Store	70	Capacitor	5
+Starship	Improved Synstone I	imp_synstone_1	5	Store	30	EM Damage	1
+Starship	Improved Synstone II	imp_synstone_2	15	Store	40	EM Damage	2
+Starship	Improved Synstone III	imp_synstone_3	25	Store	50	EM Damage	3
+Starship	Improved Synstone IV	imp_synstone_4	35	Store	60	EM Damage	4
+Starship	Improved Synstone V	imp_synstone_5	45	Store	70	EM Damage	5
+Starship	Improved Pourstone I	imp_pourstone_1	5	Store	30	EM Defense	1
+Starship	Improved Pourstone II	imp_pourstone_2	15	Store	40	EM Defense	2
+Starship	Improved Pourstone III	imp_pourstone_3	25	Store	50	EM Defense	3
+Starship	Improved Pourstone IV	imp_pourstone_4	35	Store	60	EM Defense	4
+Starship	Improved Pourstone V	imp_pourstone_5	45	Store	70	EM Defense	5
+Starship	Improved Ceramacrete I	imp_cerama_1	5	Store	30	Evasion	1
+Starship	Improved Ceramacrete II	imp_cerama_2	15	Store	40	Evasion	2
+Starship	Improved Ceramacrete III	imp_cerama_3	25	Store	50	Evasion	3
+Starship	Improved Ceramacrete IV	imp_cerama_4	35	Store	60	Evasion	4
+Starship	Improved Ceramacrete V	imp_cerama_5	45	Store	70	Evasion	5
+Starship	Improved Resicrete I	imp_resicrete_1	5	Store	30	Explosive Damage	1
+Starship	Improved Resicrete II	imp_resicrete_2	15	Store	40	Explosive Damage	2
+Starship	Improved Resicrete III	imp_resicrete_3	25	Store	50	Explosive Damage	3
+Starship	Improved Resicrete IV	imp_resicrete_4	35	Store	60	Explosive Damage	4
+Starship	Improved Resicrete V	imp_resicrete_5	45	Store	70	Explosive Damage	5
+Starship	Improved Stresscrete I	imp_stress_1	5	Store	30	Explosive Defense	1
+Starship	Improved Stresscrete II	imp_stress_2	15	Store	40	Explosive Defense	2
+Starship	Improved Stresscrete III	imp_stress_3	25	Store	50	Explosive Defense	3
+Starship	Improved Stresscrete IV	imp_stress_4	35	Store	60	Explosive Defense	4
+Starship	Improved Stresscrete V	imp_stress_5	45	Store	70	Explosive Defense	5
+Starship	Improved Permaplas I	imp_perma_1	5	Store	30	Shield	1
+Starship	Improved Permaplas II	imp_perma_2	15	Store	40	Shield	2
+Starship	Improved Permaplas III	imp_perma_3	25	Store	50	Shield	3
+Starship	Improved Permaplas IV	imp_perma_4	35	Store	60	Shield	4
+Starship	Improved Permaplas V	imp_perma_5	45	Store	70	Shield	5
+Starship	Improved Ferroconcrete I	imp_ferroc_1	5	Store	40	Shield Recharge Rate	1
+Starship	Improved Ferroconcrete II	imp_ferroc_2	15	Store	50	Shield Recharge Rate	2
+Starship	Improved Ferroconcrete III	imp_ferroc_3	25	Store	60	Shield Recharge Rate	3
+Starship	Improved Ferroconcrete IV	imp_ferroc_4	35	Store	70	Shield Recharge Rate	4
+Starship	Improved Ferroconcrete V	imp_ferroc_5	45	Store	80	Shield Recharge Rate	5
+Starship	Improved Steelcrete I	imp_steelcr_1	5	Store	30	Thermal Damage	1
+Starship	Improved Steelcrete II	imp_steelcr_2	15	Store	40	Thermal Damage	2
+Starship	Improved Steelcrete III	imp_steelcr_3	25	Store	50	Thermal Damage	3
+Starship	Improved Steelcrete IV	imp_steelcr_4	35	Store	60	Thermal Damage	4
+Starship	Improved Steelcrete V	imp_steelcr_5	45	Store	70	Thermal Damage	5
+Starship	Improved Diatium I	imp_diatium_1	5	Store	30	Thermal Defense	1
+Starship	Improved Diatium II	imp_diatium_2	15	Store	40	Thermal Defense	2
+Starship	Improved Diatium III	imp_diatium_3	25	Store	50	Thermal Defense	3
+Starship	Improved Diatium IV	imp_diatium_4	35	Store	60	Thermal Defense	4
+Starship	Improved Diatium V	imp_diatium_5	45	Store	70	Thermal Defense	5
+Module	Improved Power Supply I	imp_powsupp_1	5	Store	40	Module Bonus	1
+Module	Improved Power Supply II	imp_powsupp_2	15	Store	50	Module Bonus	2
+Module	Improved Power Supply III	imp_powsupp_3	25	Store	60	Module Bonus	3
+Module	Improved Power Supply IV	imp_powsupp_4	35	Store	70	Module Bonus	4
+Module	Improved Power Supply V	imp_powsupp_5	45	Store	80	Module Bonus	5

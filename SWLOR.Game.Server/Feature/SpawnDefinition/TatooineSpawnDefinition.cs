@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Wraid();
             SandDemon();
             TuskenRaider();
+            TuskenElite();
             SandWorm();
             AridHillyDesert();
             Flatlands();
@@ -28,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_WOMPRATS", "Womprats")
                 .AddSpawn(ObjectType.Creature, "womprat")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void Sandswimmers()
@@ -36,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_SANDSWIMMERS", "Sandswimmers")
                 .AddSpawn(ObjectType.Creature, "sandswimmer")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void Wraid()
@@ -44,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_WRAID", "Wraid")
                 .AddSpawn(ObjectType.Creature, "sandbeetle")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void SandDemon()
@@ -52,7 +56,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_SANDDEMON", "Sand Demon")
                 .AddSpawn(ObjectType.Creature, "sanddemon")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void TuskenRaider()
@@ -61,10 +66,26 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "ext_tusken_tr003")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "tusken_melee")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void TuskenElite()
+        {
+            _builder.Create("TATOOINE_TUSKEN_ELITE", "Tusken Elite")
+                .AddSpawn(ObjectType.Creature, "tusken_elite1")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tusken_elite2")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void SandWorm()
@@ -72,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_SAND_WORM", "Sand Worm")
                 .AddSpawn(ObjectType.Creature, "sandworm")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void AridHillyDesert()
@@ -81,10 +103,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "ext_tusken_tr003")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "womprat")
                 .WithFrequency(40)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void Flatlands()
@@ -93,18 +117,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "sandswimmer")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "sandworm")
                 .WithFrequency(2)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "sanddemon")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "sandbeetle")
                 .WithFrequency(40)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void NorthernDunes()
@@ -113,14 +141,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "sandswimmer")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "sanddemon")
                 .WithFrequency(20)
                 .RandomlyWalks()
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "sandbeetle")
                 .WithFrequency(40)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

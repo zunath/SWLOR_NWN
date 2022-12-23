@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The Rodian before you is dressed in beautiful blue attire. In her hand is a holo puck, with imagery of star ships. She casually flips through them as he idly waits in the Hall."
+    }
   },
   "Dex": {
     "type": "byte",

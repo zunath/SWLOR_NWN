@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -19,11 +18,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void MainPageInit(DialogPage page)
         {
-            page.Header = "If you die, you will return to the last medical facility you registered at. Would you like to register to this medical facility?";
+            var player = GetPC();
+            page.Header = "In the event you suffer a critical injury you will return to your registered medical facility. Would you like to register to this medical facility?";
 
             page.AddResponse("Register", () =>
             {
-                var player = GetPC();
+                if (!GetIsPC(player) || GetIsDM(player)) return;
+
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
 

@@ -8,13 +8,14 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class AI
     {
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new Dictionary<uint, HashSet<uint>>();
+
+        private const string StickyTargetRounds = "AI_STICKY_TARGET_ROUNDS";
 
         /// <summary>
         /// Entry point for creature heartbeat logic.
@@ -24,7 +25,8 @@ namespace SWLOR.Game.Server.Service
         {
             ExecuteScript("crea_hb_bef", OBJECT_SELF);
             RestoreCreatureStats();
-            ProcessRandomWalkFlag();
+            ProcessFlags();
+            AttackHighestEnmityTarget();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
             ExecuteScript("crea_hb_aft", OBJECT_SELF);
         }
@@ -130,6 +132,7 @@ namespace SWLOR.Game.Server.Service
             LoadCreatureStats();
             LoadAggroEffect();
             DoVFX();
+            SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
             ExecuteScript("cdef_c2_default9", OBJECT_SELF);
             ExecuteScript("crea_spawn_aft", OBJECT_SELF);
         }
@@ -180,12 +183,24 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
+        /// Invisible creatures do not trigger this.
         /// </summary>
         [NWNEventHandler("crea_aggro_enter")]
         public static void CreatureAggroEnter()
         {
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
+
+            // Target is invisible
+            if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
+            {
+                return;
+            }
+
+            // Must have line of sight to AOE creator
+            if (!LineOfSightObject(entering, self))
+                return;
+
             if (!GetIsEnemy(entering, self))
             {
                 var attackTarget = Enmity.GetHighestEnmityTarget(entering);
@@ -232,6 +247,31 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Fail-safe to ensure the creature attacks 
+        /// </summary>
+        private static void AttackHighestEnmityTarget()
+        {
+            var self = OBJECT_SELF;
+            if (GetIsInCombat(self))
+                return;
+
+            var target = Enmity.GetHighestEnmityTarget(self);
+            if (!GetIsObjectValid(target))
+                return;
+
+            var action = GetCurrentAction(self);
+            if (action != ActionType.RandomWalk && 
+                action != ActionType.Invalid)
+                return;
+
+            AssignCommand(self, () =>
+            {
+                ClearAllActions();
+                ActionAttack(target);
+            });
+        }
+
+        /// <summary>
         /// Handles custom perk usage
         /// </summary>
         private static void ProcessPerkAI()
@@ -239,12 +279,17 @@ namespace SWLOR.Game.Server.Service
             var self = OBJECT_SELF;
 
             // Petrified - do nothing else.
-            if (GetHasEffect(EffectTypeScript.Petrify, self)) return;
+            if (GetHasEffect(self, EffectTypeScript.Petrify)) 
+                return;
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = GetTarget();
-            if (!GetIsObjectValid(target)) return;
+            var target = Enmity.GetHighestEnmityTarget(self);
+            if (!GetIsObjectValid(target))
+            {
+                ClearAllActions();
+                return;
+            }
 
             // If currently randomly walking, clear all actions.
             if (GetCurrentAction(self) == ActionType.RandomWalk)
@@ -252,12 +297,23 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions();
             }
 
-            // Switch targets if necessary
-            if (target != GetAttackTarget(self) ||
-                GetCurrentAction(self) == ActionType.Invalid)
+            // Not currently fighting - attack target
+            if (GetCurrentAction(self) == ActionType.Invalid)
             {
+                DeleteLocalInt(self, StickyTargetRounds);
                 ClearAllActions();
                 ActionAttack(target);
+            }
+            // The AI should stick to their same target for 3 rounds before shifting to the next highest enmity target.
+            else if (target != GetAttackTarget(self))
+            {
+                var rounds = GetLocalInt(self, StickyTargetRounds) + 1;
+                if (rounds > 3)
+                {
+                    DeleteLocalInt(self, StickyTargetRounds);
+                    ClearAllActions();
+                    ActionAttack(target);
+                }
             }
             // Perk ability usage
             else
@@ -278,18 +334,23 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the creature with the highest enmity on this enemy's enmity table.
-        /// If no target can be determined, OBJECT_INVALID will be returned.
+        /// Forces a creature to start attacking a different target, regardless of enmity level.
+        /// This also resets their sticky targeting.
+        /// If either the creature or the target is invalid, nothing will happen.
         /// </summary>
-        /// <returns>The creature with the highest enmity, or OBJECT_INVALID if it cannot be determined.</returns>
-        private static uint GetTarget()
+        /// <param name="creature">The creature to force a target swap upon.</param>
+        /// <param name="target">The new target.</param>
+        public static void ForceTargetSwap(uint creature, uint target)
         {
-            var self = OBJECT_SELF;
-            var enmityTable = Enmity.GetEnmityTable(self);
-            if (enmityTable.Count <= 0) return OBJECT_INVALID;
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(target))
+                return;
 
-            var highest = enmityTable.OrderByDescending(o => o.Value).First();
-            return highest.Key;
+            DeleteLocalInt(creature, StickyTargetRounds);
+            AssignCommand(creature, () =>
+            {
+                ClearAllActions();
+                ActionAttack(target);
+            });
         }
 
         /// <summary>
@@ -298,12 +359,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectType">The type of effect to look for.</param>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if creature has the effect, false otherwise</returns>
-        private static bool GetHasEffect(EffectTypeScript effectType, uint creature)
+        private static bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
         {
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
             {
-                if (GetEffectType(effect) == effectType)
+                var type = GetEffectType(effect);
+
+                if (type == effectType || otherEffectTypes.Contains(type))
                 {
                     return true;
                 }
@@ -403,10 +466,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature's heartbeat fires, if they have the RandomWalk AI flag,
-        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk.
+        /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
+        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
         /// </summary>
-        private static void ProcessRandomWalkFlag()
+        private static void ProcessFlags()
         {
             var self = OBJECT_SELF;
 
@@ -421,13 +484,24 @@ namespace SWLOR.Game.Server.Service
             }
 
             var aiFlags = GetAIFlag(self);
-            if (!aiFlags.HasFlag(AIFlag.RandomWalk) ||
-                IsInConversation(self) ||
+            if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk)
+                GetCurrentAction(self) == ActionType.RandomWalk ||
+                GetCurrentAction(self) == ActionType.MoveToPoint ||
+                GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)))
                 return;
 
-            if (Random.D100(1) <= 40)
+            // Return Home flag
+            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
+            if (aiFlags.HasFlag(AIFlag.ReturnHome) &&
+                (GetAreaFromLocation(homeLocation) != GetArea(self) ||
+                 GetDistanceBetweenLocations(GetLocation(self), homeLocation) > 15f))
+            {
+                AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
+            }
+            // Randomly walk flag
+            else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
+                Random.D100(1) <= 40)
             {
                 AssignCommand(self, ActionRandomWalk);
             }
@@ -446,7 +520,7 @@ namespace SWLOR.Game.Server.Service
             var isSeen = GetLastPerceptionSeen();
             var isVanished = GetLastPerceptionVanished();
 
-            if (GetIsPC(lastPerceived)) return;
+            if (GetIsPC(lastPerceived) || GetIsDead(lastPerceived)) return;
             var isSameFaction = GetFactionEqual(self, lastPerceived);
             if (!isSameFaction) return;
 

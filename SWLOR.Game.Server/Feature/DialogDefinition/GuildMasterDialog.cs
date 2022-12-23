@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.QuestService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -154,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var status = ColorToken.Green("{ACCEPTED}");
                 // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
                 if (!dbPlayer.Quests.ContainsKey(task.QuestId) ||
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted == null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0)
+                    (dbPlayer.Quests[task.QuestId].DateLastCompleted != null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0))
                 {
                     status = ColorToken.Yellow("{Available}");
                 }
@@ -192,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var goldReward in goldRewards)
             {
-                goldAmount += goldReward.Amount;
+                goldAmount += Quest.CalculateQuestGoldReward(player, true, goldReward.Amount);
             }
 
             page.Header = ColorToken.Green("Task: ") + task.Name + "\n\n" +

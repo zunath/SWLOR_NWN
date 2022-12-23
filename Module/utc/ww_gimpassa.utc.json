@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -9
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 100
   },
   "DecayTime": {
     "type": "dword",
@@ -126,7 +126,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Gimpassa"
+      "0": "Gimpassa Hatchling"
     }
   },
   "fortbonus": {
@@ -143,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 100
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 16
   },
   "Interruptable": {
     "type": "byte",
@@ -177,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 330
+    "value": 130
   },
   "NaturalAC": {
     "type": "byte",
@@ -205,7 +205,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 734
+    "value": 1039
   },
   "Race": {
     "type": "byte",
@@ -550,7 +550,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_GIMPASSA,60,2"
+          "value": "VISCARA_GIMPASSA,100,1"
         }
       },
       {
@@ -566,6 +566,36 @@
         "Value": {
           "type": "int",
           "value": 9
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_GIMPASSA,60,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_GIMPASSA_RARES,20,1"
         }
       }
     ]
@@ -584,6 +614,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 16
   }
 }

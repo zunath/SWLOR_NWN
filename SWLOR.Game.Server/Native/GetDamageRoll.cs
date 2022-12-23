@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
@@ -37,6 +40,8 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
+            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnGetDamageRoll)}", "RunScript", "Script");
+
             var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
             var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -46,7 +51,11 @@ namespace SWLOR.Game.Server.Native
 
             // On a critical hit, this method appears to be invoked multiple times, with an invalid target the second and
             // subsequent times.  Bail out early.
-            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID) return 0;
+            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID)
+            {
+                ProfilerPlugin.PopPerfScope();
+                return 0;
+            }
 
             var attackType = (uint) AttackType.Melee;
             var weapon = bOffHand == 1
@@ -98,6 +107,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Physical] = 0;
             var physicalDamage = 0;
             var foundDMG = false;
+            var weaponPerkLevel = 0;
 
             // Calculate attacker's base DMG
             var specializationDMGBonus = CalculateSpecializationDMG(attacker, weapon);
@@ -115,7 +125,8 @@ namespace SWLOR.Game.Server.Native
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
-                    if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
+                    if (ip == null) continue;
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         // Catch old-style DMG properties here, and correct the damage type by hand.
                         var damageTypeId = ip.m_nSubType;
@@ -131,6 +142,11 @@ namespace SWLOR.Game.Server.Native
                         dmgValues[damageType] = dmg;
                         foundDMG = true;
                     }
+
+                    if (weaponPerkLevel == 0 && ip.m_nPropertyName == (ushort)ItemPropertyType.UseLimitationPerk)
+                    {
+                        weaponPerkLevel = ip.m_nCostTableValue;
+                    }
                 }
             }
             
@@ -141,25 +157,23 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] = 1;
             }
 
-            int attackerStat = attackerStats.m_nStrengthBase;
+            var attackerStatType = weapon == null
+                ? AbilityType.Might
+                : Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+            var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
-            if (attackType == (uint) AttackType.Ranged)
+            // Weapon Style Toggle
+            // Swaps damage stat as appropriate.
+            var damageStat = GetWeaponStyleStat(weapon, attacker);
+            if (damageStat > -1)
             {
-                // Throwing weapons should add Strength.  Other ranged types are based on weapon base damage rating. 
-                if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-                {
-                    attackerStat = attackerStats.m_nStrengthBase;
-                }
-                else
-                {
-                    attackerStat = attackerStats.m_nDexterityBase;
-                }
+                attackerStat = damageStat;
             }
 
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
             if (attackerStat > 128) attackerStat -= 256;
 
-            var log = "DAMAGE: attacker attribute modifier: " + attackerStat.ToString() + ", weapon damage ratings ";
+            var log = "DAMAGE: attacker attribute modifier: " + attackerStat + ", weapon damage ratings ";
             foreach(var damageType in dmgValues.Keys)
             {
                 log += damageType + ": " + dmgValues[damageType] + ";";
@@ -170,27 +184,49 @@ namespace SWLOR.Game.Server.Native
             // attack attribute, so it can't happen earlier.
             dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
 
-            // Combat Mode - Power Attack (+1 DMG)
+            // Combat Mode - Power Attack (+3 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
-            {
-                dmgValues[CombatDamageType.Physical] += 1;
-            }
-            // Combat Mode - Improved Power Attack (+3 DMG)
-            else if (attacker?.m_nCombatMode == 3) // 3 = Improved Power Attack
             {
                 dmgValues[CombatDamageType.Physical] += 3;
             }
-
-            // 2-handed weapons and Doublehand perk
-            if (attackType == (uint)AttackType.Melee && weapon != null)
+            // Combat Mode - Improved Power Attack (+6 DMG)
+            else if (attacker?.m_nCombatMode == 3) // 3 = Improved Power Attack
             {
-                var isDoubleHand = attacker.m_pInventory.GetItemInSlot((uint)InventorySlot.LeftHand) == null &&
-                                  attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand) == 1;
-                if (isDoubleHand)
+                dmgValues[CombatDamageType.Physical] += 6;
+            }
+
+            var mightMod = attacker.m_pStats.m_nStrengthModifier;
+            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+
+            // Doublehand perk, MGT mod bonus to Crushing Staves + Strong Style
+            if (weapon != null)
+            {
+                if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
                 {
-                    Log.Write(LogGroup.Attack, "DAMAGE: Applying doublehand damage bonus.");
-                    attackerStat = (int)(attackerStat * 1.5f);
+                    var weaponType = (BaseItem)weapon.m_nBaseItem;
+
+                    if (Item.OneHandedMeleeItemTypes.Contains(weaponType) ||
+                        Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
+                    {
+                        var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
+                        Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
+                        dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
+                    }
                 }
+
+                if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
+                        dmgValues[CombatDamageType.Physical] += mightMod * 2; // Mastery gives 2x MGT
+                    else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
+                        dmgValues[CombatDamageType.Physical] += mightMod; // Crushing Staves 1x MGT
+                }
+                else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
+                else if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                    Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                    dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
             }
 
             var critMultiplier = 1;
@@ -200,6 +236,7 @@ namespace SWLOR.Game.Server.Native
                 // Look up the weapon's base crit multiplier and apply any bonus from the Improved Multiplier perk. 
                 critMultiplier = weapon != null ? Item.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
                 if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
+                if (HasRapidReload(attacker, weapon)) critMultiplier += 1;
             }
 
             var critical = bCritical == 1 ? critMultiplier : 0;
@@ -212,7 +249,7 @@ namespace SWLOR.Game.Server.Native
                 if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
                     var target = CNWSCreature.FromPointer(pTarget);
-                    int defenderStat = target.m_pStats.m_nConstitutionBase;
+                    int defenderStat = target.m_pStats.GetCONStat();
                     var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                     var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
 
@@ -223,7 +260,8 @@ namespace SWLOR.Game.Server.Native
                         attackerStat, 
                         defense,
                         defenderStat, 
-                        critical);
+                        critical,
+                        weaponPerkLevel);
 
                     // Apply droid bonus for electrical damage.
                     if (target.m_pStats.m_nRace == (ushort)RacialType.Robot && damageType == CombatDamageType.Electrical)
@@ -289,7 +327,7 @@ namespace SWLOR.Game.Server.Native
                 }
                 else if (damageType == CombatDamageType.Force && damage > 0)
                 {
-                    pAttackData.AddDamage((ushort)DamageType.Sonic, damage);
+                    pAttackData.AddDamage((ushort)DamageType.Magical, damage);
                 }
                 else if (damageType == CombatDamageType.Fire && damage > 0)
                 {
@@ -308,6 +346,8 @@ namespace SWLOR.Game.Server.Native
                     pAttackData.AddDamage((ushort)DamageType.Cold, damage);
                 }
             }
+
+            ProfilerPlugin.PopPerfScope();
 
             return physicalDamage;
         }
@@ -429,11 +469,49 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            if (Item.StaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
 
             return false;
+        }
+
+        private static bool HasRapidReload(CNWSCreature attacker, CNWSItem weapon)
+        {
+            if (weapon == null) return false;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.RapidReload) == 0) return false;
+
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+
+            if (Item.RifleBaseItemTypes.Contains(baseItemType)) return true;
+
+            return false;
+        }
+
+        private static int GetWeaponStyleStat(CNWSItem weapon, CNWSCreature attacker)
+        {
+            if (weapon == null)
+                return -1;
+
+            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+            if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                    return attacker.m_pStats.GetSTRStat();
+            }
+            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                    return attacker.m_pStats.GetSTRStat();
+            } 
+            else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
+                    return attacker.m_pStats.GetDEXStat();
+            }
+
+            return -1;
         }
     }
 }

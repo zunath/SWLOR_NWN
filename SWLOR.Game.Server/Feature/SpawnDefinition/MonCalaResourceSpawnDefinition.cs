@@ -29,11 +29,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "ancient_tree")
                 .WithFrequency(70)
 
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_2")
+                .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
                 .WithFrequency(30)
 
-                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
                 .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .WithFrequency(30)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
                 .WithFrequency(20)
@@ -49,11 +53,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(20)
 
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_2")
+                .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_3")
                 .WithFrequency(30)
 
-                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
                 .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies3")
+                .WithFrequency(30)
 
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
                 .WithFrequency(10)

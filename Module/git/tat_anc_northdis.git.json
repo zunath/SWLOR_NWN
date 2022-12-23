@@ -25821,7 +25821,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 6.0
         },
         "ClassList": {
           "type": "list",
@@ -80602,11 +80602,11 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 10
+                            "value": 15
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 2
+                            "value": 1
                           },
                           "Param1": {
                             "type": "byte",
@@ -80618,7 +80618,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
+                            "value": 32
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
                             "value": 11
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 9
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 81
                           },
                           "Subtype": {
                             "type": "word",

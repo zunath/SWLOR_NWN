@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 80.0
+    "value": 77.0
   },
   "ClassList": {
     "type": "list",
@@ -179,13 +179,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "item004"
-        }
-      },
-      {
-        "__struct_id": 128,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "item010"
         }
       },
       {

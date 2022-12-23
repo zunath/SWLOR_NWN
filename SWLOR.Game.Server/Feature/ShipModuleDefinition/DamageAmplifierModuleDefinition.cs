@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(name)
                 .Texture("iit_ess_210")
-                .Description($"Improves a ship's EM damage by {emDamageBonus}.")
+                .Description($"Improves a ship's EM attack by {emDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(name)
                 .Texture("iit_ess_214")
-                .Description($"Improves a ship's thermal damage by {thermalDamageBonus}.")
+                .Description($"Improves a ship's thermal attack by {thermalDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(name)
                 .Texture("iit_ess_216")
-                .Description($"Improves a ship's explosive damage by {explosiveDamageBonus}.")
+                .Description($"Improves a ship's explosive attack by {explosiveDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .EquippedAction((creature, shipStatus, moduleBonus) =>

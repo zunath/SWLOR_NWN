@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Extension;
 
 namespace SWLOR.Game.Server.Service

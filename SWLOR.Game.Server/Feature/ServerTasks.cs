@@ -2,9 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -14,7 +15,8 @@ namespace SWLOR.Game.Server.Feature
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
         private static TimeSpan RestartTime => new TimeSpan(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
-
+        private static DateTime _nextNotification;
+        
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.
         /// The time must be within 30 seconds of the schedule restart time (see RestartTime above)
@@ -49,11 +51,67 @@ namespace SWLOR.Game.Server.Feature
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
             ConfigureServerSettings();
+            ApplyBans();
+            ScheduleRestartReminder();
         }
 
         private static void ConfigureServerSettings()
         {
             AdministrationPlugin.SetPlayOption(AdministrationOption.ExamineChallengeRating, false);
+            AdministrationPlugin.SetPlayOption(AdministrationOption.UseMaxHitpoints, true);
+        }
+
+        private static void ApplyBans()
+        {
+            var query = new DBQuery<PlayerBan>();
+
+            var dbBanCount = (int)DB.SearchCount(query);
+            var dbBans = DB.Search(query.AddPaging(dbBanCount, 0));
+
+            foreach (var ban in dbBans)
+            {
+                AdministrationPlugin.AddBannedCDKey(ban.CDKey);
+            }
+        }
+
+        private static void ScheduleRestartReminder()
+        {
+            var bootNow = DateTime.UtcNow;
+            _nextNotification = new DateTime(bootNow.Year, bootNow.Month, bootNow.Day, bootNow.Hour, 0, 0)
+                .AddMinutes(1);
+
+            Scheduler.ScheduleRepeating(() =>
+            {
+                var now = DateTime.UtcNow;
+                var restartDate = new DateTime(now.Year, now.Month, now.Day, RestartTime.Hours, RestartTime.Minutes, RestartTime.Seconds);
+
+                if (RestartTime < now.TimeOfDay)
+                {
+                    restartDate = restartDate.AddDays(1);
+                }
+                
+                if (now >= _nextNotification)
+                {
+                    var delta = restartDate - now;
+                    var rebootString = Time.GetTimeLongIntervals(delta, false);
+                    var message = $"Server will automatically reboot in approximately {rebootString}.";
+
+                    Log.Write(LogGroup.Server, message, true);
+
+                    for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+                    {
+                        var playerId = GetObjectUUID(player);
+                        var dbPlayer = DB.Get<Player>(playerId);
+
+                        if(GetIsDM(player) || dbPlayer.Settings.DisplayServerResetReminders)
+                            SendMessageToPC(player, message);
+                    }
+
+                    _nextNotification = delta.TotalMinutes <= 15 
+                        ? now.AddMinutes(1) 
+                        : now.AddHours(1);
+                }
+            }, TimeSpan.FromMinutes(1));
         }
     }
 }

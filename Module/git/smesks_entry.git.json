@@ -319,7 +319,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 12
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -1767,7 +1767,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 12
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -3215,7 +3215,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 12
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -4663,7 +4663,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 12
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -6111,7 +6111,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -7510,7 +7510,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -9005,7 +9005,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 16
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -10121,7 +10121,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 184
+                "value": 36
               },
               "Cursed": {
                 "type": "byte",
@@ -11962,7 +11962,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -13361,7 +13361,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 20
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",

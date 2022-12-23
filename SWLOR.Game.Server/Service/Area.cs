@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -62,6 +63,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves list of all areas.
+        /// </summary>
+        /// <param> </param>
+        /// <returns>AreasByResref cache.</returns>
+        public static Dictionary<string, uint> GetAreas()
+        {
+            return AreasByResref;
+        }
+
+        /// <summary>
         /// Retrieves all of the players currently in the specified area.
         /// If no players are in the area, an empty list will returned.
         /// </summary>
@@ -91,6 +102,28 @@ namespace SWLOR.Game.Server.Service
 
             if(!PlayersByArea[area].Contains(player))
                 PlayersByArea[area].Add(player);
+
+            // Handle DM created Area Notes
+            var query = new DBQuery<AreaNote>()
+                .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
+                .OrderBy(nameof(AreaNote.AreaResref));
+            var notes = DB.Search(query)
+                .ToList();
+
+            if (notes.Count > 0)
+            {
+                var prefix = GetName(area) + ": ";
+                var message = string.Empty;
+                foreach (var note in notes)
+                {
+                    message += note.PublicText;
+                }
+
+                if (!string.IsNullOrWhiteSpace(message.Trim()))
+                {
+                    SendMessageToPC(player, ColorToken.Purple(prefix + message));
+                }
+            }
         }
 
         /// <summary>

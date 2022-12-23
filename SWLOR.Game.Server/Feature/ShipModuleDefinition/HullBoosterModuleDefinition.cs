@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -31,7 +30,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
-                    shipStatus.Hull += hullBoostAmount + moduleBonus * 2;
                     shipStatus.MaxHull += hullBoostAmount + moduleBonus * 2;
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>

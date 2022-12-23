@@ -214,7 +214,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 18
   },
   "Interruptable": {
     "type": "byte",
@@ -632,7 +632,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_VELLEN_FLESHLEADER,95,1"
+          "value": "VISCARA_VELLEN_FLESHLEADER,100,1"
         }
       },
       {
@@ -677,7 +677,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_VELLEN_FLESHLEADER_RARES,5,1"
+          "value": "VISCARA_VELLEN_FLESHLEADER_RARES,20,1"
         }
       }
     ]

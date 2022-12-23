@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -69,11 +67,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
+            Enmity.ModifyEnmityOnAll(activator, 250 * level);
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            int attackerStat;
+            int attack;
+
+            if (GetHasFeat(FeatType.FlurryStyle, activator))
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+                attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+            }
+            else
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Might);
+                attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            }
+
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
@@ -91,10 +101,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam1, PerkType.Slam)
                 .Name("Slam I")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .Level(1)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -102,7 +112,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam2, PerkType.Slam)
                 .Name("Slam II")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .Level(2)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
                 .HasCustomValidation(Validation)
@@ -112,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Slam3, PerkType.Slam)
                 .Name("Slam III")
-                .HasRecastDelay(RecastGroup.Slam, 30f)
+                .Level(3)
+                .HasRecastDelay(RecastGroup.Slam, 12f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
                 .HasCustomValidation(Validation)

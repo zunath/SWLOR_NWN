@@ -47,7 +47,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Ugnaught = 163,
         Togruta = 164,
         Rodian = 165,
-        KelDor = 166
+        KelDor = 166,
+        Droid = 167,
 
     }
 }

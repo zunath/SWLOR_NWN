@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -157,6 +155,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder RequirementUnlocked()
         {
             var requirement = new PerkRequirementUnlock(_activePerk.Type);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a requirement that the player must have leveled a specific other perk.
+        /// </summary>
+        /// <param name="mustHavePerkType">The type of perk the player must have.</param>
+        /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
+        /// <returns>A perk builder with the configured options.</returns>
+        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
+        {
+            var requirement = new PerkRequirementMustHavePerk(mustHavePerkType, mustHavePerkLevel);
             _activeLevel.Requirements.Add(requirement);
 
             return this;

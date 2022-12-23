@@ -4,11 +4,12 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -443,9 +444,13 @@ namespace SWLOR.Game.Server.Service
                 if (now > despawnTime)
                 {
                     // Destroy active spawned objects from the module.
-                    foreach (var activeSpawn in _activeSpawnsByArea[area])
+                    if (_activeSpawnsByArea.ContainsKey(area))
                     {
-                        DestroyObject(activeSpawn.SpawnObject);
+                        foreach (var activeSpawn in _activeSpawnsByArea[area])
+                        {
+                            ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
+                            DestroyObject(activeSpawn.SpawnObject);
+                        }
                     }
 
                     if (!_queuedSpawnsByArea.ContainsKey(area))
@@ -457,10 +462,118 @@ namespace SWLOR.Game.Server.Service
 
                     // Remove area from the various cache collections.
                     _queuedSpawnsByArea.Remove(area);
-                    _activeSpawnsByArea[area].Clear();
+
+                    if (_activeSpawnsByArea.ContainsKey(area))
+                    {
+                        _activeSpawnsByArea[area].Clear();
+                    }
+
                     _queuedAreaDespawns.Remove(area);
                 }
             }
+        }
+
+        private static void AdjustScripts(uint spawn)
+        {
+            if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))
+                return;
+
+            var type = GetObjectType(spawn);
+
+            if (type == ObjectType.Creature)
+            {
+                var originalSpawnScript = GetEventScript(spawn, EventScript.Creature_OnSpawnIn);
+
+                SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
+                SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
+                //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
+                SetEventScript(spawn, EventScript.Creature_OnDamaged, "x2_def_ondamage");
+                SetEventScript(spawn, EventScript.Creature_OnDeath, "x2_def_ondeath");
+                SetEventScript(spawn, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
+                SetEventScript(spawn, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
+                SetEventScript(spawn, EventScript.Creature_OnNotice, "x2_def_percept");
+                SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
+                SetEventScript(spawn, EventScript.Creature_OnRested, "x2_def_rested");
+                SetEventScript(spawn, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
+                SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
+                SetEventScript(spawn, EventScript.Creature_OnUserDefined, "x2_def_userdef");
+
+                // The spawn script will not fire because it has already executed. In the event there wasn't a script
+                // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
+                if (string.IsNullOrWhiteSpace(originalSpawnScript))
+                {
+                    ExecuteScript("x2_def_spawn", spawn);
+                }
+            }
+            else if (type == ObjectType.Placeable)
+            {
+                if (string.IsNullOrWhiteSpace(GetEventScript(spawn, EventScript.Placeable_OnDeath)))
+                {
+                    SetEventScript(spawn, EventScript.Placeable_OnDeath, "plc_death");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Make plot/immortal NPCs incredibly strong to dissuade players from attacking them and messing with spawns.
+        /// </summary>
+        /// <param name="spawn"></param>
+        private static void AdjustStats(uint spawn)
+        {
+            if (!GetIsObjectValid(spawn) || GetObjectType(spawn) != ObjectType.Creature)
+                return;
+
+            if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))
+                return;
+
+            if (!GetPlotFlag(spawn) && !GetImmortal(spawn))
+                return;
+
+            CreaturePlugin.SetBaseAC(spawn, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Might, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Perception, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Vitality, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Agility, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Willpower, 100);
+            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Social, 100);
+            CreaturePlugin.SetBaseAttackBonus(spawn, 254);
+            CreaturePlugin.AddFeatByLevel(spawn, FeatType.WeaponProficiencyCreature, 1);
+
+            AssignCommand(spawn, () => ClearAllActions());
+
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, spawn)))
+            {
+                var claw = CreateItemOnObject("npc_claw", spawn);
+                AssignCommand(spawn, () =>
+                {
+                    ActionEquipItem(claw, InventorySlot.CreatureRight);
+                });
+            }
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, spawn)))
+            {
+                var claw = CreateItemOnObject("npc_claw", spawn);
+                AssignCommand(spawn, () =>
+                {
+                    ActionEquipItem(claw, InventorySlot.CreatureLeft);
+                });
+            }
+        }
+
+        /// <summary>
+        /// When a DM spawns a creature, attach all required scripts to it.
+        /// </summary>
+        [NWNEventHandler("dm_spwnobj_aft")]
+        public static void DMSpawnCreature()
+        {
+            var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
+
+            if (objectType != InternalObjectType.Creature)
+                return;
+
+            var objectData = EventsPlugin.GetEventData("OBJECT");
+            var spawn = Convert.ToUInt32(objectData, 16); // Not sure why this is in hex.
+            AdjustScripts(spawn);
+            AdjustStats(spawn);
         }
 
         /// <summary>
@@ -485,7 +598,9 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                // Note: AI flag is not set here as the builder is expected to specify this as a local variable if they are hand-placing spawns.
+                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                AdjustScripts(deserialized);
+                AdjustStats(deserialized);
 
                 return deserialized;
             }
@@ -494,11 +609,11 @@ namespace SWLOR.Game.Server.Service
             else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var (objectType, resref, aiFlag, animators) = spawnTable.GetNextSpawn();
+                var spawnObject = spawnTable.GetNextSpawn();
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
-                if (string.IsNullOrWhiteSpace(resref))
+                if (string.IsNullOrWhiteSpace(spawnObject.Resref))
                 {
                     return OBJECT_INVALID;
                 }
@@ -510,14 +625,21 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);
 
-                var spawn = CreateObject(objectType, resref, location);
+                var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                AI.SetAIFlag(spawn, aiFlag);
+                AI.SetAIFlag(spawn, spawnObject.AIFlags);
+                AdjustScripts(spawn);
+                AdjustStats(spawn);
 
-                foreach (var animator in animators)
+                foreach (var animator in spawnObject.Animators)
                 {
                     animator.SetLocalVariables(spawn);
+                }
+
+                foreach (var action in spawnObject.OnSpawnActions)
+                {
+                    action(spawn);
                 }
 
                 return spawn;

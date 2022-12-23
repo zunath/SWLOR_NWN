@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ChatCommand
     {
-        private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new Dictionary<string, ChatCommandDetail>();
+        private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
+        private static readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
         public static string HelpTextPlayer { get; private set; }
         public static string HelpTextEmote { get; private set; }
         public static string HelpTextDM { get; private set; }
         public static string HelpTextAdmin { get; private set; }
+
+        public static GuiBindingList<string> EmoteNames { get; } = new();
+        public static GuiBindingList<string> EmoteDescriptions { get; } = new();
+        public static List<Animation> EmoteAnimations { get; } = new();
+        public static GuiBindingList<bool> EmoteIsLooping { get; } = new();
 
         /// <summary>
         /// Loads all chat commands into cache and builds the related help text.
@@ -25,6 +32,7 @@ namespace SWLOR.Game.Server.Service
         {
             LoadChatCommands();
             BuildHelpText();
+            BuildEmoteUILists();
         }
 
         /// <summary>
@@ -158,6 +166,11 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (key, value) in commands)
                 {
                     _chatCommands[key] = value;
+
+                    if (value.IsEmote)
+                    {
+                        _emoteCommands[key] = value;
+                    }
                 }
             }
 
@@ -179,7 +192,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.Player))
                 {
-                    if (definition.IsEmote == true)
+                    if (definition.IsEmote)
                     {
                         HelpTextEmote += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                     }
@@ -191,14 +204,28 @@ namespace SWLOR.Game.Server.Service
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.DM))
                 {
-                    HelpTextDM += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    if(!definition.IsEmote)
+                        HelpTextDM += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                 }
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.Admin))
                 {
-                    HelpTextAdmin += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    if (!definition.IsEmote)
+                        HelpTextAdmin += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                 }
             }
         }
+
+        private static void BuildEmoteUILists()
+        {
+            foreach (var (text, command) in _emoteCommands)
+            {
+                EmoteNames.Add(text);
+                EmoteDescriptions.Add(command.Description);
+                EmoteAnimations.Add(command.EmoteAnimation);
+                EmoteIsLooping.Add(command.IsEmoteLooping);
+            }
+        }
+
     }
 }

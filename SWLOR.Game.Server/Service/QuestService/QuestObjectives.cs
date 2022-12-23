@@ -1,7 +1,5 @@
 ﻿using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using Player = SWLOR.Game.Server.Entity.Player;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -83,6 +81,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(questId))
+                return "N/A";
+            if (!dbPlayer.Quests[questId].ItemProgresses.ContainsKey(_resref))
                 return "N/A";
 
             var numberRemaining = dbPlayer.Quests[questId].ItemProgresses[_resref];

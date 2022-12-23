@@ -2,11 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var distance = 3f + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
+            var distance = 6f + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
             var party = Party.GetAllPartyMembersWithinRange(activator, distance);
 
             foreach (var member in party)
@@ -53,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Builder.Create(FeatType.KoltoRecovery1, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
@@ -63,12 +63,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, _, _, _) =>
                 {
                     Impact(activator, 15);
+
+                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void KoltoRecovery2()
         {
             Builder.Create(FeatType.KoltoRecovery2, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
@@ -79,12 +83,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, _, _, _) =>
                 {
                     Impact(activator, 60);
+
+                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void KoltoRecovery3()
         {
             Builder.Create(FeatType.KoltoRecovery3, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
@@ -95,6 +103,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, _, _, _) =>
                 {
                     Impact(activator, 100);
+
+                    Enmity.ModifyEnmityOnAll(activator, 750);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

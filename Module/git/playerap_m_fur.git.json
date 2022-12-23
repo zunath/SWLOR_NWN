@@ -19462,7 +19462,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.117048740386963
+          "value": -3.141592264175415
         },
         "BodyBag": {
           "type": "byte",
@@ -19535,7 +19535,7 @@
           "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Building Exit"
+            "0": "Property Exit"
           }
         },
         "OnClick": {
@@ -19665,6 +19665,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.GenericConversation"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -19673,7 +19688,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "BuildingExit"
+                "value": "PropertyExitDialog"
               }
             }
           ]
@@ -19684,15 +19699,15 @@
         },
         "X": {
           "type": "float",
-          "value": 25.10274124145508
+          "value": 25.07999992370606
         },
         "Y": {
           "type": "float",
-          "value": 2.274331092834473
+          "value": 1.980000019073486
         },
         "Z": {
           "type": "float",
-          "value": 0.04004798084497452
+          "value": 0.0
         }
       }
     ]

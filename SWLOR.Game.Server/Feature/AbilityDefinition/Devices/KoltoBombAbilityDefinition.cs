@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -15,7 +14,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyEffect(uint creature, int hpRegen)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectRegenerate(hpRegen, 6f), creature, 6f);
+
+            RemoveEffectByTag(creature, "kolto_regen"); // Get rid of any regen effects to prevent stacking
+
+            Effect eKolto = EffectRegenerate(hpRegen, 6f);
+            eKolto = TagEffect(eKolto, "kolto_regen");
+
+            ApplyEffectToObject(DurationType.Temporary, eKolto, creature, 6f);
         }
 
         [NWNEventHandler("grenade_kolt1_en")]
@@ -80,29 +85,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-
-        private string Validation(uint activator, uint target, int level, Location location)
-        {
-            if (!HasExplosives(activator))
-            {
-                return "You have no explosives.";
-            }
-
-            return string.Empty;
-        }
-
+        
         private void KoltoBomb1()
         {
             _builder.Create(FeatType.KoltoBomb1, PerkType.KoltoBomb)
                 .Name("Kolto Bomb I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
-                .RequirementStamina(3)
+                .RequirementStamina(5)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -113,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt1_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 30);
+                    Enmity.ModifyEnmityOnAll(activator, 220);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
@@ -122,14 +118,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoBomb2, PerkType.KoltoBomb)
                 .Name("Kolto Bomb II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
-                .RequirementStamina(4)
+                .RequirementStamina(7)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -139,6 +136,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt2_en",
                         "grenade_kolt2_hb",
                         40f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 340);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -146,14 +146,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             _builder.Create(FeatType.KoltoBomb3, PerkType.KoltoBomb)
                 .Name("Kolto Bomb III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
-                .RequirementStamina(5)
+                .RequirementStamina(9)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
-                .HasCustomValidation(Validation)
+                .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
@@ -163,6 +164,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt3_en",
                         "grenade_kolt3_hb",
                         60f);
+
+                    Enmity.ModifyEnmityOnAll(activator, 480);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

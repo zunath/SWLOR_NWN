@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
 {
@@ -31,6 +29,44 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public StatusEffectBuilder Name(string name)
         {
             _activeStatusEffect.Name = name;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates the ability can stack. This means multiple of the same status effect can be applied on the same target.
+        /// </summary>
+        /// <returns>A status effect builder with the configured options.</returns>
+        public StatusEffectBuilder CanStack()
+        {
+            _activeStatusEffect.CanStack = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates the status effects which will be replaced by this one.
+        /// Generally used to ensure higher tier effects take priority over lower
+        /// but can also be used for mutually exclusive effects.
+        /// </summary>
+        /// <param name="effectTypes">The effects which replace this one.</param>
+        /// <returns>A status effect builder with the configured options.</returns>
+        public StatusEffectBuilder Replaces(params StatusEffectType[] effectTypes)
+        {
+            _activeStatusEffect.ReplacesEffects = effectTypes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates the status effects which take higher priority than this one.
+        /// Can be used to ensure a tier 1 effect doesn't apply if a tier 2 one is already in place.
+        /// </summary>
+        /// <param name="effectTypes">The effects which this effect cannot replace.</param>
+        /// <returns>A status effect builder with the configured options.</returns>
+        public StatusEffectBuilder CannotReplace(params StatusEffectType[] effectTypes)
+        {
+            _activeStatusEffect.CannotReplaceEffects = effectTypes;
 
             return this;
         }

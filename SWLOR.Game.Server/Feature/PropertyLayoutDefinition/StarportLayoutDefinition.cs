@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -146,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.StarportStyle1)
                 .PropertyType(PropertyType.Starport)
                 .Name("Starport")
-                .StructureLimit(30)
+                .StructureLimit(80)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .InitialPrice(0)

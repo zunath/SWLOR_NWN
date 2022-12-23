@@ -173,7 +173,7 @@
         "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "man_helm_npc"
+          "value": "man_helm_npc001"
         }
       },
       {
@@ -358,7 +358,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "Interruptable": {
     "type": "byte",
@@ -821,7 +821,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_LEADER,95,1"
+          "value": "VISCARA_MANDALORIAN_LEADER,100,1"
         }
       },
       {
@@ -836,7 +836,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_LEADER,30,1"
+          "value": "VISCARA_MANDALORIAN_LEADER,50,1"
         }
       },
       {
@@ -852,6 +852,21 @@
         "Value": {
           "type": "cexostring",
           "value": "VISCARA_MANDALORIAN_LEADER_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_MANDALORIAN_LEADER_TAGS,100,1"
         }
       }
     ]

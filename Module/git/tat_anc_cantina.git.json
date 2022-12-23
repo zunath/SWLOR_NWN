@@ -12021,11 +12021,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_anchor_qn_cantina"
+          "value": "door_anchor_cantina"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 2
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -12120,7 +12120,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "anchor_cantin_qn"
+          "value": "anchor_cantina_southdis"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -32283,7 +32283,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 79
+                      "value": 538
                     },
                     "Charges": {
                       "type": "byte",
@@ -32361,7 +32361,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.10842708528093e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -32384,11 +32384,11 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -32396,7 +32396,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32485,11 +32485,11 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -32497,7 +32497,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -32596,7 +32596,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",
@@ -32731,7 +32731,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.10842708528093e-042
                     },
                     "XPosition": {
                       "type": "float",

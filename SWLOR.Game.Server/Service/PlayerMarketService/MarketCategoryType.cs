@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         TwinBlade = 9,
         [MarketCategory("Rifle",  true)]
         Rifle = 10,
-
         [MarketCategory("Shield",  true)]
         Shield = 11,
         [MarketCategory("Cloak",  true)]
@@ -54,19 +53,26 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Glove = 22,
         [MarketCategory("Boot",  true)]
         Boot = 23,
-
         [MarketCategory("Recipe",  true)]
         Recipe = 24,
         [MarketCategory("Components",  true)]
         Components = 25,
-
         [MarketCategory("Starship",  true)]
         Starship = 26,
         [MarketCategory("Starship Parts", true)]
         StarshipParts = 27,
-
         [MarketCategory("Enhancement", true)]
         Enhancement = 28,
+        [MarketCategory("Structure", true)]
+        Structure = 29,
+        [MarketCategory("Lightsaber", true)]
+        Lightsaber = 30,
+        [MarketCategory("Saberstaff", true)]
+        Saberstaff = 31,
+        [MarketCategory("Food", true)]
+        Food = 32,
+        [MarketCategory("Fishing", true)]
+        Fishing = 33,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -61,10 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             }
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 25);
-
+            
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
@@ -77,12 +72,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void HardSlash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash1, PerkType.HardSlash)
                 .Name("Hard Slash I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.HardSlash2, PerkType.HardSlash)
                 .Name("Hard Slash II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(5)
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             builder.Create(FeatType.HardSlash3, PerkType.HardSlash)
                 .Name("Hard Slash III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(8)

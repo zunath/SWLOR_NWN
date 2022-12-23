@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -20,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             HelpCommand(builder);
             ListEmotesCommand(builder);
             StuckCommand(builder);
+            EmotesWindowCommand(builder);
 
             return builder.Build();
         }
@@ -114,6 +114,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         AssignCommand(user, () => { JumpToObject(waypoint); });
                         SetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION", nextStuckAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
                     }
+                });
+        }
+        private static void EmotesWindowCommand(ChatCommandBuilder builder)
+        {
+            builder.Create("emotegui", "emotesgui")
+                .Description("Displays the Emotes window.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
                 });
         }
     }

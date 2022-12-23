@@ -104,34 +104,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 196
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 332
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 333
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 334
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 26
         }
       },
@@ -168,7 +140,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 21
   },
   "Interruptable": {
     "type": "byte",
@@ -571,7 +543,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_SANDSWIMMER,40,2"
+          "value": "TATOOINE_SANDSWIMMER,100,1"
         }
       },
       {
@@ -587,6 +559,21 @@
         "Value": {
           "type": "int",
           "value": 24
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_SANDSWIMMER,40,1"
         }
       }
     ]

@@ -21,13 +21,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(23, 7)},
-            { 1, new RewardDetails(84, 27)},
-            { 2, new RewardDetails(122, 39)},
-            { 3, new RewardDetails(184, 52)},
-            { 4, new RewardDetails(245, 65)},
-            { 5, new RewardDetails(312, 82)},
+            { 0, new RewardDetails(138, 21)},
+            { 1, new RewardDetails(343, 81)},
+            { 2, new RewardDetails(532, 117)},
+            { 3, new RewardDetails(733, 156)},
+            { 4, new RewardDetails(874, 195)},
+            { 5, new RewardDetails(960, 246)},
         };
+
         private readonly QuestBuilder _builder = new();
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Tier 2 (Rank 1)
             BuildItemTask("hun_tsk_200", "herb_m", 6, 1);
             BuildItemTask("hun_tsk_201", "m_blast_parts", 6, 1);
-            BuildItemTask("hun_tsk_202", "man_tags", 6, 1);
+            BuildItemTask("hun_tsk_202", "man_tags", 10, 1);
             BuildItemTask("hun_tsk_203", "m_lvibro_parts", 6, 1);
             BuildKillTask("hun_tsk_204", NPCGroupType.Viscara_MandalorianLeader, 1, 1);
             BuildItemTask("hun_tsk_205", "m_ls_parts", 6, 1);
@@ -72,6 +73,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_214", NPCGroupType.Viscara_CrystalSpider, 10, 1);
             BuildItemTask("hun_tsk_215", "steel", 3, 1);
             BuildItemTask("hun_tsk_216", "elec_flawed", 10, 1);
+            BuildKillTask("hun_tsk_217", NPCGroupType.Korriban_Tukata, 10, 1);
+            BuildKillTask("hun_tsk_218", NPCGroupType.Korriban_Hssiss, 10, 1);
+            BuildKillTask("hun_tsk_219", NPCGroupType.Korriban_Shyrack, 10, 1);
+            BuildKillTask("hun_tsk_220", NPCGroupType.Korriban_MorabandSerpent, 10, 1);
+            BuildKillTask("hun_tsk_221", NPCGroupType.Korriban_SithApprenticeGhost, 10, 1);
+            BuildKillTask("hun_tsk_222", NPCGroupType.Korriban_Terentatek, 5, 1);
+            BuildKillTask("hun_tsk_223", NPCGroupType.MonCala_Octotench, 10, 1);
+            BuildKillTask("hun_tsk_224", NPCGroupType.MonCala_Microtench, 10, 1);
+            BuildKillTask("hun_tsk_225", NPCGroupType.MonCala_Scorchellus, 10, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask("hun_tsk_400", "amphi_brain", 6, 2);
@@ -147,7 +157,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Tier 5 (Rank 4)
             BuildItemTask("hun_tsk_800", "diamond", 3, 4);
             BuildItemTask("hun_tsk_801", "elec_high", 10, 4);
-            BuildItemTask("hun_tsk_802", "emerald", 6, 3);
+            BuildItemTask("hun_tsk_802", "emerald", 6, 4);
+            BuildKillTask("hun_tsk_803", NPCGroupType.Dathomir_DragonTurtle, 10, 4);
+            BuildKillTask("hun_tsk_804", NPCGroupType.Dathomir_KwiGuardian, 10, 4);
+            BuildKillTask("hun_tsk_805", NPCGroupType.Dathomir_KwiShaman, 10, 4);
+            BuildKillTask("hun_tsk_806", NPCGroupType.Dathomir_KwiTribal, 10, 4);
+            BuildKillTask("hun_tsk_807", NPCGroupType.Dathomir_Purbole, 10, 4);
+            BuildKillTask("hun_tsk_808", NPCGroupType.Dathomir_ShearMite, 10, 4);
+            BuildKillTask("hun_tsk_809", NPCGroupType.Dathomir_Sprantal, 10, 4);
+            BuildKillTask("hun_tsk_810", NPCGroupType.Dathomir_Squellbug, 10, 4);
+            BuildKillTask("hun_tsk_811", NPCGroupType.Dathomir_Ssurian, 10, 4);
+            BuildKillTask("hun_tsk_812", NPCGroupType.Dathomir_SwamplandBug, 10, 4);
 
 
             return _builder.Build();

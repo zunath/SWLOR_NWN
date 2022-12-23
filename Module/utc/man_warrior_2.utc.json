@@ -360,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 125
+    "value": 124
   },
   "NaturalAC": {
     "type": "byte",
@@ -718,7 +718,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_WARRIOR,40,2"
+          "value": "VISCARA_MANDALORIAN_WARRIOR,75,2"
         }
       },
       {
@@ -748,7 +748,22 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_WARRIOR_RARES,5,1"
+          "value": "VISCARA_MANDALORIAN_WARRIOR_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_MANDALORIAN_WARRIOR_TAGS,50,1"
         }
       }
     ]

@@ -332,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 51
+    "value": 47
   },
   "NaturalAC": {
     "type": "byte",
@@ -674,7 +674,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_OUTLAW,50,1"
+          "value": "VISCARA_OUTLAW,100,1"
         }
       },
       {
@@ -705,6 +705,21 @@
         "Value": {
           "type": "cexostring",
           "value": "VISCARA_OUTLAW_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_OUTLAW,50,1"
         }
       }
     ]

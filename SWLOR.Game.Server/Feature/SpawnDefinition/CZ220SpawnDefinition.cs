@@ -24,11 +24,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "malsecdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
                 .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
 
                 .AddSpawn(ObjectType.Creature, "malspiderdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
                 .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball);
         }
 
@@ -37,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             builder.Create("CZ220_MYNOCKS", "CZ-220 Mynocks")
                 .AddSpawn(ObjectType.Creature, "mynock")
                 .WithFrequency(100)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void ColicoidExperimentSpawn(SpawnTableBuilder builder)
@@ -45,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             builder.Create("CZ220_COLICOID_EXPERIMENT", "Colicoid Experiment")
                 .AddSpawn(ObjectType.Creature, "colicoidexp")
                 .WithFrequency(100)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

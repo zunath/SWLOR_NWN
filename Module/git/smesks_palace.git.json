@@ -7400,7 +7400,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 5160
+          "value": 5140
         },
         "NaturalAC": {
           "type": "byte",
@@ -91562,7 +91562,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.006659400913138e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -91665,7 +91665,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.402699762789142e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -91768,7 +91768,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.054830652228101e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -91873,7 +91873,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -91978,7 +91978,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 1.386715991985667e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -92291,7 +92291,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.019161963161748e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -92604,7 +92604,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.019161963161748e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -92917,7 +92917,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.386715991985667e-038
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -93020,7 +93020,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -93125,7 +93125,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.054830652228101e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -93228,7 +93228,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.402699762789142e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -93331,7 +93331,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.006659400913138e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -93372,7 +93372,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 79
+                      "value": 538
                     },
                     "Charges": {
                       "type": "byte",
@@ -93450,7 +93450,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.10842708528093e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -93473,11 +93473,11 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -93485,7 +93485,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 15
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -93574,11 +93574,11 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 311
+                      "value": 539
                     },
                     "Charges": {
                       "type": "byte",
@@ -93586,7 +93586,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 18
+                      "value": 13
                     },
                     "Cursed": {
                       "type": "byte",
@@ -93685,7 +93685,7 @@
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Cost": {
                       "type": "dword",
@@ -93820,7 +93820,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.10842708528093e-042
                     },
                     "XPosition": {
                       "type": "float",

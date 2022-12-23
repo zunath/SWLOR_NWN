@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceDrainStatusEffectDefinition : IStatusEffectListDefinition
@@ -25,25 +25,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain1)
                 .Name("Force Drain I")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .CannotReplace(StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 1);
+                    Enmity.ModifyEnmityOnAll(source, 200);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 1);
+                    Enmity.ModifyEnmityOnAll(source, 80);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
         private void ForceDrain2(StatusEffectBuilder builder)
@@ -51,25 +46,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain2)
                 .Name("Force Drain II")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1)
+                .CannotReplace(StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 1);
+                    Enmity.ModifyEnmityOnAll(source, 250);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 2);
+                    Enmity.ModifyEnmityOnAll(source, 100);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
         private void ForceDrain3(StatusEffectBuilder builder)
@@ -77,25 +68,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain3)
                 .Name("Force Drain III")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2)
+                .CannotReplace(StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 1);
+                    Enmity.ModifyEnmityOnAll(source, 250);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 3);
+                    Enmity.ModifyEnmityOnAll(source, 150);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
         private void ForceDrain4(StatusEffectBuilder builder)
@@ -103,25 +90,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain4)
                 .Name("Force Drain IV")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3)
+                .CannotReplace(StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 1);
+                    Enmity.ModifyEnmityOnAll(source, 300);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 4);
+                    Enmity.ModifyEnmityOnAll(source, 200);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
         private void ForceDrain5(StatusEffectBuilder builder)
@@ -129,30 +112,39 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             builder.Create(StatusEffectType.ForceDrain5)
                 .Name("Force Drain V")
                 .EffectIcon(EffectIconType.LevelDrain)
+                .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4)
+                .GrantAction((source, target, length, effectData) =>
+                {
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
+                    Enmity.ModifyEnmityOnAll(source, 350);
+
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                })
                 .TickAction((source, target, effectData) =>
                 {
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 5);
+                    Enmity.ModifyEnmityOnAll(source, 250);
 
-                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
-                    {
-                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-                    }
+                    CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
 
         private void ProcessForceDrainTick(VisualEffect vfx1, int damageAmt, int healAmt, uint target, uint source)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Drain"))
+            if (!Ability.GetAbilityResisted(source, target, "Force Drain", AbilityType.Willpower))
             {
                 PlaySound("plr_force_absorb");
-                ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
-                ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), source);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+
+                AssignCommand(source, () =>
+                {
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), source);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                });
             }
         }
     }

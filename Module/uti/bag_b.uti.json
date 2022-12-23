@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 486
   },
   "Cursed": {
     "type": "byte",
@@ -71,15 +71,15 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 0
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 0
         },
         "Param1": {
           "type": "byte",
-          "value": 255
+          "value": 11
         },
         "Param1Value": {
           "type": "byte",
@@ -87,11 +87,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 15
+          "value": 81
         },
         "Subtype": {
           "type": "word",
-          "value": 335
+          "value": 0
         }
       }
     ]
@@ -111,40 +111,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bag_b"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "RenameItem"
-        }
-      }
-    ]
   }
 }

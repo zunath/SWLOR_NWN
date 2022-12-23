@@ -4,19 +4,12 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
         public bool DisplayAchievementNotification
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool DisplayHelmet
         {
             get => Get<bool>();
             set => Set(value);
@@ -46,6 +39,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool DisplayServerResetReminders
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
@@ -54,16 +53,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
-            DisplayHelmet = dbPlayer.Settings.ShowHelmet;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
+            DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
 
             WatchOnClient(model => model.DisplayAchievementNotification);
-            WatchOnClient(model => model.DisplayHelmet);
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.ShareLightsaberForceXP);
+            WatchOnClient(model => model.DisplayServerResetReminders);
         }
 
         public Action OnSave() => () =>
@@ -72,17 +71,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
-            dbPlayer.Settings.ShowHelmet = DisplayHelmet;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
+            dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
 
             DB.Set(dbPlayer);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 
             // Post-save actions
-            UpdateHelmetDisplay();
             UpdateHolonetSetting();
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
@@ -97,15 +95,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
-
-        private void UpdateHelmetDisplay()
-        {
-            var helmet = GetItemInSlot(InventorySlot.Head, Player);
-            if (GetIsObjectValid(helmet))
-            {
-                SetHiddenWhenEquipped(helmet, !DisplayHelmet);
-            }
-        }
 
         private void UpdateHolonetSetting()
         {

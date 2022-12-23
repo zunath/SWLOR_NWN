@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -153,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
-                            if(dbOldStarport.Id == dbStarport.Id)
+                            if(dbStarport != null && dbOldStarport.Id == dbStarport.Id)
                                 dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
                         }
 

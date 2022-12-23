@@ -19,19 +19,25 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.ComprehendSpeech1)
                 .Name("Comprehend Speech I")
-                .EffectIcon(EffectIconType.SkillIncrease);
+                .EffectIcon(EffectIconType.SkillIncrease)
+                .CannotReplace(StatusEffectType.ComprehendSpeech2, StatusEffectType.ComprehendSpeech3, StatusEffectType.ComprehendSpeech4);
 
             _builder.Create(StatusEffectType.ComprehendSpeech2)
                 .Name("Comprehend Speech II")
-                .EffectIcon(EffectIconType.SkillIncrease);
+                .EffectIcon(EffectIconType.SkillIncrease)
+                .CannotReplace(StatusEffectType.ComprehendSpeech3, StatusEffectType.ComprehendSpeech4)
+                .Replaces(StatusEffectType.ComprehendSpeech1);
 
             _builder.Create(StatusEffectType.ComprehendSpeech3)
                 .Name("Comprehend Speech III")
-                .EffectIcon(EffectIconType.SkillIncrease);
+                .EffectIcon(EffectIconType.SkillIncrease)
+                .CannotReplace(StatusEffectType.ComprehendSpeech4)
+                .Replaces(StatusEffectType.ComprehendSpeech1, StatusEffectType.ComprehendSpeech2);
 
             _builder.Create(StatusEffectType.ComprehendSpeech4)
                 .Name("Comprehend Speech IV")
-                .EffectIcon(EffectIconType.SkillIncrease);
+                .EffectIcon(EffectIconType.SkillIncrease)
+                .Replaces(StatusEffectType.ComprehendSpeech1, StatusEffectType.ComprehendSpeech2, StatusEffectType.ComprehendSpeech3);
         }
     }
 }

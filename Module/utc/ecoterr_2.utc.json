@@ -182,6 +182,13 @@
           "type": "resref",
           "value": "npc_eco_rifle"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ecoter_hide"
+        }
       }
     ]
   },
@@ -703,7 +710,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_ECOTERRORIST,40,2"
+          "value": "MONCALA_ECOTERRORIST,100,1"
         }
       },
       {
@@ -719,6 +726,51 @@
         "Value": {
           "type": "cexostring",
           "value": "MONCALA_ECOTERRORIST_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORIST,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORIST_GEAR,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_ECOTERRORIST_GEAR,0,1"
         }
       }
     ]

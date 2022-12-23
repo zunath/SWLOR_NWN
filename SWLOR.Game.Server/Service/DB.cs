@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Newtonsoft.Json;
 using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 
@@ -52,6 +52,19 @@ namespace SWLOR.Game.Server.Service
             {
                 _cachedEntities.Clear();
             };
+
+            // This is a hack to ensure the background process of index scanning completes before we kick off
+            // the rest of the server initialization process.
+            // If we don't wait long enough, DB searches won't retrieve any data. If you have a better solution 
+            // please submit a fix, thanks!
+            Console.WriteLine($"Waiting ten seconds for background index scanning to complete.");
+            Thread.Sleep(10000);
+
+            // CLI tools also use this class and don't have access to the NWN context.
+            // Perform an environment variable check to ensure we're in the game server context before executing the event.
+            var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
+            if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
+                ExecuteScript("db_loaded", OBJECT_SELF);
         }
 
         /// <summary>
@@ -149,6 +162,7 @@ namespace SWLOR.Game.Server.Service
         {
             var type = typeof(T);
             var data = JsonConvert.SerializeObject(entity);
+
             var keyPrefix = _keyPrefixByType[type];
             var indexKey = $"Index:{keyPrefix}:{entity.Id}";
             var indexData = new Dictionary<string, RedisValue>();
@@ -177,7 +191,6 @@ namespace SWLOR.Game.Server.Service
                     indexData[prop] = (dynamic)value;
                 }
             }
-
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
             _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
             _cachedEntities[entity.Id] = entity;
@@ -256,7 +269,9 @@ namespace SWLOR.Game.Server.Service
                 .Replace("|", "\\|")
                 .Replace("-", "\\-")
                 .Replace("=", "\\=")
-                .Replace(">", "\\>");
+                .Replace(">", "\\>")
+                .Replace("'", "\\'")
+                .Replace("\"", "\\\"");
         }
 
         /// <summary>

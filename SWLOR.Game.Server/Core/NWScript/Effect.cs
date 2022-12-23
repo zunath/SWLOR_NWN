@@ -1606,10 +1606,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///            Using the icon for Poison/Disease will also color the health bar green/brown, useful to simulate custom poisons/diseases.
         /// Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is < 1 or > 255.
         /// </summary>
-        /// <param name="eEffect"></param>
-        /// <returns></returns>
-        public static Effect EffectIcon(Effect eEffect)
+        public static Effect EffectIcon(EffectIconType nIconId)
         {
+            VM.StackPush((int)nIconId);
             VM.Call(959);
             return VM.StackPopStruct((int)EngineStructure.Effect);
         }

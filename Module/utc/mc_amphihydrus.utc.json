@@ -104,14 +104,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 334
+          "value": 1730
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1730
+          "value": 1831
         }
       },
       {
@@ -595,7 +595,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "MONCALA_AMPHIHYDRUS,40,2"
+          "value": "MONCALA_AMPHIHYDRUS,100,1"
         }
       },
       {
@@ -626,6 +626,21 @@
         "Value": {
           "type": "cexostring",
           "value": "MONCALA_AMPHIHYDRUS_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_AMPHIHYDRUS,40,1"
         }
       }
     ]

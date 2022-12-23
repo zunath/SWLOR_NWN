@@ -5303,7 +5303,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "map_035"
+                "value": "harvest_r_4"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -5322,7 +5322,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "map_033"
+                "value": "bread"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -5341,7 +5341,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "map_037"
+                "value": "explosives"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -5360,7 +5360,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "harvest_r_4"
+                "value": "explosives50"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -5379,7 +5379,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bread"
+                "value": "power_core50"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -5388,63 +5388,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 4
-              }
-            },
-            {
-              "__struct_id": 15,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "explosives"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 16,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "explosives50"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 17,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "power_core50"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
               }
             }
           ]

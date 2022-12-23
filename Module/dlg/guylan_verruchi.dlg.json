@@ -915,7 +915,7 @@
               "__struct_id": 0,
               "Key": {
                 "type": "cexostring",
-                "value": "action-accept_quest"
+                "value": "action-accept-quest"
               },
               "Value": {
                 "type": "cexostring",
@@ -1151,7 +1151,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "hut_power_inves"
+                "value": "hut_power_invest"
               }
             }
           ]
@@ -1244,19 +1244,7 @@
         "__struct_id": 9,
         "ActionParams": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Key": {
-                "type": "cexostring",
-                "value": "action-advance-quest"
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "hut_power_invest"
-              }
-            }
-          ]
+          "value": []
         },
         "Animation": {
           "type": "dword",
@@ -1304,7 +1292,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "action"
+          "value": ""
         },
         "Sound": {
           "type": "resref",
@@ -1330,7 +1318,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "hut_power_inves"
+                "value": "hut_power_invest"
               }
             }
           ]

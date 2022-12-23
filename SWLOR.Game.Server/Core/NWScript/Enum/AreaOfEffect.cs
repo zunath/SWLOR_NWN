@@ -61,5 +61,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         CustomAOE10Odd = 62,
         CustomAOE20Odd = 63,
         CustomAOE30Odd = 64,
+
+        AuraDefault = 100,
+        AuraUpgrade1 = 101,
+        AuraUpgrade2 = 102,
     }
 }

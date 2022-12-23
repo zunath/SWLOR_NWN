@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
-    public class DedicationAbilityDefinition: AuraBaseAbilityDefinition, IAbilityListDefinition
+    public class DedicationAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
@@ -29,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return OnAuraActivation(activator, StatusEffectType.Dedication);
+                    return Ability.ToggleAura(activator, StatusEffectType.Dedication);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
+                    Ability.ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
                 });
         }
     }

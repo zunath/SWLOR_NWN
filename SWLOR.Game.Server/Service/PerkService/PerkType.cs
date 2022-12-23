@@ -260,5 +260,6 @@
         FrenziedShout = 253,
 
         FishingRods = 257,
+        ShoutRange = 258,
     }
 }

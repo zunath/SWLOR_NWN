@@ -1,6 +1,7 @@
 ﻿@page "/player"
+@inject NavigationManager NavManager
 
-<h3>Players</h3>
+<h3>Players (@_totalRecords)</h3>
 
 <div class="row">
 	
@@ -37,19 +38,14 @@
 			<td>@player.Name</td>
 			<td>@player.CharacterType.ToString()</td>
 			<td>@player.DateCreated</td>
-			<td>
-				<div class="btn-group" role="group">
-					<button type="button"
-					        class="btn btn-primary">
-						Skills
-					</button>
-					
-					<button type="button"
-					        class="btn btn-warning">
-						Perks
-					</button>
-				</div>
-			</td>
+            <td>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="args => Edit(player.Id)">
+                    View
+                </button>
+            </td>
 			<td>
 			</td>
 		</tr>
@@ -62,10 +58,13 @@
 @code {
 	private List<Player> _players;
 	protected string _searchText;
+    protected long _totalRecords;
 
 	protected void RefreshList()
 	{
 		var query = new DBQuery<Player>();
+
+	    _totalRecords = DB.SearchCount(query);
 
 		if (!string.IsNullOrWhiteSpace(_searchText))
 		{
@@ -79,4 +78,9 @@
 	{
 		RefreshList();
 	}
+
+    protected void Edit(string id)
+    {
+        NavManager.NavigateTo($"ViewPlayer/{id}");
+    }
 }

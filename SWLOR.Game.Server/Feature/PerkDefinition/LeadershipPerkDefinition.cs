@@ -13,13 +13,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class LeadershipPerkDefinition: IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new PerkBuilder();
+        private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             CityManagement();
             Upkeep();
             GuildRelations();
+            ShoutRange();
             RousingShout();
             Dedication();
             SoldiersSpeed();
@@ -139,6 +140,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Improves GP and credit rewards from guild tasks by 20%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 20);
+        }
+
+        private void ShoutRange()
+        {
+            _builder.Create(PerkCategoryType.Leadership, PerkType.ShoutRange)
+                .Name("Shout Range")
+
+                .AddPerkLevel()
+                .Description("Increases the range of your shouts to 12.5 meters.")
+                .Price(2)
+                .RequirementSkill(SkillType.Leadership, 25)
+
+                .AddPerkLevel()
+                .Description("Increases the range of your shouts to 15 meters.")
+                .Price(2)
+                .RequirementSkill(SkillType.Leadership, 50)
+                
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Ability.ReapplyPlayerAuraAOE(player);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    Ability.ReapplyPlayerAuraAOE(player);
+                });
         }
 
         private void RousingShout()

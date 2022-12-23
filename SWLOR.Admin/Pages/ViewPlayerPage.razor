@@ -1,0 +1,184 @@
+﻿@page "/viewplayer/{PlayerId}"
+
+@if (!PlayerExists())
+{
+    <label>Player Id not found</label>
+
+    return;
+}
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">Version: @ActivePlayer!.Version</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Name: @ActivePlayer.Name</label>
+    </div>
+    <div class="col">
+        <label class="form-label">
+            <input type="checkbox" disabled="disabled" class="form-check-input disabled" @bind="ActivePlayer.IsDeleted" />
+            Is Deleted
+        </label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">Max HP: @ActivePlayer.MaxHP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Max FP: @ActivePlayer.MaxFP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Max STM: @ActivePlayer.MaxStamina</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">HP: @ActivePlayer.HP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">FP: @ActivePlayer.FP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">STM: @ActivePlayer.Stamina</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">Temp. Food HP: @ActivePlayer.TemporaryFoodHP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">BAB: @ActivePlayer.BAB</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Regeneration Tick: @ActivePlayer.RegenerationTick</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">Location: @ActivePlayer.LocationAreaResref (@ActivePlayer.LocationX, @ActivePlayer.LocationY, @ActivePlayer.LocationZ) @ActivePlayer.LocationOrientation°</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Respawn: @ActivePlayer.RespawnAreaResref (@ActivePlayer.RespawnLocationX, @ActivePlayer.RespawnLocationY, @ActivePlayer.RespawnLocationZ) @ActivePlayer.RespawnLocationOrientation°</label>
+    </div>
+</div>
+
+<div class="row">
+    
+    <div class="col">
+        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedXP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedSP</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedAP</label>
+    </div>
+</div>
+
+<div class="row">
+    
+    <div class="col">
+        <label class="form-label">Total SP: @ActivePlayer.TotalSPAcquired</label>
+    </div>
+    <div class="col">
+        <label class="form-label">Total AP: @ActivePlayer.TotalAPAcquired</label>
+    </div>
+    <div class="col">
+        <label class="form-label">DM XP Bonus: @ActivePlayer.DMXPBonus</label>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <label class="form-label">HP Regen: @ActivePlayer.HPRegen</label>
+    </div>
+    <div class="col">
+        <label class="form-label">FP Regen: @ActivePlayer.FPRegen</label>
+    </div>
+    <div class="col">
+        <label class="form-label">STM Regen: @ActivePlayer.STMRegen</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label class="form-label"># Perk Resets: @ActivePlayer.NumberPerkResetsAvailable</label>
+    </div>
+    <div class="col">
+        <label class="form-label"># Rebuilds: @ActivePlayer.NumberRebuildsAvailable</label>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label class="form-label">Date Perk Refund Available: @ActivePlayer.DatePerkRefundAvailable</label>
+    </div>
+    <div class="col">
+        <label>Character Type:</label>
+        <label>@ActivePlayer.CharacterType</label>
+    </div>
+    <div class="col">
+        <label>Emote Style:</label>
+        <label>@ActivePlayer.EmoteStyle</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Appearance ID: @ActivePlayer.OriginalAppearanceType.ToString()</label>
+    </div>
+    <div class="col">
+        <label>Movement Rate: @ActivePlayer.MovementRate</label>
+    </div>
+    <div class="col">
+        <label>Recast Reduction: @ActivePlayer.AbilityRecastReduction</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Market Till: @ActivePlayer.MarketTill</label>
+    </div>
+    <div class="col">
+        <label>Taxes Owed: @ActivePlayer.PropertyOwedTaxes</label>
+    </div>
+    <div class="col">
+        <label>Attack: @ActivePlayer.Attack</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Force Attack: @ActivePlayer.ForceAttack</label>
+    </div>
+    <div class="col">
+        <label>Evasion: @ActivePlayer.Evasion</label>
+    </div>
+    <div class="col">
+        <label>Rebuild Complete: @ActivePlayer.RebuildComplete</label>
+    </div>
+</div>
+
+
+@code {
+    
+    [Parameter]
+    public string? PlayerId { get; set; }
+
+    protected Player? ActivePlayer;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ActivePlayer = DB.Get<Player>(PlayerId);
+    }
+
+    protected bool PlayerExists()
+    {
+        return ActivePlayer != null;
+    }
+}

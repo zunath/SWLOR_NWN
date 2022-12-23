@@ -26,13 +26,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static string Validation(uint target, int tier)
         {
-            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            if (HasMorePowerfulEffect(target, tier,
+                    new(Tier1Tag, 1),
+                    new(Tier2Tag, 2)))
             {
-                var tag = GetEffectTag(effect);
-                if (tag == Tier2Tag && tier < 2)
-                {
-                    return "Your target is already enhanced by a more powerful effect.";
-                }
+                return "Your target is already enhanced by a more powerful effect.";
             }
 
             return string.Empty;

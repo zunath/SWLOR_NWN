@@ -3818,7 +3818,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3891,7 +3891,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
+                "value": "QUEST_ID"
               },
               "Type": {
                 "type": "dword",
@@ -3899,22 +3899,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "QUEST_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1003
+                "value": "hut_power_invest"
               }
             },
             {
@@ -4138,7 +4123,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4211,7 +4196,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
+                "value": "QUEST_ID"
               },
               "Type": {
                 "type": "dword",
@@ -4219,22 +4204,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "QUEST_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1003
+                "value": "hut_power_invest"
               }
             },
             {
@@ -4458,7 +4428,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4531,7 +4501,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
+                "value": "QUEST_ID"
               },
               "Type": {
                 "type": "dword",
@@ -4539,22 +4509,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "QUEST_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1003
+                "value": "hut_power_invest"
               }
             },
             {
@@ -4778,7 +4733,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4851,7 +4806,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
+                "value": "QUEST_ID"
               },
               "Type": {
                 "type": "dword",
@@ -4859,22 +4814,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "QUEST_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1003
+                "value": "hut_power_invest"
               }
             },
             {
@@ -5098,7 +5038,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -5171,7 +5111,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
+                "value": "QUEST_ID"
               },
               "Type": {
                 "type": "dword",
@@ -5179,22 +5119,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "QUEST_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1003
+                "value": "hut_power_invest"
               }
             },
             {
@@ -5418,7 +5343,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -5510,11 +5435,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 1003
+                "type": "cexostring",
+                "value": "hut_power_invest"
               }
             },
             {
@@ -5560,6 +5485,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "You replace the actuator. The device begins whirring."
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
               }
             }
           ]

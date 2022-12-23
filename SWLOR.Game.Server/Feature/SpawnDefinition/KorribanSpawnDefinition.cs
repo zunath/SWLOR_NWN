@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
-    public class KorribanSpawnDefinition: ISpawnListDefinition
+    public class KorribanSpawnDefinition : ISpawnListDefinition
     {
         private readonly SpawnTableBuilder _builder = new();
 
@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Caverns();
             Dunes();
             SithCrypt();
+            KorribanFortress();
 
             return _builder.Build();
         }
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
-                
+
                 .AddSpawn(ObjectType.Creature, "sithsnake")
                 .WithFrequency(10)
                 .RandomlyWalks()
@@ -117,6 +118,57 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        private void KorribanFortress()
+        {
+            _builder.Create("KorribanDungeonMaster")
+                .AddSpawn(ObjectType.Creature, "vkorrdun4boss")
+                .WithFrequency(1)
+                .RespawnDelay(120);
+
+            _builder.Create("KorribanDungeonGuardian")
+                .AddSpawn(ObjectType.Creature, "vkorrdungate")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("KorribanDungeonCouncilGuard")
+                .AddSpawn(ObjectType.Creature, "vkorrduncouncilg")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("KorribanDungeonMarauder")
+                .AddSpawn(ObjectType.Creature, "vkorrdunmarauder")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(5);
+
+            _builder.Create("KorribanDungeonTrooper")
+                .AddSpawn(ObjectType.Creature, "vkorrdun1rifle")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(2)
+
+                .AddSpawn(ObjectType.Creature, "vkorrdun1sword")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(2);
+
+            _builder.Create("KorribanDungeonWarform")
+                .AddSpawn(ObjectType.Creature, "vkorrdunwarform")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("KorribanDungeonInquisitor")
+                .AddSpawn(ObjectType.Creature, "vkorrduninquis")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("KorribanDungeonIndustrial")
+                .AddSpawn(ObjectType.Creature, "vkorrdundroidhvy")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(10);
         }
     }
 }

@@ -279,7 +279,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Our equipment has gone through a lot of wear and tear between the wild beasts on this planet and the other competing factions. It's difficult to keep them up to snuff. Why don't you go find a few repair kits and bring them back to me? It'll help us keep our gear in good shape."
+            "0": "Our equipment has gone through a lot of wear and tear between the wild beasts on this planet and the other competing factions. It's difficult to keep them up to snuff. Why don't you go find some components to repair our equipment and bring them back to me? It'll help us keep our gear in good shape."
           }
         }
       },
@@ -397,7 +397,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You'll need to make them yourself or hire someone to make them for you. [She hands you a list.] This is everything we need. When you have them just bring them to me."
+            "0": "[She hands you a list.] This is everything we need. When you have the items bring them to me."
           }
         }
       },
@@ -485,7 +485,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Got those repair kits I asked for?"
+            "0": "Got those components I asked for?"
           }
         }
       },
@@ -573,7 +573,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You did good work on those repair kits. We can use a few more if you've got the time."
+            "0": "You did good work on getting those repair components. We can use a few more if you've got the time."
           }
         }
       },
@@ -661,7 +661,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "[She hands you another list.] Here are the kits we need this time."
+            "0": "[She hands you another list.] Here are the items we need this time."
           }
         }
       },
@@ -798,7 +798,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "How goes that second set of repair kits?"
+            "0": "How goes that second set of components?"
           }
         }
       },
@@ -847,7 +847,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nice job. We've got enough repair kits for the moment. Ask around the HQ and see if anyone needs any of your help."
+            "0": "Nice job. We've got enough components for the moment. Ask around the HQ and see if anyone needs any of your help."
           }
         }
       }
@@ -855,7 +855,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 322
+    "value": 304
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -1222,7 +1222,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I'll do it. Where do I find these repair kits?"
+            "0": "I'll do it. What do you need?"
           }
         }
       },
@@ -1267,7 +1267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I'll be back when I have these repair kits."
+            "0": "I'll be back when I have these components."
           }
         }
       },

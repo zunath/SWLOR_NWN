@@ -3,6 +3,23 @@
 
 <h3>DM Authorization</h3>
 
+<div class="row">
+
+    <div class="col">
+        <input type="text"
+               @bind="@_searchText"
+               class="form-control"
+               @onblur="RefreshList" />
+    </div>
+    <div class="col-1">
+        <button @onclick="RefreshList"
+                class="btn btn-primary">
+            Search
+        </button>
+    </div>
+
+</div>
+
 <table class="table">
 	<thead>
 		<tr>
@@ -41,10 +58,22 @@
 </table>
 
 @code {
+	protected string _searchText;
 	private List<AuthorizedDM> _dms;
 
 	protected override async Task OnInitializedAsync()
 	{
-		_dms = DB.Search(new DBQuery<AuthorizedDM>()).ToList();
+		RefreshList();
+	}
+
+	protected void RefreshList()
+	{
+		var query = new DBQuery<AuthorizedDM>();
+		if (!string.IsNullOrWhiteSpace(_searchText))
+		{
+		    query.AddFieldSearch(nameof(AuthorizedDM.Name), _searchText, true);
+		}
+
+	    _dms = DB.Search(query).ToList();
 	}
 }

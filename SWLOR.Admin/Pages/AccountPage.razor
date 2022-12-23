@@ -3,13 +3,30 @@
 
 <h3>Account</h3>
 
+<div class="row">
+	
+    <div class="col">
+        <input 
+            type="text" 
+            @bind="@_searchText" 
+            class="form-control"
+            @onblur="RefreshList"/>
+    </div>
+    <div class="col-1">
+        <button 
+            @onclick="RefreshList"
+            class="btn btn-primary">Search
+        </button>
+    </div>
+
+</div>
+
 <table class="table">
 	<thead>
 	<tr>
 		<th>CD Key</th>
 		<th>Completed Tutorial</th>
 		<th>Date Created</th>
-		<th>Achievements</th>
 		<th>Edit</th>
 	</tr>
 	</thead>
@@ -29,13 +46,6 @@
 			}
 			<td>@account.DateCreated</td>
 			<td>
-				<button
-					type="button"
-					class="btn btn-primary">
-					Achievements
-				</button>
-			</td>
-			<td>
 				<button class="btn btn-primary">Edit</button>
 			</td>
 		</tr>
@@ -46,14 +56,23 @@
 </table>
 
 @code {
-
+	
+    protected string _searchText;
 	private List<Account> _accounts;
-	private List<AchievementType> _achievements;
 
 	protected override async Task OnInitializedAsync()
 	{
-		_accounts = DB.Search(new DBQuery<Account>()).ToList();
-		_achievements = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>().ToList();
-
+		RefreshList();
 	}
+
+    protected void RefreshList()
+    {
+        var query = new DBQuery<Account>();
+        if (!string.IsNullOrWhiteSpace(_searchText))
+        {
+            query.AddFieldSearch(nameof(Account.Id), _searchText, true);
+        }
+
+        _accounts = DB.Search(query).ToList();
+    }
 }

@@ -83,11 +83,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "vdathtribal")
                 .RandomlyWalks()
-                .WithFrequency(100)
-
-                .AddSpawn(ObjectType.Creature, "vdathturtle")
-                .RandomlyWalks()
-                .WithFrequency(5);
+                .WithFrequency(100);
         }
 
         private void GrottoCaverns()

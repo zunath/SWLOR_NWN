@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 520
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This kit can be used to upgrade a lightsaber to the next level."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,20 +43,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Immortal Cap"
+      "0": "Lightsaber Upgrade Kit I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 52
+    "value": 116
   },
   "PaletteID": {
     "type": "byte",
-    "value": 26
+    "value": 20
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -87,7 +89,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 335
+          "value": 329
         }
       }
     ]
@@ -102,30 +104,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "RECIPE"
+    "value": "saber_upg1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "recipe_imcap"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RECIPES"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "403"
-        }
-      }
-    ]
+    "value": "saber_upg1"
   }
 }

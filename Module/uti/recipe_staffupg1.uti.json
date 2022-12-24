@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 520
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "This kit can be used to upgrade a lightsaber to the next level. This will also increase the perk requirement.\n\nA lightsaber may only be upgraded four times."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,20 +41,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Lightsaber Upgrade Kit"
+      "0": "Blueprint: Saberstaff Upgrade I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 116
+    "value": 52
   },
   "PaletteID": {
     "type": "byte",
-    "value": 20
+    "value": 26
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -89,7 +87,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 329
+          "value": 335
         }
       }
     ]
@@ -104,10 +102,30 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "saber_upgrade_kit"
+    "value": "RECIPE"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "saber_upgrade_ki"
+    "value": "recipe_staffupg1"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RECIPES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "368"
+        }
+      }
+    ]
   }
 }

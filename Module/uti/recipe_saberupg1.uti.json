@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Immortal Cap"
+      "0": "Blueprint: Lightsaber Upgrade I"
     }
   },
   "ModelPart1": {
@@ -106,7 +106,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "recipe_imcap"
+    "value": "recipe_saberupg1"
   },
   "VarTable": {
     "type": "list",
@@ -123,7 +123,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "403"
+          "value": "367"
         }
       }
     ]

@@ -882,6 +882,121 @@
                 "type": "byte",
                 "value": 2
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Council Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduncouncilg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunguardian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Industrial"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunindustry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Inquisitor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduninquis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Loot - Forge"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunforgeloot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Loot - Temple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduntemple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunmarauder"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduntrooper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Warform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunwarform"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6690

@@ -2336,6 +2336,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHAR-005 S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhar005s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLAR-001"
                     },
                     "RESREF": {
@@ -2407,6 +2418,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlar005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLAR-005 S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlar005s"
                     }
                   },
                   {
@@ -2594,6 +2616,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "reg_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_robes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_tunic"
                     }
                   },
                   {
@@ -3067,6 +3122,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DHHL-005 S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dhhl005s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLHL-001"
                     },
                     "RESREF": {
@@ -3138,6 +3204,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlhl005k"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DLHL-005 S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dlhl005s"
                     }
                   },
                   {
@@ -3479,6 +3556,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictrooperh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Crown"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_crown"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_helmet"
                     }
                   },
                   {
@@ -5606,6 +5716,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Titan Shield"
                           },
                           "RESREF": {
@@ -6437,7 +6558,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "(NPC 1) Vanguard Hammer"
+                      "value": "(NPC 1) Vanguard Greatsword"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6580,7 +6701,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "(NPC 2) Vanguard Hammer"
+                      "value": "(NPC 2) Vanguard Greatsword"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6596,6 +6717,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcrvang2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Combat Medic's Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrmedic"
                     }
                   },
                   {
@@ -6646,6 +6778,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 3) Heavy Blaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrhvyblas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 3) Jedi Lightsaber"
                     },
                     "RESREF": {
@@ -6690,11 +6833,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "(NPC 3) Sith Officer's Pistol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcpofficer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "(NPC 3) Sith Saberstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcmstaff3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "(NPC 3) Sith Saboteur Knife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmsabot"
                     }
                   },
                   {
@@ -6712,7 +6877,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "(NPC 3) Vanguard Hammer"
+                      "value": "(NPC 3) Vanguard Greatsword"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6822,7 +6987,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "(NPC 5) Warform Hammer"
+                      "value": "(NPC 5) Warform Greatsword"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6838,6 +7003,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeestaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Temple Master's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdun4melee"
                     }
                   }
                 ]
@@ -7118,6 +7294,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "holoregenhide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Heavy Drone Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdunhvyskin"
                     }
                   },
                   {
@@ -7590,18 +7777,18 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "vnpcsass006"
+                      "value": "vnpcsass4"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Sith Assassin T4 Skin"
+                      "value": "Sith Droid Special"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "vnpcsass4"
+                      "value": "vnpcsbotspc"
                     }
                   },
                   {
@@ -7811,6 +7998,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcssorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Special Troop Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsspecial"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Temple Guard Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdun1skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Temple Master Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdun4skin"
                     }
                   },
                   {
@@ -8416,6 +8636,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Heavy Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcahgunner"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Heavy Gunner Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchhgunner"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Honor Guard Armor"
                     },
                     "RESREF": {
@@ -8493,11 +8735,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Medic Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchmedic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Officer Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcasithoff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Officer Hat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchsithoff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Saboteur Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcasabot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Sorcerer Armor"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcasorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Temple Master's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdun4armor"
                     }
                   },
                   {
@@ -8542,6 +8839,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpchvang1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warmonger Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcawarmonger"
                     }
                   },
                   {
@@ -11815,6 +12123,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBE-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbe005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLBE-001"
                           },
                           "RESREF": {
@@ -11886,6 +12205,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlbe005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLBE-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbe005s"
                           }
                         },
                         {
@@ -12095,6 +12425,39 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_belt_lf"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_belt_ls"
                           }
                         },
                         {
@@ -12359,6 +12722,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHLG-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhlg005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLLG-001"
                           },
                           "RESREF": {
@@ -12430,6 +12804,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dllg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLLG-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dllg005s"
                           }
                         },
                         {
@@ -12639,6 +13024,39 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Shoes"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_shoes"
                           }
                         },
                         {
@@ -12881,6 +13299,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHBR-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhbr005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dream Bracer"
                           },
                           "RESREF": {
@@ -12963,6 +13392,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "qk_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_bracer"
                           }
                         },
                         {
@@ -13161,6 +13601,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHCL-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhcl005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLCL-001"
                           },
                           "RESREF": {
@@ -13232,6 +13683,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlcl005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLCL-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlcl005s"
                           }
                         },
                         {
@@ -13469,6 +13931,39 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Cape"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_cape"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Seeker Cloak"
                           },
                           "RESREF": {
@@ -13683,6 +14178,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DLBR-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlbr005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Flesheater Gloves"
                           },
                           "RESREF": {
@@ -13798,6 +14304,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_wraps"
                           }
                         },
                         {
@@ -27328,6 +27856,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHNK-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhnk005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLNK-001"
                           },
                           "RESREF": {
@@ -27399,6 +27938,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlnk005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLNK-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlnk005s"
                           }
                         },
                         {
@@ -27619,6 +28169,39 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "solusdisguise001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Amulet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_amulet"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Pendant"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_pendant"
                           }
                         },
                         {
@@ -27905,6 +28488,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DHRG-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dhrg005s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLRG-001"
                           },
                           "RESREF": {
@@ -27976,6 +28570,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dlrg005k"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DLRG-005 S"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dlrg005s"
                           }
                         },
                         {
@@ -28207,6 +28812,39 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "solus_ring_001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Band"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_band"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Signet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_signet"
                           }
                         },
                         {
@@ -33373,6 +34011,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Korriban Sith Fortress Key - Council Chambers"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valkorrdkey4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Fortress Key - Courtyard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valkorrdkey1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Fortress Key - Forgeworks"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valkorrdkey2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Fortress Key - Lord's Quarters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valkorrdkey3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Fort Ka'ra Access Keycode"
                     },
                     "RESREF": {
@@ -34762,6 +35444,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Commando Knife"
                           },
                           "RESREF": {
@@ -35091,6 +35784,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "raider_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Greatsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_greatswor"
                           }
                         },
                         {
@@ -35630,6 +36334,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "electroblade_s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Apprentice Electroblade"
                           },
                           "RESREF": {
@@ -35992,6 +36718,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "raider_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_katar"
                           }
                         },
                         {
@@ -36829,6 +37566,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_twinblade"
                     }
                   },
                   {
@@ -38126,6 +38885,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sacred Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Force Pike"
                     },
                     "RESREF": {
@@ -38734,6 +39504,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Officer Blaster"
                           },
                           "RESREF": {
@@ -39069,6 +39850,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sacred Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sc_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Rifle"
                           },
                           "RESREF": {
@@ -39350,6 +40142,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raider_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sacred Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sc_shuriken"
                     }
                   },
                   {

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 70.0
+    "value": 47.0
   },
   "ClassList": {
     "type": "list",
@@ -316,7 +316,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Lord"
+      "0": "Sith Sorcerer"
     }
   },
   "fortbonus": {
@@ -680,7 +680,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithLord"
+    "value": "SithSorcerer"
   },
   "Tail_New": {
     "type": "dword",

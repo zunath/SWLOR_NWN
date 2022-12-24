@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
-    public class KorribanResourceSpawnDefinition: ISpawnListDefinition
+    public class KorribanResourceSpawnDefinition : ISpawnListDefinition
     {
         private readonly SpawnTableBuilder _builder = new();
 
@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             CavernsResources();
             DunesResources();
             SithCryptResources();
+            SithFortressResources();
 
             return _builder.Build();
         }
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(20)
-                
+
                 .AddSpawn(ObjectType.Placeable, "desert_shrub")
                 .WithFrequency(5);
 
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "desert_shrub")
                 .WithFrequency(5)
-                
+
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(2);
         }
@@ -106,6 +107,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "sithcrypt_box_3")
                 .WithFrequency(2);
+        }
+
+        private void SithFortressResources()
+        {
+            _builder.Create("KorribanDungeonLootTemple")
+                .AddSpawn(ObjectType.Placeable, "korrduntemple")
+                .WithFrequency(1);
+
+            _builder.Create("KorribanDungeonLootForge")
+                .AddSpawn(ObjectType.Placeable, "korrdunforge")
+                .WithFrequency(1);
         }
     }
 }

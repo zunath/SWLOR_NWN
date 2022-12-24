@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 128.0
+    "value": 100.0
   },
   "ClassList": {
     "type": "list",
@@ -23,7 +23,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 66
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2675
+    "value": 2440
   },
   "DecayTime": {
     "type": "dword",
@@ -157,7 +157,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2675
+    "value": 2440
   },
   "Int": {
     "type": "byte",
@@ -191,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3235
+    "value": 3000
   },
   "NaturalAC": {
     "type": "byte",
@@ -492,7 +492,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 157
+    "value": 82
   },
   "Str": {
     "type": "byte",
@@ -645,7 +645,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 5
   },
   "willbonus": {
     "type": "short",

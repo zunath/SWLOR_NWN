@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.SpawnService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -124,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(480);
+                .RespawnDelay(300 * Random.D100(1));
         }
 
         private void MountainCaves()

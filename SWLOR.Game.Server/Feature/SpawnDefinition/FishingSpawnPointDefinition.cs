@@ -25,7 +25,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RespawnDelay(90 + Random.Next(30))
                 .SpawnAction(spawn =>
                 {
+                    var fishResrefList = Fishing.GetFishAvailableAtLocation(location);
+                    var description = $"Equip a fishing rod, load some bait, and click this to begin fishing.\n\n" +
+                                      "You spot the following fish in this location:\n\n";
+
+                    foreach (var resref in fishResrefList)
+                    {
+                        var itemName = Cache.GetItemNameByResref(resref);
+                        description += itemName + "\n";
+                    }
+
                     SetLocalInt(spawn, Fishing.FishingPointLocationVariable, (int)location);
+                    SetDescription(spawn, description);
                 });
         }
 

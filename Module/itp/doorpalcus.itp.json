@@ -10,6 +10,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 0
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -33,6 +37,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 1
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -122,6 +130,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 2
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -156,6 +168,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 3
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691
@@ -163,6 +179,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 4
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -314,6 +334,10 @@
       },
       {
         "__struct_id": 0,
+        "ID": {
+          "type": "byte",
+          "value": 5
+        },
         "STRREF": {
           "type": "dword",
           "value": 6734
@@ -326,6 +350,10 @@
           "value": [
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 10
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 111808
@@ -333,6 +361,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 6
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -752,6 +784,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 9
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -995,6 +1031,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 7
+              },
               "LIST": {
                 "type": "list",
                 "value": [
@@ -1095,6 +1135,10 @@
             },
             {
               "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 8
+              },
               "LIST": {
                 "type": "list",
                 "value": [

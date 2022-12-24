@@ -441,6 +441,14 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                // Queued respawns are pending. These must all spawn before a despawn can occur.
+                // Leave the queued despawn in place to ensure it eventually gets processed.
+                if (_queuedSpawnsByArea.ContainsKey(area) &&
+                    _queuedSpawnsByArea[area].Count > 0)
+                {
+                    continue;
+                }
+
                 if (now > despawnTime)
                 {
                     // Destroy active spawned objects from the module.

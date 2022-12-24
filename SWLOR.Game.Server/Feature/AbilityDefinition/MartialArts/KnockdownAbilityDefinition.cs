@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     var isHit = Random.D100(1) <= 60;
                     if (!isHit) return;
 
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 12f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 4f);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
                     Enmity.ModifyEnmity(activator, target, 670);
                 });

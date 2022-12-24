@@ -847,7 +847,7 @@
         BassMeuniere = 2124,
         CrystalSushi = 2125,
         EelectricSoup = 2126,
-        TroutBall = 2127,
+        ShiningStew = 2127,
         PopperBowl = 2128,
         PickledHerring = 2129,
         ZoniBroth = 2130,

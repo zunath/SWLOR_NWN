@@ -1311,10 +1311,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("wild_leg", 2)
                 .Component("distilled_water", 1);
 
-            // Trout Ball
-            _builder.Create(RecipeType.TroutBall, SkillType.Agriculture)
+            // Shining Stew
+            _builder.Create(RecipeType.ShiningStew, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("trout_ball")
+                .Resref("shining_stew")
                 .Level(45)
                 .Quantity(1)
                 .RequirementPerk(PerkType.CookingRecipes, 5)

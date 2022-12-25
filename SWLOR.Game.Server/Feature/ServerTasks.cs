@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature
                         var playerId = GetObjectUUID(player);
                         var dbPlayer = DB.Get<Player>(playerId);
 
-                        if(GetIsDM(player) || dbPlayer.Settings.DisplayServerResetReminders)
+                        if(GetIsDM(player) || GetIsDMPossessed(player) || (dbPlayer != null && dbPlayer.Settings.DisplayServerResetReminders))
                             SendMessageToPC(player, message);
                     }
 

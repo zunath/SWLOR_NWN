@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, DC, SavingThrowType.None, activator);
 
-            if (checkResult == SavingThrowResultType.Success)
+            if (checkResult == SavingThrowResultType.Failed)
             {
                 var effect = EffectConfused();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));

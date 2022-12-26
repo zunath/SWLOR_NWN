@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             const int DC = 14;
             var checkResult = WillSave(target, DC, SavingThrowType.None, source);
 
-            if (checkResult == SavingThrowResultType.Success)
+            if (checkResult == SavingThrowResultType.Failed)
             {
                 PlaySound("plr_force_absorb");
 

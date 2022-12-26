@@ -37,11 +37,11 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
-            { 1, 10 }, // Level 1 requires a minimum of 10 citizens
-            { 2, 15 }, // Level 2 requires a minimum of 15 citizens
-            { 3, 20 }, // Level 3 requires a minimum of 20 citizens
-            { 4, 30 }, // Level 4 requires a minimum of 30 citizens
-            { 5, 40 }  // Level 5 requires a minimum of 40 citizens
+            { 1, 5 }, // Level 1 requires a minimum of 5 citizens
+            { 2, 10 }, // Level 2 requires a minimum of 10 citizens
+            { 3, 15 }, // Level 3 requires a minimum of 15 citizens
+            { 4, 20 }, // Level 4 requires a minimum of 20 citizens
+            { 5, 25 }  // Level 5 requires a minimum of 25 citizens
         };
 
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();

@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()

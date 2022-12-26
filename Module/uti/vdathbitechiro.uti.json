@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -34,7 +34,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -48,7 +48,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 63
+    "value": 55
   },
   "Plot": {
     "type": "byte",

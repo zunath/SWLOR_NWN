@@ -1222,7 +1222,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "_mdrn_pl_weaprck", 
             "", 
             true,
-            2)]
+            1)]
         WeaponRack = 215,
         [Structure("Fridge, Worn",
             "_mdrn_pl_fridge3",
@@ -1240,7 +1240,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "_mdrn_pl_fridge1",
             "",
             true,
-            2)]
+            1)]
         FridgeStainless = 218,
         [Structure("Cookpot",
             "cookpot",

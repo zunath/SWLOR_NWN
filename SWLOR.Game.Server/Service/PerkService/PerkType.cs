@@ -258,5 +258,7 @@
         ShockingShout = 251,
         Rejuvenation = 252,
         FrenziedShout = 253,
+
+        FishingRods = 257,
     }
 }

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 15)
                 .AddItem("klorslug_meat", 10)
-                .AddItem("klorslug_claw", 10)
+                .AddItem("klorslug_tail", 10)
                 .AddItem("klorslug_innards", 5);
 
             _builder.Create("KORRIBAN_KLORSLUG_RARES")

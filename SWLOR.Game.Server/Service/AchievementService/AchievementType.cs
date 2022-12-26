@@ -266,6 +266,39 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Qion Foothills", "Explore the Qion Foothills on Hutlar.", true)]
         ExploreHutlarQionFoothills = 99,
+
+        [Achievement("Explore Dathomir Orbit", "Explore Dathomir's Orbit", true)]
+        ExploreDathomirOrbit = 100,
+
+        [Achievement("Explore Dathomir Cave Ruins", "Explore Dathomir Cave Ruins", true)]
+        ExploreDathomirCaveRuins = 101,
+
+        [Achievement("Explore Dathomir Desert", "Explore Dathomir Desert", true)]
+        ExploreDathomirDesert = 102,
+
+        [Achievement("Explore Dathomir Grotto Caverns", "Explore Dathomir Grotto Caverns", true)]
+        ExploreDathomirGrottoCaverns = 103,
+
+        [Achievement("Explore Dathomir Grottos", "Explore Dathomir Grottos", true)]
+        ExploreDathomirGrottos = 104,
+
+        [Achievement("Explore Dathomir Jungles", "Explore Dathomir Jungles", true)]
+        ExploreDathomirJungles = 105,
+
+        [Achievement("Explore Dathomir Mountain Caves", "Explore Dathomir Mountain Caves", true)]
+        ExploreDathomirMountainCaves = 106,
+
+        [Achievement("Explore Dathomir Mountains", "Explore Dathomir Mountains", true)]
+        ExploreDathomirMountains = 107,
+
+        [Achievement("Explore Dathomir Ruin Base", "Explore Dathomir Ruin Base", true)]
+        ExploreDathomirRuinBase = 108,
+
+        [Achievement("Explore Dathomir Tribe Village", "Explore Dathomir Tribe Village", true)]
+        ExploreDathomirTribeVillage = 109,
+
+        [Achievement("The Legendary Rod", "Completed the quest 'The Legendary Rod'.", true)]
+        TheLegendaryRod = 110,
     }
 
     public class AchievementAttribute: Attribute

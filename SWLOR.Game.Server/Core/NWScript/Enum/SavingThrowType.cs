@@ -3,6 +3,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
     public enum SavingThrowType
     {
         All = 0,
+        None = 0,
         MindSpells = 1,
         Poison = 2,
         Disease = 3,

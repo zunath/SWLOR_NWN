@@ -25,18 +25,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Impact(uint source, uint target)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Stun", AbilityType.Willpower))
+            const int DC = 12;
+            const string EffectTag = "StatusEffectType.ForceStun";
+            var checkResult = WillSave(target, DC, SavingThrowType.None, source);
+
+            if (checkResult == SavingThrowResultType.Success)
             {
                 var effect = EffectDazed();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-                effect = TagEffect(effect, $"StatusEffectType.ForceStun");
+                effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
-            else
+            else if(checkResult == SavingThrowResultType.Failed)
             {
-                var effect = EffectAttackDecrease(2);
+                var effect = EffectAccuracyDecrease(2);
                 effect = EffectLinkEffects(effect, EffectACDecrease(2));
-                effect = TagEffect(effect, $"StatusEffectType.ForceStun");
+                effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 

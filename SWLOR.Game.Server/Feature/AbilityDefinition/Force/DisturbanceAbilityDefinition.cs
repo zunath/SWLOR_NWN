@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
-                var accuracyDown = TagEffect(EffectAttackDecrease(accDecrease), effectTag);
+                var accuracyDown = TagEffect(EffectAccuracyDecrease(accDecrease), effectTag);
                 ApplyEffectToObject(DurationType.Temporary, accuracyDown, target, 60f);
                 Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of accuracy down.");
             }

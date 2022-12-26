@@ -22,27 +22,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            if (GetRacialType(target) == RacialType.Cyborg || GetRacialType(target) == RacialType.Robot)
+            var race = GetRacialType(target);
+            if (race == RacialType.Cyborg || 
+                race == RacialType.Robot ||
+                race == RacialType.Droid)
             {
                 return "Mind trick does not work on this creature.";
             }
-            else return string.Empty;
+            
+            return string.Empty;
         }
 
         private static void ApplyMindTrick(uint activator, uint target)
         {
+            var race = GetRacialType(target);
             if (activator == target ||
-                GetRacialType(target) == RacialType.Cyborg &&
-                GetRacialType(target) == RacialType.Robot)
+                race == RacialType.Cyborg ||
+                race == RacialType.Robot ||
+                race == RacialType.Droid)
             {
                 return;
             }
 
-            if (!Ability.GetAbilityResisted(activator, target, "Mind Trick", AbilityType.Willpower))
+            const int DC = 12;
+            const string EffectTag = "StatusEffectType.MindTrick";
+            var checkResult = WillSave(target, DC, SavingThrowType.None, activator);
+
+            if (checkResult == SavingThrowResultType.Success)
             {
                 var effect = EffectConfused();
                 effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
-                effect = TagEffect(effect, "StatusEffectType.MindTrick");
+                effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
@@ -81,15 +91,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    const float radiusSize = RadiusSize.Medium;
+                    const float Radius = RadiusSize.Medium;
                     ApplyMindTrick(activator, target);
                     // Target the next nearest creature and do the same thing.
-                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
+                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
                         if(GetIsReactionTypeHostile(targetCreature, activator))
                             ApplyMindTrick(activator, targetCreature);
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });

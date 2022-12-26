@@ -52,10 +52,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var resisted = Ability.GetAbilityResisted(activator, nearest, "Shocking Shout", AbilityType.Social);
-                            if (!resisted)
+                            const int DC = 14;
+                            var checkResult = WillSave(nearest, DC, SavingThrowType.None, activator);
+                            const float BaseDuration = 2f;
+                            var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
+                            var duration = BaseDuration + bonusDuration;
+
+                            if (checkResult == SavingThrowResultType.Success)
                             {
-                                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, 6f);
+                                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 

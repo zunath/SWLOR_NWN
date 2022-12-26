@@ -345,34 +345,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns true if the target resists the ability.
-        /// Will display a combat log message indicating the roll performed.
-        /// </summary>
-        /// <param name="attacker">The creature performing the attack</param>
-        /// <param name="defender">The creature defending against the attack</param>
-        /// <param name="actionName">Name of the action or ability to display in the combat log</param>
-        /// <param name="abilityType">The type of ability to check against.</param>
-        public static bool GetAbilityResisted(uint attacker, uint defender, string actionName, AbilityType abilityType)
-        {
-            var abilityShortName = Stat.GetAbilityNameShort(abilityType);
-            var attackerStat = (GetAbilityScore(attacker, abilityType) - 10) * 2.5f;
-            var defenderStat = (GetAbilityScore(defender, abilityType) - 10) * 2.5f;
-            var attackerRoll = d100();
-            var totalAttack = attackerRoll + attackerStat;
-            var isResisted = totalAttack <= defenderStat + 50;
-
-            var operation = attackerStat < 0 ? "-" : "+";
-            var coloredAttackerName = ColorToken.Custom(GetName(attacker), 153, 255, 255);
-            var resistText = isResisted ? "*resist*" : "*success*";
-            var message = ColorToken.Combat($"{coloredAttackerName} inflicts {actionName} on {GetName(defender)} {resistText} [{abilityShortName} vs {abilityShortName}] : ({attackerRoll} {operation} {Math.Abs(attackerStat)} = {totalAttack})");
-
-            SendMessageToPC(attacker, message);
-            SendMessageToPC(defender, message);
-
-            return isResisted;
-        }
-
-        /// <summary>
         /// Toggles an ability on or off for a given player.
         /// If additional logic is defined in an AbilityToggleDefinition, that will be run after this is performed.
         /// </summary>

@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ListEmotesCommand(builder);
             StuckCommand(builder);
             EmotesWindowCommand(builder);
-            Test(builder);
 
             return builder.Build();
         }

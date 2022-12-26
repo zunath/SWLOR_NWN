@@ -1111,7 +1111,7 @@ namespace SWLOR.Game.Server.Service
                 if (type == ItemPropertyType.AttackBonus ||
                     type == ItemPropertyType.EnhancementBonus)
                 {
-                    accuracyBonus += GetItemPropertyCostTableValue(ip) * 2;
+                    accuracyBonus += GetItemPropertyCostTableValue(ip);
                 }
             }
 
@@ -1168,7 +1168,7 @@ namespace SWLOR.Game.Server.Service
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
                         ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
                     {
-                        accuracyBonus += ip.m_nCostTableValue * 2;
+                        accuracyBonus += ip.m_nCostTableValue;
                     }
                 }
             }

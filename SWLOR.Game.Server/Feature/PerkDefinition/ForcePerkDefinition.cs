@@ -164,21 +164,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Stun")
 
                 .AddPerkLevel()
-                .Description("Single target is Tranquilized for six seconds or, if resisted, gets -10 to Accuracy and Evasion.")
+                .Description("Attempt to tranquilize a single target for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun1)
 
                 .AddPerkLevel()
-                .Description("Target and nearest other enemy within 10m is Tranquilized for six seconds or, if resisted, get -10 to Accuracy and Evasion.")
+                .Description("Target and nearest other enemy within 10m is Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
-                .Description("Target and all other enemies within 10m are Tranquilized for six seconds or, if resisted, get -10 to Accuracy and Evasion.")
+                .Description("Target and all other enemies within 10m are Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -245,14 +245,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to a single non-mechanical target with lower WIL than the caster for six seconds.")
+                .Description("Attempt to confuse a single non-mechanical target with a 12DC will check for six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIL than the caster for six seconds.")
+                .Description("Attempt to confuse all hostile non-mechanical targets within 10m with a 12DC will check for six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Drain")
 
                 .AddPerkLevel()
-                .Description("Steals 10 HP from a target every six seconds.")
+                .Description("Attempts to steal 10 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
-                .Description("Steals 15 HP from a target every six seconds.")
+                .Description("Attempts to steal 15 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
-                .Description("Steals 20 HP from a target every six seconds.")
+                .Description("Attempts to steal 20 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain3)
 
                 .AddPerkLevel()
-                .Description("Steals 25 HP from a target every six seconds.")
+                .Description("Attempts to steal 25 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain4)
 
                 .AddPerkLevel()
-                .Description("Steals 30 HP from a target every six seconds.")
+                .Description("Attempts to steal 30 HP from a target every six seconds with a 14DC will check.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -128,32 +128,5 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
                 });
         }
-
-        private static void Test(ChatCommandBuilder builder)
-        {
-            builder.Create("test")
-                .Description("testing")
-                .Permissions(AuthorizationLevel.All)
-                .Action((user, target, location, args) =>
-                {
-                    var reflex = GetReflexSavingThrow(user);
-                    var will = GetWillSavingThrow(user);
-                    var fortitude = GetFortitudeSavingThrow(user);
-
-                    Console.WriteLine($"reflex = {reflex}");
-                    Console.WriteLine($"will = {will}");
-                    Console.WriteLine($"fortitude = {fortitude}");
-
-                    CreaturePlugin.SetBaseSavingThrow(user, SavingThrow.Will, 0);
-                    CreaturePlugin.SetBaseSavingThrow(user, SavingThrow.Reflex, 0);
-                    CreaturePlugin.SetBaseSavingThrow(user, SavingThrow.Fortitude, 0);
-
-
-                    Console.WriteLine($"after reflex = {reflex}");
-                    Console.WriteLine($"after will = {will}");
-                    Console.WriteLine($"after fortitude = {fortitude}");
-
-                });
-        }
     }
 }

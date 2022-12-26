@@ -42,13 +42,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
                     return string.Empty;
                 })
-                .HasImpactAction((activator, target, level, location) =>
+                .HasImpactAction((activator, target, _, _) =>
                 {
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
+                    var perkLevel = Perk.GetEffectivePerkLevel(activator, PerkType.RousingShout);
 
-                    switch (level)
+                    switch (perkLevel)
                     {
                         default:
                         case 1:

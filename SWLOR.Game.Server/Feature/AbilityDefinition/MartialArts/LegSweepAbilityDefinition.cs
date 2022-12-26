@@ -35,27 +35,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
+            int dmg;
+            int dc;
 
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 4;
-                    if (d4()==1) inflict = true;
+                    dc = 5;
                     break;
                 case 2:
                     dmg = 13;
-                    if (Random(100) < 40) inflict = true;
+                    dc = 8;
                     break;
                 case 3:
                     dmg = 20;
-                    if (d4() > 2) inflict = true;
-                    break;
-                default:
+                    dc = 10;
                     break;
             }
 
@@ -87,7 +86,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
-            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
+
+            var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
+            }
         }
 
         private static void LegSweep1(AbilityBuilder builder)

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
         
-        private void Impact(uint activator, uint target, int dmg, int knockdownChance, float knockdownLength)
+        private void Impact(uint activator, uint target, int dmg, int dc)
         {
             if (GetFactionEqual(activator, target))
                 return;
@@ -43,9 +43,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defenderStat, 
                 0);
 
-            if (Random.D100(1) <= knockdownChance)
+            if (dc > 0)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, knockdownLength);
+                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
+                if (checkResult == SavingThrowResultType.Failed)
+                {
+                    const float Duration = 3f;
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+                }
             }
 
             AssignCommand(activator, () =>
@@ -76,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 6, 0, 0f);
+                        Impact(activator, target, 6, -1);
                     });
                 });
         }
@@ -100,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 30, 6f);
+                        Impact(activator, target, 10, 6);
                     });
                 });
         }
@@ -124,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 16, 50, 8f);
+                        Impact(activator, target, 16, 10);
                     });
                 });
         }

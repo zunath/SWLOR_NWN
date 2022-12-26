@@ -125,10 +125,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void KwiGuardian()
         {
             _builder.Create("DATHOMIR_KWI_GUARDIAN")
-                .AddItem("fiberp_imperfect", 10)
-                .AddItem("fiberp_high", 1)
-                .AddItem("lth_imperfect", 10)
-                .AddItem("lth_high", 1);
+                .AddItem("fiberp_imperfect", 5)
+                .AddItem("fiberp_high", 5)
+                .AddItem("lth_imperfect", 5)
+                .AddItem("lth_high", 5);
 
             _builder.Create("DATHOMIR_KWI_GUARDIAN_GEAR")
                 .AddItem("kwi_knife", 20)
@@ -204,10 +204,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void KwiShaman()
         {
             _builder.Create("DATHOMIR_KWI_SHAMAN")
-                .AddItem("fiberp_imperfect", 10)
-                .AddItem("fiberp_high", 1)
-                .AddItem("lth_imperfect", 10)
-                .AddItem("lth_high", 1)
+                .AddItem("fiberp_imperfect", 5)
+                .AddItem("fiberp_high", 10)
+                .AddItem("lth_imperfect", 5)
+                .AddItem("lth_high", 10)
                 .AddItem("bread_flour", 5);
 
             _builder.Create("DATHOMIR_KWI_SHAMAN_GEAR")
@@ -285,9 +285,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DATHOMIR_KWI_TRIBAL")
                 .AddItem("fiberp_imperfect", 10)
-                .AddItem("fiberp_high", 1)
+                .AddItem("fiberp_high", 5)
                 .AddItem("lth_imperfect", 10)
-                .AddItem("lth_high", 1)
+                .AddItem("lth_high", 5)
                 .AddItem("bread_flour", 5);
 
             _builder.Create("DATHOMIR_KWI_TRIBAL_GEAR")

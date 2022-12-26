@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service
                 // Distance is too great.
                 if (GetDistanceBetween(member, player) > distance) continue;
 
-                result.Add(player);
+                result.Add(member);
             }
 
             return result;

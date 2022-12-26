@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 
 // ReSharper disable once CheckNamespace
@@ -38,6 +39,30 @@ namespace SWLOR.Game.Server.Core.NWScript
                     RemoveEffect(creature, effect);
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines if a creature has a more powerful effect active based on the provided effect tag/level mapping provided.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="tier">The tier attempting to be applied</param>
+        /// <param name="effectLevels">The tag/level mapping of all levels.</param>
+        /// <returns>true if a more powerful effect is in place, false otherwise</returns>
+        public static bool HasMorePowerfulEffect(uint creature, int tier, params (string, int)[] effectLevels)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                var tag = GetEffectTag(effect);
+                foreach (var (levelTag, level) in effectLevels)
+                {
+                    if (tag == levelTag && tier < level)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

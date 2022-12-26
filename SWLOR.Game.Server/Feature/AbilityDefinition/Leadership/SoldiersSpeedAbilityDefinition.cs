@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
-    public class SoldiersSpeedAbilityDefinition : AuraBaseAbilityDefinition, IAbilityListDefinition
+    public class SoldiersSpeedAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
@@ -29,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return OnAuraActivation(activator, StatusEffectType.SoldiersSpeed);
+                    return Ability.ToggleAura(activator, StatusEffectType.SoldiersSpeed);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ApplyAura(activator, StatusEffectType.SoldiersSpeed, false, true, false);
+                    Ability.ApplyAura(activator, StatusEffectType.SoldiersSpeed, false, true, false);
                 });
         }
     }

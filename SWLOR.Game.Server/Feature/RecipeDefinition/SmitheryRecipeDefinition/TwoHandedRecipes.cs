@@ -96,10 +96,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
-                .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
-
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Spears()
@@ -179,9 +183,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
-                .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void TwinBlades()
@@ -261,9 +270,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
-                .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Saberstaffs()
@@ -332,9 +346,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
                 .Component("elec_high", 20)
-                .Component("ref_jasioclase", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Training Saberstaff I
             _builder.Create(RecipeType.TrainingSaberstaff1, SkillType.Smithery)
@@ -401,6 +420,23 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 4);
 
+            // Saberstaff Upgrade I
+            _builder.Create(RecipeType.SaberstaffUpgradeKit1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("saberstaff_upg1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.None, 0)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
 

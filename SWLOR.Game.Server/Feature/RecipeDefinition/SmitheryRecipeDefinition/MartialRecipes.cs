@@ -94,9 +94,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.MartialBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
-                .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Staffs()
@@ -176,9 +181,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
-                .Component("hyphae_wood", 10)
-                .Component("chiro_shard", 1);
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
     }

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
         private static readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
+        private static readonly Dictionary<FishingLocationType, List<string>> _fishResrefsByLocation = new();
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";
         public const string RemainingBaitVariable = "REMAINING_BAIT";
@@ -83,7 +84,10 @@ namespace SWLOR.Game.Server.Service
                 var baitDetail = bait.GetAttribute<FishingBaitType, FishingBaitAttribute>();
                 _baits[bait] = baitDetail;
 
-                _baitsByResref[baitDetail.Resref] = bait;
+                foreach (var resref in baitDetail.Resrefs)
+                {
+                    _baitsByResref[resref] = bait;
+                }
             }
 
             Console.WriteLine($"Loaded {_baits.Count} fishing baits.");
@@ -117,7 +121,26 @@ namespace SWLOR.Game.Server.Service
                             existingLocation.FishMap[key].AddRange(list);
                         }
                     }
-                    
+
+                    if (!_fishResrefsByLocation.ContainsKey(locationType))
+                    {
+                        _fishResrefsByLocation[locationType] = new List<string>();
+
+                        foreach (var (key, list) in locationDetail.FishMap)
+                        {
+                            foreach (var fish in list)
+                            {
+                                var fishDetail = _fish[fish.Type];
+                                if (fishDetail.DisplayInDescription && 
+                                    !_fishResrefsByLocation[locationType].Contains(fishDetail.Resref))
+                                {
+                                    _fishResrefsByLocation[locationType].Add(fishDetail.Resref);
+                                }
+                            }
+                        }
+
+                    }
+
                 }
             }
 
@@ -157,6 +180,16 @@ namespace SWLOR.Game.Server.Service
                 return FishingBaitType.Invalid;
 
             return _baitsByResref[resref];
+        }
+
+        /// <summary>
+        /// Retrieves the details about a specific fishing location.
+        /// </summary>
+        /// <param name="type">The type of fishing location.</param>
+        /// <returns>Details about the specified fishing location.</returns>
+        public static List<string> GetFishAvailableAtLocation(FishingLocationType type)
+        {
+            return _fishResrefsByLocation[type];
         }
 
         /// <summary>
@@ -335,7 +368,7 @@ namespace SWLOR.Game.Server.Service
 
             var rodType = _rodsByResref[rodResref];
             var baitDetail = _baits[baitType];
-            var baitName = Cache.GetItemNameByResref(baitDetail.Resref);
+            var baitName = Cache.GetItemNameByResref(baitDetail.Resrefs.First());
             var locationDetail = _fishingLocations[locationId];
             var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
             var fish = _fish[fishType];

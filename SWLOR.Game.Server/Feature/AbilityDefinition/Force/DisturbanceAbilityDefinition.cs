@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class DisturbanceAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
+        private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
+        private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -22,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int accDecrease)
+        private void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
@@ -30,8 +33,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
+            if (HasMorePowerfulEffect(target, tier,
+                    new(Tier1Tag, 1),
+                    new(Tier2Tag, 2),
+                    new(Tier3Tag, 3)))
+            {
+                SendMessageToPC(activator, "Your target is already afflicted by a more powerful effect.");
+            }
+            else
+            {
+                RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
+                var accuracyDown = TagEffect(EffectAttackDecrease(accDecrease), effectTag);
+                ApplyEffectToObject(DurationType.Temporary, accuracyDown, target, 60f);
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of accuracy down.");
+            }
+
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(accDecrease), target, 60f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
 
             Enmity.ModifyEnmityOnAll(activator, 300 + damage);
@@ -52,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 9, 2);
+                    Impact(activator, target, 9, 2, 1, Tier1Tag);
                 });
         }
 
@@ -70,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 14, 4);
+                    Impact(activator, target, 14, 4, 2, Tier2Tag);
                 });
         }
 
@@ -88,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 32, 6);
+                    Impact(activator, target, 32, 6, 3, Tier3Tag);
                 });
         }
     }

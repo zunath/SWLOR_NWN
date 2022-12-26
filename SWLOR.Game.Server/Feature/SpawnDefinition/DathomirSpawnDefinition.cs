@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.SpawnService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -83,11 +84,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "vdathtribal")
                 .RandomlyWalks()
-                .WithFrequency(100)
-
-                .AddSpawn(ObjectType.Creature, "vdathturtle")
-                .RandomlyWalks()
-                .WithFrequency(5);
+                .WithFrequency(100);
         }
 
         private void GrottoCaverns()
@@ -128,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(480);
+                .RespawnDelay(60 * Random.D100(1));
         }
 
         private void MountainCaves()

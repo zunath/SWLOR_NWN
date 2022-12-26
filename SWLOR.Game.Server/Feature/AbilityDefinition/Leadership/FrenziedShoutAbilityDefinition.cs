@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
-    public class FrenziedShoutAbilityDefinition : AuraBaseAbilityDefinition, IAbilityListDefinition
+    public class FrenziedShoutAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
@@ -29,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return OnAuraActivation(activator, StatusEffectType.FrenziedShout);
+                    return Ability.ToggleAura(activator, StatusEffectType.FrenziedShout);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ApplyAura(activator, StatusEffectType.FrenziedShout, false, false, true);
+                    Ability.ApplyAura(activator, StatusEffectType.FrenziedShout, false, false, true);
                 });
         }
     }

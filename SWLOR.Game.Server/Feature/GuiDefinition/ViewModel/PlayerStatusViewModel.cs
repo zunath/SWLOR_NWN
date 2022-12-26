@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currentShields = shipStatus.Shield;
             var maxShields = shipStatus.MaxShield;
             Bar1Value = $"{currentShields} / {maxShields}";
-            Bar1Progress = maxShields <= 0 ? 0 : (float)currentShields / (float)maxShields;
+            Bar1Progress = maxShields <= 0 ? 0 : (float)currentShields / (float)maxShields > 1.0f ? 1.0f : (float)currentShields / (float)maxShields;
         }
 
         private void UpdateHull(ShipStatus shipStatus)
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currentHull = shipStatus.Hull;
             var maxHull = shipStatus.MaxHull;
             Bar2Value = $"{currentHull} / {maxHull}";
-            Bar2Progress = maxHull <= 0 ? 0 : (float)currentHull / (float)maxHull;
+            Bar2Progress = maxHull <= 0 ? 0 : (float)currentHull / (float)maxHull > 1.0f ? 1.0f : (float)currentHull / (float)maxHull;
         }
 
         private void UpdateCapacitor(ShipStatus shipStatus)
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currentCapacitor = shipStatus.Capacitor;
             var maxCapacitor = shipStatus.MaxCapacitor;
             Bar3Value = $"{currentCapacitor} / {maxCapacitor}";
-            Bar3Progress = maxCapacitor <= 0 ? 0 : (float)currentCapacitor / (float)maxCapacitor;
+            Bar3Progress = maxCapacitor <= 0 ? 0 : (float)currentCapacitor / (float)maxCapacitor > 1.0f ? 1.0f : (float)currentCapacitor / (float)maxCapacitor;
         }
 
         private void UpdateHP()
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxHP = GetMaxHitPoints(Player);
 
             Bar1Value = $"{currentHP} / {maxHP}";
-            Bar1Progress = maxHP <= 0 ? 0 : (float)currentHP / (float)maxHP;
+            Bar1Progress = maxHP <= 0 ? 0 : (float)currentHP / (float)maxHP > 1.0f ? 1.0f : (float)currentHP / (float)maxHP;
         }
 
         private void UpdateFP()
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxFP = Stat.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
             Bar3Value = isStandard ? "0 / 0" : $"{currentFP} / {maxFP}";
-            Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP;
+            Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP > 1.0f ? 1.0f : (float)currentFP / (float)maxFP;
         }
 
         private void UpdateSTM()
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxSTM = Stat.GetMaxStamina(Player, dbPlayer);
 
             Bar2Value = $"{currentSTM} / {maxSTM}";
-            Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM;
+            Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM > 1.0f ? 1.0f : (float)currentSTM / (float)maxSTM;
         }
 
         private void UpdateSingleData(PlayerStatusRefreshEvent.StatType type)

@@ -448,9 +448,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 20)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Magus Boots
             _builder.Create(RecipeType.MagusBoots, SkillType.Smithery)
@@ -461,9 +466,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Immortal Boots
             _builder.Create(RecipeType.ImmortalBoots, SkillType.Smithery)
@@ -474,9 +484,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
                 .Component("lth_high", 20)
                 .Component("fiberp_high", 20)
-                .Component("chiro_shard", 1);
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
     }
 }

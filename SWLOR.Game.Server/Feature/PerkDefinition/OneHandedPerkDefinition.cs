@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -42,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShieldMaster();
             ShieldBash();
             Bulwark();
+            ShieldResistance();
 
             return _builder.Build();
         }
@@ -249,6 +249,58 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Bulwark);
+        }
+
+        private void ShieldResistance()
+        {
+            void AdjustSavingThrows(uint player, uint item)
+            {
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, Stat.CalculateBaseSavingThrow(player, SavingThrow.Fortitude, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, Stat.CalculateBaseSavingThrow(player, SavingThrow.Will, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, Stat.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
+            }
+
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
+                .Name("Shield Resistance")
+
+                .AddPerkLevel()
+                .Description("Grants +1 to Will, Fortitude, and Reflex saves when equipped with a shield.")
+                .Price(2)
+                .RequirementSkill(SkillType.OneHanded, 20)
+
+                .AddPerkLevel()
+                .Description("Grants +2 to Will, Fortitude, and Reflex saves when equipped with a shield.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 40)
+                
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    var itemType = GetBaseItemType(item);
+                    if (slot == InventorySlot.LeftHand &&
+                        Item.ShieldBaseItemTypes.Contains(itemType))
+                    {
+                        AdjustSavingThrows(player, item);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    var itemType = GetBaseItemType(item);
+                    if (slot == InventorySlot.LeftHand &&
+                        Item.ShieldBaseItemTypes.Contains(itemType))
+                    {
+                        AdjustSavingThrows(player, OBJECT_INVALID);
+                    }
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    AdjustSavingThrows(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    AdjustSavingThrows(player, item);
+                });
         }
 
         private void WeaponFocusVibroblades()

@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 12, 6);
+                    Impact(activator, target, 12, 8);
 
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 20, 10);
+                    Impact(activator, target, 20, 12);
 
                     Enmity.ModifyEnmity(activator, target, 380);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

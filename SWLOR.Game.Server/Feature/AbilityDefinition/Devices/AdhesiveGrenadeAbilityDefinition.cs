@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 30, 6f, 6);
+                        Impact(activator, target, 30, 6f, 8);
                     });
                 });
         }
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 50, 8f, 10);
+                        Impact(activator, target, 50, 8f, 12);
                     });
                 });
         }

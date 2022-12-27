@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

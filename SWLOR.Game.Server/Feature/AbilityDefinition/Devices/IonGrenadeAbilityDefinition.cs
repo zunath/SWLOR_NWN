@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 race == RacialType.Droid ||
                 race == RacialType.Cyborg))
             {
+                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {

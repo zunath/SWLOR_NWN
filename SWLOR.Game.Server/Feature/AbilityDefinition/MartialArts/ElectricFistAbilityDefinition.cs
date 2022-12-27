@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
 
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

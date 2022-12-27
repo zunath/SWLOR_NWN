@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

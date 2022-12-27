@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 

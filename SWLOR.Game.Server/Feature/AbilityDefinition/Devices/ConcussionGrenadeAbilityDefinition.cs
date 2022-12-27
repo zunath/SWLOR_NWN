@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
+                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {

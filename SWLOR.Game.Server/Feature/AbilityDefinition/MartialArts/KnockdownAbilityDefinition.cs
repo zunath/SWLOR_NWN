@@ -27,10 +27,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    const int DC = 12;
                     const float Duration = 4f;
 
-                    var checkResult = FortitudeSave(target, DC, SavingThrowType.None, activator);
+                    var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
+                    var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);

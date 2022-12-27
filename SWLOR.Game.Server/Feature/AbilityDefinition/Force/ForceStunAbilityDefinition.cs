@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Impact(uint source, uint target)
         {
-            const int DC = 12;
+            var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.ForceStun";
-            var checkResult = WillSave(target, DC, SavingThrowType.None, source);
+            var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;
 
             if (checkResult == SavingThrowResultType.Failed)

@@ -44,9 +44,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            const int DC = 12;
+            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.MindTrick";
-            var checkResult = WillSave(target, DC, SavingThrowType.None, activator);
+            var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)
             {

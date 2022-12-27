@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var effect = EffectSlow();
             if (immobilizeDC > 0)
             {
-                var checkResult = FortitudeSave(target, immobilizeDC, SavingThrowType.None, activator);
+                var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
+                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     effect = EffectCutsceneImmobilize();

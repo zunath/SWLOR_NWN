@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
+                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -131,8 +132,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
         {
-            const int DC = 14;
-            var checkResult = WillSave(target, DC, SavingThrowType.None, source);
+            var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
+            var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 
             if (checkResult == SavingThrowResultType.Failed)
             {

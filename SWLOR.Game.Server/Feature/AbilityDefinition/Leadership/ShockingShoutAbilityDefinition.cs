@@ -52,12 +52,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            const int DC = 14;
+                            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 14);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
 
-                            var checkResult = WillSave(nearest, DC, SavingThrowType.None, activator);
+                            var checkResult = WillSave(nearest, dc, SavingThrowType.None, activator);
                             if (checkResult == SavingThrowResultType.Failed)
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);

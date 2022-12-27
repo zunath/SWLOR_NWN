@@ -13,12 +13,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        private const string RegenTier1Tag = "ABILITY_MED_KIT_REGEN_1";
-        private const string RegenTier2Tag = "ABILITY_MED_KIT_REGEN_2";
-        private const string RegenTier3Tag = "ABILITY_MED_KIT_REGEN_3";
-        private const string RegenTier4Tag = "ABILITY_MED_KIT_REGEN_4";
-        private const string RegenTier5Tag = "ABILITY_MED_KIT_REGEN_5";
-
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             MedKit1();
@@ -50,38 +44,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, int baseAmount, int regenAmount, int tier, string effectTag)
+        private void Impact(uint activator, uint target, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             var amount = baseAmount + willpowerMod * 10 + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
-
-            if (regenAmount > 0)
-            {
-                if (HasMorePowerfulEffect(target, tier,
-                        new(RegenTier1Tag, 1),
-                        new(RegenTier2Tag, 2),
-                        new(RegenTier3Tag, 3),
-                        new(RegenTier4Tag, 4),
-                        new(RegenTier5Tag, 5)))
-                {
-                    SendMessageToPC(activator, $"Your target is already enhanced by a more powerful effect.");
-                }
-                else
-                {
-                    const float RegenDuration = 30f;
-                    const float Interval = 6f;
-
-                    var regenEffect = EffectRegenerate(regenAmount, Interval);
-                    regenEffect = TagEffect(regenEffect, effectTag);
-
-                    RemoveEffectByTag(target, RegenTier1Tag, RegenTier2Tag, RegenTier3Tag, RegenTier4Tag, RegenTier5Tag);
-                    ApplyEffectToObject(DurationType.Temporary, regenEffect, target, RegenDuration);
-                }
-            }
-
             TakeMedicalSupplies(activator);
 
             Enmity.ModifyEnmityOnAll(activator, 250 + amount);
@@ -117,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 30, 0, 1, RegenTier1Tag);
+                    Impact(activator, target, 30);
                 });
         }
 
@@ -136,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 50, 5, 2, RegenTier2Tag);
+                    Impact(activator, target, 50);
                 });
         }
 
@@ -155,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 80, 10, 3, RegenTier3Tag);
+                    Impact(activator, target, 80);
                 });
         }
 
@@ -174,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 110, 20, 4, RegenTier4Tag);
+                    Impact(activator, target, 110);
                 });
         }
         private void MedKit5()
@@ -192,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 140, 30, 5, RegenTier5Tag);
+                    Impact(activator, target, 140);
                 });
         }
     }

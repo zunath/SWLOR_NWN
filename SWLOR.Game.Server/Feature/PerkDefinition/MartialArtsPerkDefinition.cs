@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWNX;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.AbilityService;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -46,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Knockdown")
 
                 .AddPerkLevel()
-                .Description("Your next attack has a 60% chance to inflict knockdown on your target for 12 seconds. [Cross Skill]")
+                .Description("Your next attack has a 12DC fortitude check to inflict knockdown on your target for 4 seconds. [Cross Skill]")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.Knockdown);
@@ -245,21 +240,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Electric Fist")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 8 DMG and has a 50% chance to inflict Shock for 30 seconds.")
+                .Description("Your next attack deals an additional 8 DMG and has a 10DC reflex check to inflict Shock for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ElectricFist1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 17 DMG and has a 75% chance to inflict Shock for 1 minute.")
+                .Description("Your next attack deals an additional 17 DMG and has a 15DC reflex check to inflict Shock for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ElectricFist2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 24 DMG and has a 100% chance to inflict Shock for 1 minute.")
+                .Description("Your next attack deals an additional 24 DMG and has a 20DC reflex check to inflict Shock for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -272,21 +267,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Striking Cobra")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6 DMG and has a 50% chance to inflict Poison for 30 seconds.")
+                .Description("Your next attack deals an additional 6 DMG and has a 10DC reflex check to inflict Poison for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StrikingCobra1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 15 DMG and has a 75% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 15 DMG and has a 15DC reflex check to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StrikingCobra2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 22 DMG and has a 100% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 22 DMG and has a 20DC reflex check to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -404,21 +399,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Slam")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6 DMG and has a 50% chance to inflict Blindness for 12 seconds.")
+                .Description("Your next attack deals an additional 6 DMG and has a 10DC fortitude check to inflict Blindness for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Slam1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 15 DMG and has a 75% chance to inflict Blindness for 12 seconds.")
+                .Description("Your next attack deals an additional 15 DMG and has a 15DC fortitude check to inflict Blindness for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Slam2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 22 DMG and has a 100% chance to inflict Blindness for 12 seconds.")
+                .Description("Your next attack deals an additional 22 DMG and has a 20DC fortitude check to inflict Blindness for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -431,21 +426,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Leg Sweep")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 4 DMG and has a 25% chance to inflict knockdown on your target for 6 seconds.")
+                .Description("Your next attack deals an additional 4 DMG and has a 5DC reflex check to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.LegSweep1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 13 DMG and has a 40% chance to inflict knockdown on your target for 6 seconds.")
+                .Description("Your next attack deals an additional 13 DMG and has a 8DC reflex check to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.LegSweep2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 20 DMG and has a 50% chance to inflict knockdown on your target for 6 seconds.")
+                .Description("Your next attack deals an additional 20 DMG and has a 10DC reflex check to inflict knockdown on your target for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)

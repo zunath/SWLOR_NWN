@@ -21,41 +21,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return builder.Build();
         }
-
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
-        {
-            var size = GetCreatureSize(target);
-            var maxSize = CreatureSize.Invalid;
-            switch (level)
-            {
-                case 1:
-                    maxSize = CreatureSize.Small;
-                    break;
-                case 2:
-                    maxSize = CreatureSize.Medium;
-                    break;
-                case 3:
-                    maxSize = CreatureSize.Large;
-                    break;
-                case 4:
-                    maxSize = CreatureSize.Huge;
-                    break;
-            }
-
-            if (size > maxSize)
-                return "Your target is too large to force push.";
-
-            return string.Empty;
-        }
-
+        
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            if (!Ability.GetAbilityResisted(activator, target, "Force Push", AbilityType.Willpower))
+            const float BaseDuration = 2f;
+            int dc;
+
+            switch (level)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f + willpowerBonus);
+                default:
+                case 1:
+                    dc = 8;
+                    break;
+                case 2:
+                    dc = 12;
+                    break;
+                case 3:
+                    dc = 14;
+                    break;
+                case 4:
+                    dc = 16;
+                    break;
             }
-            else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f + willpowerBonus);
+
+            var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
+            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+            var duration = BaseDuration + willpowerBonus;
+
+            if (checkResult == SavingThrowResultType.Failed)
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
+
+                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
+            }
+            else if (checkResult == SavingThrowResultType.Success)
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
+            }
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);
 
@@ -74,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -90,7 +91,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -106,7 +106,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
 

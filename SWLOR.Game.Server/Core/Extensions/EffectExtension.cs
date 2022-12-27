@@ -42,6 +42,26 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
+        /// Determines if creature has at least one effect with the specified tags.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <param name="tags">The effect tags to check for</param>
+        /// <returns>true if at least one effect was found, false otherwise</returns>
+        public static bool HasEffectByTag(uint creature, params string[] tags)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                var effectTag = GetEffectTag(effect);
+                if (tags.Contains(effectTag))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines if a creature has a more powerful effect active based on the provided effect tag/level mapping provided.
         /// </summary>
         /// <param name="creature">The creature to check.</param>

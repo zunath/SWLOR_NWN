@@ -42,8 +42,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
-            var dmg = 8 * level; // 8, 16, 24 DMG
-            var effDuration = 3f + 3 * level; // 6, 9, 12 sec
+            int dmg;
+            const float Duration = 3f;
+            int dc;
+
+            switch (level)
+            {
+                default:
+                case 1:
+                    dmg = 8;
+                    dc = 8;
+                    break;
+                case 2:
+                    dmg = 16;
+                    dc = 10;
+                    break;
+                case 3:
+                    dmg = 24;
+                    dc = 12;
+                    break;
+            }
+
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
@@ -56,7 +75,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, effDuration);
+
+            if (WillSave(target, dc, SavingThrowType.None, activator) == 0)
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, Duration);
+                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+            }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 

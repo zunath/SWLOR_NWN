@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -23,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int knockdownChance)
+        private void Impact(uint activator, uint target, int dmg, int dc)
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
@@ -44,16 +43,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target);
             });
 
-            DelayCommand(delay, () =>
+            if (dc > 0)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
-
-                if (Random.D100(1) <= knockdownChance)
+                DelayCommand(delay, () =>
                 {
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                }
-            });
+                    const float Duration = 3f;
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
+
+                    var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+                    if(checkResult == SavingThrowResultType.Failed)
+                    {
+                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+
+                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    }
+                });
+            }
         }
 
         private void WristRocket1()
@@ -70,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 8, 0);
+                    Impact(activator, target, 8, -1);
 
                     Enmity.ModifyEnmity(activator, target, 180);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -91,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 12, 30);
+                    Impact(activator, target, 12, 6);
 
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -112,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 20, 50);
+                    Impact(activator, target, 20, 10);
 
                     Enmity.ModifyEnmity(activator, target, 380);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

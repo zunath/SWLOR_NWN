@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Might")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Might - Improves damage dealt by melee weapons and increases carrying capacity.");
+                            .SetTooltip("Might - Improves damage dealt by melee weapons, carrying capacity, and fortitude saving throws.");
 
                         row.AddLabel()
                             .BindText(model => model.Might)
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Perception")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons and increases physical accuracy.");
+                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, increases physical accuracy, and reflex saving throws.");
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Willpower")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.");
+                            .SetTooltip("Willpower - Improves your force attack, force defense, max force points, and will saving throws.");
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
@@ -459,6 +459,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Sav. Throws")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetTooltip("Saving Throws - Used to resist certain attacks. (Order: Fortitude, Reflex, Will)");
+
+                        row.AddLabel()
+                            .BindText(model => model.SavingThrows)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
                 })
                 
                 .AddColumn(col =>

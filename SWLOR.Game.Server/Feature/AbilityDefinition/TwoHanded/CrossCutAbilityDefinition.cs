@@ -37,27 +37,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var acLoss = 0;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            int dmg;
+            int dc;
+            int acLoss;
+            const float Duration = 60f;
+
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 8;
                     acLoss = 2;
+                    dc = 10;
                     break;
                 case 2:
                     dmg = 17;
                     acLoss = 4;
+                    dc = 15;
                     break;
                 case 3:
                     dmg = 25;
                     acLoss = 6;
-                    break;
-                default:
+                    dc = 20;
                     break;
             }
 
@@ -76,9 +81,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            RemoveEffectByTag(target, "CROSS_CUT");
-            var breach = TagEffect(EffectACDecrease(acLoss), "CROSS_CUT");
-            ApplyEffectToObject(DurationType.Temporary, breach, target, 60f);
+            var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
+            {
+                RemoveEffectByTag(target, "CROSS_CUT");
+                var breach = TagEffect(EffectACDecrease(acLoss), "CROSS_CUT");
+                ApplyEffectToObject(DurationType.Temporary, breach, target, Duration);
+            }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.CrossCut));
             DelayCommand(0.2f, () =>

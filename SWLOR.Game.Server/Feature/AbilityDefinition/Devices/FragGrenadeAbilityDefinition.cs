@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -8,7 +7,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -25,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
         
-        private void Impact(uint activator, uint target, int dmg, int bleedChance, float bleedLength)
+        private void Impact(uint activator, uint target, int dmg, int dc, float bleedLength)
         {
             if (GetFactionEqual(activator, target))
                 return;
@@ -44,9 +42,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defenderStat, 
                 0);
 
-            if (Random.D100(1) <= bleedChance)
+            if (dc > 0)
             {
-                StatusEffect.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
+                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
+                if (checkResult == SavingThrowResultType.Failed)
+                {
+                    StatusEffect.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
+                }
             }
 
             AssignCommand(activator, () =>
@@ -75,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 6, 0, 0f);
+                        Impact(activator, target, 6, -1, 0f);
                     });
                 });
         }
@@ -97,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 30, 30f);
+                        Impact(activator, target, 10, 6, 30f);
                     });
                 });
         }
@@ -119,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 16, 50, 60f);
+                        Impact(activator, target, 16, 10, 60f);
                     });
                 });
         }

@@ -633,7 +633,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         ///   GetAreaOfEffectCreator() into oSaveVersus!!
         /// </summary>
-        public static int FortitudeSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
+        public static SavingThrowResultType FortitudeSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
             VM.StackPush(oSaveVersus);
@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(nDC);
             VM.StackPush(oCreature);
             VM.Call(108);
-            return VM.StackPopInt();
+            return (SavingThrowResultType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         ///   GetAreaOfEffectCreator() into oSaveVersus!!
         /// </summary>
-        public static SaveReturn ReflexSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
+        public static SavingThrowResultType ReflexSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
             VM.StackPush(oSaveVersus);
@@ -664,7 +664,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(nDC);
             VM.StackPush(oCreature);
             VM.Call(109);
-            return (SaveReturn)VM.StackPopInt();
+            return (SavingThrowResultType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -679,7 +679,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         ///   GetAreaOfEffectCreator() into oSaveVersus!!
         /// </summary>
-        public static int WillSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
+        public static SavingThrowResultType WillSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
             VM.StackPush(oSaveVersus);
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(nDC);
             VM.StackPush(oCreature);
             VM.Call(110);
-            return VM.StackPopInt();
+            return (SavingThrowResultType)VM.StackPopInt();
         }
 
         /// <summary>

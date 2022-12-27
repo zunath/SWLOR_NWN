@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             Bleed(builder);
             Poison(builder);
             Shock(builder);
-            Tranquilize(builder);
             Burn(builder);
 
             return builder.Build();
@@ -66,26 +65,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var location = GetLocation(target);                                       
                 });
         }
-
-        private void Tranquilize(StatusEffectBuilder builder)
-        {
-            builder.Create(StatusEffectType.Tranquilize)
-                .Name("Tranquilize")
-                .EffectIcon(EffectIconType.Sleep)
-                .GrantAction((source, target, length, effectData) =>
-                {
-                    var effect = EffectSleep();
-                    effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
-                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.Tranquilize);
-
-                    ApplyEffectToObject(DurationType.Permanent, effect, target, length);
-                })
-                .RemoveAction((target, effectData) =>
-                {
-                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.Tranquilize);
-                });
-        }
-
+        
         private void Burn(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.Burn)

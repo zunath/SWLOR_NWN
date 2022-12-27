@@ -96,9 +96,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             
             DelayCommand(Delay, () =>
             {
+                const float Duration = 2f;
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
+                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
+                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
                 AssignCommand(activator, () =>
                 {
                     if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))

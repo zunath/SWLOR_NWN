@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.BattleInsight2)
                 .TickAction((source, target, effectData) =>
                 {
-                    var effect = EffectAttackDecrease(5);
+                    var effect = EffectAccuracyDecrease(5);
                     effect = EffectLinkEffects(effect, EffectACDecrease(5));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        effect = EffectAttackIncrease(3);
+                        effect = EffectAccuracyIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Replaces(StatusEffectType.BattleInsight1)
                 .TickAction((source, target, effectData) =>
                 {
-                    var effect = EffectAttackDecrease(8);
+                    var effect = EffectAccuracyDecrease(8);
                     effect = EffectLinkEffects(effect, EffectACDecrease(8));
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         if (player == source)
                             continue;
 
-                        effect = EffectAttackIncrease(6);
+                        effect = EffectAccuracyIncrease(6);
                         effect = EffectLinkEffects(effect, EffectACIncrease(6));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);

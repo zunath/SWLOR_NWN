@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -42,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShieldMaster();
             ShieldBash();
             Bulwark();
+            ShieldResistance();
 
             return _builder.Build();
         }
@@ -221,19 +221,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shield Bash")
 
                 .AddPerkLevel()
-                .Description("Strike an enemy with your shield, dealing 8 DMG and inflicting Dazed for 6 seconds.")
+                .Description("Bashes an enemy for 8 DMG and has a DC8 Will check to inflict Dazed for 3 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.ShieldBash1)
 
                 .AddPerkLevel()
-                .Description("Strike an enemy with your shield, dealing 16 DMG and inflicting Dazed for 9 seconds.")
+                .Description("Bashes an enemy for 16 DMG and has a DC10 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.ShieldBash2)
 
                 .AddPerkLevel()
-                .Description("Strike an enemy with your shield, dealing 24 DMG and inflicting Dazed for 12 seconds.")
+                .Description("Bashes an enemy for 24 DMG and has a DC12 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .GrantsFeat(FeatType.ShieldBash3);
@@ -249,6 +249,58 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Bulwark);
+        }
+
+        private void ShieldResistance()
+        {
+            void AdjustSavingThrows(uint player, uint item)
+            {
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, Stat.CalculateBaseSavingThrow(player, SavingThrow.Fortitude, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, Stat.CalculateBaseSavingThrow(player, SavingThrow.Will, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, Stat.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
+            }
+
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
+                .Name("Shield Resistance")
+
+                .AddPerkLevel()
+                .Description("Grants +1 to Will, Fortitude, and Reflex saves when equipped with a shield.")
+                .Price(2)
+                .RequirementSkill(SkillType.OneHanded, 20)
+
+                .AddPerkLevel()
+                .Description("Grants +2 to Will, Fortitude, and Reflex saves when equipped with a shield.")
+                .Price(3)
+                .RequirementSkill(SkillType.OneHanded, 40)
+                
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    var itemType = GetBaseItemType(item);
+                    if (slot == InventorySlot.LeftHand &&
+                        Item.ShieldBaseItemTypes.Contains(itemType))
+                    {
+                        AdjustSavingThrows(player, item);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    var itemType = GetBaseItemType(item);
+                    if (slot == InventorySlot.LeftHand &&
+                        Item.ShieldBaseItemTypes.Contains(itemType))
+                    {
+                        AdjustSavingThrows(player, OBJECT_INVALID);
+                    }
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    AdjustSavingThrows(player, item);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    AdjustSavingThrows(player, item);
+                });
         }
 
         private void WeaponFocusVibroblades()
@@ -362,21 +414,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hacking Blade")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 6 DMG and has a DC10 Fortitude check to inflict Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HackingBlade1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 15 DMG and has a 75% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 15 DMG and has a DC15 Fortitude check to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HackingBlade2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 22 DMG and has a 100% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 22 DMG and has a DC20 Fortitude check to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -521,21 +573,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Poison Stab")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 8 DMG and has a 50% chance to inflict Poison for 30 seconds.")
+                .Description("Your next attack deals an additional 8 DMG and has a DC10 Fortitude check to inflict Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 18 DMG and has a 75% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 18 DMG and has a DC15 Fortitude check to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 28 DMG and has a 100% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 28 DMG and has a DC20 Fortitude check to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -717,21 +769,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Saber Strike")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 6 DMG and has a 50% chance to inflict Breach, reducing evasion for 30 seconds.")
+                .Description("Your next attack deals an additional 6 DMG and has a DC10 Fortitude check to inflict Breach, reducing evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberStrike1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 15 DMG and has a 75% chance to inflict Breach, reducing evasion for 1 minute.")
+                .Description("Your next attack deals an additional 15 DMG and has a DC15 Fortitude check to inflict Breach, reducing evasion for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberStrike2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 22 DMG and has a 100% chance to inflict Breach, reducing evasion for 1 minute.")
+                .Description("Your next attack deals an additional 22 DMG and has a DC20 Fortitude check to inflict Breach, reducing evasion for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

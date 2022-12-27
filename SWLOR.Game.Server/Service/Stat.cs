@@ -17,6 +17,7 @@ using Player = SWLOR.Game.Server.Entity.Player;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
+using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -1696,6 +1697,30 @@ namespace SWLOR.Game.Server.Service
             }
 
             return control;
+        }
+
+        /// <summary>
+        /// Calculates the base value for a particular type of saving throw.
+        /// This does not factor in stat modifiers.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="type">The type of saving throw.</param>
+        /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
+        /// <returns>The base saving throw value</returns>
+        public static int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return 0;
+
+            var offHandType = GetBaseItemType(offHandItem);
+            var amount = 0;
+
+            if (Item.ShieldBaseItemTypes.Contains(offHandType))
+            {
+                amount += Perk.GetEffectivePerkLevel(player, PerkType.ShieldResistance);
+            }
+
+            return amount;
         }
     }
 }

@@ -37,31 +37,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var duration = 0f;
-            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            int dmg;
+            const float Duration = 6f;
+            int dc;
+
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 12;
-                    duration = 12f;
-                    if (d2() == 1) inflict = true;
+                    dc = 10;
                     break;
                 case 2:
                     dmg = 21;
-                    duration = 12f;
-                    if (d4() > 1) inflict = true;
+                    dc = 15;
                     break;
                 case 3:
                     dmg = 34;
-                    duration = 12f;
-                    inflict = true;
-                    break;
-                default:
+                    dc = 20;
                     break;
             }
 
@@ -81,8 +78,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-            if (inflict) 
-                ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(99), target, duration);
+
+            var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(99), target, Duration);
+            }
 
             Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }

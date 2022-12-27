@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -774,7 +774,7 @@
   },
   "willbonus": {
     "type": "short",
-    "value": 6
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",

@@ -82,6 +82,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string SavingThrows
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string Name
         {
             get => Get<string>();
@@ -407,6 +413,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
             Agility = GetAbilityScore(Player, AbilityType.Agility);
             Social = GetAbilityScore(Player, AbilityType.Social);
+            SavingThrows = GetFortitudeSavingThrow(Player) + "/" +
+                           GetReflexSavingThrow(Player) + "/" +
+                           GetWillSavingThrow(Player);
 
             IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
             IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades || isRacialBonusAvailable;

@@ -4,13 +4,12 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new AbilityBuilder();
+        private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -28,10 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    var isHit = Random.D100(1) <= 60;
-                    if (!isHit) return;
+                    const int DC = 12;
+                    const float Duration = 4f;
 
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 4f);
+                    var checkResult = FortitudeSave(target, DC, SavingThrowType.None, activator);
+                    if (checkResult == SavingThrowResultType.Failed)
+                    {
+                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    }
+
                     CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
                     Enmity.ModifyEnmity(activator, target, 670);
                 });

@@ -94,25 +94,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MedKit1)
 
                 .AddPerkLevel()
-                .Description("Restores 50 HP to a single target. Consumes medical supplies on use.")
+                .Description("Restores 50 HP to a single target and grants 5 HP regen for 30 seconds. Consumes medical supplies on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 10)
                 .GrantsFeat(FeatType.MedKit2)
 
                 .AddPerkLevel()
-                .Description("Restores 80 HP to a single target. Consumes medical supplies on use.")
+                .Description("Restores 80 HP to a single target and grants 10 HP regen for 30 seconds. Consumes medical supplies on use.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 20)
                 .GrantsFeat(FeatType.MedKit3)
 
                 .AddPerkLevel()
-                .Description("Restores 110 HP to a single target. Consumes medical supplies on use.")
+                .Description("Restores 110 HP to a single target and grants 20 HP regen for 30 seconds. Consumes medical supplies on use.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .GrantsFeat(FeatType.MedKit4)
 
                 .AddPerkLevel()
-                .Description("Restores 140 HP to a single target. Consumes medical supplies on use.")
+                .Description("Restores 140 HP to a single target and grants 30 HP regen for 30 seconds. Consumes medical supplies on use.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 40)
                 .GrantsFeat(FeatType.MedKit5);

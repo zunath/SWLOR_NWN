@@ -221,19 +221,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shield Bash")
 
                 .AddPerkLevel()
-                .Description("Bashes an enemy for 8 DMG and has a DC8 Will check to inflict Dazed for 3 seconds.")
+                .Description("Bashes an enemy for 8 DMG and has a DC12 Will check to inflict Dazed for 3 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.ShieldBash1)
 
                 .AddPerkLevel()
-                .Description("Bashes an enemy for 16 DMG and has a DC10 Will check to inflict Dazed for 3 seconds.")
+                .Description("Bashes an enemy for 16 DMG and has a DC14 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.ShieldBash2)
 
                 .AddPerkLevel()
-                .Description("Bashes an enemy for 24 DMG and has a DC12 Will check to inflict Dazed for 3 seconds.")
+                .Description("Bashes an enemy for 24 DMG and has a DC16 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .GrantsFeat(FeatType.ShieldBash3);

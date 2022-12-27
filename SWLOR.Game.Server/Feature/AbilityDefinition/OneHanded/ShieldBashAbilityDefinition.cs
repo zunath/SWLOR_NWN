@@ -51,15 +51,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 default:
                 case 1:
                     dmg = 8;
-                    dc = 8;
+                    dc = 12;
                     break;
                 case 2:
                     dmg = 16;
-                    dc = 10;
+                    dc = 14;
                     break;
                 case 3:
                     dmg = 24;
-                    dc = 12;
+                    dc = 16;
                     break;
             }
 

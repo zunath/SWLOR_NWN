@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 10, 6);
+                    Impact(activator, targetLocation, 10, 8);
                 });
         }
 
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 10);
+                    Impact(activator, targetLocation, 16, 12);
                 });
         }
     }

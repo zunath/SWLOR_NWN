@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 6);
+                        Impact(activator, target, 10, 8);
                     });
                 });
         }
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 16, 10);
+                        Impact(activator, target, 16, 12);
                     });
                 });
         }

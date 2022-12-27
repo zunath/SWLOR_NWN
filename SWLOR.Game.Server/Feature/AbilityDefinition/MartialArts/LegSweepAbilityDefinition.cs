@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 SetActionMode(activator, ActionMode.Stealth, false);
             int dmg;
             int dc;
+            const float Duration = 6f;
 
             switch (level)
             {
@@ -90,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
             }
         }
 

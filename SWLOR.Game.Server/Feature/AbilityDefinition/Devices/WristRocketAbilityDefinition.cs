@@ -55,6 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     if(checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+
+                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
                 });
             }

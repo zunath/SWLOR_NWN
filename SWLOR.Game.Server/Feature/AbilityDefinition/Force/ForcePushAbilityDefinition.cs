@@ -46,14 +46,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+            var duration = BaseDuration + willpowerBonus;
 
             if (checkResult == SavingThrowResultType.Failed)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, BaseDuration + willpowerBonus);
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
+
+                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, BaseDuration + willpowerBonus);
+                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
             }
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);

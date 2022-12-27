@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
+                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
 
                     CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);

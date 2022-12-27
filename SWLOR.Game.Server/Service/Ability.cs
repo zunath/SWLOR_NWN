@@ -701,5 +701,28 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
+
+        /// <summary>
+        /// Applies a temporary immunity effect to a particular target.
+        /// This will add 20 seconds on top of whatever the ability duration length is.
+        /// It will NOT remove any existing effects.
+        /// </summary>
+        /// <param name="target">The target receiving the immunity</param>
+        /// <param name="abilityDuration">The length of the ability's duration. This will be added on top of the 20 seconds.</param>
+        /// <param name="immunity">The type of immunity to apply.</param>
+        public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
+        {
+            const float BaseDuration = 20f;
+            var duration = BaseDuration + abilityDuration;
+            var effectTag = $"ABILITY_TEMP_IMMUNITY_{immunity}";
+
+            // Effect is already in place.
+            if (HasEffectByTag(target, effectTag))
+                return;
+
+            var effect = EffectImmunity(immunity);
+            effect = TagEffect(effect, effectTag);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+        }
     }
 }

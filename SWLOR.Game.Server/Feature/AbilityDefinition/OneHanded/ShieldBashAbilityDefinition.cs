@@ -75,9 +75,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            
-            if(WillSave(target, dc, SavingThrowType.None, activator) == 0)
+
+            if (WillSave(target, dc, SavingThrowType.None, activator) == 0)
+            {
                 ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, Duration);
+                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+            }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 

@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
+                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
             }
             
             CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);

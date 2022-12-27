@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -40,16 +41,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, int percentHeal)
+        private void Impact(uint activator, uint target, int tier)
         {
-            var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            percentHeal += willpowerMod * 2;
-            var amount = (int)(GetMaxHitPoints(target) * (percentHeal * 0.01f));
+            var willpower = GetAbilityScore(activator, AbilityType.Willpower);
+            var targetMaxHP = GetMaxHitPoints(target);
+            int hp;
+
+            switch (tier)
+            {
+                default:
+                    hp = 0;
+                    break;
+                case 2:
+                    hp = (int)(willpower * 0.01f * targetMaxHP);
+                    break;
+                case 3:
+                    hp = (int)(2 * willpower * 0.01f * targetMaxHP);
+                    break;
+            }
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            
-            if(percentHeal > 0)
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+
+            if (hp > 0)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
+            }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);

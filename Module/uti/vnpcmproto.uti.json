@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 13
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -39,16 +39,24 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Slave T3 Skin"
+      "0": "Imperial Prototype Warform Greatsword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 71
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 54
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 71
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 59
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 60
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -81,38 +89,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 35
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 60
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
@@ -127,11 +104,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 26
         },
         "CostValue": {
           "type": "word",
-          "value": 55
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -143,11 +120,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 82
         },
         "Subtype": {
           "type": "word",
+          "value": 94
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 83
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 49
         }
       }
     ]
@@ -162,10 +170,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SithSlaveT3Skin"
+    "value": "ImperialPrototypeWarformGreat"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vnpcscon3"
+    "value": "vnpcmproto"
   }
 }

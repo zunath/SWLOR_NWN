@@ -58,7 +58,7 @@
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_RFArm": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 13
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 20.0
+    "value": 55.0
   },
   "ClassList": {
     "type": "list",
@@ -110,7 +110,7 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
@@ -118,11 +118,11 @@
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 23
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 23
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 13
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 2
+    "value": 33
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 140
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -284,11 +284,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 60
+    "value": 140
   },
   "Int": {
     "type": "byte",
-    "value": 13
+    "value": 28
   },
   "Interruptable": {
     "type": "byte",
@@ -338,7 +338,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 300
   },
   "NaturalAC": {
     "type": "byte",
@@ -643,7 +643,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 13
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -679,6 +679,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 10
   }
 }

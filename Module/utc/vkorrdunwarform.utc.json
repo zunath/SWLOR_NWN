@@ -81,7 +81,7 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmbot5"
+          "value": "vnpcmproto"
         }
       },
       {

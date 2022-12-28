@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return "Your target is already enhanced by a more powerful effect.";
             }
 
+            if (!HasStimPack(activator))
+            {
+                return "You have no stim packs.";
+            }
+
             return string.Empty;
         }
 
@@ -46,6 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var effect = EffectRegenerate(amount, 6f);
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+
+            TakeStimPack(activator);
         }
 
         private void Infusion1()

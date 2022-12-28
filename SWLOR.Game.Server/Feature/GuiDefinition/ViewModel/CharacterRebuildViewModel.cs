@@ -14,6 +14,7 @@ using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.Game.Server.Core.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
+using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -369,6 +370,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
                 CreaturePlugin.SetBaseAttackBonus(Player, 1);
+
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Fortitude, 0);
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Will, 0);
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Reflex, 0);
 
                 dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
                 dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);

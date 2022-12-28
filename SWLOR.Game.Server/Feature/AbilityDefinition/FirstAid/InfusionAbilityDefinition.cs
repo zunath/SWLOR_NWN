@@ -42,15 +42,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private void Impact(uint activator, uint target, int amount, string effectTag)
         {
-            const float BaseDuration = 24f;
-            var willMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var duration = BaseDuration + willMod * 2.5f;
+            const float Duration = 24f;
+            var will = GetAbilityScore(activator, AbilityType.Willpower) - 10;
+            amount += will;
 
             RemoveEffectByTag(target, Tier1Tag, Tier2Tag);
 
             var effect = EffectRegenerate(amount, 6f);
             effect = TagEffect(effect, effectTag);
-            ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, Duration);
 
             TakeStimPack(activator);
         }

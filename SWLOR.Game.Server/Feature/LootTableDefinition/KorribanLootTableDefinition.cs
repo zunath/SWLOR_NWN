@@ -269,6 +269,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_chirifle", 10)
                 .AddItem("recipe_chitwinbl", 10)
                 .AddItem("recipe_chielec", 10)
+                .AddItem("recipe_saberupg1", 10)
+                .AddItem("recipe_staffupg1", 10)
                 .AddItem("recipe_chitelec", 10)
                 .AddItem("recipe_chshield", 10)
                 .AddItem("recipe_chcloak", 10)

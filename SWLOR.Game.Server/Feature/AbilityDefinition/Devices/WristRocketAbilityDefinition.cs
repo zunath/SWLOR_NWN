@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
 
-                    dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+                    dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if(checkResult == SavingThrowResultType.Failed)
                     {

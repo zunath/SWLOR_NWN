@@ -1849,6 +1849,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Screech = 1882,
         GreaterEarthquake = 1883,
         FlameBlast = 1884,
-
+        Infusion1 = 1885,
+        Infusion2 = 1886
     }
 }

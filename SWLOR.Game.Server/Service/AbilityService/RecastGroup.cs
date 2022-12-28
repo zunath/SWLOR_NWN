@@ -183,6 +183,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FlameBlast = 87,
         [RecastGroup("Greater Earthquake", "G. Quake")]
         GreaterEarthquake = 88,
+        [RecastGroup("Infusion", "Infusion")]
+        Infusion = 89,
     }
 
     public class RecastGroupAttribute: Attribute

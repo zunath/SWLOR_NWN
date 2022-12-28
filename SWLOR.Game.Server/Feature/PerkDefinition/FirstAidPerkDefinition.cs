@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             StasisField();
             CombatEnhancement();
             Shielding();
+            Infusion();
 
             return _builder.Build();
         }
@@ -276,6 +277,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Shielding4);
+        }
+
+        private void Infusion()
+        {
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.Infusion)
+                .Name("Infusion")
+
+                .AddPerkLevel()
+                .Description("Grants your target regeneration which heals 20 HP every six seconds for 24 seconds. Consumes stim pack on use.")
+                .Price(3)
+                .RequirementSkill(SkillType.FirstAid, 25)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.Infusion1)
+
+                .AddPerkLevel()
+                .Description("Grants your target regeneration which heals 40 HP every six seconds for 24 seconds. Consumes stim pack on use.")
+                .Price(4)
+                .RequirementSkill(SkillType.FirstAid, 45)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.Infusion2);
         }
     }
 }

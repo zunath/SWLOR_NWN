@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
@@ -42,6 +43,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShieldBash();
             Bulwark();
             ShieldResistance();
+            Alacrity();
+            Clarity();
 
             return _builder.Build();
         }
@@ -301,6 +304,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var item = GetItemInSlot(InventorySlot.LeftHand, player);
                     AdjustSavingThrows(player, item);
                 });
+        }
+
+        [NWNEventHandler("item_on_hit")]
+        public static void ApplyAlacrityAndClarity()
+        {
+            var defender = OBJECT_SELF;
+            var item = GetSpellCastItem();
+            var itemType = GetBaseItemType(item);
+
+            if (Item.ShieldBaseItemTypes.Contains(itemType))
+            {
+                if (Perk.GetEffectivePerkLevel(defender, PerkType.Alacrity) > 0)
+                {
+                    Stat.RestoreStamina(defender, 4);
+                }
+                else if (Perk.GetEffectivePerkLevel(defender, PerkType.Clarity) > 0)
+                {
+                    Stat.RestoreFP(defender, 4);
+                }
+            }
+        }
+
+        private void Alacrity()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Alacrity)
+                .Name("Alacrity")
+
+                .AddPerkLevel()
+                .Description("Attacks blocked by a shield restore 4 STM.")
+                .Price(2)
+                .RequirementCannotHavePerk(PerkType.Clarity)
+                .RequirementSkill(SkillType.OneHanded, 25);
+        }
+
+        private void Clarity()
+        {
+            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Clarity)
+                .Name("Clarity")
+
+                .AddPerkLevel()
+                .Description("Attacks blocked by a shield restore 4 FP.")
+                .Price(2)
+                .RequirementCannotHavePerk(PerkType.Alacrity)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementSkill(SkillType.OneHanded, 25);
         }
 
         private void WeaponFocusVibroblades()

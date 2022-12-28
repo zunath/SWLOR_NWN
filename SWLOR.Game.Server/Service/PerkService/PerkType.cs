@@ -263,5 +263,7 @@
         ShoutRange = 258,
         ShieldResistance = 259,
         Infusion = 260,
+        Alacrity = 261,
+        Clarity = 262
     }
 }

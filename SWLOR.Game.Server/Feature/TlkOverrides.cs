@@ -47,7 +47,9 @@ namespace SWLOR.Game.Server.Feature
                 "Other Notes:\n\n" +
                 "Improves damage dealt by regular melee weapons.\n" +
                 "Improves damage dealt by heavy melee weapons.\n" + 
-                "Improves damage dealt by throwing weapons.");
+                "Improves damage dealt by throwing weapons.\n" +
+                "Improves harvesting item acquisition.\n" +
+                "Increases Fortitude saving throws.");
             SetTlkOverride(460, 
                 "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
                 "Primary Skills: One-Handed, Two-Handed, Martial Arts, Ranged, Fabrication, Devices\n\n" + 
@@ -55,7 +57,8 @@ namespace SWLOR.Game.Server.Feature
                 "Improves accuracy of regular melee weapons.\n" + 
                 "Improves accuracy of heavy melee weapons.\n" + 
                 "Improves damage of finesse melee weapons.\n" + 
-                "Improves damage of ranged weapons.");
+                "Improves damage of ranged weapons.\n" +
+                "Increases Reflex saving throws.");
             SetTlkOverride(461, 
                 "Vitality improves your max hit points and reduces damage received.\n\n" +
                 "Primary Skills: Armor, Smithery, Engineering\n\n" +
@@ -71,7 +74,9 @@ namespace SWLOR.Game.Server.Feature
                 "Increases maximum FP.\n" + 
                 "Improves force defense (reducing damage taken).\n" +
                 "Improves effectiveness of First Aid abilities.\n" +
-                "Improves effectiveness of Force abilities.");
+                "Improves effectiveness of Force abilities.\n" +
+                "Improves effectiveness of ship combat modules.\n" +
+                "Increases Will saving throws.");
             SetTlkOverride(463,
                 "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
                 "Primary Skills: One-Handed, Martial Arts, Ranged, Engineering\n\n" +
@@ -80,14 +85,18 @@ namespace SWLOR.Game.Server.Feature
                 "Improves evasion.\n" +
                 "Improves accuracy of finesse weapons.\n" +
                 "Improves accuracy of ranged weapons.\n" +
-                "Improves accuracy of throwing weapons.");
+                "Improves accuracy of throwing weapons.\n" +
+                "Improves effectiveness of ship combat modules.\n" +
+                "Reduces critical hit chance against you.");
             SetTlkOverride(478,
                 "Social improves your XP gain and leadership capabilities.\n\n" +
                 "Primary Skills: Leadership, Agriculture\n\n" +
                 "Other Notes:\n\n" + 
                 "Improves guild point acquisition.\n" +
                 "Improves quest credit rewards.\n" + 
-                "Improves XP gain.");
+                "Improves XP gain.\n" + 
+                "Reduces XP debt on death.\n" + 
+                "Reduces ship repair bills.");
 
             SetTlkOverride(535, "Credit"); // Gold Piece
 

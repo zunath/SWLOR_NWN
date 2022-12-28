@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
             AutoLevelUp(player);
             ResetNWNSkills(player);
-            ResetSavingThrows(player);
             ResetFeats(player);
             ResetHotBar(player);
             ResetStats(player, dbPlayer);
             ResetAlignment(player);
+            ResetSavingThrows(player);
             StoreRacialAppearance(player, dbPlayer);
 
             MigrateItems(player);

@@ -37,13 +37,13 @@ namespace SWLOR.Game.Server.Feature
             ClearInventory(player);
             AutoLevelPlayer(player);
             InitializeSkills(player);
-            InitializeSavingThrows(player);
             RemoveNWNSpells(player);
             ClearFeats(player);
             GrantBasicFeats(player);
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
+            InitializeSavingThrows(player);
             InitializeLanguages(player, dbPlayer);
             AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);

@@ -97,8 +97,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        if(GetIsReactionTypeHostile(targetCreature, activator))
+                        if (GetIsReactionTypeHostile(targetCreature, activator) &&
+                            target != targetCreature)
+                        {
                             ApplyMindTrick(activator, targetCreature);
+                        }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

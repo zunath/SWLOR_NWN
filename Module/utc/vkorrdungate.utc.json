@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 13
+    "value": -3
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1100
+    "value": 1600
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 32
   },
   "Disarmable": {
     "type": "byte",
@@ -340,11 +340,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1100
+    "value": 1600
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 36
   },
   "Interruptable": {
     "type": "byte",
@@ -374,7 +374,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1500
+    "value": 2000
   },
   "NaturalAC": {
     "type": "byte",

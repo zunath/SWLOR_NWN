@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 234
+    "value": 97
   },
   "Appearance_Type": {
     "type": "word",
@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 75.0
+    "value": 100.0
   },
   "ClassList": {
     "type": "list",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 850
+    "value": 1600
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 24
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -354,11 +354,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 850
+    "value": 1600
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 50
   },
   "Interruptable": {
     "type": "byte",
@@ -388,7 +388,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1250
+    "value": 2000
   },
   "NaturalAC": {
     "type": "byte",

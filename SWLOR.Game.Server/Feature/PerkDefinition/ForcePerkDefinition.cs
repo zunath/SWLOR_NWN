@@ -608,7 +608,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Creeping Terror")
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 2 seconds and inflicts Terror which deals 4 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with an 8DC will check and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -616,7 +616,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror1)
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 3 seconds and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with a 12DC will check and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -624,7 +624,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 4 seconds and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with a 14DC will check and inflicts Terror which deals 16 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

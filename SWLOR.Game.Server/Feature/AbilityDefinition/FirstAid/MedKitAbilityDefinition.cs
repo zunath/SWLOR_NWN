@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, uint target, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willpowerMod * 10 + Random.D10(1);
+            var amount = baseAmount + willpowerMod * 20 + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(6)
+                .RequirementStamina(5)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(8)
+                .RequirementStamina(6)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(10)
+                .RequirementStamina(7)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementStamina(12)
+                .RequirementStamina(8)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

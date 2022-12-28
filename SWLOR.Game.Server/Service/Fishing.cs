@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalBool(fishingPoint, FishingPointInitializedVariable))
                 return;
 
-            var attempts = 50 + Random.Next(30);
+            var attempts = 5 + Random.Next(10);
             SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, attempts);
 
             SetLocalBool(fishingPoint, FishingPointInitializedVariable, true);

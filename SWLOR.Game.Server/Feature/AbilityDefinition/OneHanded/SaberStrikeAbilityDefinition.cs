@@ -36,31 +36,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var inflict = false;
-            var breachTime = 0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            int dmg;
+            int dc;
+            float breachTime;
+            const string EffectTag = "SABER_STRIKE";
+
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 6;
-                    if (d2() == 1) inflict = true;
+                    dc = 10;
                     breachTime = 30f;
                     break;
                 case 2:
                     dmg = 15;
-                    if (d4() > 1) inflict = true;
+                    dc = 15;
                     breachTime = 60f;
                     break;
                 case 3:
                     dmg = 22;
-                    inflict = true;
+                    dc = 20;
                     breachTime = 60f;
-                    break;
-                default:
                     break;
             }
 
@@ -85,11 +86,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            
-            if (inflict)
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
             {
-                RemoveEffectByTag(target, "SABER_STRIKE");
-                var eBreach = TagEffect(EffectACDecrease(2), "SABER_STRIKE");
+                RemoveEffectByTag(target, EffectTag);
+                var eBreach = TagEffect(EffectACDecrease(2), EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, eBreach, target, breachTime);
             }
             

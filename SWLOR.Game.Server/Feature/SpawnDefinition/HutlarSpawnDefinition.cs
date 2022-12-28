@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Wastes();
             FrozenCave();
             QionFoothills();
+            QionHive();
 
             return _builder.Build();
         }
@@ -111,6 +112,51 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(5)
                 .RandomlyWalks()
                 .ReturnsHome();
+        }
+        private void QionHive()
+        {
+            _builder.Create("HutlarDungeonBroodmother")
+                .AddSpawn(ObjectType.Creature, "huthivebroodmoth")
+                .WithFrequency(1)
+                .RespawnDelay(120);
+
+            _builder.Create("HutlarDungeonChieftain")
+                .AddSpawn(ObjectType.Creature, "byysk_chieftain")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("HutlarDungeonShaman")
+                .AddSpawn(ObjectType.Creature, "byysk_shaman")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("HutlarDungeonChampion")
+                .AddSpawn(ObjectType.Creature, "byysk_champion")
+                .WithFrequency(1)
+                .RespawnDelay(20);
+
+            _builder.Create("HutlarDungeonByyskGuardian")
+                .AddSpawn(ObjectType.Creature, "byysk_guard001")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(2)
+
+                .AddSpawn(ObjectType.Creature, "byysk_guard002")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(2);
+
+            _builder.Create("HutlarDungeonHiveSlug")
+                .AddSpawn(ObjectType.Creature, "qion_slug001")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(4);
+
+            _builder.Create("HutlarDungeonHiveTunneler")
+                .AddSpawn(ObjectType.Creature, "qion_hive_tunnel")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(4);
         }
     }
 }

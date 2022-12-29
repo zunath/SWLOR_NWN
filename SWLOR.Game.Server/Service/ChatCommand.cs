@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ChatCommand
     {
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+
         private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private static readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
         public static string HelpTextPlayer { get; private set; }
@@ -23,6 +25,8 @@ namespace SWLOR.Game.Server.Service
         public static GuiBindingList<string> EmoteDescriptions { get; } = new();
         public static List<Animation> EmoteAnimations { get; } = new();
         public static GuiBindingList<bool> EmoteIsLooping { get; } = new();
+
+        private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
 
         /// <summary>
         /// Loads all chat commands into cache and builds the related help text.
@@ -83,16 +87,26 @@ namespace SWLOR.Game.Server.Service
                     SendMessageToPC(sender, error);
                     return;
                 }
-                
-                Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
-                    target =>
-                {
-                    var location = GetIsObjectValid(target)
-                        ? GetLocation(target)
-                        : Location(GetArea(sender), GetTargetingModeSelectedPosition(), 0.0f);
-                    ProcessChatCommand(command, sender, target, location, args);
-                });
 
+
+                var authorization = Authorization.GetAuthorizationLevel(sender);
+
+                if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && chatCommand.AvailableToAllOnTestEnvironment) ||
+                    chatCommand.Authorization.HasFlag(authorization))
+                {
+                    Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
+                    target =>
+                    {
+                        var location = GetIsObjectValid(target)
+                            ? GetLocation(target)
+                            : Location(GetArea(sender), GetTargetingModeSelectedPosition(), 0.0f);
+                        ProcessChatCommand(command, sender, target, location, args);
+                    });
+                }
+                else
+                {
+                    SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage));
+                }
             }
 
         }
@@ -129,7 +143,8 @@ namespace SWLOR.Game.Server.Service
 
             var authorization = Authorization.GetAuthorizationLevel(sender);
 
-            if (command.Authorization.HasFlag(authorization))
+            if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment) ||
+                command.Authorization.HasFlag(authorization))
             {
                 var argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 var error = command.ValidateArguments?.Invoke(sender, argsArr);
@@ -145,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                SendMessageToPC(sender, ColorToken.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage));
             }
         }
 

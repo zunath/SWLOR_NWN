@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -12,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {
         public const int MaxBugReportLength = 1000;
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -59,7 +61,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var positionGroup = $"({position.X}, {position.Y}, {position.X})";
             var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             var playerId = GetObjectUUID(Player);
-            var nextReportAllowed = DateTime.UtcNow.AddMinutes(1); 
+            var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
+            var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
+                ? "Bug Report [TEST SERVER]"
+                : "Bug Report";
 
             Task.Run(async () =>
             {
@@ -67,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var embed = new EmbedBuilder
                     {
-                        Title = "Bug Report",
+                        Title = title,
                         Description = message,
                         Author = new EmbedAuthorBuilder
                         {

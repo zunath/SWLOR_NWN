@@ -24,9 +24,15 @@ namespace SWLOR.Game.Server
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-            if (!string.IsNullOrWhiteSpace(environment) && (environment == "prod" || environment == "production"))
+            if (!string.IsNullOrWhiteSpace(environment) && 
+                (environment.ToLower() == "prod" || environment.ToLower() == "production"))
             {
                 ServerEnvironment = ServerEnvironmentType.Production;
+            }
+            else if (!string.IsNullOrWhiteSpace(environment) && 
+                     (environment.ToLower() == "test" || environment.ToLower() == "testing"))
+            {
+                ServerEnvironment = ServerEnvironmentType.Test;
             }
             else
             {

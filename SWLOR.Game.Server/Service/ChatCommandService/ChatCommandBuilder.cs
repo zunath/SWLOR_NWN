@@ -154,6 +154,17 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         }
 
         /// <summary>
+        /// Indicates this chat command can be used by anyone if the server is set to 'test' mode.
+        /// </summary>
+        /// <returns>A configured ChatCommandBuilder.</returns>
+        public ChatCommandBuilder AvailableToAllOnTestEnvironment()
+        {
+            _currentDetail.AvailableToAllOnTestEnvironment = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds all of the chat commands constructed by this builder.
         /// </summary>
         /// <returns>A dictionary containing all chat command configurations.</returns>

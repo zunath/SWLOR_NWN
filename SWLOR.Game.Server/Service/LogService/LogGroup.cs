@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.LogService
 {
     public enum LogGroup
     {
-        [LogGroup("Attack", ServerEnvironmentType.Development)]
+        [LogGroup("Attack", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
         Attack,
         [LogGroup("Connection", ServerEnvironmentType.All)]
         Connection,

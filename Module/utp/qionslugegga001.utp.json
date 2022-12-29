@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 4234
+    "value": 3889
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Source: Placeable Water v1.1 by Adam Miller"
+    "value": ""
   },
   "Conversation": {
     "type": "resref",
@@ -30,18 +30,17 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 15
+    "value": 10
   },
   "Description": {
-    "id": 16810951,
     "type": "cexolocstring",
     "value": {
-      "0": "A natural effect."
+      "0": ""
     }
   },
   "DisarmDC": {
     "type": "byte",
-    "value": 15
+    "value": 0
   },
   "Faction": {
     "type": "dword",
@@ -49,7 +48,7 @@
   },
   "Fort": {
     "type": "byte",
-    "value": 16
+    "value": 5
   },
   "Hardness": {
     "type": "byte",
@@ -61,7 +60,7 @@
   },
   "HP": {
     "type": "short",
-    "value": 15
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -77,17 +76,16 @@
   },
   "Lockable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Locked": {
     "type": "byte",
     "value": 0
   },
   "LocName": {
-    "id": 16813480,
     "type": "cexolocstring",
     "value": {
-      "0": "TNO Water, green 4x4"
+      "0": "Qion Slug Egg B"
     }
   },
   "OnClick": {
@@ -152,11 +150,11 @@
   },
   "OpenLockDC": {
     "type": "byte",
-    "value": 18
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",
-    "value": 108
+    "value": 183
   },
   "Plot": {
     "type": "byte",
@@ -176,11 +174,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ZEP_WATER_TNO_6"
+    "value": "QionSlugEggA"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "zep_water012"
+    "value": "qionslugegga001"
   },
   "TrapDetectable": {
     "type": "byte",

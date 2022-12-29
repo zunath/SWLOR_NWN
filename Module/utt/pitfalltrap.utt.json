@@ -1,0 +1,122 @@
+{
+  "__data_type": "UTT ",
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "This is a pitfall trap designed for the Qion Hive dungeon on Hutlar. It is intended to cause PCs who step onto it to fall into a segment of the Outer Hive."
+  },
+  "Cursor": {
+    "type": "byte",
+    "value": 0
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 36
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "HighlightHeight": {
+    "type": "float",
+    "value": 0.0
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "LinkedTo": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "LinkedToFlags": {
+    "type": "byte",
+    "value": 0
+  },
+  "LoadScreenID": {
+    "type": "word",
+    "value": 0
+  },
+  "LocalizedName": {
+    "id": 91368,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Pitfall Trap"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": "pitfalltrap"
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 15
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 0
+  },
+  "ScriptHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptOnEnter": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptOnExit": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptUserDefine": {
+    "type": "resref",
+    "value": ""
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "PitfallTrap"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "pitfalltrap"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 122
+  },
+  "Type": {
+    "type": "int",
+    "value": 2
+  }
+}

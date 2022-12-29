@@ -58,9 +58,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    var appSettings = ApplicationSettings.Get();
                     var authorization = Authorization.GetAuthorizationLevel(user);
 
-                    if (authorization == AuthorizationLevel.DM)
+                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
+                        authorization == AuthorizationLevel.DM)
                     {
                         SendMessageToPC(user, ChatCommand.HelpTextDM);
                     }

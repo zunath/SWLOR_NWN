@@ -32,6 +32,6 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         public bool IsEmote { get; set; }
         public Animation EmoteAnimation { get; set; }
         public bool IsEmoteLooping { get; set; }
-
+        public bool AvailableToAllOnTestEnvironment { get; set; }
     }
 }

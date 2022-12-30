@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(60 * Random.D100(1));
+                .RespawnDelay(60 + Random.D100(1));
         }
 
         private void MountainCaves()

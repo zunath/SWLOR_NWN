@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 {
-    public class DroidRecipes: IRecipeListDefinition
+    public class DroidEquipmentRecipes: IRecipeListDefinition
     {
         private readonly RecipeBuilder _builder = new();
 

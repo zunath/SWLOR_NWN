@@ -16104,6 +16104,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Caching Unit Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ca_unit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Caching Unit Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ca_unit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Caching Unit Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ca_unit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Caching Unit Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ca_unit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Caching Unit Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ca_unit3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cairnmog Blood"
                     },
                     "RESREF": {
@@ -16549,6 +16604,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "control_tower"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Control Unit Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_unit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Control Unit Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_unit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Control Unit Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_unit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Control Unit Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_unit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Control Unit Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "c_unit3"
                     }
                   },
                   {
@@ -17600,11 +17710,121 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Diagnostic Circuit Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diag_circuit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Diagnostic Circuit Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diag_circuit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Diagnostic Circuit Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diag_circuit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Diagnostic Circuit Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diag_circuit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Diagnostic Circuit Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "diag_circuit3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Diamond"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "diamond"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Discharge Unit Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "discharge_unit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Discharge Unit Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "discharge_unit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Discharge Unit Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "discharge_unit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Discharge Unit Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "discharge_unit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Discharge Unit Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "discharge_unit3"
                     }
                   },
                   {
@@ -17682,6 +17902,281 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "drill_calamary"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Brain Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_brain1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Brain Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_brain2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Brain Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_brain4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Brain Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_brain5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Brain Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_brain3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Chassis Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_chassis1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Chassis Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_chassis2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Chassis Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_chassis4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Chassis Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_chassis5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Chassis Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_chassis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Motive System Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmotive_sys1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Motive System Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmotive_sys2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Motive System Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmotive_sys4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Motive System Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmotive_sys5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Motive System Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dmotive_sys3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Power Supply Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dp_supply1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Power Supply Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dp_supply2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Power Supply Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dp_supply4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Power Supply Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dp_supply5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Power Supply Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dp_supply3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Sensor Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_sensor1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Sensor Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_sensor2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Sensor Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_sensor4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Sensor Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_sensor5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Sensor Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_sensor3"
                     }
                   },
                   {
@@ -21824,6 +22319,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Logic Unit Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "l_unit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logic Unit Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "l_unit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logic Unit Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "l_unit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logic Unit Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "l_unit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logic Unit Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "l_unit3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lufaise Fly"
                     },
                     "RESREF": {
@@ -22027,6 +22577,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "m_vibro_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manipulator Arm Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manip_arm1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manipulator Arm Beta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manip_arm2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manipulator Arm Delta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manip_arm4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manipulator Arm Epsilon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manip_arm5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manipulator Arm Gamma"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "manip_arm3"
                     }
                   },
                   {
@@ -31485,6 +32090,193 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Martial Arts Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_martial1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Martial Arts Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_martial2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Memory Augmentation I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_memaug1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Memory Augmentation II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_memaug2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Memory Augmentation III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_memaug3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Memory Augmentation IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_memaug4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Memory Augmentation V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_memaug5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Mobility Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mobil1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Mobility Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_mobil2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Neural Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_neural1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Neural Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_neural2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Ocular Filter I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ocfilt1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Ocular Filter II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ocfilt2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: One-Handed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_1hand1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: One-Handed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_1hand2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Ranged Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ranged1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Ranged Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_ranged2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Saberstaff Upgrade I"
                     },
                     "RESREF": {
@@ -31617,6 +32409,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Social Adaption I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_social1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Social Adaption II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_social2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sturdiness I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sturd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sturdiness II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sturd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Training Sabers"
                     },
                     "RESREF": {
@@ -31633,6 +32469,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_trnsabstf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Two-Handed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_2hand1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Two-Handed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_2hand2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Verve I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_verve1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Verve II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_verve2"
                     }
                   },
                   {

@@ -88,13 +88,25 @@ namespace SWLOR.Game.Server.Service.CraftService
         Lightsaber = 39,
         [RecipeCategory("Crafting", true)]
         Crafting = 40,
-        [RecipeCategory("Enhancement", true)]
-        Enhancement = 41,
+        [RecipeCategory("Weapon Enhancement", true)]
+        WeaponEnhancement = 41,
         [RecipeCategory("Saberstaff", true)]
         Saberstaff = 42,
         [RecipeCategory("Wall", true)]
         Wall = 43,
-        
+        [RecipeCategory("Armor Enhancement", true)]
+        ArmorEnhancement = 44,
+        [RecipeCategory("Cooking Enhancement", true)]
+        CookingEnhancement = 45,
+        [RecipeCategory("Starship Enhancement", true)]
+        StarshipEnhancement = 46,
+        [RecipeCategory("Module Enhancement", true)]
+        ModuleEnhancement = 47,
+        [RecipeCategory("Droid Enhancement", true)]
+        DroidEnhancement = 48,
+        [RecipeCategory("Structure Enhancement", true)]
+        StructureEnhancement = 49,
+
     }
 
     public class RecipeCategoryAttribute : Attribute

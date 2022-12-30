@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HARVESTING_JASIOCLASE")
                 .AddItem("raw_jasioclase", 50)
                 .AddItem("emerald", 1);
+            _builder.Create("HARVESTING_ARKOXIT")
+                .AddItem("raw_arkoxit", 50);
         }
 
         private void Trees()

@@ -218,6 +218,7 @@ namespace SWLOR.Game.Server.Entity
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
         public bool IsLightsaberForceShareEnabled { get; set; }
+        public bool DisplayServerResetReminders { get; set; }
 
         public PlayerSettings()
         {
@@ -227,6 +228,7 @@ namespace SWLOR.Game.Server.Entity
             IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
             IsLightsaberForceShareEnabled = true;
+            DisplayServerResetReminders = true;
         }
     }
 

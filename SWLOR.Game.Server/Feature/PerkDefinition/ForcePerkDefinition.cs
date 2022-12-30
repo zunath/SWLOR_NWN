@@ -44,27 +44,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Push")
 
                 .AddPerkLevel()
-                .Description("Knockdown a small target. If resisted, target is slowed for 6 seconds.")
+                .Description("Attempt to knockdown a target for 2 seconds with an 8DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush1)
 
                 .AddPerkLevel()
-                .Description("Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.")
+                .Description("Attempt to knockdown a target for 2 seconds with a 12DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush2)
 
                 .AddPerkLevel()
-                .Description("Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.")
+                .Description("Attempt to knockdown a target for 2 seconds with a 14DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush3)
 
                 .AddPerkLevel()
-                .Description("Knockdown any size target. If resisted, target is slowed for 6 seconds.")
+                .Description("Attempt to knockdown a target for 2 seconds with a 16DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -164,21 +164,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Stun")
 
                 .AddPerkLevel()
-                .Description("Single target is Tranquilized for six seconds or, if resisted, gets -10 to Accuracy and Evasion.")
+                .Description("Attempt to tranquilize a single target for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun1)
 
                 .AddPerkLevel()
-                .Description("Target and nearest other enemy within 10m is Tranquilized for six seconds or, if resisted, get -10 to Accuracy and Evasion.")
+                .Description("Target and nearest other enemy within 10m is Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
-                .Description("Target and all other enemies within 10m are Tranquilized for six seconds or, if resisted, get -10 to Accuracy and Evasion.")
+                .Description("Target and all other enemies within 10m are Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -245,14 +245,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to a single non-mechanical target with lower WIL than the caster for six seconds.")
+                .Description("Attempt to confuse a single non-mechanical target with a 12DC will check for six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIL than the caster for six seconds.")
+                .Description("Attempt to confuse all hostile non-mechanical targets within 10m with a 12DC will check for six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Drain")
 
                 .AddPerkLevel()
-                .Description("Steals 10 HP from a target every six seconds.")
+                .Description("Attempts to steal 10 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
-                .Description("Steals 15 HP from a target every six seconds.")
+                .Description("Attempts to steal 15 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
-                .Description("Steals 20 HP from a target every six seconds.")
+                .Description("Attempts to steal 20 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain3)
 
                 .AddPerkLevel()
-                .Description("Steals 25 HP from a target every six seconds.")
+                .Description("Attempts to steal 25 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain4)
 
                 .AddPerkLevel()
-                .Description("Steals 30 HP from a target every six seconds.")
+                .Description("Attempts to steal 30 HP from a target every six seconds with a 14DC will check.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disturbance")
 
                 .AddPerkLevel()
-                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 2 for one minute.")
+                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 2 with an 8DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -504,7 +504,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 4 for one minute.")
+                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 4 with a 12DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance2)
 
                 .AddPerkLevel()
-                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 6 for one minute.")
+                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 6 with a 14DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -578,7 +578,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Spark")
 
                 .AddPerkLevel()
-                .Description("Deals 9 DMG to a single target and reduces target's evasion by 2 for one minute.")
+                .Description("Deals 9 DMG to a single target and reduces target's evasion by 2 with an 8DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -586,7 +586,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 DMG to a single target and reduces target's evasion by 4 for one minute.")
+                .Description("Deals 14 DMG to a single target and reduces target's evasion by 4 with a 12DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -594,7 +594,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 32 DMG to a single target and reduces target's evasion by 6 for one minute.")
+                .Description("Deals 32 DMG to a single target and reduces target's evasion by 6 with a 14DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -608,7 +608,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Creeping Terror")
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 2 seconds and inflicts Terror which deals 4 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with an 8DC will check and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -616,7 +616,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror1)
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 3 seconds and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with a 12DC will check and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -624,7 +624,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
-                .Description("Immobilizes a target for 4 seconds and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 2 seconds with a 14DC will check and inflicts Terror which deals 16 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

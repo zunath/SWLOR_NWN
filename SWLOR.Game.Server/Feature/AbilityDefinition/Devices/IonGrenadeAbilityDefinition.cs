@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -7,7 +6,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -24,11 +22,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
         
-        private void Impact(uint activator, uint target, int dmg, int stunChance)
+        private void Impact(uint activator, uint target, int dmg, int dc)
         {
             if (GetFactionEqual(activator, target))
                 return;
 
+            const float Duration = 6f;
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
@@ -43,9 +42,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defenderStat, 
                 0);
 
-            if (GetRacialType(target) == RacialType.Robot && Random.D100(1) <= stunChance)
+            var race = GetRacialType(target);
+            if (dc > 0 &&
+                (race == RacialType.Robot ||
+                race == RacialType.Droid ||
+                race == RacialType.Cyborg))
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 6f);
+                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+                if (checkResult == SavingThrowResultType.Failed)
+                {
+                    ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
+                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                }
             }
 
             AssignCommand(activator, () =>
@@ -74,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 4, 0);
+                        Impact(activator, target, 4, -1);
                     });
                 });
         }
@@ -96,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 8, 50);
+                        Impact(activator, target, 8, 10);
                     });
                 });
         }
@@ -118,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 14, 70);
+                        Impact(activator, target, 14, 14);
                     });
                 });
         }

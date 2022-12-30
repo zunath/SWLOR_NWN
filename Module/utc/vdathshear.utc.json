@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 52.0
+    "value": 47.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 23
+    "value": 24
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 360
+    "value": 209
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 27
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -88,7 +88,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathskinshear"
+          "value": "shear_mite_skin"
         }
       }
     ]
@@ -136,11 +136,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 360
+    "value": 209
   },
   "Int": {
     "type": "byte",
-    "value": 27
+    "value": 38
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 600
+    "value": 489
   },
   "NaturalAC": {
     "type": "byte",
@@ -475,7 +475,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 27
+    "value": 34
   },
   "Subrace": {
     "type": "cexostring",
@@ -497,6 +497,71 @@
     "type": "resref",
     "value": "vdathshear"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_SHEAR_MITE,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_SHEAR_MITE,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_SHEAR_MITE_RARES,5,1"
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 7
@@ -511,6 +576,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 23
   }
 }

@@ -1,0 +1,77 @@
+﻿@page "/account"
+@using SWLOR.Game.Server.Service.AchievementService
+
+<h3>Accounts (@_totalRecords)</h3>
+
+<div class="row">
+	
+    <div class="col">
+        <input 
+            type="text" 
+            @bind="@_searchText" 
+            class="form-control"
+            @onblur="RefreshList"/>
+    </div>
+    <div class="col-1">
+        <button 
+            @onclick="RefreshList"
+            class="btn btn-primary">Search
+        </button>
+    </div>
+
+</div>
+
+<table class="table">
+	<thead>
+	<tr>
+		<th>CD Key</th>
+		<th>Completed Tutorial</th>
+		<th>Date Created</th>
+	</tr>
+	</thead>
+	<tbody>
+		
+	@foreach (var account in _accounts)
+	{
+		<tr>
+			<td>@account.Id</td>
+			@if (account.HasCompletedTutorial)
+			{
+				<td>Yes</td>
+			}
+			else
+			{
+				<td>No</td>
+			}
+			<td>@account.DateCreated</td>
+		</tr>
+	}
+
+	</tbody>
+	
+</table>
+
+@code {
+	
+    protected string _searchText;
+	private List<Account> _accounts;
+    protected long _totalRecords;
+
+	protected override async Task OnInitializedAsync()
+	{
+		RefreshList();
+	}
+
+    protected void RefreshList()
+    {
+        var query = new DBQuery<Account>();
+        _totalRecords = DB.SearchCount(query);
+
+        if (!string.IsNullOrWhiteSpace(_searchText))
+        {
+            query.AddFieldSearch(nameof(Account.Id), _searchText, true);
+        }
+
+        _accounts = DB.Search(query).ToList();
+    }
+}

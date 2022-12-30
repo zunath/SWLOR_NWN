@@ -37,27 +37,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
+            int dmg;
+            int dc;
 
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 12;
-                    if (Random(100) < 45) inflict = true;
+                    dc = 10;
                     break;
                 case 2:
                     dmg = 21;
-                    if (d4() > 1) inflict = true;
+                    dc = 15;
                     break;
                 case 3:
                     dmg = 34;
-                    inflict = true;
-                    break;
-                default:
+                    dc = 20;
                     break;
             }
 
@@ -75,7 +74,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-            if (inflict)
+
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
+            var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
             {
                 UsePerkFeat.DequeueWeaponAbility(target);
                 Ability.EndConcentrationAbility(target);

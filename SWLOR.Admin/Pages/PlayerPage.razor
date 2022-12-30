@@ -1,0 +1,86 @@
+﻿@page "/player"
+@inject NavigationManager NavManager
+
+<h3>Players (@_totalRecords)</h3>
+
+<div class="row">
+	
+	<div class="col">
+		<input 
+			type="text" 
+			@bind="@_searchText" 
+			class="form-control"
+			@onblur="RefreshList"/>
+	</div>
+	<div class="col-1">
+		<button 
+			@onclick="RefreshList"
+			class="btn btn-primary">Search
+			</button>
+	</div>
+
+</div>
+
+<table class="table">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Date Created</th>
+		<th>Actions</th>
+	</tr>
+	</thead>
+	<tbody>
+
+	@foreach (var player in _players)
+	{
+		<tr>
+			<td>@player.Name</td>
+			<td>@player.CharacterType.ToString()</td>
+			<td>@player.DateCreated</td>
+            <td>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="args => Edit(player.Id)">
+                    View
+                </button>
+            </td>
+			<td>
+			</td>
+		</tr>
+	}
+
+	</tbody>
+
+</table>
+
+@code {
+	private List<Player> _players;
+	protected string _searchText;
+    protected long _totalRecords;
+
+	protected void RefreshList()
+	{
+		var query = new DBQuery<Player>();
+
+	    _totalRecords = DB.SearchCount(query);
+
+		if (!string.IsNullOrWhiteSpace(_searchText))
+		{
+			query.AddFieldSearch(nameof(Player.Name), _searchText, true);
+		}
+
+		_players = DB.Search(query).ToList();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		RefreshList();
+	}
+
+    protected void Edit(string id)
+    {
+        NavManager.NavigateTo($"ViewPlayer/{id}");
+    }
+}

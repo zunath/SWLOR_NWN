@@ -86,6 +86,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 3);
+
+            // Chiro Great Sword
+            _builder.Create(RecipeType.ChiroGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("chi_greatsword")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Spears()
@@ -155,6 +173,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("aracia_wood", 4)
                 .Component("hyphae_wood", 2);
+
+            // Chiro Spear
+            _builder.Create(RecipeType.ChiroSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("chi_spear")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void TwinBlades()
@@ -224,6 +260,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
+
+            // Chiro Twin Blade
+            _builder.Create(RecipeType.ChiroTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("chi_twinblade")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Saberstaffs()
@@ -282,6 +336,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
+
+            // Chiro Twin Electroblade
+            _builder.Create(RecipeType.ChiroTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("chi_twinelec")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Training Saberstaff I
             _builder.Create(RecipeType.TrainingSaberstaff1, SkillType.Smithery)
@@ -348,6 +420,23 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 4);
 
+            // Saberstaff Upgrade I
+            _builder.Create(RecipeType.SaberstaffUpgradeKit1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("saberstaff_upg1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.None, 0)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
 

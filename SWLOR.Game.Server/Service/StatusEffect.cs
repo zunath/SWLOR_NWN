@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if(sendApplicationMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
 
             Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }

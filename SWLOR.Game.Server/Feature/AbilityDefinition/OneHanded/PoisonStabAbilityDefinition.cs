@@ -37,27 +37,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var dmg = 0;
-            var inflictPoison = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
 
+            int dmg;
+            int dc;
+
             switch (level)
             {
+                default:
                 case 1:
                     dmg = 8;
-                    if (d2() == 1) inflictPoison = true;
+                    dc = 10;
                     break;
                 case 2:
                     dmg = 18;
-                    if (d4() > 1) inflictPoison = true;
+                    dc = 15;
                     break;
                 case 3:
                     dmg = 28;
-                    inflictPoison = true;
-                    break;
-                default:
+                    dc = 20;
                     break;
             }
 
@@ -78,8 +78,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 defenderStat, 
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictPoison) 
+
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+            if (checkResult == SavingThrowResultType.Failed)
+            {
                 StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
+            }
 
             Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }

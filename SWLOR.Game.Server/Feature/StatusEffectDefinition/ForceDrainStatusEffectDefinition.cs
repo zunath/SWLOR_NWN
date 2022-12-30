@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -129,20 +130,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 });
         }
 
-        private void ProcessForceDrainTick(VisualEffect vfx1, int damageAmt, int healAmt, uint target, uint source)
+        private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
         {
-            if (!Ability.GetAbilityResisted(source, target, "Force Drain", AbilityType.Willpower))
+            var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
+            var checkResult = WillSave(target, dc, SavingThrowType.None, source);
+
+            if (checkResult == SavingThrowResultType.Failed)
             {
                 PlaySound("plr_force_absorb");
 
                 AssignCommand(source, () =>
                 {
-                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
-                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, target, BodyNode.Hand), source, 2.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, source, BodyNode.Hand), target, 2.0f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), source);
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(heal), source);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
                 });
             }

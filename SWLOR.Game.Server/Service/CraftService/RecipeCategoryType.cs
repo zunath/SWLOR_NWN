@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         [RecipeCategory("Twin Blade", true)]
         TwinBlade = 24,
         [RecipeCategory("Bed", true)]
-        Beds = 25,
+        Bed = 25,
         [RecipeCategory("Misc. Furniture", true)]
         MiscellaneousFurniture = 25,
         [RecipeCategory("Flooring", true)]
@@ -92,6 +92,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         Enhancement = 41,
         [RecipeCategory("Saberstaff", true)]
         Saberstaff = 42,
+        [RecipeCategory("Wall", true)]
+        Wall = 43,
+        
     }
 
     public class RecipeCategoryAttribute : Attribute

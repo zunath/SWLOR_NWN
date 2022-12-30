@@ -1,0 +1,68 @@
+﻿@page "/dm"
+@using SWLOR.Game.Server.Enumeration
+
+<h3>DMs (@_totalRecords)</h3>
+
+<div class="row">
+
+    <div class="col">
+        <input type="text"
+               @bind="@_searchText"
+               class="form-control"
+               @onblur="RefreshList" />
+    </div>
+    <div class="col-1">
+        <button @onclick="RefreshList"
+                class="btn btn-primary">
+            Search
+        </button>
+    </div>
+
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Type</th>
+			<th>Date Created</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		@foreach (var account in _dms)
+		{
+			<tr>
+				<td>@account.Name</td>
+				<td>@account.Authorization.ToString()</td>
+				<td>@account.DateCreated</td>
+			</tr>
+		}
+
+	</tbody>
+
+</table>
+
+@code {
+	protected string _searchText;
+	private List<AuthorizedDM> _dms;
+	protected long _totalRecords;
+
+	protected override async Task OnInitializedAsync()
+	{
+		RefreshList();
+	}
+
+	protected void RefreshList()
+	{
+		var query = new DBQuery<AuthorizedDM>();
+		_totalRecords = DB.SearchCount(query);
+
+		if (!string.IsNullOrWhiteSpace(_searchText))
+		{
+		    query.AddFieldSearch(nameof(AuthorizedDM.Name), _searchText, true);
+		}
+
+	    _dms = DB.Search(query).ToList();
+	}
+}

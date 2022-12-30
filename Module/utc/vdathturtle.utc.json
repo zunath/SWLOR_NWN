@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 93.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 38
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1100
+    "value": 2295
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 24
+    "value": 38
   },
   "Disarmable": {
     "type": "byte",
@@ -88,7 +88,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathskinturtle"
+          "value": "dragturt_skin"
         }
       }
     ]
@@ -143,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1100
+    "value": 2295
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 38
   },
   "Interruptable": {
     "type": "byte",
@@ -177,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1500
+    "value": 2855
   },
   "NaturalAC": {
     "type": "byte",
@@ -3474,6 +3474,71 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vdathturtle"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 41
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_DRAGON_TURTLE,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_DRAGON_TURTLE,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "DATHOMIR_DRAGON_TURTLE_RARES,5,1"
+        }
+      }
+    ]
   },
   "WalkRate": {
     "type": "int",

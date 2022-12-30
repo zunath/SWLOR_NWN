@@ -229,6 +229,36 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "HARVESTING_LOOT_TABLE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HARVESTING_ARKOXIT"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "HARVESTER_REQUIRED_LEVEL"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 5
+        }
       }
     ]
   },

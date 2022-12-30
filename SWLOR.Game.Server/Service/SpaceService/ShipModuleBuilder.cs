@@ -195,13 +195,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Indicates this ship module requires a target to use.
+        /// Indicates this ship module can target itself.
         /// Only applicable when dealing with an active ship module.
         /// </summary>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder RequiresTarget()
+        public ShipModuleBuilder CanTargetSelf()
         {
-            _activeShipModule.RequiresTarget = true;
+            _activeShipModule.CanTargetSelf = true;
 
             return this;
         }
@@ -217,6 +217,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             return this;
         }
+
+
 
         /// <summary>
         /// Indicates a player must have the perk at a specific level in order to equip and use it.

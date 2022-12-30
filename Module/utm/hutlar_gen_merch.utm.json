@@ -3956,6 +3956,158 @@
                 "type": "word",
                 "value": 4
               }
+            },
+            {
+              "__struct_id": 32,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dhrg001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 33,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dhrg002"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 34,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dhrg003"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
+            },
+            {
+              "__struct_id": 35,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dhrg004"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
+            },
+            {
+              "__struct_id": 36,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dlrg001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
+            },
+            {
+              "__struct_id": 37,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dlrg002"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
+            },
+            {
+              "__struct_id": 38,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dlrg003"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
+            },
+            {
+              "__struct_id": 39,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "dlrg004"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 5
+              }
             }
           ]
         }

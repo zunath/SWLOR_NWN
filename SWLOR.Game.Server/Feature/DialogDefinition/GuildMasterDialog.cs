@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var goldReward in goldRewards)
             {
-                goldAmount += goldReward.Amount;
+                goldAmount += Quest.CalculateQuestGoldReward(player, true, goldReward.Amount);
             }
 
             page.Header = ColorToken.Green("Task: ") + task.Name + "\n\n" +

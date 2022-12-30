@@ -112,12 +112,17 @@ namespace SWLOR.Game.Server.Service
 
             if (notes.Count > 0)
             {
-                var message = GetName(area) + ": ";
+                var prefix = GetName(area) + ": ";
+                var message = string.Empty;
                 foreach (var note in notes)
                 {
                     message += note.PublicText;
                 }
-                SendMessageToPC(player, ColorToken.Purple(message));
+
+                if (!string.IsNullOrWhiteSpace(message.Trim()))
+                {
+                    SendMessageToPC(player, ColorToken.Purple(prefix + message));
+                }
             }
         }
 

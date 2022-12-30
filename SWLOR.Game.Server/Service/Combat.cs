@@ -10,6 +10,8 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
+using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
+using SavingThrowType = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrowType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -435,6 +437,45 @@ namespace SWLOR.Game.Server.Service
                 dmg = 2;
 
             return dmg;
+        }
+
+        /// <summary>
+        /// Determines the DC for an attacker's saving throw.
+        /// </summary>
+        /// <param name="attacker">The attacker to check.</param>
+        /// <param name="type">The type of saving throw.</param>
+        /// <param name="baseDC">The base DC amount.</param>
+        /// <param name="abilityOverride">Use this to specify a specific ability to be used.</param>
+        /// <returns>A DC value with any bonuses applied.</returns>
+        public static int CalculateSavingThrowDC(
+            uint attacker, 
+            SavingThrow type, 
+            int baseDC, 
+            AbilityType abilityOverride = AbilityType.Invalid)
+        {
+            var ability = abilityOverride;
+
+            if (ability == AbilityType.Invalid)
+            {
+                switch (type)
+                {
+                    case SavingThrow.Fortitude:
+                        ability = AbilityType.Might;
+                        break;
+                    case SavingThrow.Reflex:
+                        ability = AbilityType.Perception;
+                        break;
+                    case SavingThrow.Will:
+                        ability = AbilityType.Willpower;
+                        break;
+                    default:
+                        return baseDC;
+                }
+            }
+
+            var modifier = GetAbilityModifier(ability, attacker);
+
+            return baseDC + modifier;
         }
     }
 }

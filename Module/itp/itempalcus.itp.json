@@ -15895,6 +15895,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blade CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blindfish"
                     },
                     "RESREF": {

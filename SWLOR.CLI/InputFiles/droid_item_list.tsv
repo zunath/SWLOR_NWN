@@ -1,0 +1,180 @@
+Blade CPU I - Variant M	d_bl_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10	5	5		
+Blade CPU I - Variant P	d_bl_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10	5	5		
+Blade CPU I - Variant V	d_bl_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10	5	5		
+Blade CPU I - Variant W	d_bl_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10	5	5		
+Blade CPU I - Variant A	d_bl_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10	5	5		
+Blade CPU I - Variant S	d_bl_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11	5	5		
+Light Martial CPU I - Variant M	d_lm_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10	5		5	
+Light Martial CPU I - Variant P	d_lm_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10	5		5	
+Light Martial CPU I - Variant V	d_lm_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10	5		5	
+Light Martial CPU I - Variant W	d_lm_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10	5		5	
+Light Martial CPU I - Variant A	d_lm_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10	5		5	
+Light Martial CPU I - Variant S	d_lm_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11	5		5	
+Ranger CPU I - Variant M	d_rn_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10	5			5
+Ranger CPU I - Variant P	d_rn_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10	5			5
+Ranger CPU I - Variant V	d_rn_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10	5			5
+Ranger CPU I - Variant W	d_rn_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10	5			5
+Ranger CPU I - Variant A	d_rn_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10	5			5
+Ranger CPU I - Variant S	d_rn_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11	5			5
+Heavy Martial CPU I - Variant M	d_hm_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10		5	5	
+Heavy Martial CPU I - Variant P	d_hm_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10		5	5	
+Heavy Martial CPU I - Variant V	d_hm_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10		5	5	
+Heavy Martial CPU I - Variant W	d_hm_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10		5	5	
+Heavy Martial CPU I - Variant A	d_hm_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10		5	5	
+Heavy Martial CPU I - Variant S	d_hm_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11		5	5	
+Assault CPU I - Variant M	d_as_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10		5		5
+Assault CPU I - Variant P	d_as_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10		5		5
+Assault CPU I - Variant V	d_as_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10		5		5
+Assault CPU I - Variant W	d_as_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10		5		5
+Assault CPU I - Variant A	d_as_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10		5		5
+Assault CPU I - Variant S	d_as_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11		5		5
+Jaguar CPU I - Variant M	d_jg_cpu1_m	CPU	1	3	0	70	10	11	10	10	10	10	10			5	5
+Jaguar CPU I - Variant P	d_jg_cpu1_p	CPU	1	3	0	70	10	10	11	10	10	10	10			5	5
+Jaguar CPU I - Variant V	d_jg_cpu1_v	CPU	1	3	0	70	10	10	10	11	10	10	10			5	5
+Jaguar CPU I - Variant W	d_jg_cpu1_w	CPU	1	3	0	70	10	10	10	10	11	10	10			5	5
+Jaguar CPU I - Variant A	d_jg_cpu1_a	CPU	1	3	0	70	10	10	10	10	10	11	10			5	5
+Jaguar CPU I - Variant S	d_jg_cpu1_s	CPU	1	3	0	70	10	10	10	10	10	10	11			5	5
+Blade CPU II - Variant M	d_bl_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10	15	15		
+Blade CPU II - Variant P	d_bl_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10	15	15		
+Blade CPU II - Variant V	d_bl_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10	15	15		
+Blade CPU II - Variant W	d_bl_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10	15	15		
+Blade CPU II - Variant A	d_bl_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10	15	15		
+Blade CPU II - Variant S	d_bl_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11	15	15		
+Light Martial CPU II - Variant M	d_lm_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10	15		15	
+Light Martial CPU II - Variant P	d_lm_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10	15		15	
+Light Martial CPU II - Variant V	d_lm_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10	15		15	
+Light Martial CPU II - Variant W	d_lm_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10	15		15	
+Light Martial CPU II - Variant A	d_lm_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10	15		15	
+Light Martial CPU II - Variant S	d_lm_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11	15		15	
+Ranger CPU II - Variant M	d_rn_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10	15			15
+Ranger CPU II - Variant P	d_rn_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10	15			15
+Ranger CPU II - Variant V	d_rn_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10	15			15
+Ranger CPU II - Variant W	d_rn_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10	15			15
+Ranger CPU II - Variant A	d_rn_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10	15			15
+Ranger CPU II - Variant S	d_rn_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11	15			15
+Heavy Martial CPU II - Variant M	d_hm_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10		15	15	
+Heavy Martial CPU II - Variant P	d_hm_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10		15	15	
+Heavy Martial CPU II - Variant V	d_hm_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10		15	15	
+Heavy Martial CPU II - Variant W	d_hm_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10		15	15	
+Heavy Martial CPU II - Variant A	d_hm_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10		15	15	
+Heavy Martial CPU II - Variant S	d_hm_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11		15	15	
+Assault CPU II - Variant M	d_as_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10		15		15
+Assault CPU II - Variant P	d_as_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10		15		15
+Assault CPU II - Variant V	d_as_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10		15		15
+Assault CPU II - Variant W	d_as_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10		15		15
+Assault CPU II - Variant A	d_as_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10		15		15
+Assault CPU II - Variant S	d_as_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11		15		15
+Jaguar CPU II - Variant M	d_jg_cpu2_m	CPU	2	6	0	70	10	11	10	10	10	10	10			15	15
+Jaguar CPU II - Variant P	d_jg_cpu2_p	CPU	2	6	0	70	10	10	11	10	10	10	10			15	15
+Jaguar CPU II - Variant V	d_jg_cpu2_v	CPU	2	6	0	70	10	10	10	11	10	10	10			15	15
+Jaguar CPU II - Variant W	d_jg_cpu2_w	CPU	2	6	0	70	10	10	10	10	11	10	10			15	15
+Jaguar CPU II - Variant A	d_jg_cpu2_a	CPU	2	6	0	70	10	10	10	10	10	11	10			15	15
+Jaguar CPU II - Variant S	d_jg_cpu2_s	CPU	2	6	0	70	10	10	10	10	10	10	11			15	15
+Blade CPU III - Variant M	d_bl_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10	25	25		
+Blade CPU III - Variant P	d_bl_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10	25	25		
+Blade CPU III - Variant V	d_bl_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10	25	25		
+Blade CPU III - Variant W	d_bl_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10	25	25		
+Blade CPU III - Variant A	d_bl_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10	25	25		
+Blade CPU III - Variant S	d_bl_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11	25	25		
+Light Martial CPU III - Variant M	d_lm_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10	25		25	
+Light Martial CPU III - Variant P	d_lm_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10	25		25	
+Light Martial CPU III - Variant V	d_lm_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10	25		25	
+Light Martial CPU III - Variant W	d_lm_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10	25		25	
+Light Martial CPU III - Variant A	d_lm_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10	25		25	
+Light Martial CPU III - Variant S	d_lm_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11	25		25	
+Ranger CPU III - Variant M	d_rn_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10	25			25
+Ranger CPU III - Variant P	d_rn_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10	25			25
+Ranger CPU III - Variant V	d_rn_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10	25			25
+Ranger CPU III - Variant W	d_rn_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10	25			25
+Ranger CPU III - Variant A	d_rn_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10	25			25
+Ranger CPU III - Variant S	d_rn_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11	25			25
+Heavy Martial CPU III - Variant M	d_hm_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10		25	25	
+Heavy Martial CPU III - Variant P	d_hm_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10		25	25	
+Heavy Martial CPU III - Variant V	d_hm_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10		25	25	
+Heavy Martial CPU III - Variant W	d_hm_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10		25	25	
+Heavy Martial CPU III - Variant A	d_hm_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10		25	25	
+Heavy Martial CPU III - Variant S	d_hm_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11		25	25	
+Assault CPU III - Variant M	d_as_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10		25		25
+Assault CPU III - Variant P	d_as_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10		25		25
+Assault CPU III - Variant V	d_as_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10		25		25
+Assault CPU III - Variant W	d_as_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10		25		25
+Assault CPU III - Variant A	d_as_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10		25		25
+Assault CPU III - Variant S	d_as_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11		25		25
+Jaguar CPU III - Variant M	d_jg_cpu3_m	CPU	3	9	0	70	10	11	10	10	10	10	10			25	25
+Jaguar CPU III - Variant P	d_jg_cpu3_p	CPU	3	9	0	70	10	10	11	10	10	10	10			25	25
+Jaguar CPU III - Variant V	d_jg_cpu3_v	CPU	3	9	0	70	10	10	10	11	10	10	10			25	25
+Jaguar CPU III - Variant W	d_jg_cpu3_w	CPU	3	9	0	70	10	10	10	10	11	10	10			25	25
+Jaguar CPU III - Variant A	d_jg_cpu3_a	CPU	3	9	0	70	10	10	10	10	10	11	10			25	25
+Jaguar CPU III - Variant S	d_jg_cpu3_s	CPU	3	9	0	70	10	10	10	10	10	10	11			25	25
+Blade CPU IV - Variant M	d_bl_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10	35	35		
+Blade CPU IV - Variant P	d_bl_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10	35	35		
+Blade CPU IV - Variant V	d_bl_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10	35	35		
+Blade CPU IV - Variant W	d_bl_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10	35	35		
+Blade CPU IV - Variant A	d_bl_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10	35	35		
+Blade CPU IV - Variant S	d_bl_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11	35	35		
+Light Martial CPU IV - Variant M	d_lm_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10	35		35	
+Light Martial CPU IV - Variant P	d_lm_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10	35		35	
+Light Martial CPU IV - Variant V	d_lm_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10	35		35	
+Light Martial CPU IV - Variant W	d_lm_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10	35		35	
+Light Martial CPU IV - Variant A	d_lm_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10	35		35	
+Light Martial CPU IV - Variant S	d_lm_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11	35		35	
+Ranger CPU IV - Variant M	d_rn_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10	35			35
+Ranger CPU IV - Variant P	d_rn_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10	35			35
+Ranger CPU IV - Variant V	d_rn_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10	35			35
+Ranger CPU IV - Variant W	d_rn_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10	35			35
+Ranger CPU IV - Variant A	d_rn_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10	35			35
+Ranger CPU IV - Variant S	d_rn_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11	35			35
+Heavy Martial CPU IV - Variant M	d_hm_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10		35	35	
+Heavy Martial CPU IV - Variant P	d_hm_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10		35	35	
+Heavy Martial CPU IV - Variant V	d_hm_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10		35	35	
+Heavy Martial CPU IV - Variant W	d_hm_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10		35	35	
+Heavy Martial CPU IV - Variant A	d_hm_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10		35	35	
+Heavy Martial CPU IV - Variant S	d_hm_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11		35	35	
+Assault CPU IV - Variant M	d_as_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10		35		35
+Assault CPU IV - Variant P	d_as_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10		35		35
+Assault CPU IV - Variant V	d_as_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10		35		35
+Assault CPU IV - Variant W	d_as_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10		35		35
+Assault CPU IV - Variant A	d_as_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10		35		35
+Assault CPU IV - Variant S	d_as_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11		35		35
+Jaguar CPU IV - Variant M	d_jg_cpu4_m	CPU	4	12	0	70	10	11	10	10	10	10	10			35	35
+Jaguar CPU IV - Variant P	d_jg_cpu4_p	CPU	4	12	0	70	10	10	11	10	10	10	10			35	35
+Jaguar CPU IV - Variant V	d_jg_cpu4_v	CPU	4	12	0	70	10	10	10	11	10	10	10			35	35
+Jaguar CPU IV - Variant W	d_jg_cpu4_w	CPU	4	12	0	70	10	10	10	10	11	10	10			35	35
+Jaguar CPU IV - Variant A	d_jg_cpu4_a	CPU	4	12	0	70	10	10	10	10	10	11	10			35	35
+Jaguar CPU IV - Variant S	d_jg_cpu4_s	CPU	4	12	0	70	10	10	10	10	10	10	11			35	35
+Blade CPU V - Variant M	d_bl_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10	45	45		
+Blade CPU V - Variant P	d_bl_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10	45	45		
+Blade CPU V - Variant V	d_bl_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10	45	45		
+Blade CPU V - Variant W	d_bl_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10	45	45		
+Blade CPU V - Variant A	d_bl_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10	45	45		
+Blade CPU V - Variant S	d_bl_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11	45	45		
+Light Martial CPU V - Variant M	d_lm_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10	45		45	
+Light Martial CPU V - Variant P	d_lm_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10	45		45	
+Light Martial CPU V - Variant V	d_lm_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10	45		45	
+Light Martial CPU V - Variant W	d_lm_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10	45		45	
+Light Martial CPU V - Variant A	d_lm_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10	45		45	
+Light Martial CPU V - Variant S	d_lm_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11	45		45	
+Ranger CPU V - Variant M	d_rn_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10	45			45
+Ranger CPU V - Variant P	d_rn_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10	45			45
+Ranger CPU V - Variant V	d_rn_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10	45			45
+Ranger CPU V - Variant W	d_rn_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10	45			45
+Ranger CPU V - Variant A	d_rn_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10	45			45
+Ranger CPU V - Variant S	d_rn_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11	45			45
+Heavy Martial CPU V - Variant M	d_hm_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10		45	45	
+Heavy Martial CPU V - Variant P	d_hm_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10		45	45	
+Heavy Martial CPU V - Variant V	d_hm_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10		45	45	
+Heavy Martial CPU V - Variant W	d_hm_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10		45	45	
+Heavy Martial CPU V - Variant A	d_hm_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10		45	45	
+Heavy Martial CPU V - Variant S	d_hm_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11		45	45	
+Assault CPU V - Variant M	d_as_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10		45		45
+Assault CPU V - Variant P	d_as_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10		45		45
+Assault CPU V - Variant V	d_as_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10		45		45
+Assault CPU V - Variant W	d_as_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10		45		45
+Assault CPU V - Variant A	d_as_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10		45		45
+Assault CPU V - Variant S	d_as_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11		45		45
+Jaguar CPU V - Variant M	d_jg_cpu5_m	CPU	5	15	0	70	10	11	10	10	10	10	10			45	45
+Jaguar CPU V - Variant P	d_jg_cpu5_p	CPU	5	15	0	70	10	10	11	10	10	10	10			45	45
+Jaguar CPU V - Variant V	d_jg_cpu5_v	CPU	5	15	0	70	10	10	10	11	10	10	10			45	45
+Jaguar CPU V - Variant W	d_jg_cpu5_w	CPU	5	15	0	70	10	10	10	10	11	10	10			45	45
+Jaguar CPU V - Variant A	d_jg_cpu5_a	CPU	5	15	0	70	10	10	10	10	10	11	10			45	45
+Jaguar CPU V - Variant S	d_jg_cpu5_s	CPU	5	15	0	70	10	10	10	10	10	10	11			45	45

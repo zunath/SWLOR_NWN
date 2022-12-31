@@ -6998,6 +6998,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Imperial Prototype Warform Greatsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmproto"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Koyee's Saberstaff"
                     },
                     "RESREF": {
@@ -8773,6 +8784,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcasabot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Slave Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchslave3"
                     }
                   },
                   {
@@ -15774,6 +15796,336 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Assault CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_as_cpu5_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Axkivna"
                     },
                     "RESREF": {
@@ -15895,11 +16247,330 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blade CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blade CPU I - Variant M"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "d_bl_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blade CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bl_cpu5_w"
                     }
                   },
                   {
@@ -19074,6 +19745,336 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Martial CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hm_cpu5_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "High Quality Electronics"
                     },
                     "RESREF": {
@@ -21923,6 +22924,336 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jaguar CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_jg_cpu5_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jankkly Coonlank"
                     },
                     "RESREF": {
@@ -22269,6 +23600,336 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "l_armor_segment"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Light Martial CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lm_cpu5_w"
                     }
                   },
                   {
@@ -24029,6 +25690,336 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "r_weapon_core"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU I - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu1_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU II - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu2_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU III - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu3_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU IV - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu4_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_a"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant M"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_v"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranger CPU V - Variant W"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_rn_cpu5_w"
                     }
                   },
                   {

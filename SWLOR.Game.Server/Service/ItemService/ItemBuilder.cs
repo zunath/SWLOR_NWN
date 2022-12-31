@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         /// Creates a new item.
         /// </summary>
         /// <param name="itemTag">The tag of the item which will use these rules.</param>
+        /// <param name="itemTags">The additional item tags which will also use these rules.</param>
         /// <returns>An item builder with the configured options.</returns>
         public ItemBuilder Create(string itemTag, params string[] itemTags)
         {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.InitializationMessageAction = (user, u, target, location) => message;
+                item.InitializationMessageAction = (user, u, target, location, itemPropertyIndex) => message;
             }
 
             return this;
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.DelayAction = (user, u, target, location) => seconds;
+                item.DelayAction = (user, u, target, location, itemPropertyIndex) => seconds;
             }
 
             return this;
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.CalculateDistanceAction = (user, u, target, location) => maxDistance;
+                item.CalculateDistanceAction = (user, u, target, location, itemPropertyIndex) => maxDistance;
             }
 
             return this;
@@ -160,7 +161,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.ReducesItemChargeAction = (user, u, target, location) => true;
+                item.ReducesItemChargeAction = (user, u, target, location, itemPropertyIndex) => true;
             }
 
             return this;

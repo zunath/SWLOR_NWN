@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .UserFacesTarget()
                 .MaxDistance(3.0f)
                 .ReducesItemCharge()
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Harvesting);
 
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsObjectValid(target))
                     {

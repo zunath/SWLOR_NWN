@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ReducesItemCharge()
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
                     {
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var recipeList = GetLocalString(item, "RECIPES");
                     var recipeIds = recipeList.Split(',');

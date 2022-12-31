@@ -281,6 +281,7 @@ namespace SWLOR.Game.Server.Service
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
+            var propertyIndex = Convert.ToInt32(EventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
 
             // Bypass the NWN "item use" animation.
             EventsPlugin.SkipEvent();
@@ -300,7 +301,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var itemDetail = _items[itemTag];
-            var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
+            var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation, propertyIndex);
 
             // Failed validation.
             if(!string.IsNullOrWhiteSpace(validationMessage))
@@ -312,13 +313,13 @@ namespace SWLOR.Game.Server.Service
             // Send the initialization message, if there is one.
             var initializationMessage = itemDetail.InitializationMessageAction == null
                 ? string.Empty
-                : itemDetail.InitializationMessageAction(user, item, target, targetLocation);
+                : itemDetail.InitializationMessageAction(user, item, target, targetLocation, propertyIndex);
             if (!string.IsNullOrWhiteSpace(initializationMessage))
             {
                 SendMessageToPC(user, initializationMessage);
             }
 
-            var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation) ?? 3.5f;
+            var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? 3.5f;
             // Distance checks, if necessary for this item.
             if (GetItemPossessor(target) != user && maxDistance > 0.0f)
             {
@@ -346,7 +347,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(user, () => SetFacingPoint(targetPosition));
             }
 
-            var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation) ?? 0.0f;
+            var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? 0.0f;
             // Play an animation if configured.
             if (itemDetail.ActivationAnimation != Animation.Invalid)
             {
@@ -384,17 +385,17 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Rerun validation since things may have changed since the user started the action.
-                    validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
+                    validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation, propertyIndex);
                     if (!string.IsNullOrWhiteSpace(validationMessage))
                     {
                         SendMessageToPC(user, validationMessage);
                         return;
                     }
 
-                    itemDetail.ApplyAction(user, item, target, targetLocation);
+                    itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
 
                     // Reduce item charge if specified.
-                    var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
+                    var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? false;
                     if (reducesItemCharge)
                     {
                         var charges = GetItemCharges(item) - 1;

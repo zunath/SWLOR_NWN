@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 
@@ -114,5 +118,72 @@ namespace SWLOR.Game.Server.Service
 
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
+
+        public static DroidDetails LoadDroidDetails(uint item)
+        {
+            var details = new DroidDetails();
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+
+                if (type == ItemPropertyType.DroidStat)
+                {
+                    var subType = (DroidStatSubType)GetItemPropertySubType(ip);
+                    var value = GetItemPropertyCostTableValue(ip);
+
+                    switch (subType)
+                    {
+                        case DroidStatSubType.Tier:
+                            details.Tier = value;
+                            break;
+                        case DroidStatSubType.AISlots:
+                            details.AISlots += value;
+                            break;
+                        case DroidStatSubType.HP:
+                            details.HP += value;
+                            break;
+                        case DroidStatSubType.STM:
+                            details.STM += value;
+                            break;
+                        case DroidStatSubType.MGT:
+                            details.MGT += value;
+                            break;
+                        case DroidStatSubType.PER:
+                            details.PER += value;
+                            break;
+                        case DroidStatSubType.VIT:
+                            details.VIT += value;
+                            break;
+                        case DroidStatSubType.WIL:
+                            details.WIL += value;
+                            break;
+                        case DroidStatSubType.AGI:
+                            details.AGI += value;
+                            break;
+                        case DroidStatSubType.SOC:
+                            details.SOC += value;
+                            break;
+                        case DroidStatSubType.OneHanded:
+                            details.OneHanded += value;
+                            break;
+                        case DroidStatSubType.TwoHanded:
+                            details.TwoHanded += value;
+                            break;
+                        case DroidStatSubType.MartialArts:
+                            details.MartialArts += value;
+                            break;
+                        case DroidStatSubType.Ranged:
+                            details.Ranged += value;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+
+            return details;
+        }
+
     }
 }

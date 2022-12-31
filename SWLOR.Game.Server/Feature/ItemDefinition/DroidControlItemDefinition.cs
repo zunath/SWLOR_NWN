@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.ItemService;
 
@@ -20,9 +21,18 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("droid_control")
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-
+                    // Droid Activation
+                    if (itemPropertyIndex == 0)
+                    {
+                        Console.WriteLine("Droid Activation");
+                    }
+                    // Reprogramming
+                    else if (itemPropertyIndex == 1)
+                    {
+                        Console.WriteLine("Droid reprogramming");
+                    }
                 });
         }
     }

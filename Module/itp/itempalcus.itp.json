@@ -37234,6 +37234,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Droid Control Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "droid_control"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Explosives"
                     },
                     "RESREF": {

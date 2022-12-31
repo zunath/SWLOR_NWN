@@ -509,6 +509,35 @@ namespace SWLOR.Game.Server.Service
                 case 82: // Food Bonus - Social
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
 
+                // 83-101 are free
+
+                case 102: // Droid: AI Slot
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 3, amount);
+                case 103: // Droid: HP
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 4, amount);
+                case 104: // Droid: STM
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 5, amount);
+                case 105: // Droid: MGT
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 6, amount);
+                case 106: // Droid: PER
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 7, amount);
+                case 107: // Droid: VIT
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 8, amount);
+                case 108: // Droid: WIL
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 9, amount);
+                case 109: // Droid: AGI
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
+                case 110: // Droid: SOC
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
+                case 111: // Droid: 1-Handed
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 12, amount);
+                case 112: // Droid: 2-Handed
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 13, amount);
+                case 113: // Droid: Martial Arts
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 14, amount);
+                case 114: // Droid: Ranged
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 15, amount);
+
             }
 
             throw new Exception("Unsupported enhancement type.");

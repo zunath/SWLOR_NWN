@@ -114,10 +114,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ModuleBonus = 113,
         StarshipBonus = 114,
         CPBonus = 115,
-
+        DroidEnhancement = 116,
         Evasion = 117,
         AbilityRecastReduction = 118,
         FPRegen = 119,
         STMRegen = 120,
+        DroidStat = 121,
+        DroidPart = 122,
     }
 }

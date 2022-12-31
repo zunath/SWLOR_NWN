@@ -549,6 +549,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.ModuleEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Droid)
+            {
+                typeIP = ItemPropertyType.DroidEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {
@@ -640,6 +644,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.DroidEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);

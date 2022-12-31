@@ -32684,6 +32684,1458 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Adhesive Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_adhgren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Adhesive Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_adhgren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Adhesive Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_adhgren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Alacrity"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_alacrity"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Backstab I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_backstab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Backstab II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_backstab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Backstab III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_backstab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Bulwark"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_bulwark"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Chi I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_chi1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Chi II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_chi2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Chi III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_chi3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Cleave"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_cleave"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Combat Enhancement I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_combenh1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Combat Enhancement II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_combenh2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Combat Enhancement III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_combenh3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Concussion Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_concgren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Concussion Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_concgren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Concussion Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_concgren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crescent Moon I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_cmoon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crescent Moon II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_cmoon2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crescent Moon III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_cmoon3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crippling Shot I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crippshot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crippling Shot II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crippshot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Crippling Shot III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crippshot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Cross Cut I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crosscut1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Cross Cut II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crosscut2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Cross Cut III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crosscut3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dirty Blow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dirtyblow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Shot I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dblshot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Shot II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dblshot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Shot III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dblshot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Thrust I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dthrust1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Thrust II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dthrust2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Double Thrust III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dthrust3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Doublehand I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_doublehand1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Doublehand II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_doublehand2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Doublehand III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_doublehand3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Doublehand IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_doublehand4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Doublehand V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_doublehand5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dual Wield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dualwield"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Electric Fist I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_elecfist1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Electric Fist II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_elecfist2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Electric Fist III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_elecfist3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Explosive Toss I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_exptoss1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Explosive Toss II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_exptoss2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Explosive Toss III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_exptoss3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flamethrower I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flamethrow1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flamethrower II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flamethrow2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flamethrower III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flamethrow3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flashbang Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flashgren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flashbang Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flashgren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Flashbang Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flashgren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Frag Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_fraggren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Frag Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_fraggren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Frag Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_fraggren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Hard Slash I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_hardslash1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Hard Slash II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_hardslash2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Hard Slash III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_hardslash3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Infusion I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_infusion1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Infusion II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_infusion2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Inner Strength I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_innstr1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Inner Strength II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_innstr2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Ion Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_iongren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Ion Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_iongren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Ion Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_iongren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Knockdown"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_knockdown"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_koltgren1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_koltgren2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_koltgren3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Recovery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_kolt1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Recovery II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_kolt2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Kolto Recovery III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_kolt3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Leg Sweep I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_legsweep1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Leg Sweep II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_legsweep2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Leg Sweep III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_legsweep3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Med Kit I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_medkit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Med Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_medkit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Med Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_medkit3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Med Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_medkit4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Med Kit V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_medkit5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Piercing Toss I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_ptoss1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Piercing Toss II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_ptoss2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Piercing Toss III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_ptoss3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Poison Stab I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pstab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Poison Stab II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pstab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Poison Stab III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pstab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Power Attack I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pwrattack1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Power Attack II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pwrattack2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Precision Aim I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_precaim1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Precision Aim II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_precaim2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Provoke I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_provoke1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Provoke II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_provoke2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Quick Draw I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_quickdraw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Quick Draw II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_quickdraw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Quick Draw III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_quickdraw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Resuscitation I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_resusc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Resuscitation II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_resusc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Resuscitation III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_resusc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Bash I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shbash1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Bash II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shbash2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Bash III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shbash3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Resistance I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shresist1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shield Resistance II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shresist2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shielding I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shielding1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shielding II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shielding2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shielding III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shielding3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Shielding IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_shielding4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Skewer I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_skewer1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Skewer II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_skewer2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Skewer III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_skewer3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Slam I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_slam1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Slam II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_slam2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Slam III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_slam3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Spinning Whirl I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_spinwhirl1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Spinning Whirl II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_spinwhirl2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Spinning Whirl III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_spinwhirl3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Stasis Field I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_stasisf1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Stasis Field II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_stasisf2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Stasis Field III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_stasisf3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Striking Cobra I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_strcobra1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Striking Cobra II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_strcobra2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Striking Cobra III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_strcobra3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Superior Weapon Focus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_supweapfoc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Tranquilizer Shot I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_tranqshot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Tranquilizer Shot II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_tranqshot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Tranquilizer Shot III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_tranqshot3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Treatment Kit I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_treatkit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Treatment Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_treatkit2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Wrist Rocket I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_wristrck1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Wrist Rocket II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_wristrck2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Wrist Rocket III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_wristrck3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Korriban - Caverns Map"
                     },
                     "RESREF": {

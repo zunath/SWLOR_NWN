@@ -2259,6 +2259,171 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DAAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "daar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "daar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "daar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "daar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "daar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dear001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dear002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dear003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dear004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dear005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DHAR-001"
                     },
                     "RESREF": {
@@ -2429,6 +2594,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dlar005s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSAR-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dsar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSAR-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dsar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSAR-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dsar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSAR-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dsar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSAR-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dsar005"
                     }
                   },
                   {
@@ -3034,11 +3254,176 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DAHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dahl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dahl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dahl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dahl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DAHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dahl005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Darth Vecten's Helmet"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "ter_vectenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dehl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dehl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dehl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dehl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DEHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dehl005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfhl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfhl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfhl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfhl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DFHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dfhl005"
                     }
                   },
                   {
@@ -3226,6 +3611,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dream_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSHL-001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dshl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSHL-002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dshl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSHL-003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dshl003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSHL-004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dshl004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DSHL-005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dshl005"
                     }
                   },
                   {
@@ -12068,6 +12508,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DABE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbe005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHBE-001"
                           },
                           "RESREF": {
@@ -12249,6 +12854,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dream_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBE-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbe001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBE-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbe002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBE-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbe003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBE-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbe004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBE-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbe005"
                           }
                         },
                         {
@@ -12667,6 +13327,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DALG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dalg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DALG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dalg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DALG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dalg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DALG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dalg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DALG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dalg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DELG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "delg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DELG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "delg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DELG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "delg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DELG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "delg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DELG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "delg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFLG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dflg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFLG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dflg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFLG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dflg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFLG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dflg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFLG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dflg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHLG-001"
                           },
                           "RESREF": {
@@ -12848,6 +13673,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dream_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSLG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dslg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSLG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dslg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSLG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dslg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSLG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dslg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSLG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dslg005"
                           }
                         },
                         {
@@ -13244,6 +14124,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DABR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DABR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dabr005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DEBR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "debr005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFBR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfbr005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHBR-001"
                           },
                           "RESREF": {
@@ -13337,6 +14382,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dream_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBR-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbr001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBR-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbr002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBR-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbr003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBR-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbr004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSBR-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsbr005"
                           }
                         },
                         {
@@ -13546,6 +14646,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DACL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dacl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DACL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dacl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DACL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dacl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DACL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dacl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DACL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dacl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DECL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DECL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DECL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DECL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DECL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFCL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfcl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFCL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfcl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFCL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfcl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFCL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfcl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFCL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfcl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHCL-001"
                           },
                           "RESREF": {
@@ -13727,6 +14992,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dream_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSCL-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dscl001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSCL-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dscl002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSCL-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dscl003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSCL-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dscl004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSCL-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dscl005"
                           }
                         },
                         {
@@ -18590,6 +19910,1766 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Droid Arms MAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mps1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mps2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mps3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mps4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mps5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPV I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpv1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPV II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpv2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPV III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpv3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPV IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpv4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPV V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpv5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MPW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mpw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms MWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_mws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms PVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_pvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms VWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_vws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms WAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_was1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms WAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_was2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms WAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_was3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms WAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_was4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Arms WAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_ar_was5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body AS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_as1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body AS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_as2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body AS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_as3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body AS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_as4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body AS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_as5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ma1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ma2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ma3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ma4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ma5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MP I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MP II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MP III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MP IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MP V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ms1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ms2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ms3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ms4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ms5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MV I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mv1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MV II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mv2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MV III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mv3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MV IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mv4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MV V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mv5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body MW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_mw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ps1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ps2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ps3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ps4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ps5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PV I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pv1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PV II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pv2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PV III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pv3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PV IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pv4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PV V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pv5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body PW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_pw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_va1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_va2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_va3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_va4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_va5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body VW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_vw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_wa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_wa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_wa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_wa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_wa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Body WS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_bd_ws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Droid Brain Alpha"
                     },
                     "RESREF": {
@@ -18694,6 +21774,1876 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "d_chassis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mps1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mps2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mps3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mps4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mps5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPV I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpv1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPV II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpv2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPV III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpv3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPV IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpv4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPV V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpv5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MPW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mpw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head MWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_mws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head PVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_pvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head VWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_vws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head WAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_was1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head WAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_was2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head WAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_was3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head WAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_was4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Head WAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_hd_was5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mps1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mps2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mps3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mps4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mps5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPV I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpv1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPV II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpv2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPV III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpv3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPV IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpv4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPV V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpv5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MPW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mpw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs MWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_mws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pva1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pva2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pva3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pva4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvs1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvs2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvs3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvs4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvs5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVW I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvw1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVW II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvw2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVW III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvw3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVW IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvw4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs PVW V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_pvw5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vas4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vas5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWA I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vwa1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWA II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vwa2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWA III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vwa3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWA IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vwa4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWA V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vwa5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vws1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vws2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vws3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vws4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs VWS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_vws5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs WAS I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_was1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs WAS II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_was2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs WAS III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_was3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs WAS IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_was4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Legs WAS V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_lg_was5"
                     }
                   },
                   {
@@ -30386,6 +35336,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DANK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dank001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DANK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dank002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DANK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dank003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DANK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dank004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DANK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dank005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DENK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "denk001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DENK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "denk002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DENK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "denk003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DENK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "denk004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DENK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "denk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFNK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfnk001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFNK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfnk002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFNK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfnk003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFNK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfnk004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFNK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfnk005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHNK-001"
                           },
                           "RESREF": {
@@ -30567,6 +35682,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dream_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSNK-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsnk001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSNK-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsnk002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSNK-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsnk003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSNK-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsnk004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSNK-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsnk005"
                           }
                         },
                         {
@@ -31018,6 +36188,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "DARG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "darg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DARG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "darg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DARG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "darg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DARG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "darg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DARG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "darg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DERG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "derg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DERG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "derg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DERG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "derg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DERG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "derg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DERG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "derg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFRG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfrg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFRG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfrg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFRG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfrg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFRG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfrg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DFRG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dfrg005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DHRG-001"
                           },
                           "RESREF": {
@@ -31199,6 +36534,61 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "majestic_ring001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSRG-001"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsrg001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSRG-002"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsrg002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSRG-003"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsrg003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSRG-004"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsrg004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DSRG-005"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dsrg005"
                           }
                         },
                         {

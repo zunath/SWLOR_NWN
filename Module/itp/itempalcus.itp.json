@@ -29260,6 +29260,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Martial Arts Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_martialarts1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Martial Arts Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_martialarts2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mass Production Unit"
                     },
                     "RESREF": {
@@ -29403,6 +29425,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Memory Augmentation I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_memaug1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Memory Augmentation II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_memaug2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Memory Augmentation III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_memaug3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Memory Augmentation IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_memaug4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Memory Augmentation V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_memaug5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mercanbaligi"
                     },
                     "RESREF": {
@@ -29452,6 +29529,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "moat_carp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mobility Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_mobboost1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mobility Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_mobboost2"
                     }
                   },
                   {
@@ -29733,6 +29832,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Neural Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_neuboost1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neural Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_neuboost2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nibullan"
                     },
                     "RESREF": {
@@ -29810,6 +29931,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ocular Filter I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_ocfilt1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ocular Filter II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_ocfilt2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ogre Eel"
                     },
                     "RESREF": {
@@ -29848,6 +29991,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "omedia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One-Handed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_1handboost1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One-Handed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_1handboost2"
                     }
                   },
                   {
@@ -30629,6 +30794,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rakaz_shellfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranged Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_rangedboost1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ranged Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_rangedboost2"
                     }
                   },
                   {
@@ -32109,6 +32296,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Social Adaption I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_socadapt1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Social Adaption II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_socadapt2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sogayn Electronics"
                     },
                     "RESREF": {
@@ -33033,6 +33242,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sturdiness I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sturdiness1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sturdiness II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sturdiness2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sugar"
                     },
                     "RESREF": {
@@ -33462,6 +33693,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Two-Handed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_2handboost1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Two-Handed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_2handboost2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ultranio"
                     },
                     "RESREF": {
@@ -33566,6 +33819,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vendusii_gem"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Verve I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_verve1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Verve II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_verve2"
                     }
                   },
                   {

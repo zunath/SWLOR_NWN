@@ -8,7 +8,8 @@ namespace SWLOR.CLI
     internal class DroidItemBuilder
     {
         private const string InputData = "./InputFiles/droid_item_list.tsv";
-        private const string Template = "./Templates/droid_item_template.json";
+        //private const string Template = "./Templates/droid_cpu_template.json";
+        private const string Template = "./Templates/droid_part_template.json";
         private const string OutputFolder = "./OutputDroidItems/";
 
         private readonly int[] _iconIds = { 1, 2, 3, 4, 5, 6, 9, 10, 12, 13, 14, 15, 16, 17, 20, 22, 23, 24, 25, 26, 27, 30, 31, 41, 42,
@@ -30,16 +31,16 @@ namespace SWLOR.CLI
                 var name = parsed[0].Trim();
                 var resref = parsed[1].Trim();
                 var slotType = GetSlotType(parsed[2].Trim());
-                var tier = parsed[3].Trim();
-                var aiSlots = parsed[4].Trim();
-                var hp = parsed[6].Trim();
-                var stm = parsed[7].Trim();
-                var mgt = parsed[8].Trim();
-                var per = parsed[9].Trim();
-                var vit = parsed[10].Trim();
-                var wil = parsed[11].Trim();
-                var agi = parsed[12].Trim();
-                var soc = parsed[13].Trim();
+                var tier = string.IsNullOrWhiteSpace(parsed[3]) ? 0.ToString() : parsed[3].Trim();
+                var aiSlots = string.IsNullOrWhiteSpace(parsed[4]) ? 0.ToString() : parsed[4].Trim();
+                var hp = string.IsNullOrWhiteSpace(parsed[6]) ? 0.ToString() : parsed[6].Trim();
+                var stm = string.IsNullOrWhiteSpace(parsed[7]) ? 0.ToString() : parsed[7].Trim();
+                var mgt = string.IsNullOrWhiteSpace(parsed[8]) ? 0.ToString() : parsed[8].Trim();
+                var per = string.IsNullOrWhiteSpace(parsed[9]) ? 0.ToString() : parsed[9].Trim();
+                var vit = string.IsNullOrWhiteSpace(parsed[10]) ? 0.ToString() : parsed[10].Trim();
+                var wil = string.IsNullOrWhiteSpace(parsed[11]) ? 0.ToString() : parsed[11].Trim();
+                var agi = string.IsNullOrWhiteSpace(parsed[12]) ? 0.ToString() : parsed[12].Trim();
+                var soc = string.IsNullOrWhiteSpace(parsed[13]) ? 0.ToString() : parsed[13].Trim();
                 var oneHanded = string.IsNullOrWhiteSpace(parsed[14]) ? 0 : Convert.ToInt32(parsed[14].Trim());
                 var twoHanded = string.IsNullOrWhiteSpace(parsed[15]) ? 0 : Convert.ToInt32(parsed[15].Trim());
                 var martialArts = string.IsNullOrWhiteSpace(parsed[16]) ? 0 : Convert.ToInt32(parsed[16].Trim());

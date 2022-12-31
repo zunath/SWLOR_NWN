@@ -761,7 +761,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 3)
 				.Component("ref_scordspar", 2);
 
-            /* DSCL-002
+            // DSCL-002
             _builder.Create(RecipeType.DSCL002, SkillType.Engineering)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl002")
@@ -1143,7 +1143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3); */
+                .Component("agate", 3);
         }
 
         private void Tier3()

@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Service.ItemService
 {
@@ -25,6 +26,8 @@ namespace SWLOR.Game.Server.Service.ItemService
         public Animation ActivationAnimation { get; set; }
         public ReducesItemChargeDelegate ReducesItemChargeAction { get; set; }
         public bool CanTargetLocation { get; set; }
+        public RecastGroup? RecastGroup { get; set; }
+        public float? RecastCooldown { get; set; }
 
         public ItemDetail()
         {

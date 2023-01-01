@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Service.ItemService
 {
@@ -221,6 +222,23 @@ namespace SWLOR.Game.Server.Service.ItemService
             foreach (var item in _activeItems)
             {
                 item.ApplyAction = action;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this item has a recast timer when used.
+        /// </summary>
+        /// <param name="type">The recast group type</param>
+        /// <param name="delaySeconds">The delay in seconds</param>
+        /// <returns>An item builder with the configured options.</returns>
+        public ItemBuilder HasRecastDelay(RecastGroup type, float delaySeconds)
+        {
+            foreach (var item in _activeItems)
+            {
+                item.RecastGroup = type;
+                item.RecastCooldown = delaySeconds;
             }
 
             return this;

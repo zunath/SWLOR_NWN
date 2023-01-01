@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("droid_control")
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
+                .HasRecastDelay(RecastGroup.DroidController, 1800f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (Space.IsPlayerInSpaceMode(user))

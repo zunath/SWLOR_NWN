@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
@@ -282,6 +283,7 @@ namespace SWLOR.Game.Server.Service
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
             var propertyIndex = Convert.ToInt32(EventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
+            var itemDetail = _items[itemTag];
 
             // Bypass the NWN "item use" animation.
             EventsPlugin.SkipEvent();
@@ -300,7 +302,17 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var itemDetail = _items[itemTag];
+            // Check recast cooldown
+            if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
+            {
+                var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                if (isOnRecast)
+                {
+                    SendMessageToPC(user, $"This item can be used in {timeToWait}.");
+                    return;
+                }
+            }
+
             var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation, propertyIndex);
 
             // Failed validation.
@@ -393,6 +405,11 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
+
+                    if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
+                    {
+                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                    }
 
                     // Reduce item charge if specified.
                     var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? false;

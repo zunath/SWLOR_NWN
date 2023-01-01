@@ -185,6 +185,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         GreaterEarthquake = 88,
         [RecastGroup("Infusion", "Infusion")]
         Infusion = 89,
+        [RecastGroup("Droid Controller", "Droid Contr.")]
+        DroidController = 90,
     }
 
     public class RecastGroupAttribute: Attribute

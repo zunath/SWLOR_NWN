@@ -1,8 +1,13 @@
-﻿namespace SWLOR.Game.Server.Service.DroidService
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PerkService;
+
+namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidDetails
     {
+        public string CustomName { get; set; }
         public int Tier { get; set; }
+        public int Level { get; set; }
         public int HP { get; set; }
         public int STM { get; set; }
         public int AISlots { get; set; }
@@ -16,5 +21,13 @@
         public int TwoHanded { get; set; }
         public int MartialArts { get; set; }
         public int Ranged { get; set; }
+
+        public Dictionary<PerkType, int> Perks { get; set; }
+
+        public DroidDetails()
+        {
+            CustomName = string.Empty;
+            Perks = new Dictionary<PerkType, int>();
+        }
     }
 }

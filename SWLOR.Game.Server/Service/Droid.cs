@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -12,11 +17,26 @@ namespace SWLOR.Game.Server.Service
     public class Droid
     {
         private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
+        private static readonly Dictionary<int, int> _levelsByTier = new();
+
+        public const string DroidResref = "pc_droid";
+        private const string DroidObjectVariable = "ACTIVE_DROID";
+        private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
+            CacheDroidLevels();
             CacheDefaultTierPerks();
+        }
+
+        private static void CacheDroidLevels()
+        {
+            _levelsByTier[1] = 5;
+            _levelsByTier[2] = 15;
+            _levelsByTier[3] = 25;
+            _levelsByTier[4] = 35;
+            _levelsByTier[5] = 45;
         }
 
         private static void CacheDefaultTierPerks()
@@ -119,6 +139,27 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
+        [NWNEventHandler("mod_exit")]
+        public static void OnPlayerExit()
+        {
+            var player = GetExitingObject();
+            DespawnDroid(player);
+        }
+
+        [NWNEventHandler("rest_started")]
+        public static void OnPlayerRest()
+        {
+            var player = OBJECT_SELF;
+            var droid = GetDroid(player);
+            if (!GetIsObjectValid(droid))
+                return;
+        
+            AssignCommand(droid, () =>
+            {
+                ActionRest();
+            });
+        }
+
         public static DroidDetails LoadDroidDetails(uint item)
         {
             var details = new DroidDetails();
@@ -135,7 +176,7 @@ namespace SWLOR.Game.Server.Service
                     switch (subType)
                     {
                         case DroidStatSubType.Tier:
-                            details.Tier = value;
+                            details.Tier = value < 1 ? 1 : value;
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -180,9 +221,221 @@ namespace SWLOR.Game.Server.Service
                             throw new ArgumentOutOfRangeException();
                     }
                 }
+
+                else if (type == ItemPropertyType.DroidInstruction)
+                {
+                    var perkType = (PerkType)GetItemPropertySubType(ip);
+                    var level = GetItemPropertyCostTableValue(ip);
+
+                    if(details.Perks.ContainsKey(perkType) && details.Perks[perkType] < level)
+                        details.Perks[perkType] = level;
+                }
             }
 
+            details.Level = _levelsByTier[details.Tier];
+
             return details;
+        }
+
+        public static uint GetDroid(uint player)
+        {
+            var droid = GetLocalObject(player, DroidObjectVariable);
+
+            return droid;
+        }
+
+        public static void SpawnDroid(uint player, uint item)
+        {
+            var details = LoadDroidDetails(item);
+
+            var droid = CreateObject(ObjectType.Creature, DroidResref, GetLocation(player), true);
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
+
+            SetName(droid, string.IsNullOrWhiteSpace(details.CustomName) 
+                ? $"{GetName(player)}'s Droid" 
+                : details.CustomName);
+
+            // Raw stats
+            ObjectPlugin.SetMaxHitPoints(droid, details.HP);
+            ObjectPlugin.SetCurrentHitPoints(droid, details.HP);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
+            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
+            CreaturePlugin.SetBaseAC(droid, 10);
+            CreaturePlugin.SetBaseAttackBonus(droid, 1);
+
+            // Skin item properties
+            var levelIP = ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, details.Level);
+            var hpIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, details.HP);
+            var stmIP = ItemPropertyCustom(ItemPropertyType.NPCSTM, -1, details.STM);
+
+            BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+            BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+            BiowareXP2.IPSafeAddItemProperty(skin, stmIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+
+            // Perks
+            foreach (var (perk, level) in details.Perks)
+            {
+                var perkDefinition = Perk.GetPerkDetails(perk);
+                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
+                    ? perkDefinition.PerkLevels[level].GrantedFeats
+                    : new List<FeatType>();
+
+                foreach (var feat in perkFeats)
+                {
+                    CreaturePlugin.AddFeat(droid, feat);
+                }
+            }
+
+            // Scripts
+            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, "droid_blocked");
+            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, "droid_roundend");
+            SetEventScript(droid, EventScript.Creature_OnDialogue, "droid_convers");
+            SetEventScript(droid, EventScript.Creature_OnDamaged, "droid_damaged");
+            SetEventScript(droid, EventScript.Creature_OnDeath, "droid_death");
+            SetEventScript(droid, EventScript.Creature_OnDisturbed, "droid_disturbed");
+            SetEventScript(droid, EventScript.Creature_OnHeartbeat, "droid_hb");
+            SetEventScript(droid, EventScript.Creature_OnNotice, "droid_perception");
+            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, "droid_attacked");
+            SetEventScript(droid, EventScript.Creature_OnRested, "droid_rest");
+            SetEventScript(droid, EventScript.Creature_OnSpawnIn, "droid_spawn");
+            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, "droid_spellcast");
+            SetEventScript(droid, EventScript.Creature_OnUserDefined, "droid_userdef");
+
+            AssignCommand(droid, () => ActionSpeakString("How may I assist you today?"));
+
+            AddHenchman(player, droid);
+            SetLocalObject(player, DroidObjectVariable, droid);
+            SetLocalObject(player, DroidControlItemVariable, item);
+            SetLocalObject(droid, DroidControlItemVariable, item);
+
+            // Ensure the spawn script gets called as it normally gets skipped
+            // because it doesn't exist at the time of the droid being created.
+            ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
+        }
+
+        private static void DespawnDroid(uint player)
+        {
+            var droid = GetDroid(player);
+            if (!GetIsObjectValid(droid))
+                return;
+
+            var item = GetLocalObject(droid, DroidControlItemVariable);
+
+            DestroyObject(droid);
+            SetItemCursedFlag(item, false);
+
+            DeleteLocalObject(player, DroidObjectVariable);
+            DeleteLocalObject(player, DroidControlItemVariable);
+            DeleteLocalObject(droid, DroidControlItemVariable);
+        }
+
+        [NWNEventHandler("space_enter")]
+        [NWNEventHandler("asso_rem_aft")]
+        public static void RemoveAssociate()
+        {
+            var player = OBJECT_SELF;
+            DespawnDroid(player);
+        }
+
+        [NWNEventHandler("droid_blocked")]
+        public static void DroidOnBlocked()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_block", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("droid_roundend")]
+        public static void DroidOnEndCombatRound()
+        {
+            var droid = OBJECT_SELF;
+            if (!Activity.IsBusy(droid))
+            {
+                ExecuteScriptNWScript("x0_ch_hen_combat", OBJECT_SELF);
+                AI.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
+            }
+        }
+
+        [NWNEventHandler("droid_convers")]
+        public static void DroidOnConversation()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_conv", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("droid_damaged")]
+        public static void DroidOnDamaged()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_damage", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_death")]
+        public static void DroidOnDeath()
+        {
+            ExecuteScriptNWScript("x2_hen_death", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_disturbed")]
+        public static void DroidOnDisturbed()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_distrb", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_hb")]
+        public static void DroidOnHeartbeat()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_heart", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_perception")]
+        public static void DroidOnPerception()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_percep", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_attacked")]
+        public static void DroidOnPhysicalAttacked()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_attack", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_rest")]
+        public static void DroidOnRested()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_rest", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_spawn")]
+        public static void DroidOnSpawn()
+        {
+            var droid = OBJECT_SELF;
+            ExecuteScriptNWScript("x0_ch_hen_spawn", droid);
+            AssignCommand(droid, () =>
+            {
+                SetIsDestroyable(true, false, false);
+            }); 
+        }
+
+        [NWNEventHandler("droid_spellcast")]
+        public static void DroidOnSpellCastAt()
+        {
+            ExecuteScriptNWScript("x2_hen_spell", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("droid_userdef")]
+        public static void DroidOnUserDefined()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
+
         }
 
     }

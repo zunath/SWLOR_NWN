@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -13,9 +12,17 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AI
     {
-        private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new Dictionary<uint, HashSet<uint>>();
+        private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
+        private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
         private const string StickyTargetRounds = "AI_STICKY_TARGET_ROUNDS";
+
+        [NWNEventHandler("mod_cache")]
+        public static void CacheAIData()
+        {
+            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
+            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
+        }
 
         /// <summary>
         /// Entry point for creature heartbeat logic.
@@ -50,12 +57,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_roundend")]
         public static void CreatureCombatRoundEnd()
         {
-            if (!Activity.IsBusy(OBJECT_SELF))
+            var creature = OBJECT_SELF;
+            if (!Activity.IsBusy(creature))
             {
-                ExecuteScript("crea_rndend_bef", OBJECT_SELF);
-                ProcessPerkAI();
-                ExecuteScript("cdef_c2_default3", OBJECT_SELF);
-                ExecuteScript("crea_rndend_aft", OBJECT_SELF);
+                ExecuteScript("crea_rndend_bef", creature);
+                ProcessPerkAI(AIDefinitionType.Generic, creature, true);
+                ExecuteScript("cdef_c2_default3", creature);
+                ExecuteScript("crea_rndend_aft", creature);
             }
         }
 
@@ -274,43 +282,41 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles custom perk usage
         /// </summary>
-        private static void ProcessPerkAI()
+        public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
         {
-            var self = OBJECT_SELF;
-
             // Petrified - do nothing else.
-            if (GetHasEffect(self, EffectTypeScript.Petrify)) 
+            if (GetHasEffect(creature, EffectTypeScript.Petrify)) 
                 return;
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = Enmity.GetHighestEnmityTarget(self);
-            if (!GetIsObjectValid(target))
+            var target = Enmity.GetHighestEnmityTarget(creature);
+            if (usesEnmity && !GetIsObjectValid(target))
             {
                 ClearAllActions();
                 return;
             }
 
             // If currently randomly walking, clear all actions.
-            if (GetCurrentAction(self) == ActionType.RandomWalk)
+            if (GetCurrentAction(creature) == ActionType.RandomWalk)
             {
                 ClearAllActions();
             }
 
             // Not currently fighting - attack target
-            if (GetCurrentAction(self) == ActionType.Invalid)
+            if (GetCurrentAction(creature) == ActionType.Invalid)
             {
-                DeleteLocalInt(self, StickyTargetRounds);
+                DeleteLocalInt(creature, StickyTargetRounds);
                 ClearAllActions();
                 ActionAttack(target);
             }
             // The AI should stick to their same target for 3 rounds before shifting to the next highest enmity target.
-            else if (target != GetAttackTarget(self))
+            else if (usesEnmity && target != GetAttackTarget(creature))
             {
-                var rounds = GetLocalInt(self, StickyTargetRounds) + 1;
+                var rounds = GetLocalInt(creature, StickyTargetRounds) + 1;
                 if (rounds > 3)
                 {
-                    DeleteLocalInt(self, StickyTargetRounds);
+                    DeleteLocalInt(creature, StickyTargetRounds);
                     ClearAllActions();
                     ActionAttack(target);
                 }
@@ -318,13 +324,15 @@ namespace SWLOR.Game.Server.Service
             // Perk ability usage
             else
             {
-                if (!_creatureAllies.TryGetValue(self, out var allies))
+                if (!_creatureAllies.TryGetValue(creature, out var allies))
                 {
                     allies = new HashSet<uint>();
                 }
-                allies.Add(self);
+                allies.Add(creature);
 
-                var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
+                var aiDefinition = _aiDefinitions[aiType];
+                aiDefinition.PreProcessAI(creature, target, allies);
+                var (feat, featTarget) = aiDefinition.DeterminePerkAbility();
                 if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
                     ClearAllActions();

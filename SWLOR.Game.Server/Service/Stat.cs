@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service
                 var ep = 0;
                 for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
                 {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCEP)
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCFP)
                     {
                         ep += GetItemPropertyCostTableValue(ip);
                     }

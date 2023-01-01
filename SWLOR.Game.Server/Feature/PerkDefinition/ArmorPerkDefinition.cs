@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Goads a single target into attacking you.")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 5)
-                .GrantsFeat(FeatType.Provoke)
+                .GrantsFeat(FeatType.Provoke1)
                 
                 .AddPerkLevel()
                 .Description("Goads all enemies within range into attacking you.")

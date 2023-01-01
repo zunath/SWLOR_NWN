@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
         private void Provoke()
         {
-            _builder.Create(FeatType.Provoke, PerkType.Provoke)
+            _builder.Create(FeatType.Provoke1, PerkType.Provoke)
                 .Name("Provoke")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 20f)

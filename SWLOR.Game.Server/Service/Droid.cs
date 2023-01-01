@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
         public const string DroidResref = "pc_droid";
         private const string DroidObjectVariable = "ACTIVE_DROID";
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
+        private const string DroidInventory = "ACTIVE_DROID_INVENTORY";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
@@ -144,6 +145,28 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             DespawnDroid(player);
+        }
+
+        [NWNEventHandler("mod_acquire")]
+        public static void OnAcquireItem()
+        {
+            var droid = GetModuleItemAcquiredBy();
+            if (GetResRef(droid) != DroidResref)
+                return;
+
+            var item = GetModuleItemAcquired();
+            UpdateDroidInventory(droid, item, true);
+        }
+
+        [NWNEventHandler("mod_unacquire")]
+        public static void OnLostItem()
+        {
+            var droid = GetModuleItemLostBy();
+            if (GetResRef(droid) != DroidResref)
+                return;
+
+            var item = GetModuleItemLost();
+            UpdateDroidInventory(droid, item, true);
         }
 
         [NWNEventHandler("rest_started")]
@@ -312,6 +335,29 @@ namespace SWLOR.Game.Server.Service
             SetLocalObject(player, DroidControlItemVariable, item);
             SetLocalObject(droid, DroidControlItemVariable, item);
 
+            // Inventory / Equipment
+            var serializedInventory = GetLocalString(item, DroidInventory);
+            if (!string.IsNullOrWhiteSpace(serializedInventory))
+            {
+                var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+
+                foreach (var (slot, serialized) in inventory.EquippedItems)
+                {
+                    var deserialized = ObjectPlugin.Deserialize(serialized);
+                    ObjectPlugin.AcquireItem(droid, deserialized);
+                    SetDroppableFlag(deserialized, false);
+
+                    AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
+                }
+
+                foreach (var (id, serialized) in inventory.Inventory)
+                {
+                    var deserialized = ObjectPlugin.Deserialize(serialized);
+                    ObjectPlugin.AcquireItem(droid, deserialized);
+                    SetDroppableFlag(deserialized, false);
+                }
+            }
+
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
             ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
@@ -339,6 +385,39 @@ namespace SWLOR.Game.Server.Service
         {
             var player = OBJECT_SELF;
             DespawnDroid(player);
+        }
+
+        private static void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
+        {
+            var itemType = GetBaseItemType(item);
+
+            if (itemType == BaseItem.CreatureBludgeonWeapon ||
+                itemType == BaseItem.CreaturePierceWeapon ||
+                itemType == BaseItem.CreatureSlashPierceWeapon ||
+                itemType == BaseItem.CreatureSlashWeapon ||
+                itemType == BaseItem.CreatureItem)
+                return;
+
+            var itemId = GetObjectUUID(item);
+            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
+            var inventory = new DroidInventory();
+            if (!string.IsNullOrWhiteSpace(serializedInventory))
+            {
+                inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+            }
+
+            if (wasAcquired)
+            {
+                inventory.Inventory[itemId] = ObjectPlugin.Serialize(item);
+            }
+            else
+            {
+                inventory.Inventory.Remove(itemId);
+            }
+
+            serializedInventory = JsonConvert.SerializeObject(inventory);
+            SetLocalString(controlUnit, DroidInventory, serializedInventory);
         }
 
         [NWNEventHandler("droid_blocked")]
@@ -382,7 +461,6 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnDisturbed()
         {
             ExecuteScriptNWScript("x0_ch_hen_distrb", OBJECT_SELF);
-
         }
 
         [NWNEventHandler("droid_hb")]

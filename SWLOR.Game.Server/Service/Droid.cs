@@ -7,10 +7,12 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -603,8 +605,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("droid_rest")]
         public static void DroidOnRested()
         {
-            ExecuteScriptNWScript("x0_ch_hen_rest", OBJECT_SELF);
+            var droid = OBJECT_SELF;
+            ExecuteScriptNWScript("x0_ch_hen_rest", droid);
 
+            AssignCommand(droid, () => ClearAllActions());
+
+            StatusEffect.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
         [NWNEventHandler("droid_spawn")]

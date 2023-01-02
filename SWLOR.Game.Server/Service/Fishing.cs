@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var xp = Skill.GetDeltaXP(fish.Level - skill);
-            Skill.GiveSkillXP(player, SkillType.Agriculture, xp);
+            Skill.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
         }
 
         private static void ClearFishingAttempt(uint player)

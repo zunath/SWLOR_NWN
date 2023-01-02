@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var delta = veinLevel - dbSkill.Rank;
                         var deltaXP = Skill.GetDeltaXP(delta);
 
-                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP);
+                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP, false, false);
                     }
 
                     ExecuteScript("harvester_used", user);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -53,9 +54,16 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            if(!string.IsNullOrWhiteSpace(canUseItem))
-                SendMessageToPC(creature, ColorToken.Red(canUseItem));
-
+            if (!string.IsNullOrWhiteSpace(canUseItem))
+            {
+                var messageTarget = creature;
+                if (Droid.IsDroid(creature))
+                {
+                    messageTarget = GetMaster(creature);
+                }
+                SendMessageToPC(messageTarget, ColorToken.Red(canUseItem));
+            }
+            
             EventsPlugin.SkipEvent();
         }
 
@@ -153,7 +161,10 @@ namespace SWLOR.Game.Server.Feature
         /// <returns>An empty string if successful or an error message if failed</returns>
         private static string CanItemBeUsed(uint creature, uint item)
         {
-            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
+            var isPlayer = GetIsPC(creature);
+            var isDroid = Droid.IsDroid(creature);
+
+            if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
                 return string.Empty;
 
             var itemType = GetBaseItemType(item);
@@ -164,9 +175,21 @@ namespace SWLOR.Game.Server.Feature
             var race = GetRacialType(creature);
             var needsDroidLimitation = race == RacialType.Droid && Item.DroidBaseItemTypes.Contains(itemType);
             var itemHasDroidIP = false;
+            Dictionary<PerkType, int> creaturePerks;
 
-            var playerId = GetObjectUUID(creature);
-            var dbPlayer = DB.Get<Player>(playerId);
+            if (isPlayer)
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+                creaturePerks = dbPlayer.Perks;
+            }
+            // Droids
+            else
+            {
+                var controller = Droid.GetControllerItem(creature);
+                var droidDetails = Droid.LoadDroidDetails(controller);
+                creaturePerks = droidDetails.Perks;
+            }
 
             // Check for required perk levels.
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -180,7 +203,7 @@ namespace SWLOR.Game.Server.Feature
                     if (perkType == PerkType.Invalid) continue;
 
                     var requiredLevel = GetItemPropertyCostTableValue(ip);
-                    var perkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
+                    var perkLevel = creaturePerks.ContainsKey(perkType) ? creaturePerks[perkType] : 0;
 
                     if (perkLevel < requiredLevel)
                     {

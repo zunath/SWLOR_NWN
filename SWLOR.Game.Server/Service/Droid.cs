@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -7,7 +8,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -145,9 +145,25 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private static bool IsDroid(uint creature)
+        /// <summary>
+        /// Determines if a creature is a droid.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <returns>true if droid, false otherwise</returns>
+        public static bool IsDroid(uint creature)
         {
             return GetResRef(creature) == DroidResref;
+        }
+
+        /// <summary>
+        /// Retrieves the controller item associated with a droid.
+        /// If not found, OBJECT_INVALID will be returned.
+        /// </summary>
+        /// <param name="droid">The droid to check</param>
+        /// <returns>The controller item or OBJECT_INVALID.</returns>
+        public static uint GetControllerItem(uint droid)
+        {
+            return GetLocalObject(droid, DroidControlItemVariable);
         }
 
         [NWNEventHandler("droid_ass_used")]
@@ -217,7 +233,7 @@ namespace SWLOR.Game.Server.Service
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var controlUnit = GetControllerItem(droid);
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
             var serializedInventory = GetLocalString(controlUnit, DroidInventory);
             var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
@@ -243,7 +259,7 @@ namespace SWLOR.Game.Server.Service
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var controlUnit = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
             var serializedInventory = GetLocalString(controlUnit, DroidInventory);
             var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
@@ -272,7 +288,14 @@ namespace SWLOR.Game.Server.Service
         public static DroidDetails LoadDroidDetails(uint item)
         {
             var details = new DroidDetails();
+            if (details.Tier < 1)
+                details.Tier = 1;
+            else if (details.Tier > 5)
+                details.Tier = 5;
 
+            details.Perks = _defaultPerksByTier[details.Tier]
+                .ToDictionary(x => x.Key, y => y.Value);
+            
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -471,7 +494,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(droid))
                 return;
 
-            var item = GetLocalObject(droid, DroidControlItemVariable);
+            var item = GetControllerItem(droid);
             var droidDetails = LoadDroidDetails(item);
             var personality = _droidPersonalities[droidDetails.PersonalityType];
 
@@ -508,7 +531,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var controlUnit = GetControllerItem(droid);
             var serializedInventory = GetLocalString(controlUnit, DroidInventory);
             var inventory = new DroidInventory();
             if (!string.IsNullOrWhiteSpace(serializedInventory))
@@ -565,7 +588,7 @@ namespace SWLOR.Game.Server.Service
             var droid = OBJECT_SELF;
             ExecuteScriptNWScript("x2_hen_death", droid);
 
-            var item = GetLocalObject(droid, DroidControlItemVariable);
+            var item = GetControllerItem(droid);
             var droidDetail = LoadDroidDetails(item);
             var personality = _droidPersonalities[droidDetail.PersonalityType];
 

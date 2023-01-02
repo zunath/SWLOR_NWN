@@ -7938,6 +7938,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "PC Droid Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "droid_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pirate Borealis Hide"
                     },
                     "RESREF": {

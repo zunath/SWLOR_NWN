@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 107
+    "value": 108
   },
   "Width": {
     "type": "int",

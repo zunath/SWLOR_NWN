@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyStats()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+            if (GetIsDM(player) || GetIsDMPossessed(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));

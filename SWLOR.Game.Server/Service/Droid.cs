@@ -18,16 +18,19 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
         private static readonly Dictionary<int, int> _levelsByTier = new();
+        private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
         public const string DroidResref = "pc_droid";
         private const string DroidObjectVariable = "ACTIVE_DROID";
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
         private const string DroidInventory = "ACTIVE_DROID_INVENTORY";
+        private const string DroidIsSpawning = "DROID_IS_SPAWNING";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             CacheDroidLevels();
+            CachePersonalities();
             CacheDefaultTierPerks();
         }
 
@@ -38,6 +41,16 @@ namespace SWLOR.Game.Server.Service
             _levelsByTier[3] = 25;
             _levelsByTier[4] = 35;
             _levelsByTier[5] = 45;
+        }
+
+        private static void CachePersonalities()
+        {
+            _droidPersonalities[DroidPersonalityType.Geeky] = new DroidGeekyPersonality();
+            _droidPersonalities[DroidPersonalityType.Prissy] = new DroidPrissyPersonality();
+            _droidPersonalities[DroidPersonalityType.Sarcastic] = new DroidSarcasticPersonality();
+            _droidPersonalities[DroidPersonalityType.Slang] = new DroidSlangPersonality();
+            _droidPersonalities[DroidPersonalityType.Bland] = new DroidBlandPersonality();
+            _droidPersonalities[DroidPersonalityType.Worshipful] = new DroidWorshipfulPersonality();
         }
 
         private static void CacheDefaultTierPerks()
@@ -130,6 +143,11 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        private static bool IsDroid(uint creature)
+        {
+            return GetResRef(creature) == DroidResref;
+        }
+
         [NWNEventHandler("droid_ass_used")]
         public static void UseDroidAssemblyTerminal()
         {
@@ -151,10 +169,29 @@ namespace SWLOR.Game.Server.Service
         public static void OnAcquireItem()
         {
             var droid = GetModuleItemAcquiredBy();
-            if (GetResRef(droid) != DroidResref)
+            if (!IsDroid(droid))
                 return;
 
+            if (GetLocalBool(droid, DroidIsSpawning))
+                return;
+
+            var master = GetMaster(droid);
             var item = GetModuleItemAcquired();
+
+            var might = GetAbilityScore(droid, AbilityType.Might);
+            var weight = GetWeight(droid);
+            var maxWeight = Convert.ToInt32(Get2DAString("encumbrance", "Normal", might));
+
+            if (weight > maxWeight)
+            {
+                AssignCommand(droid, () =>
+                {
+                    ActionSpeakString("I'm sorry master. I cannot carry any more items.");
+                });
+                Item.ReturnItem(master, item);
+                return;
+            }
+
             UpdateDroidInventory(droid, item, true);
         }
 
@@ -166,7 +203,54 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = GetModuleItemLost();
-            UpdateDroidInventory(droid, item, true);
+            UpdateDroidInventory(droid, item, false);
+        }
+
+        [NWNEventHandler("item_eqp_bef")]
+        public static void OnEquipItem()
+        {
+            var droid = OBJECT_SELF;
+            if (!IsDroid(droid))
+                return;
+
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var itemId = GetObjectUUID(item);
+            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
+            var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+
+            // Equipment won't be in the inventory but it does get equipped on spawn-in.
+            // Avoid proceeding in this situation.
+            if (!inventory.Inventory.ContainsKey(itemId))
+                return;
+
+            inventory.EquippedItems[slot] = inventory.Inventory[itemId];
+            inventory.Inventory.Remove(itemId);
+
+            serializedInventory = JsonConvert.SerializeObject(inventory);
+            SetLocalString(controlUnit, DroidInventory, serializedInventory);
+        }
+
+        [NWNEventHandler("item_uneqp_bef")]
+        public static void OnUnequipItem()
+        {
+            var droid = OBJECT_SELF;
+            if (!IsDroid(droid))
+                return;
+
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var itemId = GetObjectUUID(item);
+            var controlUnit = GetLocalObject(droid, DroidControlItemVariable);
+            var slot = Item.GetItemSlot(droid, item);
+            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
+            var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+
+            inventory.Inventory[itemId] = inventory.EquippedItems[slot];
+            inventory.EquippedItems.Remove(slot);
+
+            serializedInventory = JsonConvert.SerializeObject(inventory);
+            SetLocalString(controlUnit, DroidInventory, serializedInventory);
         }
 
         [NWNEventHandler("rest_started")]
@@ -272,6 +356,8 @@ namespace SWLOR.Game.Server.Service
             var details = LoadDroidDetails(item);
 
             var droid = CreateObject(ObjectType.Creature, DroidResref, GetLocation(player), true);
+            SetLocalBool(droid, DroidIsSpawning, true);
+
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
 
             SetName(droid, string.IsNullOrWhiteSpace(details.CustomName) 
@@ -353,6 +439,9 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (id, serialized) in inventory.Inventory)
                 {
                     var deserialized = ObjectPlugin.Deserialize(serialized);
+                    if(!GetIsObjectValid(deserialized))
+                        continue;
+
                     ObjectPlugin.AcquireItem(droid, deserialized);
                     SetDroppableFlag(deserialized, false);
                 }
@@ -361,6 +450,11 @@ namespace SWLOR.Game.Server.Service
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
             ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
+
+            AssignCommand(GetModule(), () =>
+            {
+                DelayCommand(0.1f, () => DeleteLocalBool(droid, DroidIsSpawning));
+            });
         }
 
         private static void DespawnDroid(uint player)

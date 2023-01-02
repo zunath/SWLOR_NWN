@@ -1067,5 +1067,38 @@ namespace SWLOR.Game.Server.Service
             SetTag(item, "LEGACY_ITEM");
         }
 
+        /// <summary>
+        /// Retrieves the item slot of a specific item.
+        /// If the item isn't equipped, InventorySlot.Invalid will be returned.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>The inventory slot of the item or InventorySlot.Invalid if not equipped.</returns>
+        public static InventorySlot GetItemSlot(uint creature, uint item)
+        {
+            var slot = InventorySlot.Invalid;
+
+            if (GetItemInSlot(InventorySlot.Head, creature) == item) slot = InventorySlot.Head;
+            if (GetItemInSlot(InventorySlot.Chest, creature) == item) slot = InventorySlot.Chest;
+            if (GetItemInSlot(InventorySlot.Boots, creature) == item) slot = InventorySlot.Boots;
+            if (GetItemInSlot(InventorySlot.Arms, creature) == item) slot = InventorySlot.Arms;
+            if (GetItemInSlot(InventorySlot.RightHand, creature) == item) slot = InventorySlot.RightHand;
+            if (GetItemInSlot(InventorySlot.LeftHand, creature) == item) slot = InventorySlot.LeftHand;
+            if (GetItemInSlot(InventorySlot.Cloak, creature) == item) slot = InventorySlot.Cloak;
+            if (GetItemInSlot(InventorySlot.LeftRing, creature) == item) slot = InventorySlot.LeftRing;
+            if (GetItemInSlot(InventorySlot.RightRing, creature) == item) slot = InventorySlot.RightRing;
+            if (GetItemInSlot(InventorySlot.Neck, creature) == item) slot = InventorySlot.Neck;
+            if (GetItemInSlot(InventorySlot.Belt, creature) == item) slot = InventorySlot.Belt;
+            if (GetItemInSlot(InventorySlot.Arrows, creature) == item) slot = InventorySlot.Arrows;
+            if (GetItemInSlot(InventorySlot.Bullets, creature) == item) slot = InventorySlot.Bullets;
+            if (GetItemInSlot(InventorySlot.Bolts, creature) == item) slot = InventorySlot.Bolts;
+            if (GetItemInSlot(InventorySlot.CreatureLeft, creature) == item) slot = InventorySlot.CreatureLeft;
+            if (GetItemInSlot(InventorySlot.CreatureRight, creature) == item) slot = InventorySlot.CreatureRight;
+            if (GetItemInSlot(InventorySlot.CreatureBite, creature) == item) slot = InventorySlot.CreatureBite;
+            if (GetItemInSlot(InventorySlot.CreatureArmor, creature) == item) slot = InventorySlot.CreatureArmor;
+
+            return slot;
+        }
+
     }
 }

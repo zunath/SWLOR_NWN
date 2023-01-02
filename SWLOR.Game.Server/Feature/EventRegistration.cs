@@ -216,6 +216,14 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_BEFORE", "item_splt_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_AFTER", "item_splt_aft");
 
+            // Item Merge events
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_BEFORE", "item_merge_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_AFTER", "item_merge_aft");
+
+            // Acquire Item events
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_BEFORE", "item_acquire_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_AFTER", "item_acquire_aft");
+
             // Feat Use events
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_BEFORE", "feat_use_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_AFTER", "feat_use_aft");

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
     public static class EquipmentStats
     {
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
-        private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new Dictionary<ItemPropertyType, ApplyStatChangeDelegate>();
+        private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
 
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
@@ -163,9 +163,9 @@ namespace SWLOR.Game.Server.Feature
                 var maxHP = 0;
                 for (var ipHP = GetFirstItemProperty(skin); GetIsItemPropertyValid(ipHP); ipHP = GetNextItemProperty(skin))
                 {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
+                    if (GetItemPropertyType(ipHP) == ItemPropertyType.NPCHP)
                     {
-                        maxHP += GetItemPropertyCostTableValue(ip);
+                        maxHP += GetItemPropertyCostTableValue(ipHP);
                     }
                 }
 

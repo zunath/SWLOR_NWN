@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
         private const string DroidInventory = "ACTIVE_DROID_INVENTORY";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
+        private const float RecastDelaySeconds = 1800f;
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
@@ -488,6 +490,16 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        private static void ClearTemporaryData(uint player, uint droid)
+        {
+            var item = GetControllerItem(droid);
+            SetItemCursedFlag(item, false);
+
+            DeleteLocalObject(player, DroidObjectVariable);
+            DeleteLocalObject(player, DroidControlItemVariable);
+            DeleteLocalObject(droid, DroidControlItemVariable);
+        }
+
         private static void DespawnDroid(uint player)
         {
             var droid = GetDroid(player);
@@ -504,11 +516,9 @@ namespace SWLOR.Game.Server.Service
             });
 
             DestroyObject(droid, 0.1f);
-            SetItemCursedFlag(item, false);
+            ClearTemporaryData(player, droid);
 
-            DeleteLocalObject(player, DroidObjectVariable);
-            DeleteLocalObject(player, DroidControlItemVariable);
-            DeleteLocalObject(droid, DroidControlItemVariable);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
         }
 
         [NWNEventHandler("space_enter")]
@@ -586,16 +596,16 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnDeath()
         {
             var droid = OBJECT_SELF;
+            var player = GetMaster(droid);
             ExecuteScriptNWScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
             var droidDetail = LoadDroidDetails(item);
             var personality = _droidPersonalities[droidDetail.PersonalityType];
 
-            AssignCommand(droid, () =>
-            {
-                ActionSpeakString(personality.DeathPhrase());
-            });
+            ActionSpeakString(personality.DeathPhrase());
+            ClearTemporaryData(player, droid);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
         }
 
         [NWNEventHandler("droid_disturbed")]

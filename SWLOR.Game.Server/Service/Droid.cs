@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler("space_enter")]
-        [NWNEventHandler("asso_rem_aft")]
+        [NWNEventHandler("asso_rem_bef")]
         public static void RemoveAssociate()
         {
             var player = OBJECT_SELF;

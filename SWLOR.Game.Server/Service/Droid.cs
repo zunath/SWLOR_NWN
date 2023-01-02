@@ -337,6 +337,11 @@ namespace SWLOR.Game.Server.Service
                     if(details.Perks.ContainsKey(perkType) && details.Perks[perkType] < level)
                         details.Perks[perkType] = level;
                 }
+                else if (type == ItemPropertyType.DroidPersonality)
+                {
+                    var personalityType = (DroidPersonalityType)GetItemPropertySubType(ip);
+                    details.PersonalityType = personalityType;
+                }
             }
 
             details.Level = _levelsByTier[details.Tier];
@@ -357,6 +362,7 @@ namespace SWLOR.Game.Server.Service
 
             var droid = CreateObject(ObjectType.Creature, DroidResref, GetLocation(player), true);
             SetLocalBool(droid, DroidIsSpawning, true);
+            var personality = _droidPersonalities[details.PersonalityType];
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
 
@@ -414,7 +420,7 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(droid, EventScript.Creature_OnSpellCastAt, "droid_spellcast");
             SetEventScript(droid, EventScript.Creature_OnUserDefined, "droid_userdef");
 
-            AssignCommand(droid, () => ActionSpeakString("How may I assist you today?"));
+            AssignCommand(droid, () => ActionSpeakString(personality.GreetingPhrase()));
 
             AddHenchman(player, droid);
             SetLocalObject(player, DroidObjectVariable, droid);
@@ -464,8 +470,15 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = GetLocalObject(droid, DroidControlItemVariable);
+            var droidDetails = LoadDroidDetails(item);
+            var personality = _droidPersonalities[droidDetails.PersonalityType];
 
-            DestroyObject(droid);
+            AssignCommand(droid, () =>
+            {
+                ActionSpeakString(personality.DismissedPhrase());
+            });
+
+            DestroyObject(droid, 0.1f);
             SetItemCursedFlag(item, false);
 
             DeleteLocalObject(player, DroidObjectVariable);
@@ -547,8 +560,17 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("droid_death")]
         public static void DroidOnDeath()
         {
-            ExecuteScriptNWScript("x2_hen_death", OBJECT_SELF);
+            var droid = OBJECT_SELF;
+            ExecuteScriptNWScript("x2_hen_death", droid);
 
+            var item = GetLocalObject(droid, DroidControlItemVariable);
+            var droidDetail = LoadDroidDetails(item);
+            var personality = _droidPersonalities[droidDetail.PersonalityType];
+
+            AssignCommand(droid, () =>
+            {
+                ActionSpeakString(personality.DeathPhrase());
+            });
         }
 
         [NWNEventHandler("droid_disturbed")]

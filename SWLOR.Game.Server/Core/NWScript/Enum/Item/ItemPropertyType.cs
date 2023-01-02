@@ -122,5 +122,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         DroidStat = 121,
         DroidPart = 122,
         DroidInstruction = 123,
+        DroidPersonality = 124,
     }
 }

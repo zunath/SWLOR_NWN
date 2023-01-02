@@ -42,12 +42,12 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public string DeathPhrase()
         {
-            return _greetingPhrases[Random.Next(_deathPhrases.Count)];
+            return _deathPhrases[Random.Next(_deathPhrases.Count)];
         }
 
         public string DismissedPhrase()
         {
-            return _greetingPhrases[Random.Next(_dismissedPhrases.Count)];
+            return _dismissedPhrases[Random.Next(_dismissedPhrases.Count)];
         }
     }
 }

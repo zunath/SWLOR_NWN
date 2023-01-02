@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int TwoHanded { get; set; }
         public int MartialArts { get; set; }
         public int Ranged { get; set; }
+        public DroidPersonalityType PersonalityType { get; set; }
 
         public Dictionary<PerkType, int> Perks { get; set; }
 
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         {
             CustomName = string.Empty;
             Perks = new Dictionary<PerkType, int>();
+            PersonalityType = DroidPersonalityType.Bland;
         }
     }
 }

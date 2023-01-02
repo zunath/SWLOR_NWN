@@ -202,8 +202,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - FP I
-			_builder.Create(RecipeType.ArmorEnhancementFP1, SkillType.Engineering)
+            // Armor Enhancement - Attack I
+            _builder.Create(RecipeType.ArmorEnhancementAttack1, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_atk1")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 1)
+                .Component("ref_tilarium", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 2)
+                ;
+
+            // Armor Enhancement - Force Attack I
+            _builder.Create(RecipeType.ArmorEnhancementForceAttack1, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_frcatk1")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 1)
+                .Component("ref_tilarium", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 2)
+                ;
+
+            // Armor Enhancement - FP I
+            _builder.Create(RecipeType.ArmorEnhancementFP1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("aen_fp1")
 				.Level(5)
@@ -262,8 +286,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Weapon Enhancement - Control - Smithery I
-			_builder.Create(RecipeType.WeaponEnhancementControlSmithery1, SkillType.Engineering)
+            // Weapon Enhancement - Force Attack I
+            _builder.Create(RecipeType.WeaponEnhancementForceAttack1, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("wen_frcatk1")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 1)
+                .Component("ref_tilarium", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 2)
+                ;
+
+
+            // Weapon Enhancement - Control - Smithery I
+            _builder.Create(RecipeType.WeaponEnhancementControlSmithery1, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_con_smth1")
 				.Level(4)
@@ -903,8 +940,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - FP II
-			_builder.Create(RecipeType.ArmorEnhancementFP2, SkillType.Engineering)
+            // Armor Enhancement - Attack II
+            _builder.Create(RecipeType.ArmorEnhancementAttack2, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_atk2")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 2)
+                .Component("ref_currian", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 2)
+                ;
+
+            // Armor Enhancement - Force Attack II
+            _builder.Create(RecipeType.ArmorEnhancementForceAttack2, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_frcatk2")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 2)
+                .Component("ref_currian", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 2)
+                ;
+
+            // Armor Enhancement - FP II
+            _builder.Create(RecipeType.ArmorEnhancementFP2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("aen_fp2")
 				.Level(15)
@@ -963,8 +1024,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - Control - Smithery II
-			_builder.Create(RecipeType.WeaponEnhancementControlSmithery2, SkillType.Engineering)
+            // Weapon Enhancement - Force Attack II
+            _builder.Create(RecipeType.WeaponEnhancementForceAttack2, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("wen_frcatk2")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 2)
+                .Component("ref_currian", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 2)
+                ;
+
+            // Weapon Enhancement - Control - Smithery II
+            _builder.Create(RecipeType.WeaponEnhancementControlSmithery2, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_con_smth2")
 				.Level(14)
@@ -1628,8 +1701,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - FP III
-			_builder.Create(RecipeType.ArmorEnhancementFP3, SkillType.Engineering)
+            // Armor Enhancement - Attack III
+            _builder.Create(RecipeType.ArmorEnhancementAttack3, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_atk3")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .Component("ref_idailia", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 2)
+                ;
+
+            // Armor Enhancement - Force Attack III
+            _builder.Create(RecipeType.ArmorEnhancementForceAttack3, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_frcatk3")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .Component("ref_idailia", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 2)
+                ;
+
+            // Armor Enhancement - FP III
+            _builder.Create(RecipeType.ArmorEnhancementFP3, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("aen_fp3")
 				.Level(25)
@@ -1688,8 +1785,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Weapon Enhancement - Control - Smithery III
-			_builder.Create(RecipeType.WeaponEnhancementControlSmithery3, SkillType.Engineering)
+            // Weapon Enhancement - Force Attack III
+            _builder.Create(RecipeType.WeaponEnhancementForceAttack3, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("wen_frcatk3")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .Component("ref_idailia", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 2)
+                ;
+
+            // Weapon Enhancement - Control - Smithery III
+            _builder.Create(RecipeType.WeaponEnhancementControlSmithery3, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_con_smth3")
 				.Level(24)
@@ -2329,8 +2438,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - FP IV
-			_builder.Create(RecipeType.ArmorEnhancementFP4, SkillType.Engineering)
+            // Armor Enhancement - Attack IV
+            _builder.Create(RecipeType.ArmorEnhancementAttack4, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_atk4")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 4)
+                .Component("ref_barinium", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 2)
+                ;
+
+            // Armor Enhancement - Force Attack IV
+            _builder.Create(RecipeType.ArmorEnhancementForceAttack4, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_frcatk4")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 4)
+                .Component("ref_barinium", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 2)
+                ;
+
+            // Armor Enhancement - FP IV
+            _builder.Create(RecipeType.ArmorEnhancementFP4, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("aen_fp4")
 				.Level(35)
@@ -2389,8 +2522,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - Control - Smithery IV
-			_builder.Create(RecipeType.WeaponEnhancementControlSmithery4, SkillType.Engineering)
+            // Weapon Enhancement - Force Attack IV
+            _builder.Create(RecipeType.WeaponEnhancementForceAttack4, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("wen_frcatk4")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 4)
+                .Component("ref_barinium", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 2)
+                ;
+
+            // Weapon Enhancement - Control - Smithery IV
+            _builder.Create(RecipeType.WeaponEnhancementControlSmithery4, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_con_smth4")
 				.Level(34)
@@ -3054,8 +3199,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - FP V
-			_builder.Create(RecipeType.ArmorEnhancementFP5, SkillType.Engineering)
+            // Armor Enhancement - Attack V
+            _builder.Create(RecipeType.ArmorEnhancementAttack5, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_atk5")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .Component("ref_gostian", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 2)
+                ;
+
+            // Armor Enhancement - Force Attack V
+            _builder.Create(RecipeType.ArmorEnhancementForceAttack5, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("aen_frcatk5")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .Component("ref_gostian", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 2)
+                ;
+
+            // Armor Enhancement - FP V
+            _builder.Create(RecipeType.ArmorEnhancementFP5, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("aen_fp5")
 				.Level(45)
@@ -3114,8 +3283,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Weapon Enhancement - Control - Smithery V
-			_builder.Create(RecipeType.WeaponEnhancementControlSmithery5, SkillType.Engineering)
+            // Weapon Enhancement - Force Attack V
+            _builder.Create(RecipeType.WeaponEnhancementForceAttack5, SkillType.Engineering)
+                .Category(RecipeCategoryType.Enhancement)
+                .Resref("wen_frcatk5")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .Component("ref_gostian", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 2)
+                ;
+
+            // Weapon Enhancement - Control - Smithery V
+            _builder.Create(RecipeType.WeaponEnhancementControlSmithery5, SkillType.Engineering)
 				.Category(RecipeCategoryType.Enhancement)
 				.Resref("wen_con_smth5")
 				.Level(44)

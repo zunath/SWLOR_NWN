@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - Attack Bonus II"
+      "0": "Weapon Enhancement - Force Attack I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 16
+    "value": 8
   },
   "PaletteID": {
     "type": "byte",
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 30
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -133,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -149,7 +149,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 83
+          "value": 84
         }
       }
     ]
@@ -164,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "wen_atk2"
+    "value": "wen_frcatk1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "wen_atk2"
+    "value": "wen_frcatk1"
   }
 }

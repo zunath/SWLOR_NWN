@@ -1,20 +1,96 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 227
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 10050
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
   },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
+  },
   "Cha": {
     "type": "byte",
-    "value": 10
+    "value": 40
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 71.0
+    "value": 450.0
   },
   "ClassList": {
     "type": "list",
@@ -32,13 +108,29 @@
       }
     ]
   },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 63
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 86
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 58
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 91
+  },
   "Comment": {
     "type": "cexostring",
     "value": ""
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -27
+    "value": 118
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2400
+    "value": 9600
   },
   "DecayTime": {
     "type": "dword",
@@ -62,13 +154,11 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "When the endless swarms of Sith ships and troops do not suffice, it becomes necessary to abandon old military doctrines and adopt something new. Imperial scientists and engineers have begun to compile the newest advancements in military technology in these combat droids. Standing tall, with thick durasteel plating, shield generators and devastating weaponry, they have proven more than capable of breaking any stalemate the Sith have encountered in their conquests."
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 36
   },
   "Disarmable": {
     "type": "byte",
@@ -78,17 +168,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmbot006"
+          "value": "vnpcasorc4"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcmplot"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vkorrdunhvyskin"
+          "value": "vnpcsplot"
         }
       }
     ]
@@ -125,21 +222,56 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1788
+          "value": 1835
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1614
+          "value": 1733
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1482
+          "value": 1726
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1353
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1832
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1366
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1844
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1242
         }
       },
       {
@@ -176,20 +308,13 @@
           "type": "word",
           "value": 46
         }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1785
-        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Imperial Prototype Warform"
+      "0": "Dark Lord"
     }
   },
   "fortbonus": {
@@ -206,11 +331,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2400
+    "value": 9600
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 60
   },
   "Interruptable": {
     "type": "byte",
@@ -240,7 +365,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3000
+    "value": 10000
   },
   "NaturalAC": {
     "type": "byte",
@@ -252,11 +377,11 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 155
+    "value": 38
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 9
+    "value": 10
   },
   "Phenotype": {
     "type": "int",
@@ -268,11 +393,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 356
+    "value": 581
   },
   "Race": {
     "type": "byte",
-    "value": 167
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -533,7 +658,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 49
+    "value": 931
   },
   "SpecAbilityList": {
     "type": "list",
@@ -545,7 +670,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 50
   },
   "Subrace": {
     "type": "cexostring",
@@ -553,7 +678,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ImperialPrototypeWarform"
+    "value": "DarkLord"
   },
   "Tail_New": {
     "type": "dword",
@@ -565,151 +690,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vkorrdunwarform"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_GEAR,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_GEAR,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_GEAR,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_RESOURCES,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_5"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_RESOURCES,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_6"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_FORTRESS_RESOURCES,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_7"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_MASTER_RESOURCE,66,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_8"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_MASTER_RECIPE,33,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_9"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "KORRIBAN_LORD_KEY,100,1"
-        }
-      }
-    ]
+    "value": "vnpcdarklord"
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -721,6 +706,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 26
+    "value": 60
   }
 }

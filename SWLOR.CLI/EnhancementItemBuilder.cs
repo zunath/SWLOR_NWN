@@ -49,7 +49,7 @@ namespace SWLOR.CLI
             { "HP", 8 },
             { "Recast Reduction", 27 },
             { "STM", 10 },
-            { "Attack Bonus", 26 },
+            { "Accuracy", 26 },
             { "DMG - Physical", 18 },
             { "DMG - Force", 19 },
             { "DMG - Poison", 21 },
@@ -79,7 +79,9 @@ namespace SWLOR.CLI
             { "Shield Recharge Rate", 49 },
             { "Thermal Damage", 51 },
             { "Thermal Defense", 55 },
-            { "Module Bonus", 45 }
+            { "Agility", 58 },
+            { "Attack", 83 },
+            { "Force Attack", 84 }
         };
 
         private readonly Dictionary<int, int> _levelToTier = new()

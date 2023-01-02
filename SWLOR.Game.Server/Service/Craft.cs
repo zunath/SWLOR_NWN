@@ -508,6 +508,10 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Agility, amount);
                 case 82: // Food Bonus - Social
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
+                case 83: // Attack
+                    return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
+                case 84: // Force Attack
+                    return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
 
             }
 

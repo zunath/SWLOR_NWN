@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - Attack Bonus II"
+      "0": "Armor Enhancement - Accuracy II"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 16
+    "value": 216
   },
   "PaletteID": {
     "type": "byte",
@@ -59,6 +59,37 @@
   "PropertiesList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 101
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 26
+        }
+      },
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -120,37 +151,6 @@
           "type": "word",
           "value": 0
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 102
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 83
-        }
       }
     ]
   },
@@ -164,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "wen_atk2"
+    "value": "aen_acc2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "wen_atk2"
+    "value": "aen_acc2"
   }
 }

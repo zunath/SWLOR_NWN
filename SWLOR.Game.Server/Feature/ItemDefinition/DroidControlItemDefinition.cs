@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -20,6 +21,38 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             return _builder.Build();
         }
 
+        private static readonly SkillType[] _skillsUsedForAverages =
+        {
+            SkillType.OneHanded,
+            SkillType.TwoHanded,
+            SkillType.MartialArts,
+            SkillType.Ranged,
+            SkillType.Force,
+            SkillType.Devices,
+            SkillType.FirstAid
+        };
+
+        private int GetAverageSkillLevel(uint player)
+        {
+            if (!GetIsPC(player))
+                return 50;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var skillLevel = 0;
+            foreach (var skill in _skillsUsedForAverages)
+            {
+                var rank = dbPlayer.Skills[skill].Rank;
+                if (rank > skillLevel)
+                    skillLevel = rank;
+            }
+
+            skillLevel += dbPlayer.Skills[SkillType.Armor].Rank;
+            
+            return (int)(skillLevel / 2f);
+        }
+
         private void DroidControlUnit()
         {
             _builder.Create("droid_control")
@@ -28,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var droid = Droid.GetDroid(user);
+                    var droidDetails = Droid.LoadDroidDetails(item);
                     if (Space.IsPlayerInSpaceMode(user))
                     {
                         return "Droids cannot be activated or adjusted while in space.";
@@ -47,6 +81,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         {
                             return "Only one droid may be activated at a time.";
                         }
+
+                        var averageLevel = GetAverageSkillLevel(user);
+                        var requiredLevel = droidDetails.Tier * 10 - 10;
+
+                        if (averageLevel < requiredLevel)
+                        {
+                            return $"Average combat level requirement not met. (Required: {requiredLevel}, Your Average: {averageLevel})";
+                        }
                     }
                     // Reprogramming (not subject to cooldown)
                     else if (itemPropertyIndex == 1)
@@ -56,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var droidDetails = Droid.LoadDroidDetails(item);
                         var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Programming);
 
                         if (perkLevel < droidDetails.Tier)

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 50
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 516
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -30,27 +30,33 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - Attack Bonus II"
+      "0": "Autoblaster"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 16
+    "value": 11
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 32
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 11
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 59
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +89,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -98,7 +104,7 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 44
+          "value": 34
         },
         "CostValue": {
           "type": "word",
@@ -114,42 +120,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 2
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 102
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 83
+          "value": 1
         }
       }
     ]
@@ -164,10 +139,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "wen_atk2"
+    "value": "Autoblaster"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "wen_atk2"
+    "value": "vkorrdunrautobls"
   }
 }

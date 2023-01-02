@@ -1722,5 +1722,68 @@ namespace SWLOR.Game.Server.Service
 
             return amount;
         }
+
+        /// <summary>
+        /// Stores an NPC's STM and FP as local variables.
+        /// Also load their HP per their skin, if specified.
+        /// </summary>
+        public static void LoadNPCStats()
+        {
+            var self = OBJECT_SELF;
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+
+            var maxHP = 0;
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
+                {
+                    maxHP += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            if (maxHP > 30000)
+                maxHP = 30000;
+
+            if (maxHP > 0)
+            {
+                ObjectPlugin.SetMaxHitPoints(self, maxHP);
+                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+            }
+
+            SetLocalInt(self, "FP", GetMaxFP(self));
+            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Restores an NPC's STM and FP.
+        /// </summary>
+        public static void RestoreNPCStats(bool outOfCombatRegen)
+        {
+            var self = OBJECT_SELF;
+            var maxFP = Stat.GetMaxFP(self);
+            var maxSTM = Stat.GetMaxStamina(self);
+            var fp = GetLocalInt(self, "FP") + 1;
+            var stm = GetLocalInt(self, "STAMINA") + 1;
+
+            if (fp > maxFP)
+                fp = maxFP;
+            if (stm > maxSTM)
+                stm = maxSTM;
+
+            SetLocalInt(self, "FP", fp);
+            SetLocalInt(self, "STAMINA", stm);
+
+            if (outOfCombatRegen)
+            {
+                // If out of combat - restore HP at 10% per tick.
+                if (!GetIsInCombat(self) &&
+                    !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
+                    GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+                {
+                    var hpToHeal = GetMaxHitPoints(self) * 0.1f;
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
+                }
+            }
+        }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
@@ -31,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureHeartbeat()
         {
             ExecuteScript("crea_hb_bef", OBJECT_SELF);
-            RestoreCreatureStats();
+            Stat.RestoreNPCStats(true);
             ProcessFlags();
             AttackHighestEnmityTarget();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
@@ -137,7 +135,7 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureSpawn()
         {
             ExecuteScript("crea_spawn_bef", OBJECT_SELF);
-            LoadCreatureStats();
+            Stat.LoadNPCStats();
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
@@ -320,6 +318,7 @@ namespace SWLOR.Game.Server.Service
                     ClearAllActions();
                     ActionAttack(target);
                 }
+                SetLocalInt(creature, StickyTargetRounds, rounds);
             }
             // Perk ability usage
             else
@@ -329,6 +328,9 @@ namespace SWLOR.Game.Server.Service
                     allies = new HashSet<uint>();
                 }
                 allies.Add(creature);
+
+                if(!GetIsObjectValid(target))
+                    target = GetAttemptedAttackTarget();
 
                 var aiDefinition = _aiDefinitions[aiType];
                 aiDefinition.PreProcessAI(creature, target, allies);
@@ -385,37 +387,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and FP as local variables.
-        /// Also load their HP per their skin, if specified.
-        /// </summary>
-        private static void LoadCreatureStats()
-        {
-            var self = OBJECT_SELF;
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
-
-            var maxHP = 0;
-            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-            {
-                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
-                {
-                    maxHP += GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            if (maxHP > 30000)
-                maxHP = 30000;
-
-            if (maxHP > 0)
-            {
-                ObjectPlugin.SetMaxHitPoints(self, maxHP);
-                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
-            }
-
-            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
-        }
-
-        /// <summary>
         /// When the creature spawns, add an AOE effect to the creature which will be used to process aggro ranges.
         /// </summary>
         private static void LoadAggroEffect()
@@ -442,35 +413,6 @@ namespace SWLOR.Game.Server.Service
             var daze = GetLocalInt(OBJECT_SELF, "DAZE");
             if (daze > 0) 
                 ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
-        }
-
-        /// <summary>
-        /// When a creature's heartbeat fires, restore their STM and FP.
-        /// </summary>
-        private static void RestoreCreatureStats()
-        {
-            var self = OBJECT_SELF;
-            var maxFP = Stat.GetMaxFP(self);
-            var maxSTM = Stat.GetMaxStamina(self);
-            var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA") + 1;
-
-            if (fp > maxFP)
-                fp = maxFP;
-            if (stm > maxSTM)
-                stm = maxSTM;
-
-            SetLocalInt(self, "FP", fp);
-            SetLocalInt(self, "STAMINA", stm);
-
-            // If out of combat - restore HP at 10% per tick.
-            if (!GetIsInCombat(self) &&
-                !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
-                GetCurrentHitPoints(self) < GetMaxHitPoints(self))
-            {
-                var hpToHeal = GetMaxHitPoints(self) * 0.1f;
-                ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
-            }
         }
 
         /// <summary>

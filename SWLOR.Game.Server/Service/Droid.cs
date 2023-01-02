@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Service
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var level = GetItemPropertyCostTableValue(ip);
 
-                    if(details.Perks.ContainsKey(perkType) && details.Perks[perkType] < level)
+                    if(!details.Perks.ContainsKey(perkType) || details.Perks[perkType] < level)
                         details.Perks[perkType] = level;
                 }
                 else if (type == ItemPropertyType.DroidPersonality)
@@ -585,7 +585,7 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnHeartbeat()
         {
             ExecuteScriptNWScript("x0_ch_hen_heart", OBJECT_SELF);
-
+            Stat.RestoreNPCStats(false);
         }
 
         [NWNEventHandler("droid_perception")]
@@ -622,6 +622,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SetIsDestroyable(true, false, false);
             }); 
+            Stat.LoadNPCStats();
         }
 
         [NWNEventHandler("droid_spellcast")]

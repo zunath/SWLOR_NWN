@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Ranged = $"Ranged: {_ranged}";
         }
 
-        private void AddPart(DroidPart part, uint item)
+        private void AddPart(DroidPartItemPropertyDetails part, uint item)
         {
             var assemblyLevel = Perk.GetEffectivePerkLevel(Player, PerkType.DroidAssembly);
 
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshStats();
         }
 
-        private void RemovePart(DroidPart part)
+        private void RemovePart(DroidPartItemPropertyDetails part)
         {
             switch (part.PartType)
             {
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         var item = ObjectPlugin.Deserialize(_cpuItem);
                         ObjectPlugin.AcquireItem(Player, item);
                         CPUResref = BlankTexture;
-                        var part = Droid.LoadDroidPart(item);
+                        var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                         RemovePart(part);
                     }
@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.CPU)
                     {
@@ -489,7 +489,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(_headItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     HeadResref = BlankTexture;
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -505,7 +505,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Head)
                     {
@@ -528,7 +528,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(_bodyItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     BodyResref = BlankTexture;
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Body)
                     {
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(_armsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     ArmsResref = BlankTexture;
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -583,7 +583,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Arms)
                     {
@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(_legsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     LegsResref = BlankTexture;
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -622,7 +622,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPart(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Legs)
                     {

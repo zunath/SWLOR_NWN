@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 var controller = Droid.GetControllerItem(creature);
-                var droidDetails = Droid.LoadDroidDetails(controller);
+                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
                 creaturePerks = droidDetails.Perks;
             }
 

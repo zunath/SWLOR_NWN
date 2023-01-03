@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Service.DroidService
 {
-    public class DroidPart
+    public class DroidPartItemPropertyDetails
     {
         public DroidPartItemPropertySubType PartType { get; set; }
         public int Tier { get; set; }
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int MartialArts { get; set; }
         public int Ranged { get; set; }
 
-        public DroidPart()
+        public DroidPartItemPropertyDetails()
         {
             PartType = DroidPartItemPropertySubType.Invalid;
         }

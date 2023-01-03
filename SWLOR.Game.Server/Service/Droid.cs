@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Service
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const float RecastDelaySeconds = 1800f;
 
+        /// <summary>
+        /// When the module loads, cache all relevant droid data into memory.
+        /// </summary>
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
@@ -170,6 +173,10 @@ namespace SWLOR.Game.Server.Service
             return GetLocalObject(droid, DroidControlItemVariable);
         }
 
+        /// <summary>
+        /// When a player uses a droid assembly terminal, displays the UI.
+        /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
+        /// </summary>
         [NWNEventHandler("droid_ass_used")]
         public static void UseDroidAssemblyTerminal()
         {
@@ -186,6 +193,9 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
+        /// <summary>
+        /// When a player leaves the server, any droids they have actives are despawned.
+        /// </summary>
         [NWNEventHandler("mod_exit")]
         public static void OnPlayerExit()
         {
@@ -193,6 +203,9 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        /// <summary>
+        /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
+        /// </summary>
         [NWNEventHandler("mod_acquire")]
         public static void OnAcquireItem()
         {
@@ -223,6 +236,9 @@ namespace SWLOR.Game.Server.Service
             UpdateDroidInventory(droid, item, true);
         }
 
+        /// <summary>
+        /// When a droid loses an item, it is removed from the persistent variable on the controller item.
+        /// </summary>
         [NWNEventHandler("mod_unacquire")]
         public static void OnLostItem()
         {
@@ -234,6 +250,9 @@ namespace SWLOR.Game.Server.Service
             UpdateDroidInventory(droid, item, false);
         }
 
+        /// <summary>
+        /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
+        /// </summary>
         [NWNEventHandler("item_eqp_bef")]
         public static void OnEquipItem()
         {
@@ -258,6 +277,9 @@ namespace SWLOR.Game.Server.Service
             SaveConstructedDroid(controller, constructedDroid);
         }
 
+        /// <summary>
+        /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
+        /// </summary>
         [NWNEventHandler("item_uneqp_bef")]
         public static void OnUnequipItem()
         {
@@ -267,18 +289,19 @@ namespace SWLOR.Game.Server.Service
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetControllerItem(droid);
+            var controller = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
-            var serializedInventory = GetLocalString(controlUnit, ConstructedDroidVariable);
-            var constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serializedInventory);
+            var constructedDroid = LoadConstructedDroid(controller);
 
             constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
             constructedDroid.EquippedItems.Remove(slot);
-
-            serializedInventory = JsonConvert.SerializeObject(constructedDroid);
-            SetLocalString(controlUnit, ConstructedDroidVariable, serializedInventory);
+            
+            SaveConstructedDroid(controller, constructedDroid);
         }
 
+        /// <summary>
+        /// When a player rests, any droids they have active also rest.
+        /// </summary>
         [NWNEventHandler("rest_started")]
         public static void OnPlayerRest()
         {
@@ -293,7 +316,12 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public static DroidItemPropertyDetails LoadDroidDetails(uint controller)
+        /// <summary>
+        /// Loads item property details from a droid's controller item.
+        /// </summary>
+        /// <param name="controller">The controller item to read from.</param>
+        /// <returns>Droid item property details.</returns>
+        public static DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
         {
             var details = new DroidItemPropertyDetails();
             if (details.Tier < 1)
@@ -385,9 +413,14 @@ namespace SWLOR.Game.Server.Service
             return details;
         }
 
-        public static DroidPart LoadDroidPart(uint item)
+        /// <summary>
+        /// Loads item property details from a droid part item.
+        /// </summary>
+        /// <param name="item">The part item to read from</param>
+        /// <returns>Droid part item property details</returns>
+        public static DroidPartItemPropertyDetails LoadDroidPartItemPropertyDetails(uint item)
         {
-            var details = new DroidPart();
+            var details = new DroidPartItemPropertyDetails();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -456,6 +489,12 @@ namespace SWLOR.Game.Server.Service
             return details;
         }
 
+        /// <summary>
+        /// Retrieves the droid assigned to a player.
+        /// Returns OBJECT_INVALID if a droid is not assigned.
+        /// </summary>
+        /// <param name="player">The player to retrieve from</param>
+        /// <returns>The droid object or OBJECT_INVALID.</returns>
         public static uint GetDroid(uint player)
         {
             var droid = GetLocalObject(player, DroidObjectVariable);
@@ -463,9 +502,14 @@ namespace SWLOR.Game.Server.Service
             return droid;
         }
 
-        public static void SpawnDroid(uint player, uint item)
+        /// <summary>
+        /// Spawns a droid NPC based on details found on the controller item.
+        /// </summary>
+        /// <param name="player">The player spawning the droid.</param>
+        /// <param name="controller">The controller item</param>
+        public static void SpawnDroid(uint player, uint controller)
         {
-            var details = LoadDroidDetails(item);
+            var details = LoadDroidItemPropertyDetails(controller);
 
             var droid = CreateObject(ObjectType.Creature, DroidResref, GetLocation(player), true);
             SetLocalBool(droid, DroidIsSpawning, true);
@@ -531,33 +575,29 @@ namespace SWLOR.Game.Server.Service
 
             AddHenchman(player, droid);
             SetLocalObject(player, DroidObjectVariable, droid);
-            SetLocalObject(player, DroidControlItemVariable, item);
-            SetLocalObject(droid, DroidControlItemVariable, item);
+            SetLocalObject(player, DroidControlItemVariable, controller);
+            SetLocalObject(droid, DroidControlItemVariable, controller);
 
             // Inventory / Equipment
-            var serializedInventory = GetLocalString(item, ConstructedDroidVariable);
-            if (!string.IsNullOrWhiteSpace(serializedInventory))
+            var constructedDroid = LoadConstructedDroid(controller);
+
+            foreach (var (slot, serialized) in constructedDroid.EquippedItems)
             {
-                var constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serializedInventory);
+                var deserialized = ObjectPlugin.Deserialize(serialized);
+                ObjectPlugin.AcquireItem(droid, deserialized);
+                SetDroppableFlag(deserialized, false);
 
-                foreach (var (slot, serialized) in constructedDroid.EquippedItems)
-                {
-                    var deserialized = ObjectPlugin.Deserialize(serialized);
-                    ObjectPlugin.AcquireItem(droid, deserialized);
-                    SetDroppableFlag(deserialized, false);
+                AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
+            }
 
-                    AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
-                }
+            foreach (var (id, serialized) in constructedDroid.Inventory)
+            {
+                var deserialized = ObjectPlugin.Deserialize(serialized);
+                if(!GetIsObjectValid(deserialized))
+                    continue;
 
-                foreach (var (id, serialized) in constructedDroid.Inventory)
-                {
-                    var deserialized = ObjectPlugin.Deserialize(serialized);
-                    if(!GetIsObjectValid(deserialized))
-                        continue;
-
-                    ObjectPlugin.AcquireItem(droid, deserialized);
-                    SetDroppableFlag(deserialized, false);
-                }
+                ObjectPlugin.AcquireItem(droid, deserialized);
+                SetDroppableFlag(deserialized, false);
             }
 
             // Ensure the spawn script gets called as it normally gets skipped
@@ -587,7 +627,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = GetControllerItem(droid);
-            var droidDetails = LoadDroidDetails(item);
+            var droidDetails = LoadDroidItemPropertyDetails(item);
             var personality = _droidPersonalities[droidDetails.PersonalityType];
 
             AssignCommand(droid, () =>
@@ -601,6 +641,9 @@ namespace SWLOR.Game.Server.Service
             Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
         }
 
+        /// <summary>
+        /// When a player enters space or forcefully removes a droid from the party, the droid gets despawned.
+        /// </summary>
         [NWNEventHandler("space_enter")]
         [NWNEventHandler("asso_rem_bef")]
         public static void RemoveAssociate()
@@ -636,6 +679,12 @@ namespace SWLOR.Game.Server.Service
             SaveConstructedDroid(controller, constructedDroid);
         }
 
+        /// <summary>
+        /// Loads constructed droid information stored as a local variable on the controller item.
+        /// If this doesn't exist, a new object will be returned.
+        /// </summary>
+        /// <param name="controller">The controller item to read from.</param>
+        /// <returns>A ConstructedDroid object.</returns>
         public static ConstructedDroid LoadConstructedDroid(uint controller)
         {
             var constructedDroid = new ConstructedDroid();
@@ -648,12 +697,17 @@ namespace SWLOR.Game.Server.Service
             return constructedDroid;
         }
 
+        /// <summary>
+        /// Saves constructed droid information onto a local variable on the controller item.
+        /// </summary>
+        /// <param name="controller">The controller item to write to.</param>
+        /// <param name="constructedDroid">The constructed droid data to save.</param>
         public static void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
         {
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
-
+        
         [NWNEventHandler("droid_blocked")]
         public static void DroidOnBlocked()
         {
@@ -692,7 +746,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScriptNWScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
-            var droidDetail = LoadDroidDetails(item);
+            var droidDetail = LoadDroidItemPropertyDetails(item);
             var personality = _droidPersonalities[droidDetail.PersonalityType];
 
             ActionSpeakString(personality.DeathPhrase());

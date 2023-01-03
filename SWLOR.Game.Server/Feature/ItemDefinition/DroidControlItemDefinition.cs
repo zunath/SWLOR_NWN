@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var droid = Droid.GetDroid(user);
-                    var droidDetails = Droid.LoadDroidDetails(item);
+                    var droidDetails = Droid.LoadDroidItemPropertyDetails(item);
                     if (Space.IsPlayerInSpaceMode(user))
                     {
                         return "Droids cannot be activated or adjusted while in space.";

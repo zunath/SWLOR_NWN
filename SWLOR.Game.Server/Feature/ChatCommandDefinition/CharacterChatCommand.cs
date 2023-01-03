@@ -6,6 +6,7 @@ using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -324,7 +325,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         uiTarget = player;
                         player = GetMaster(player);
                     }
-                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, null, OBJECT_INVALID, uiTarget);
+
+                    var payload = new AppearanceEditorPayload(user);
+                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
                 });
         }
 

@@ -12,11 +12,12 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AppearanceEditorViewModel :
-        GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>,
+        GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
         public const string PartialElement = "PARTIAL_VIEW";
@@ -30,6 +31,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
+
+        private uint _target;
 
         [NWNEventHandler("mod_load")]
         public static void LoadAppearances()
@@ -356,8 +359,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DoesNotHaveItemEquipped = !hasItemEquipped;
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
+            _target = Player;
+            if (GetIsObjectValid(initialPayload.Target))
+            {
+                _target = initialPayload.Target;
+            }
+
             ChangePartialView(PartialElement, EditorPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
@@ -380,7 +389,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
 
-            if (GetIsPC(Player) && !GetIsDM(Player) && !GetIsDMPossessed(Player))
+            if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
             {
                 IsSettingsVisible = true;
                 WatchOnClient(model => model.ShowHelmet);
@@ -556,23 +565,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
-                return GetItemInSlot(InventorySlot.Chest, Player);
+                return GetItemInSlot(InventorySlot.Chest, _target);
             }
             else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
-                return GetItemInSlot(InventorySlot.Head, Player);
+                return GetItemInSlot(InventorySlot.Head, _target);
             }
             else if (SelectedItemTypeIndex == 2) // 2 = Cloak
             {
-                return GetItemInSlot(InventorySlot.Cloak, Player);
+                return GetItemInSlot(InventorySlot.Cloak, _target);
             }
             else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
             {
-                return GetItemInSlot(InventorySlot.RightHand, Player);
+                return GetItemInSlot(InventorySlot.RightHand, _target);
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return GetItemInSlot(InventorySlot.LeftHand, Player);
+                return GetItemInSlot(InventorySlot.LeftHand, _target);
             }
 
             return OBJECT_INVALID;
@@ -580,12 +589,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyParts()
         {
-            var appearanceType = GetAppearanceType(Player);
-            var gender = GetGender(Player);
+            var appearanceType = GetAppearanceType(_target);
+            var gender = GetGender(_target);
 
             if (!_racialAppearances.ContainsKey(appearanceType))
             {
-                Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);
+                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
@@ -606,63 +615,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             break;
                     }
 
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Head, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Head, _target);
                     break;
                 case 1: // Torso
                     partIds = appearance.Torsos;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Torso, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Torso, _target);
                     break;
                 case 2: // Pelvis
                     partIds = appearance.Pelvis;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Pelvis, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Pelvis, _target);
                     break;
                 case 3: // Right Bicep
                     partIds = appearance.RightBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightBicep, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightBicep, _target);
                     break;
                 case 4: // Right Forearm
                     partIds = appearance.RightForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightForearm, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightForearm, _target);
                     break;
                 case 5: // Right Hand
                     partIds = appearance.RightHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightHand, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightHand, _target);
                     break;
                 case 6: // Right Thigh
                     partIds = appearance.RightThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightThigh, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightThigh, _target);
                     break;
                 case 7: // Right Shin
                     partIds = appearance.RightShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, _target);
                     break;
                 case 8: // Right Foot
                     partIds = appearance.RightFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightFoot, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightFoot, _target);
                     break;
                 case 9: // Left Bicep
                     partIds = appearance.LeftBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, _target);
                     break;
                 case 10: // Left Forearm
                     partIds = appearance.LeftForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, _target);
                     break;
                 case 11: // Left Hand
                     partIds = appearance.LeftHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, _target);
                     break;
                 case 12: // Left Thigh
                     partIds = appearance.LeftThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, _target);
                     break;
                 case 13: // Left Shin
                     partIds = appearance.LeftShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, _target);
                     break;
                 case 14: // Left Foot
                     partIds = appearance.LeftFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftFoot, Player);
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftFoot, _target);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -678,10 +687,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
-            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+            if (GetIsDM(_target) || GetIsDMPossessed(_target))
                 return;
 
-            var playerId = GetObjectUUID(Player);
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
@@ -699,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int selectedPartId;
             var item = GetItem();
             var type = GetBaseItemType(item);
-            var appearanceType = GetAppearanceType(Player);
+            var appearanceType = GetAppearanceType(_target);
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
@@ -883,7 +892,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEquipmentSelected = false;
             IsSettingsSelected = true;
 
-            var playerId = GetObjectUUID(Player);
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
@@ -893,34 +902,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnDecreaseAppearanceScale() => () =>
         {
-            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
             const float MinimumScale = 0.85f;
 
             if (scale - Increment < MinimumScale)
             {
-                SendMessageToPC(Player, "You cannot decrease your height any further.");
+                SendMessageToPC(_target, "You cannot decrease your height any further.");
             }
             else
             {
-                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - Increment);
-                SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
+                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment);
+                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
         {
-            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
             const float MaximumScale = 1.15f;
 
             if (scale + Increment > MaximumScale)
             {
-                SendMessageToPC(Player, "You cannot increase your height any further.");
+                SendMessageToPC(_target, "You cannot increase your height any further.");
             }
             else
             {
-                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + Increment);
-                SendMessageToPC(Player, $"Height: {GetObjectVisualTransform(Player, ObjectVisualTransform.Scale)}");
+                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment);
+                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
 
@@ -1034,7 +1043,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(item);
             }
 
-            AssignCommand(Player, () =>
+            AssignCommand(_target, () =>
             {
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
@@ -1086,7 +1095,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(item);
             }
 
-            AssignCommand(Player, () =>
+            AssignCommand(_target, () =>
             {
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
@@ -1101,7 +1110,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (DoesNotHaveItemEquipped)
                 return;
 
-            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100.0f;
+            var scale = GetPlayerDeviceProperty(_target, PlayerDevicePropertyType.GuiScale) / 100.0f;
             var payload = NuiGetEventPayload();
             var mousePosition = JsonObjectGet(payload, "mouse_pos");
             var jsonX = JsonObjectGet(mousePosition, "x");
@@ -1131,16 +1140,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 switch (SelectedColorCategoryIndex)
                 {
                     case 0: // 0 = Skin
-                        SetColor(Player, ColorChannel.Skin, colorId);
+                        SetColor(_target, ColorChannel.Skin, colorId);
                         break;
                     case 1: //  1 = Hair
-                        SetColor(Player, ColorChannel.Hair, colorId);
+                        SetColor(_target, ColorChannel.Hair, colorId);
                         break;
                     case 2: // 2 = Tattoo 1
-                        SetColor(Player, ColorChannel.Tattoo1, colorId);
+                        SetColor(_target, ColorChannel.Tattoo1, colorId);
                         break;
                     case 3: // 3 = Tattoo 2
-                        SetColor(Player, ColorChannel.Tattoo2, colorId);
+                        SetColor(_target, ColorChannel.Tattoo2, colorId);
                         break;
                 }
             }
@@ -1173,8 +1182,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyPart()
         {
-            var appearanceType = GetAppearanceType(Player);
-            var gender = GetGender(Player);
+            var appearanceType = GetAppearanceType(_target);
+            var gender = GetGender(_target);
             var appearance = _racialAppearances[appearanceType];
 
             switch (SelectedPartCategoryIndex)
@@ -1183,54 +1192,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     switch (gender)
                     {
                         case Gender.Male:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], _target);
                             break;
                         default:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], _target);
                             break;
                     }
                     break;
                 case 1: // Torso
-                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], _target);
                     break;
                 case 2: // Pelvis
-                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], _target);
                     break;
                 case 3: // Right Bicep
-                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], _target);
                     break;
                 case 4: // Right Forearm
-                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], _target);
                     break;
                 case 5: // Right Hand
-                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], _target);
                     break;
                 case 6: // Right Thigh
-                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], _target);
                     break;
                 case 7: // Right Shin
-                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], _target);
                     break;
                 case 8: // Right Foot
-                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], _target);
                     break;
                 case 9: // Left Bicep
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _target);
                     break;
                 case 10: // Left Forearm
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], _target);
                     break;
                 case 11: // Left Hand
-                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], _target);
                     break;
                 case 12: // Left Thigh
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], _target);
                     break;
                 case 13: // Left Shin
-                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], _target);
                     break;
                 case 14: // Left Foot
-                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], _target);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1244,7 +1253,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             var item = GetItem();
             var itemType = GetBaseItemType(item);
-            var appearanceType = GetAppearanceType(Player);
+            var appearanceType = GetAppearanceType(_target);
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
@@ -1407,46 +1416,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickOutfits() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Outfits);
+            Gui.TogglePlayerWindow(_target, GuiWindowType.Outfits);
         };
 
         public Action OnCloseWindow() => () =>
         {
-            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+            if (GetIsDM(_target) || GetIsDMPossessed(_target))
                 return;
 
-            var playerId = GetObjectUUID(Player);
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+            SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
 
         public Action OnClickSaveSettings() => () =>
         {
-            var playerId = GetObjectUUID(Player);
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;
 
-            var newHeight = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             dbPlayer.AppearanceScale = newHeight;
 
             DB.Set(dbPlayer);
-            SendMessageToPC(Player, ColorToken.Green("Appearance settings saved successfully."));
+            SendMessageToPC(_target, ColorToken.Green("Appearance settings saved successfully."));
 
             UpdateArmorDisplay();
         };
 
         private void UpdateArmorDisplay()
         {
-            var helmet = GetItemInSlot(InventorySlot.Head, Player);
+            var helmet = GetItemInSlot(InventorySlot.Head, _target);
             if (GetIsObjectValid(helmet))
             {
                 SetHiddenWhenEquipped(helmet, !ShowHelmet);
             }
 
-            var cloak = GetItemInSlot(InventorySlot.Cloak, Player);
+            var cloak = GetItemInSlot(InventorySlot.Cloak, _target);
             if (GetIsObjectValid(cloak))
             {
                 SetHiddenWhenEquipped(cloak, !ShowCloak);

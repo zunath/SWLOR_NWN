@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -120,7 +121,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     // Reprogramming
                     else if (itemPropertyIndex == 1)
                     {
-                        Gui.TogglePlayerWindow(user, GuiWindowType.DroidProgramming); // todo: Pass in item to payload.
+                        var payload = new DroidProgrammingPayload(item);
+                        Gui.TogglePlayerWindow(user, GuiWindowType.DroidProgramming, payload);
                     }
                 });
         }

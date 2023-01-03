@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {
-    public class DroidDetails
+    public class DroidItemPropertyDetails
     {
         public string CustomName { get; set; }
         public int Tier { get; set; }
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public Dictionary<PerkType, int> Perks { get; set; }
 
-        public DroidDetails()
+        public DroidItemPropertyDetails()
         {
             CustomName = string.Empty;
             Perks = new Dictionary<PerkType, int>();

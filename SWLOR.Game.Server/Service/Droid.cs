@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
@@ -24,9 +25,10 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
         public const string DroidResref = "pc_droid";
+        public const string DroidControlItemResref = "droid_control";
         private const string DroidObjectVariable = "ACTIVE_DROID";
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
-        private const string DroidInventory = "ACTIVE_DROID_INVENTORY";
+        private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const float RecastDelaySeconds = 1800f;
 
@@ -175,6 +177,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            if (Perk.GetEffectivePerkLevel(player, PerkType.DroidAssembly) <= 0)
+            {
+                SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
+                return;
+            }
+
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
@@ -235,21 +243,19 @@ namespace SWLOR.Game.Server.Service
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetControllerItem(droid);
+            var controller = GetControllerItem(droid);
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
-            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
-            var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+            var constructedDroid = LoadConstructedDroid(controller);
 
             // Equipment won't be in the inventory but it does get equipped on spawn-in.
             // Avoid proceeding in this situation.
-            if (!inventory.Inventory.ContainsKey(itemId))
+            if (!constructedDroid.Inventory.ContainsKey(itemId))
                 return;
 
-            inventory.EquippedItems[slot] = inventory.Inventory[itemId];
-            inventory.Inventory.Remove(itemId);
-
-            serializedInventory = JsonConvert.SerializeObject(inventory);
-            SetLocalString(controlUnit, DroidInventory, serializedInventory);
+            constructedDroid.EquippedItems[slot] = constructedDroid.Inventory[itemId];
+            constructedDroid.Inventory.Remove(itemId);
+            
+            SaveConstructedDroid(controller, constructedDroid);
         }
 
         [NWNEventHandler("item_uneqp_bef")]
@@ -263,14 +269,14 @@ namespace SWLOR.Game.Server.Service
             var itemId = GetObjectUUID(item);
             var controlUnit = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
-            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
-            var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+            var serializedInventory = GetLocalString(controlUnit, ConstructedDroidVariable);
+            var constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serializedInventory);
 
-            inventory.Inventory[itemId] = inventory.EquippedItems[slot];
-            inventory.EquippedItems.Remove(slot);
+            constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
+            constructedDroid.EquippedItems.Remove(slot);
 
-            serializedInventory = JsonConvert.SerializeObject(inventory);
-            SetLocalString(controlUnit, DroidInventory, serializedInventory);
+            serializedInventory = JsonConvert.SerializeObject(constructedDroid);
+            SetLocalString(controlUnit, ConstructedDroidVariable, serializedInventory);
         }
 
         [NWNEventHandler("rest_started")]
@@ -287,9 +293,9 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public static DroidDetails LoadDroidDetails(uint item)
+        public static DroidItemPropertyDetails LoadDroidDetails(uint controller)
         {
-            var details = new DroidDetails();
+            var details = new DroidItemPropertyDetails();
             if (details.Tier < 1)
                 details.Tier = 1;
             else if (details.Tier > 5)
@@ -298,7 +304,7 @@ namespace SWLOR.Game.Server.Service
             details.Perks = _defaultPerksByTier[details.Tier]
                 .ToDictionary(x => x.Key, y => y.Value);
             
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            for (var ip = GetFirstItemProperty(controller); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(controller))
             {
                 var type = GetItemPropertyType(ip);
 
@@ -371,6 +377,80 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            details.Level = _levelsByTier[details.Tier];
+
+            var constructedDroid = LoadConstructedDroid(controller);
+            details.CustomName = constructedDroid.Name;
+
+            return details;
+        }
+
+        public static DroidPart LoadDroidPart(uint item)
+        {
+            var details = new DroidPart();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+
+                if (type == ItemPropertyType.DroidStat)
+                {
+                    var subType = (DroidStatSubType)GetItemPropertySubType(ip);
+                    var value = GetItemPropertyCostTableValue(ip);
+
+                    switch (subType)
+                    {
+                        case DroidStatSubType.Tier:
+                            details.Tier = value < 1 ? 1 : value;
+                            break;
+                        case DroidStatSubType.AISlots:
+                            details.AISlots += value;
+                            break;
+                        case DroidStatSubType.HP:
+                            details.HP += value;
+                            break;
+                        case DroidStatSubType.STM:
+                            details.STM += value;
+                            break;
+                        case DroidStatSubType.MGT:
+                            details.MGT += value;
+                            break;
+                        case DroidStatSubType.PER:
+                            details.PER += value;
+                            break;
+                        case DroidStatSubType.VIT:
+                            details.VIT += value;
+                            break;
+                        case DroidStatSubType.WIL:
+                            details.WIL += value;
+                            break;
+                        case DroidStatSubType.AGI:
+                            details.AGI += value;
+                            break;
+                        case DroidStatSubType.SOC:
+                            details.SOC += value;
+                            break;
+                        case DroidStatSubType.OneHanded:
+                            details.OneHanded += value;
+                            break;
+                        case DroidStatSubType.TwoHanded:
+                            details.TwoHanded += value;
+                            break;
+                        case DroidStatSubType.MartialArts:
+                            details.MartialArts += value;
+                            break;
+                        case DroidStatSubType.Ranged:
+                            details.Ranged += value;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                else if (type == ItemPropertyType.DroidPart)
+                {
+                    details.PartType = (DroidPartItemPropertySubType)GetItemPropertySubType(ip);
+                }
+            }
             details.Level = _levelsByTier[details.Tier];
 
             return details;
@@ -455,12 +535,12 @@ namespace SWLOR.Game.Server.Service
             SetLocalObject(droid, DroidControlItemVariable, item);
 
             // Inventory / Equipment
-            var serializedInventory = GetLocalString(item, DroidInventory);
+            var serializedInventory = GetLocalString(item, ConstructedDroidVariable);
             if (!string.IsNullOrWhiteSpace(serializedInventory))
             {
-                var inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
+                var constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serializedInventory);
 
-                foreach (var (slot, serialized) in inventory.EquippedItems)
+                foreach (var (slot, serialized) in constructedDroid.EquippedItems)
                 {
                     var deserialized = ObjectPlugin.Deserialize(serialized);
                     ObjectPlugin.AcquireItem(droid, deserialized);
@@ -469,7 +549,7 @@ namespace SWLOR.Game.Server.Service
                     AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
                 }
 
-                foreach (var (id, serialized) in inventory.Inventory)
+                foreach (var (id, serialized) in constructedDroid.Inventory)
                 {
                     var deserialized = ObjectPlugin.Deserialize(serialized);
                     if(!GetIsObjectValid(deserialized))
@@ -541,25 +621,37 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var itemId = GetObjectUUID(item);
-            var controlUnit = GetControllerItem(droid);
-            var serializedInventory = GetLocalString(controlUnit, DroidInventory);
-            var inventory = new DroidInventory();
-            if (!string.IsNullOrWhiteSpace(serializedInventory))
-            {
-                inventory = JsonConvert.DeserializeObject<DroidInventory>(serializedInventory);
-            }
+            var controller = GetControllerItem(droid);
+            var constructedDroid = LoadConstructedDroid(controller);
 
             if (wasAcquired)
             {
-                inventory.Inventory[itemId] = ObjectPlugin.Serialize(item);
+                constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
             }
             else
             {
-                inventory.Inventory.Remove(itemId);
+                constructedDroid.Inventory.Remove(itemId);
             }
 
-            serializedInventory = JsonConvert.SerializeObject(inventory);
-            SetLocalString(controlUnit, DroidInventory, serializedInventory);
+            SaveConstructedDroid(controller, constructedDroid);
+        }
+
+        public static ConstructedDroid LoadConstructedDroid(uint controller)
+        {
+            var constructedDroid = new ConstructedDroid();
+            var serialized = GetLocalString(controller, ConstructedDroidVariable);
+            if (!string.IsNullOrWhiteSpace(serialized))
+            {
+                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
+            }
+
+            return constructedDroid;
+        }
+
+        public static void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
+        {
+            var serialized = JsonConvert.SerializeObject(constructedDroid);
+            SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
 
         [NWNEventHandler("droid_blocked")]

@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using NRediSearch.Aggregation;
+using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -15,260 +17,278 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 480f, 540f)
                 .SetTitle("Droid Assembly")
-
-                .DefinePartialView(DroidAssemblyViewModel.CombatPartsView, group =>
-                {
-                    group.AddColumn(col =>
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.HeadIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Head")
-                                .BindOnClicked(model => model.OnClickHead());
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.LeftHandIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Left Hand")
-                                .BindOnClicked(model => model.OnClickLeftHand());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.LeftArmIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Left Arm")
-                                .BindOnClicked(model => model.OnClickLeftArm());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.BodyIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Body")
-                                .BindOnClicked(model => model.OnClickBody());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.RightArmIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Right Arm")
-                                .BindOnClicked(model => model.OnClickRightArm());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.RightHandIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Right Hand")
-                                .BindOnClicked(model => model.OnClickRightHand());
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.LeftLegIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Left Leg")
-                                .BindOnClicked(model => model.OnClickLeftLeg());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.RightLegIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Right Leg")
-                                .BindOnClicked(model => model.OnClickRightLeg());
-                            row.AddSpacer();
-                        });
-
-                    });
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.AstromechPartsView, group =>
-                {
-
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.PartsSelectionView, group =>
-                {
-                    group.AddColumn(col =>
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.ChassisIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("Chassis")
-                                .BindOnClicked(model => model.OnClickChassis());
-                            row.AddButtonImage()
-                                .BindImageResref(model => model.CPUIcon)
-                                .SetHeight(64f)
-                                .SetWidth(64f)
-                                .SetTooltip("CPU")
-                                .BindOnClicked(model => model.OnClickCPU());
-
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddPartialView(DroidAssemblyViewModel.PartsPartialName);
-                        });
-                    });
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.StatsView, group =>
-                {
-                    group.AddColumn(col =>
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddTextEdit()
-                                .SetPlaceholder("Name")
-                                .BindValue(model => model.Name);
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddLabel()
-                                .SetText("HP:");
-
-                            row.AddLabel()
-                                .BindText(model => model.HP);
-
-                            row.AddLabel()
-                                .SetText("STM:");
-
-                            row.AddLabel()
-                                .BindText(model => model.STM);
-
-                            row.AddLabel()
-                                .SetText("Attack:");
-
-                            row.AddLabel()
-                                .BindText(model => model.Attack);
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddLabel()
-                                .SetText("Defense:");
-
-                            row.AddLabel()
-                                .BindText(model => model.Defense);
-
-                            row.AddLabel()
-                                .SetText("F Defense:");
-
-                            row.AddLabel()
-                                .BindText(model => model.ForceDefense);
-
-                            row.AddLabel()
-                                .SetText("Recast Reduction:");
-
-                            row.AddLabel()
-                                .BindText(model => model.RecastReduction);
-                            row.AddSpacer();
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
-                            row.AddLabel()
-                                .SetText("Instructions:");
-
-                            row.AddLabel()
-                                .BindText(model => model.InstructionSlots);
-
-                            row.AddLabel()
-                                .SetText("Gambit Slots:");
-
-                            row.AddLabel()
-                                .BindText(model => model.GambitSlots);
-
-                            row.AddLabel()
-                                .SetText("Tier:");
-
-                            row.AddLabel()
-                                .BindText(model => model.Tier);
-                            row.AddSpacer();
-                        });
-
-                    });
-
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.DetailsView, group =>
-                {
-                    group.AddColumn(col =>
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddPartialView(DroidAssemblyViewModel.StatsPartialName);
-                        });
-                    });
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.InstructionsView, group =>
-                {
-
-                })
-
-                .DefinePartialView(DroidAssemblyViewModel.GambitsView, group =>
-                {
-
-                })
-
+                
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
+                        row.AddLabel()
+                            .BindText(model => model.Error)
+                            .SetColor(255, 0, 0)
+                            .SetHeight(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddSpacer();
+                        row.AddButton()
+                            .SetText("New Droid")
+                            .BindOnClicked(model => model.OnClickNewDroid())
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.ProcessNotStarted);
 
-                        row.AddToggleButton()
-                            .SetText("Parts")
-                            .SetHeight(64f)
-                            .BindOnClicked(model => model.OnClickParts())
-                            .BindIsToggled(model => model.IsPartsSelected);
-
-                        row.AddToggleButton()
-                            .SetText("Details")
-                            .SetHeight(64f)
-                            .BindOnClicked(model => model.OnClickDetails())
-                            .BindIsToggled(model => model.IsDetailsSelected);
-
-                        row.AddToggleButton()
-                            .SetText("Instructions")
-                            .SetHeight(64f)
-                            .BindOnClicked(model => model.OnClickInstructions())
-                            .BindIsToggled(model => model.IsInstructionsSelected);
-
-                        row.AddToggleButton()
-                            .SetText("Gambits")
-                            .SetHeight(64f)
-                            .BindOnClicked(model => model.OnClickGambits())
-                            .BindIsToggled(model => model.IsGambitsSelected);
-
+                        row.AddButton()
+                            .SetText("Reset")
+                            .BindOnClicked(model => model.OnClickReset())
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsBuildInProgress);
                         row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddPartialView(DroidAssemblyViewModel.ActivePartialName);
+                        row.AddTextEdit()
+                            .SetMaxLength(32)
+                            .BindValue(model => model.Name)
+                            .BindIsEnabled(model => model.IsBuildInProgress);
+
+                        row.AddComboBox()
+                            .AddOption("<Personality>", 0)
+                            .AddOption("Geeky", 1)
+                            .AddOption("Prissy", 2)
+                            .AddOption("Sarcastic", 3)
+                            .AddOption("Slang", 4)
+                            .AddOption("Bland", 5)
+                            .AddOption("Worshipful", 6)
+                            .BindSelectedIndex(model => model.PersonalityIndex)
+                            .BindIsEnabled(model => model.IsBuildInProgress);
                     });
-                });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("CPU")
+                            .SetHeight(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButtonImage()
+                            .BindOnClicked(model => model.OnClickCPU())
+                            .BindImageResref(model => model.CPUResref)
+                            .SetHeight(32f)
+                            .SetWidth(32f)
+                            .BindIsEnabled(model => model.IsBuildInProgress);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .SetText("Head")
+                                    .SetHeight(32f);
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .SetText("Body")
+                                    .SetHeight(32f);
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .SetText("Arms")
+                                    .SetHeight(32f);
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .SetText("Legs")
+                                    .SetHeight(32f);
+                            });
+                        });
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButtonImage()
+                                    .BindOnClicked(model => model.OnClickHead())
+                                    .BindImageResref(model => model.HeadResref)
+                                    .SetHeight(32f)
+                                    .SetWidth(32f)
+                                    .BindIsEnabled(model => model.IsCPUSelected);
+                                row2.AddSpacer();
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButtonImage()
+                                    .BindOnClicked(model => model.OnClickBody())
+                                    .BindImageResref(model => model.BodyResref)
+                                    .SetHeight(32f)
+                                    .SetWidth(32f)
+                                    .BindIsEnabled(model => model.IsCPUSelected);
+                                row2.AddSpacer();
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButtonImage()
+                                    .BindOnClicked(model => model.OnClickArms())
+                                    .BindImageResref(model => model.ArmsResref)
+                                    .SetHeight(32f)
+                                    .SetWidth(32f)
+                                    .BindIsEnabled(model => model.IsCPUSelected);
+                                row2.AddSpacer();
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButtonImage()
+                                    .BindOnClicked(model => model.OnClickLegs())
+                                    .BindImageResref(model => model.LegsResref)
+                                    .SetHeight(32f)
+                                    .SetWidth(32f)
+                                    .BindIsEnabled(model => model.IsCPUSelected);
+                                row2.AddSpacer();
+                            });
+                        });
+                    });
+                    
+                    col.AddRow(row =>
+                    {
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Tier);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.HP);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Perception);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Willpower);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.TwoHanded);
+                            });
+                        });
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Level);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Stamina);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Vitality);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Social);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.MartialArts);
+                            });
+                        });
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.AISlots);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Might);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Agility);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.OneHanded);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Ranged);
+                            });
+                        });
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .BindOnClicked(model => model.OnClickConstruct())
+                            .SetText("Construct")
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsBuildInProgress);
+                        row.AddSpacer();
+                    });
+                })
+                ;
 
             return _builder.Build();
         }

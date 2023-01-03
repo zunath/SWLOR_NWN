@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 526
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -182,8 +182,7 @@
           "type": "word",
           "value": 2
         }
-      },
-      {
+      },{
         "__struct_id": 0,
         "ChanceAppear": {
           "type": "byte",
@@ -213,8 +212,7 @@
           "type": "word",
           "value": 8
         }
-      },
-      {
+      },{
         "__struct_id": 0,
         "ChanceAppear": {
           "type": "byte",

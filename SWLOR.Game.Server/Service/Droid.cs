@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Discord;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
@@ -599,6 +601,93 @@ namespace SWLOR.Game.Server.Service
                 ObjectPlugin.AcquireItem(droid, deserialized);
                 SetDroppableFlag(deserialized, false);
             }
+
+            // Appearance
+            var defaultDroid = Race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
+
+            SetCreatureBodyPart(CreaturePart.Head,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
+                    ? constructedDroid.AppearanceParts[CreaturePart.Head]
+                    : defaultDroid.HeadId,
+                player);
+
+            SetCreatureBodyPart(CreaturePart.Neck,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Neck)
+                    ? constructedDroid.AppearanceParts[CreaturePart.Neck]
+                    : defaultDroid.NeckId,
+                player);
+            SetCreatureBodyPart(CreaturePart.Torso,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Torso)
+                    ? constructedDroid.AppearanceParts[CreaturePart.Torso]
+                    : defaultDroid.TorsoId,
+                player);
+            SetCreatureBodyPart(CreaturePart.Pelvis,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Pelvis)
+                    ? constructedDroid.AppearanceParts[CreaturePart.Pelvis]
+                    : defaultDroid.PelvisId,
+                player);
+
+            SetCreatureBodyPart(CreaturePart.RightBicep,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightBicep)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightBicep]
+                    : defaultDroid.RightBicepId,
+                player);
+            SetCreatureBodyPart(CreaturePart.RightForearm,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightForearm)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightForearm]
+                    : defaultDroid.RightForearmId,
+                player);
+            SetCreatureBodyPart(CreaturePart.RightHand,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightHand)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightHand]
+                    : defaultDroid.RightHandId,
+                player);
+            SetCreatureBodyPart(CreaturePart.RightThigh,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightThigh)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightThigh]
+                    : defaultDroid.RightThighId,
+                player);
+            SetCreatureBodyPart(CreaturePart.RightShin,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightShin)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightShin]
+                    : defaultDroid.RightShinId,
+                player);
+            SetCreatureBodyPart(CreaturePart.RightFoot,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightFoot)
+                    ? constructedDroid.AppearanceParts[CreaturePart.RightFoot]
+                    : defaultDroid.RightFootId,
+                player);
+
+            SetCreatureBodyPart(CreaturePart.LeftBicep,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftBicep)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftBicep]
+                    : defaultDroid.LeftBicepId,
+                player);
+            SetCreatureBodyPart(CreaturePart.LeftForearm,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftForearm)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftForearm]
+                    : defaultDroid.LeftForearmId,
+                player);
+            SetCreatureBodyPart(CreaturePart.LeftHand,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftHand)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftHand]
+                    : defaultDroid.LeftHandId,
+                player);
+            SetCreatureBodyPart(CreaturePart.LeftThigh,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftThigh)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftThigh]
+                    : defaultDroid.LeftThighId,
+                player);
+            SetCreatureBodyPart(CreaturePart.LeftShin,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftShin)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftShin]
+                    : defaultDroid.LeftShinId,
+                player);
+            SetCreatureBodyPart(CreaturePart.LeftFoot,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftFoot)
+                    ? constructedDroid.AppearanceParts[CreaturePart.LeftFoot]
+                    : defaultDroid.LeftFootId,
+                player);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.

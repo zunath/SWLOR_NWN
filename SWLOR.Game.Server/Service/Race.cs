@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Race
     {
-        private class RacialAppearance
+        public class RacialAppearance
         {
             public int HeadId { get; set; } = 1;
             public int SkinColorId { get; set; } = 2;
@@ -512,6 +512,19 @@ namespace SWLOR.Game.Server.Service
             SetCreatureBodyPart(CreaturePart.LeftThigh, raceConfig.LeftThighId, player);
             SetCreatureBodyPart(CreaturePart.LeftShin, raceConfig.LeftShinId, player);
             SetCreatureBodyPart(CreaturePart.LeftFoot, raceConfig.LeftFootId, player);
+        }
+
+        /// <summary>
+        /// Retrieves the default racial appearance of a specific race.
+        /// </summary>
+        /// <param name="race"></param>
+        /// <param name="gender"></param>
+        /// <returns></returns>
+        public static RacialAppearance GetDefaultAppearance(RacialType race, Gender gender)
+        {
+            return gender == Gender.Female ? 
+                _defaultRaceAppearancesFemale[race] : 
+                _defaultRaceAppearancesMale[race];
         }
     }
 }

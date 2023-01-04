@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "Droids cannot be activated or adjusted while in space.";
                     }
 
-                    // Droid Activation (subject to cooldown)
+                    // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
                         var (onDelay, timeToWait) = Recast.IsOnRecastDelay(user, RecastGroup.DroidController);
@@ -91,8 +91,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return $"Average combat level requirement not met. (Required: {requiredLevel}, Your Average: {averageLevel})";
                         }
                     }
-                    // Reprogramming (not subject to cooldown)
+                    // Modify Appearance
                     else if (itemPropertyIndex == 1)
+                    {
+                        if (!GetIsObjectValid(droid))
+                        {
+                            return "Your droid must be active in order to change its appearance.";
+                        }
+                    }
+                    // Reprogramming
+                    else if (itemPropertyIndex == 2)
                     {
                         if (GetIsObjectValid(droid))
                         {
@@ -118,8 +126,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SetItemCursedFlag(item, true);
 
                     }
-                    // Reprogramming
+                    // Modify Appearance
                     else if (itemPropertyIndex == 1)
+                    {
+                        var droid = Droid.GetDroid(user);
+                        var payload = new AppearanceEditorPayload(droid);
+                        Gui.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
+                    }
+                    // Reprogramming
+                    else if (itemPropertyIndex == 2)
                     {
                         var payload = new DroidProgrammingPayload(item);
                         Gui.TogglePlayerWindow(user, GuiWindowType.DroidProgramming, payload);

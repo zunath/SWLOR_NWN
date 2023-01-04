@@ -1244,6 +1244,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
+
+            ExecuteScript("appearance_edit", _target);
         }
 
         private void LoadArmorPart()
@@ -1421,7 +1423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCloseWindow() => () =>
         {
-            if (GetIsDM(_target) || GetIsDMPossessed(_target))
+            if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))
                 return;
 
             var playerId = GetObjectUUID(_target);

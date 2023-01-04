@@ -609,85 +609,85 @@ namespace SWLOR.Game.Server.Service
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
                     ? constructedDroid.AppearanceParts[CreaturePart.Head]
                     : defaultDroid.HeadId,
-                player);
+                droid);
 
             SetCreatureBodyPart(CreaturePart.Neck,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Neck)
                     ? constructedDroid.AppearanceParts[CreaturePart.Neck]
                     : defaultDroid.NeckId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.Torso,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Torso)
                     ? constructedDroid.AppearanceParts[CreaturePart.Torso]
                     : defaultDroid.TorsoId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.Pelvis,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Pelvis)
                     ? constructedDroid.AppearanceParts[CreaturePart.Pelvis]
                     : defaultDroid.PelvisId,
-                player);
+                droid);
 
             SetCreatureBodyPart(CreaturePart.RightBicep,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightBicep)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightBicep]
                     : defaultDroid.RightBicepId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.RightForearm,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightForearm)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightForearm]
                     : defaultDroid.RightForearmId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.RightHand,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightHand)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightHand]
                     : defaultDroid.RightHandId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.RightThigh,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightThigh)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightThigh]
                     : defaultDroid.RightThighId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.RightShin,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightShin)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightShin]
                     : defaultDroid.RightShinId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.RightFoot,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightFoot)
                     ? constructedDroid.AppearanceParts[CreaturePart.RightFoot]
                     : defaultDroid.RightFootId,
-                player);
+                droid);
 
             SetCreatureBodyPart(CreaturePart.LeftBicep,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftBicep)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftBicep]
                     : defaultDroid.LeftBicepId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.LeftForearm,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftForearm)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftForearm]
                     : defaultDroid.LeftForearmId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.LeftHand,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftHand)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftHand]
                     : defaultDroid.LeftHandId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.LeftThigh,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftThigh)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftThigh]
                     : defaultDroid.LeftThighId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.LeftShin,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftShin)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftShin]
                     : defaultDroid.LeftShinId,
-                player);
+                droid);
             SetCreatureBodyPart(CreaturePart.LeftFoot,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftFoot)
                     ? constructedDroid.AppearanceParts[CreaturePart.LeftFoot]
                     : defaultDroid.LeftFootId,
-                player);
+                droid);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
@@ -728,6 +728,47 @@ namespace SWLOR.Game.Server.Service
             ClearTemporaryData(player, droid);
 
             Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            CloseAppearanceEditor(player);
+        }
+
+        /// <summary>
+        /// When the appearance of a droid is changed, update the data on the local variable.
+        /// </summary>
+        [NWNEventHandler("appearance_edit")]
+        public static void EditDroidAppearance()
+        {
+            var droid = OBJECT_SELF;
+            if (!IsDroid(droid))
+                return;
+            var controller = GetControllerItem(droid);
+
+            var constructedDroid = LoadConstructedDroid(controller);
+
+            constructedDroid.AppearanceParts[CreaturePart.Head] = GetCreatureBodyPart(CreaturePart.Head, droid);
+            constructedDroid.AppearanceParts[CreaturePart.Torso] = GetCreatureBodyPart(CreaturePart.Torso, droid);
+            constructedDroid.AppearanceParts[CreaturePart.Pelvis] = GetCreatureBodyPart(CreaturePart.Pelvis, droid);
+
+            constructedDroid.AppearanceParts[CreaturePart.RightBicep] = GetCreatureBodyPart(CreaturePart.RightBicep, droid);
+            constructedDroid.AppearanceParts[CreaturePart.RightForearm] = GetCreatureBodyPart(CreaturePart.RightForearm, droid);
+            constructedDroid.AppearanceParts[CreaturePart.RightHand] = GetCreatureBodyPart(CreaturePart.RightHand, droid);
+            constructedDroid.AppearanceParts[CreaturePart.RightThigh] = GetCreatureBodyPart(CreaturePart.RightThigh, droid);
+            constructedDroid.AppearanceParts[CreaturePart.RightShin] = GetCreatureBodyPart(CreaturePart.RightShin, droid);
+            constructedDroid.AppearanceParts[CreaturePart.RightFoot] = GetCreatureBodyPart(CreaturePart.RightFoot, droid);
+
+            constructedDroid.AppearanceParts[CreaturePart.LeftBicep] = GetCreatureBodyPart(CreaturePart.LeftBicep, droid);
+            constructedDroid.AppearanceParts[CreaturePart.LeftForearm] = GetCreatureBodyPart(CreaturePart.LeftForearm, droid);
+            constructedDroid.AppearanceParts[CreaturePart.LeftHand] = GetCreatureBodyPart(CreaturePart.LeftHand, droid);
+            constructedDroid.AppearanceParts[CreaturePart.LeftThigh] = GetCreatureBodyPart(CreaturePart.LeftThigh, droid);
+            constructedDroid.AppearanceParts[CreaturePart.LeftShin] = GetCreatureBodyPart(CreaturePart.LeftShin, droid);
+            constructedDroid.AppearanceParts[CreaturePart.LeftFoot] = GetCreatureBodyPart(CreaturePart.LeftFoot, droid);
+
+            SaveConstructedDroid(controller, constructedDroid);
+        }
+
+        private static void CloseAppearanceEditor(uint player)
+        {
+            if(Gui.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
+                Gui.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
         }
 
         /// <summary>
@@ -841,6 +882,7 @@ namespace SWLOR.Game.Server.Service
             ActionSpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
             Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            CloseAppearanceEditor(player);
         }
 
         [NWNEventHandler("droid_disturbed")]

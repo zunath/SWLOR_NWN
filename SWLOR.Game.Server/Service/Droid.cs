@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Discord;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -10,7 +9,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;

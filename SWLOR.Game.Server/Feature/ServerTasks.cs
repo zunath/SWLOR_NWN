@@ -113,5 +113,20 @@ namespace SWLOR.Game.Server.Feature
                 }
             }, TimeSpan.FromMinutes(1));
         }
+
+
+        /// <summary>
+        /// When a player enters the server, send them a greeting and a link to the Discord server.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void WelcomeMessage()
+        {
+            var player = GetEnteringObject();
+            DelayCommand(2f, () =>
+            {
+                SendMessageToPC(player, ColorToken.Green("Welcome to Star Wars: Legends of the Old Republic!\n") +
+                                        ColorToken.White("Join our Discord at: https://discord.gg/MyQAM6m"));
+            });
+        }
     }
 }

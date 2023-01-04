@@ -265,7 +265,7 @@
         Infusion = 260,
         Alacrity = 261,
         Clarity = 262,
-        Programming = 263,
+        // 263 is free
         DroidAssembly = 264
     }
 }

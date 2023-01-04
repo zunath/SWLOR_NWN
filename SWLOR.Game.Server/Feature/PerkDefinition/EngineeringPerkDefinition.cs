@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             EngineeringEquipment();
             EnhancementBlueprints();
             DroidEquipmentBlueprints();
-            Programming();
             DroidAssembly();
             
             return _builder.Build();
@@ -257,56 +256,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DroidEquipmentBlueprints5);
         }
 
-        private void Programming()
-        {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.Programming)
-                .Name("Programming")
-
-                .AddPerkLevel()
-                .Description("Enables AI modification of tier 1 droids.")
-                .Price(2)
-
-                .AddPerkLevel()
-                .Description("Enables AI modification of tier 2 droids.")
-                .Price(2)
-
-                .AddPerkLevel()
-                .Description("Enables AI modification of tier 3 droids.")
-                .Price(2)
-
-                .AddPerkLevel()
-                .Description("Enables AI modification of tier 4 droids.")
-                .Price(2)
-
-                .AddPerkLevel()
-                .Description("Enables AI modification of tier 5 droids.")
-                .Price(2);
-        }
-
         private void DroidAssembly()
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.DroidAssembly)
                 .Name("Droid Assembly")
 
                 .AddPerkLevel()
-                .Description("Enables the construction of tier 1 droids.")
-                .Price(2)
+                .Description("Enables the construction and programming of tier 1 droids.")
+                .Price(3)
 
                 .AddPerkLevel()
-                .Description("Enables the construction of tier 2 droids.")
-                .Price(2)
+                .Description("Enables the construction and programming of tier 2 droids.")
+                .Price(3)
 
                 .AddPerkLevel()
-                .Description("Enables the construction of tier 3 droids.")
-                .Price(2)
+                .Description("Enables the construction and programming of tier 3 droids.")
+                .Price(3)
 
                 .AddPerkLevel()
-                .Description("Enables the construction of tier 4 droids.")
-                .Price(2)
+                .Description("Enables the construction and programming of tier 4 droids.")
+                .Price(3)
 
                 .AddPerkLevel()
-                .Description("Enables the construction of tier 5 droids.")
-                .Price(2);
+                .Description("Enables the construction and programming of tier 5 droids.")
+                .Price(3);
         }
     }
 }

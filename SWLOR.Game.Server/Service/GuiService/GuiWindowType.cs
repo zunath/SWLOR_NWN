@@ -47,6 +47,6 @@
         AreaManager = 42,
         Emotes = 43,
         DroidAssembly = 44,
-        DroidProgramming = 45,
+        DroidAI = 45,
     }
 }

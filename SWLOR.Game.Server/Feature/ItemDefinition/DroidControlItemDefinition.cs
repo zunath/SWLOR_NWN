@@ -107,11 +107,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Programming);
+                        var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.DroidAssembly);
 
                         if (perkLevel < droidDetails.Tier)
                         {
-                            return $"Your Programming perk is too low to configure this droid's AI. (Required: {droidDetails.Tier})";
+                            return $"Your Droid Assembly perk is too low to configure this droid's AI. (Required: {droidDetails.Tier})";
                         }
                     }
 
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     else if (itemPropertyIndex == 2)
                     {
                         var payload = new DroidProgrammingPayload(item);
-                        Gui.TogglePlayerWindow(user, GuiWindowType.DroidProgramming, payload);
+                        Gui.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
                     }
                 });
         }

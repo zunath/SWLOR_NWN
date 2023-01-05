@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ConcentrationAbility();
             Customize();
             AlwaysWalk();
+            AssociateCommands();
 
             return _builder.Build();
         }
@@ -350,6 +351,40 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SetLocalInt(user, "WALK_TOGGLE", 1);
                         SendMessageToPC(user, $"Walk mode {ColorToken.Green("enabled")}.");
                     }
+                });
+        }
+
+        private void AssociateCommands()
+        {
+            _builder.Create("associate", "a")
+                .Description("Makes your associate (droid, pet, etc.) speak a message.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    var droid = Droid.GetDroid(user);
+                    if (!GetIsObjectValid(droid))
+                    {
+                        return "You do not have an active associate.";
+                    }
+
+                    if (GetIsDead(droid))
+                    {
+                        return "Your associate is dead.";
+                    }
+
+                    if (args.Length <= 0)
+                    {
+                        return "Please enter a message. Example: /associate Hello!";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var droid = Droid.GetDroid(user);
+                    var message = string.Join(' ', args);
+
+                    AssignCommand(droid, () => ActionSpeakString(message));
                 });
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -7,6 +8,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -315,13 +317,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             if (Item.ShieldBaseItemTypes.Contains(itemType))
             {
-                if (Perk.GetEffectivePerkLevel(defender, PerkType.Alacrity) > 0)
+                if (Random.D100(1) <= 10)
                 {
-                    Stat.RestoreStamina(defender, 4);
-                }
-                else if (Perk.GetEffectivePerkLevel(defender, PerkType.Clarity) > 0)
-                {
-                    Stat.RestoreFP(defender, 4);
+                    if (Perk.GetEffectivePerkLevel(defender, PerkType.Alacrity) > 0)
+                    {
+                        Stat.RestoreStamina(defender, 4);
+                    }
+                    else if (Perk.GetEffectivePerkLevel(defender, PerkType.Clarity) > 0)
+                    {
+                        Stat.RestoreFP(defender, 4);
+                    }
                 }
             }
         }
@@ -332,7 +337,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Alacrity")
 
                 .AddPerkLevel()
-                .Description("Attacks blocked by a shield restore 4 STM.")
+                .Description("Grants a 10% chance to restore 4 STM when damaged while equipped with a shield.")
                 .Price(2)
                 .RequirementCannotHavePerk(PerkType.Clarity)
                 .RequirementSkill(SkillType.OneHanded, 25);
@@ -344,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Clarity")
 
                 .AddPerkLevel()
-                .Description("Attacks blocked by a shield restore 4 FP.")
+                .Description("Grants a 10% chance to restore 4 FP when damaged while equipped with a shield.")
                 .Price(2)
                 .RequirementCannotHavePerk(PerkType.Alacrity)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

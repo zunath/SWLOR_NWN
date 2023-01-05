@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                 foodEffect.RecastReductionPercent += amount;
                                 break;
                             case FoodItemPropertySubType.Duration:
-                                duration += amount * 60f; // 1 minute per duration bonus
+                                duration += amount * (60f * 5); // 5 minutes per duration bonus
                                 break;
                             case FoodItemPropertySubType.Might:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, amount), user, duration);

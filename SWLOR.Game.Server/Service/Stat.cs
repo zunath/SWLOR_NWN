@@ -874,8 +874,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                // If a skill value is assigned for this item type, use it.
+                // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStats(creature);
-                skillLevel = npcStats.Level;
+
+                if (npcStats.Skills.ContainsKey(skillType))
+                {
+                    skillLevel = npcStats.Skills[skillType];
+                }
+                else
+                {
+                    skillLevel = npcStats.Level;
+                }
             }
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
@@ -889,12 +899,12 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
             var statType = Item.GetWeaponDamageAbilityType(itemType);
             var stat = GetStatValueNative(creature, statType);
+            var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
-                var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
                 if (dbPlayer != null)
                 {
@@ -909,8 +919,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                // If a skill value is assigned for this item type, use it.
+                // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStatsNative(creature);
-                skillLevel = npcStats.Level;
+
+                if (npcStats.Skills.ContainsKey(skillType))
+                {
+                    skillLevel = npcStats.Skills[skillType];
+                }
+                else
+                {
+                    skillLevel = npcStats.Level;
+                }
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
@@ -1428,6 +1448,11 @@ namespace SWLOR.Game.Server.Service
                     var damageType = (CombatDamageType)GetItemPropertySubType(ip);
                     npcStats.Defenses[damageType] = GetItemPropertyCostTableValue(ip);
                 }
+                else if (type == ItemPropertyType.NPCSkill)
+                {
+                    var skillType = (SkillType)GetItemPropertySubType(ip);
+                    npcStats.Skills[skillType] = GetItemPropertyCostTableValue(ip);
+                }
 
             }
 
@@ -1454,6 +1479,12 @@ namespace SWLOR.Game.Server.Service
                             npcStats.Defenses[damageType] = 0;
 
                         npcStats.Defenses[damageType] += prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCSkill)
+                    {
+                        var skillType = (SkillType)prop.m_nSubType;
+
+                        npcStats.Skills[skillType] = prop.m_nCostTableValue;
                     }
                 }
             }

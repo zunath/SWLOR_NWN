@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -374,16 +375,28 @@ namespace SWLOR.Game.Server.Service
                             details.SOC += value;
                             break;
                         case DroidStatSubType.OneHanded:
-                            details.OneHanded += value;
+                            if (!details.Skills.ContainsKey(SkillType.OneHanded))
+                                details.Skills[SkillType.OneHanded] = value;
+                            else
+                                details.Skills[SkillType.OneHanded] += value;
                             break;
                         case DroidStatSubType.TwoHanded:
-                            details.TwoHanded += value;
+                            if (!details.Skills.ContainsKey(SkillType.TwoHanded))
+                                details.Skills[SkillType.TwoHanded] = value;
+                            else
+                                details.Skills[SkillType.TwoHanded] += value;
                             break;
                         case DroidStatSubType.MartialArts:
-                            details.MartialArts += value;
+                            if (!details.Skills.ContainsKey(SkillType.MartialArts))
+                                details.Skills[SkillType.MartialArts] = value;
+                            else
+                                details.Skills[SkillType.MartialArts] += value;
                             break;
                         case DroidStatSubType.Ranged:
-                            details.Ranged += value;
+                            if (!details.Skills.ContainsKey(SkillType.Ranged))
+                                details.Skills[SkillType.Ranged] = value;
+                            else
+                                details.Skills[SkillType.Ranged] += value;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -547,6 +560,13 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, stmIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+
+            // Skin skills
+            foreach (var (skill, level) in details.Skills)
+            {
+                var skillIP = ItemPropertyCustom(ItemPropertyType.NPCSkill, (int)skill, level);
+                BiowareXP2.IPSafeAddItemProperty(skin, skillIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting,  true, false);
+            }
 
             // Perks
             foreach (var (perk, level) in details.Perks)
@@ -804,10 +824,12 @@ namespace SWLOR.Game.Server.Service
             if (wasAcquired)
             {
                 constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
+                SetDroppableFlag(item, false);
             }
             else
             {
                 constructedDroid.Inventory.Remove(itemId);
+                SetDroppableFlag(item, true);
             }
 
             SaveConstructedDroid(controller, constructedDroid);

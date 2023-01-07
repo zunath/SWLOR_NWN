@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         Defense = 94,
         ProgressPenalty = 95,
         NPCHP = 96,
-        NPCEP = 97,
+        NPCFP = 97,
         NPCSTM = 98,
         NPCLevel = 99,
         UseLimitationPerk = 100,
@@ -114,10 +114,16 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ModuleBonus = 113,
         StarshipBonus = 114,
         CPBonus = 115,
-
+        DroidEnhancement = 116,
         Evasion = 117,
         AbilityRecastReduction = 118,
         FPRegen = 119,
         STMRegen = 120,
+        DroidStat = 121,
+        DroidPart = 122,
+        DroidInstruction = 123,
+        DroidPersonality = 124,
+        NPCSkill = 125,
+        IncreasedPrice = 126,
     }
 }

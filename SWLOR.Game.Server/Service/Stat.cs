@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service
                 var ep = 0;
                 for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
                 {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCEP)
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCFP)
                     {
                         ep += GetItemPropertyCostTableValue(ip);
                     }
@@ -874,8 +874,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                // If a skill value is assigned for this item type, use it.
+                // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStats(creature);
-                skillLevel = npcStats.Level;
+
+                if (npcStats.Skills.ContainsKey(skillType))
+                {
+                    skillLevel = npcStats.Skills[skillType];
+                }
+                else
+                {
+                    skillLevel = npcStats.Level;
+                }
             }
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
@@ -889,12 +899,12 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
             var statType = Item.GetWeaponDamageAbilityType(itemType);
             var stat = GetStatValueNative(creature, statType);
+            var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
-                var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
                 if (dbPlayer != null)
                 {
@@ -909,8 +919,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                // If a skill value is assigned for this item type, use it.
+                // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStatsNative(creature);
-                skillLevel = npcStats.Level;
+
+                if (npcStats.Skills.ContainsKey(skillType))
+                {
+                    skillLevel = npcStats.Skills[skillType];
+                }
+                else
+                {
+                    skillLevel = npcStats.Level;
+                }
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
@@ -1428,6 +1448,11 @@ namespace SWLOR.Game.Server.Service
                     var damageType = (CombatDamageType)GetItemPropertySubType(ip);
                     npcStats.Defenses[damageType] = GetItemPropertyCostTableValue(ip);
                 }
+                else if (type == ItemPropertyType.NPCSkill)
+                {
+                    var skillType = (SkillType)GetItemPropertySubType(ip);
+                    npcStats.Skills[skillType] = GetItemPropertyCostTableValue(ip);
+                }
 
             }
 
@@ -1454,6 +1479,12 @@ namespace SWLOR.Game.Server.Service
                             npcStats.Defenses[damageType] = 0;
 
                         npcStats.Defenses[damageType] += prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCSkill)
+                    {
+                        var skillType = (SkillType)prop.m_nSubType;
+
+                        npcStats.Skills[skillType] = prop.m_nCostTableValue;
                     }
                 }
             }
@@ -1721,6 +1752,69 @@ namespace SWLOR.Game.Server.Service
             }
 
             return amount;
+        }
+
+        /// <summary>
+        /// Stores an NPC's STM and FP as local variables.
+        /// Also load their HP per their skin, if specified.
+        /// </summary>
+        public static void LoadNPCStats()
+        {
+            var self = OBJECT_SELF;
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+
+            var maxHP = 0;
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
+                {
+                    maxHP += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            if (maxHP > 30000)
+                maxHP = 30000;
+
+            if (maxHP > 0)
+            {
+                ObjectPlugin.SetMaxHitPoints(self, maxHP);
+                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+            }
+
+            SetLocalInt(self, "FP", GetMaxFP(self));
+            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Restores an NPC's STM and FP.
+        /// </summary>
+        public static void RestoreNPCStats(bool outOfCombatRegen)
+        {
+            var self = OBJECT_SELF;
+            var maxFP = Stat.GetMaxFP(self);
+            var maxSTM = Stat.GetMaxStamina(self);
+            var fp = GetLocalInt(self, "FP") + 1;
+            var stm = GetLocalInt(self, "STAMINA") + 1;
+
+            if (fp > maxFP)
+                fp = maxFP;
+            if (stm > maxSTM)
+                stm = maxSTM;
+
+            SetLocalInt(self, "FP", fp);
+            SetLocalInt(self, "STAMINA", stm);
+
+            if (outOfCombatRegen)
+            {
+                // If out of combat - restore HP at 10% per tick.
+                if (!GetIsInCombat(self) &&
+                    !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
+                    GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+                {
+                    var hpToHeal = GetMaxHitPoints(self) * 0.1f;
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
+                }
+            }
         }
     }
 }

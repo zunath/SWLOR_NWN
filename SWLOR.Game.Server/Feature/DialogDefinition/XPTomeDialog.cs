@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Select this skill.", () =>
             {
                 var amount = GetLocalInt(model.Item, "XP_TOME_AMOUNT");
-                Skill.GiveSkillXP(player, model.Skill, amount);
+                Skill.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 
                 EndConversation();

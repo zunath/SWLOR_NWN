@@ -9,5 +9,6 @@
         Food = 4,
         Starship = 5,
         Module = 6,
+        Droid = 7,
     }
 }

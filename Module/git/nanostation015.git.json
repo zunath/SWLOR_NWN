@@ -219199,6 +219199,687 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20916
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Droid Assembly Terminal"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "droid_ass_used"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "droid_ass_term"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "droid_ass_term"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 90.64400482177734
+        },
+        "Y": {
+          "type": "float",
+          "value": 83.07707214355469
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20916
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Droid Assembly Terminal"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "droid_ass_used"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "droid_ass_term"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "droid_ass_term"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 92.37354278564453
+        },
+        "Y": {
+          "type": "float",
+          "value": 83.10482025146484
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.01099133491516113
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20916
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Droid Assembly Terminal"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "droid_ass_used"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "droid_ass_term"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "droid_ass_term"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 93.95851898193359
+        },
+        "Y": {
+          "type": "float",
+          "value": 83.07289886474609
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.01099133491516113
+        }
       }
     ]
   },
@@ -228768,7 +229449,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 29
                     },
                     "Cursed": {
                       "type": "byte",
@@ -228972,7 +229653,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 74
                     },
                     "Cursed": {
                       "type": "byte",
@@ -229176,7 +229857,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -229351,7 +230032,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -229526,7 +230207,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 29
                     },
                     "Cursed": {
                       "type": "byte",
@@ -229701,7 +230382,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 74
                     },
                     "Cursed": {
                       "type": "byte",
@@ -229876,7 +230557,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 29
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230050,7 +230731,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 74
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230224,7 +230905,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 29
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230397,7 +231078,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230570,7 +231251,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 74
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230743,7 +231424,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -230916,7 +231597,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -231089,7 +231770,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -231262,7 +231943,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 29
                     },
                     "Cursed": {
                       "type": "byte",
@@ -231466,7 +232147,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 74
                     },
                     "Cursed": {
                       "type": "byte",
@@ -231670,7 +232351,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -231876,7 +232557,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -232082,7 +232763,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 31
                     },
                     "Cursed": {
                       "type": "byte",
@@ -232247,7 +232928,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 75
+                      "value": 76
                     },
                     "Cursed": {
                       "type": "byte",
@@ -232412,7 +233093,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -232617,7 +233298,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -232822,7 +233503,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 60
+                      "value": 59
                     },
                     "Cursed": {
                       "type": "byte",
@@ -233026,7 +233707,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 150
+                      "value": 149
                     },
                     "Cursed": {
                       "type": "byte",
@@ -235288,7 +235969,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.060248342129747e-038
+                      "value": 9.498516669028482e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -235393,7 +236074,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.625506218616788e-043
+                      "value": 1.060248342129747e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -235529,7 +236210,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.625506218616788e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -235941,7 +236622,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -236534,7 +237215,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.282577075818272e-023
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -236639,7 +237320,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.282577075818272e-023
                     },
                     "XPosition": {
                       "type": "float",
@@ -236786,7 +237467,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -236891,7 +237572,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -236994,7 +237675,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237097,7 +237778,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237202,7 +237883,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 500
+                      "value": 499
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237307,7 +237988,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 500
+                      "value": 499
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237412,7 +238093,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237515,7 +238196,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237620,7 +238301,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237723,7 +238404,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237828,7 +238509,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -237933,7 +238614,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238038,7 +238719,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238143,7 +238824,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238246,7 +238927,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238349,7 +239030,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 10
+                      "value": 9
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238454,7 +239135,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -238557,7 +239238,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 250
+                      "value": 249
                     },
                     "Cursed": {
                       "type": "byte",
@@ -251390,6 +252071,69 @@
         "ZPosition": {
           "type": "float",
           "value": -1.192092895507813e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 1
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14814,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "id": 14815,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Droid Assembly"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "MN_DroidAssembly"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_mapnote001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 92.22444915771484
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 84.49842834472656
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.5367431640625e-007
         }
       }
     ]

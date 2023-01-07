@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void FishingRod()
         {
             _builder.Create(Fishing.FishingRodTag)
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (item != target && 
                         !Fishing.IsItemBait(target))
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var existingBait = GetLocalString(item, Fishing.ActiveBaitVariable);
                     var remainingBait = GetLocalInt(item, Fishing.RemainingBaitVariable);

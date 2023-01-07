@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .Delay(1f)
                 .PlaysAnimation(Animation.FireForgetDrink)
                 .ReducesItemCharge()
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var ability = AbilityType.Invalid;
                     
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .Delay(1f)
                 .PlaysAnimation(Animation.FireForgetSalute)
                 .ReducesItemCharge()
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (StatusEffect.HasStatusEffect(user, StatusEffectType.Food))
                     {
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var foodEffect = new FoodEffectData();
                     var duration = 1800f; // 30 minutes by default for all food
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             _builder.Create("rebuild_token")
                 .PlaysAnimation(Animation.LoopingGetMid)
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
                     {
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);

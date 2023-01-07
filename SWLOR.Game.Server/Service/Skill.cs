@@ -32,7 +32,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skill">The type of skill to give XP towards.</param>
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
-        public static void GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses = false)
+        /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
+        public static void GiveSkillXP(
+            uint player, 
+            SkillType skill, 
+            int xp, 
+            bool ignoreBonuses = false,
+            bool applyHenchmanPenalty = true)
         {
             if (skill == SkillType.Invalid || xp <= 0 || !GetIsPC(player) || GetIsDM(player)) return;
 
@@ -78,6 +84,14 @@ namespace SWLOR.Game.Server.Service
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);
+            }
+
+            // 30% penalty applied if a Henchman is active.
+            if (applyHenchmanPenalty)
+            {
+                const float HenchmanPenalty = 0.3f;
+
+                xp -= (int)(xp * HenchmanPenalty);
             }
 
             var debtRemoved = 0;

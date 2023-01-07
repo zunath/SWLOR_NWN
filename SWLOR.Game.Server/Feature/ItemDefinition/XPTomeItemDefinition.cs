@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private static void XPTomes(ItemBuilder builder)
         {
             builder.Create("xp_tome_1", "xp_tome_2", "xp_tome_3", "xp_tome_4")
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
                     AssignCommand(user, () => ClearAllActions());
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private static void PerkRefundTome(ItemBuilder builder)
         {
             builder.Create("refund_tome")
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
                     {
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);

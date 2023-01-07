@@ -98,6 +98,18 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Sets the number of droid AI slots needed to equip a droid with this perk.
+        /// If unspecified, the perk will be unavailable to droids.
+        /// </summary>
+        /// <param name="aiSlots">The amount of AI slots needed to equip a droid with this perk.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder DroidAISlots(int aiSlots)
+        {
+            _activeLevel.DroidAISlots = aiSlots;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a feat to grant to the player when the perk is purchased.
         /// </summary>
         /// <param name="feat">The feat to grant</param>

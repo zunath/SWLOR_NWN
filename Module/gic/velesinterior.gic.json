@@ -1614,20 +1614,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Weathering / Scorch Mark"
         }
       },
@@ -3862,6 +3848,27 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       },
       {

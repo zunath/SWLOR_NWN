@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");
-                Skill.GiveSkillXP(Player, SkillType.Gathering, xp);
+                Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
 
                 _inputItemResrefs.Clear();
                 _inputItems.Clear();

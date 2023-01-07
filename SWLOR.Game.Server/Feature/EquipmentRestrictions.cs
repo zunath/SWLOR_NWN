@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -53,9 +54,16 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            if(!string.IsNullOrWhiteSpace(canUseItem))
-                SendMessageToPC(creature, ColorToken.Red(canUseItem));
-
+            if (!string.IsNullOrWhiteSpace(canUseItem))
+            {
+                var messageTarget = creature;
+                if (Droid.IsDroid(creature))
+                {
+                    messageTarget = GetMaster(creature);
+                }
+                SendMessageToPC(messageTarget, ColorToken.Red(canUseItem));
+            }
+            
             EventsPlugin.SkipEvent();
         }
 
@@ -153,7 +161,10 @@ namespace SWLOR.Game.Server.Feature
         /// <returns>An empty string if successful or an error message if failed</returns>
         private static string CanItemBeUsed(uint creature, uint item)
         {
-            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
+            var isPlayer = GetIsPC(creature);
+            var isDroid = Droid.IsDroid(creature);
+
+            if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
                 return string.Empty;
 
             var itemType = GetBaseItemType(item);
@@ -164,9 +175,21 @@ namespace SWLOR.Game.Server.Feature
             var race = GetRacialType(creature);
             var needsDroidLimitation = race == RacialType.Droid && Item.DroidBaseItemTypes.Contains(itemType);
             var itemHasDroidIP = false;
+            Dictionary<PerkType, int> creaturePerks;
 
-            var playerId = GetObjectUUID(creature);
-            var dbPlayer = DB.Get<Player>(playerId);
+            if (isPlayer)
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+                creaturePerks = dbPlayer.Perks;
+            }
+            // Droids
+            else
+            {
+                var controller = Droid.GetControllerItem(creature);
+                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+                creaturePerks = droidDetails.Perks;
+            }
 
             // Check for required perk levels.
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -180,7 +203,7 @@ namespace SWLOR.Game.Server.Feature
                     if (perkType == PerkType.Invalid) continue;
 
                     var requiredLevel = GetItemPropertyCostTableValue(ip);
-                    var perkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
+                    var perkLevel = creaturePerks.ContainsKey(perkType) ? creaturePerks[perkType] : 0;
 
                     if (perkLevel < requiredLevel)
                     {
@@ -248,26 +271,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void RunUnequipTriggers(uint player, uint item)
         {
-            var slot = InventorySlot.Invalid;
-
-            if (GetItemInSlot(InventorySlot.Head, player) == item) slot = InventorySlot.Head;
-            if (GetItemInSlot(InventorySlot.Chest, player) == item) slot = InventorySlot.Chest;
-            if (GetItemInSlot(InventorySlot.Boots, player) == item) slot = InventorySlot.Boots;
-            if (GetItemInSlot(InventorySlot.Arms, player) == item) slot = InventorySlot.Arms;
-            if (GetItemInSlot(InventorySlot.RightHand, player) == item) slot = InventorySlot.RightHand;
-            if (GetItemInSlot(InventorySlot.LeftHand, player) == item) slot = InventorySlot.LeftHand;
-            if (GetItemInSlot(InventorySlot.Cloak, player) == item) slot = InventorySlot.Cloak;
-            if (GetItemInSlot(InventorySlot.LeftRing, player) == item) slot = InventorySlot.LeftRing;
-            if (GetItemInSlot(InventorySlot.RightRing, player) == item) slot = InventorySlot.RightRing;
-            if (GetItemInSlot(InventorySlot.Neck, player) == item) slot = InventorySlot.Neck;
-            if (GetItemInSlot(InventorySlot.Belt, player) == item) slot = InventorySlot.Belt;
-            if (GetItemInSlot(InventorySlot.Arrows, player) == item) slot = InventorySlot.Arrows;
-            if (GetItemInSlot(InventorySlot.Bullets, player) == item) slot = InventorySlot.Bullets;
-            if (GetItemInSlot(InventorySlot.Bolts, player) == item) slot = InventorySlot.Bolts;
-            if (GetItemInSlot(InventorySlot.CreatureLeft, player) == item) slot = InventorySlot.CreatureLeft;
-            if (GetItemInSlot(InventorySlot.CreatureRight, player) == item) slot = InventorySlot.CreatureRight;
-            if (GetItemInSlot(InventorySlot.CreatureBite, player) == item) slot = InventorySlot.CreatureBite;
-            if (GetItemInSlot(InventorySlot.CreatureArmor, player) == item) slot = InventorySlot.CreatureArmor;
+            var slot = Item.GetItemSlot(player, item);
 
             foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())
             {

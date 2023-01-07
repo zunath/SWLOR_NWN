@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("speeder")
                 .Delay(2f)
                 .PlaysAnimation(Animation.LoopingGetMid)
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var area = GetArea(user);
                     var itemTag = GetTag(item);

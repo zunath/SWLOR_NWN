@@ -77,7 +77,9 @@ namespace SWLOR.CLI
                 recipeCode = recipeCode.Replace("%%REQUIRESRECIPE%%", recipeRequirement);
 
                 var enhancements = string.Empty;
-                if (!string.IsNullOrWhiteSpace(enhancementSlots))
+                if (!string.IsNullOrWhiteSpace(enhancementSlots) && 
+                    !string.IsNullOrWhiteSpace(enhancementCategory) &&
+                    enhancementCategory != "N/A")
                 {
                     enhancements = enhancementTemplate
                         .Replace("%%ENHANCEMENTSLOTS%%", enhancementSlots)

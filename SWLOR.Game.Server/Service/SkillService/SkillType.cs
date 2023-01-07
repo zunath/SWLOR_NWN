@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SkillService
 {
+    // Note: Corresponds to iprp_skill.2da
+    // New additions or changes to this file should also be made to the 2DA.
     public enum SkillType
     {
         [Skill(SkillCategoryType.Invalid,
@@ -126,6 +128,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false)]
         Leadership = 12,
+
+        // ID #13 is free
 
         [Skill(SkillCategoryType.Languages,
             "Mirialan",

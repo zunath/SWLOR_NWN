@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Service
 
             // Update this creature's list of enemies.
             _creatureToEnemies[creature] = enemyList;
-
+            
             // If one creature is a player, add the NPC to the Combat Point tracker.
             if (GetIsPC(creature)) { CombatPoint.AddPlayerToNPCReferenceToCache(creature, enemy); }
             else if (GetIsPC(enemy)) { CombatPoint.AddPlayerToNPCReferenceToCache(enemy, creature); }

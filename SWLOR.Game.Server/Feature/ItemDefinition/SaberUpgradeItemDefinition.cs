@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .Delay(12f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .MaxDistance(0.0f)
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var itemType = GetBaseItemType(target);
                     var numberOfUpgrades = GetWeaponLevel(target);
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var numberOfUpgrades = GetWeaponLevel(target) + 1;
                     var physicalDMG = 0;

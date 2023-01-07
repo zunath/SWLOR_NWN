@@ -5,7 +5,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -84,6 +86,57 @@ namespace SWLOR.Game.Server.Service
                     return (now < dateTime, timeToWait);
                 }
             }
+        }
+
+        /// <summary>
+        /// Applies a recast delay on a specific recast group.
+        /// If group is invalid or delay amount is less than or equal to zero, nothing will happen.
+        /// </summary>
+        /// <param name="activator">The activator of the ability.</param>
+        /// <param name="group">The recast group to put this delay under.</param>
+        /// <param name="delaySeconds">The number of seconds to delay.</param>
+        /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
+        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
+        {
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
+
+            // NPCs and DM-possessed NPCs
+            if (!GetIsPC(activator) || GetIsDMPossessed(activator))
+            {
+                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
+                var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
+                SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
+            }
+            // Players
+            else if (GetIsPC(activator) && !GetIsDM(activator))
+            {
+                var playerId = GetObjectUUID(activator);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (!ignoreRecastReduction)
+                {
+                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
+                    var recastReduction = dbPlayer.AbilityRecastReduction;
+                    if (foodEffect != null)
+                    {
+                        recastReduction += foodEffect.RecastReductionPercent;
+                    }
+
+                    var recastPercentage = recastReduction * 0.01f;
+                    if (recastPercentage > 0.5f)
+                        recastPercentage = 0.5f;
+
+                    delaySeconds -= delaySeconds * recastPercentage;
+                }
+
+
+
+                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
+                dbPlayer.RecastTimes[group] = recastDate;
+
+                DB.Set(dbPlayer);
+            }
+
         }
     }
 }

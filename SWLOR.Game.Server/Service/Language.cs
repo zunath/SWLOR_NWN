@@ -164,11 +164,11 @@ namespace SWLOR.Game.Server.Service
                     amount += socialModifier * 10;
                 }
 
-                Skill.GiveSkillXP(listener, language, amount);
+                Skill.GiveSkillXP(listener, language, amount, false, false);
 
                 // Grant Force XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    Skill.GiveSkillXP(listener, SkillType.Force, amount * 10);
+                    Skill.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
 
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));

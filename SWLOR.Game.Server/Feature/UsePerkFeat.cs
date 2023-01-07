@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature
 
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-                ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
                 {
@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Feature
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
-            ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+            Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
@@ -426,52 +426,6 @@ namespace SWLOR.Game.Server.Feature
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);
             DeleteLocalInt(player, ActiveAbilityEffectivePerkLevelName);
-        }
-
-        /// <summary>
-        /// Applies a recast delay on a specific recast group.
-        /// If group is invalid or delay amount is less than or equal to zero, nothing will happen.
-        /// </summary>
-        /// <param name="activator">The activator of the ability.</param>
-        /// <param name="group">The recast group to put this delay under.</param>
-        /// <param name="delaySeconds">The number of seconds to delay.</param>
-        private static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds)
-        {
-            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
-
-            // NPCs and DM-possessed NPCs
-            if (!GetIsPC(activator) || GetIsDMPossessed(activator))
-            {
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
-                var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
-                SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
-            }
-            // Players
-            else if (GetIsPC(activator) && !GetIsDM(activator))
-            {
-                var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Entity.Player>(playerId);
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
-
-                var recastReduction = dbPlayer.AbilityRecastReduction;
-
-                if (foodEffect != null)
-                {
-                    recastReduction += foodEffect.RecastReductionPercent;
-                }
-
-                var recastPercentage = recastReduction * 0.01f;
-                if (recastPercentage > 0.5f)
-                    recastPercentage = 0.5f;
-
-                delaySeconds -= delaySeconds * recastPercentage;
-
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
-                dbPlayer.RecastTimes[group] = recastDate;
-
-                DB.Set(dbPlayer);
-            }
-
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         public Dictionary<string, ItemDetail> BuildItems()
         {
             _builder.Create("player_guide", "survival_knife")
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "DESTROY_ITEM", item);
                     Dialog.StartConversation(user, user, nameof(DestroyItemDialog));

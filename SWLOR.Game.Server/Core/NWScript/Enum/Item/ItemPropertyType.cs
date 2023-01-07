@@ -124,5 +124,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         DroidInstruction = 123,
         DroidPersonality = 124,
         NPCSkill = 125,
+        IncreasedPrice = 126,
     }
 }

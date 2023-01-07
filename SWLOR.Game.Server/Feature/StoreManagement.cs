@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class CleanStores
+    public class StoreManagement
     {
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
         private static readonly List<uint> _stores = new();
+        private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
 
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
@@ -28,7 +31,8 @@ namespace SWLOR.Game.Server.Feature
 
                     for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
                     {
-                        SetLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM", true);
+                        SetLocalBool(item, StoreServiceItem, true);
+                        ApplyIncreasedPriceItemProperty(item);
                     }
 
                     _stores.Add(store);
@@ -44,8 +48,52 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_acquire")]
         public static void AcquireItem()
         {
+            ClearStoreServiceItemFlag();
+            HandleIncreasedPriceItemProperty();
+        }
+
+        private static void ClearStoreServiceItemFlag()
+        {
             var item = GetModuleItemAcquired();
-            DeleteLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM");
+            DeleteLocalBool(item, StoreServiceItem);
+        }
+        
+        private static void HandleIncreasedPriceItemProperty()
+        {
+            var item = GetModuleItemAcquired();
+            var creature = GetModuleItemAcquiredBy();
+
+            if (GetIsPC(creature))
+            {
+                BiowareXP2.IPRemoveMatchingItemProperties(item, ItemPropertyType.IncreasedPrice, DurationType.Invalid, -1);
+            }
+            else
+            {
+                ApplyIncreasedPriceItemProperty(item);
+            }
+        }
+
+        private static void ApplyIncreasedPriceItemProperty(uint item)
+        {
+            var increasedPrice = 0;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.IncreasedPrice)
+                {
+                    var index = GetItemPropertyCostTableValue(ip);
+                    var value = Get2DAString("iprp_incprice", "Cost", index);
+                    if (int.TryParse(value, out var price))
+                    {
+                        increasedPrice += price;
+                    }
+                }
+            }
+
+            if (increasedPrice > 0)
+            {
+                var price = ItemPlugin.GetBaseGoldPieceValue(item) + increasedPrice;
+                ItemPlugin.SetBaseGoldPieceValue(item, price);
+            }
         }
 
         /// <summary>
@@ -58,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
                 var count = 0;
                 for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
                 {
-                    if (GetLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM"))
+                    if (GetLocalBool(item, StoreServiceItem))
                         continue;
 
                     DestroyObject(item);

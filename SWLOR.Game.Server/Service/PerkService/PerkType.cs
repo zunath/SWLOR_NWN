@@ -264,6 +264,8 @@
         ShieldResistance = 259,
         Infusion = 260,
         Alacrity = 261,
-        Clarity = 262
+        Clarity = 262,
+        // 263 is free
+        DroidAssembly = 264
     }
 }

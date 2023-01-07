@@ -549,6 +549,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.ModuleEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Droid)
+            {
+                typeIP = ItemPropertyType.DroidEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {
@@ -640,6 +644,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.DroidEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
@@ -1120,7 +1130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Give XP plus a percent bonus based on the quality achieved.
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, firstTime, qualityPercent);
-            Skill.GiveSkillXP(Player, recipe.Skill, xp);
+            Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             // Clean up and return to the Set Up mode.
             _itemPropertiesEnhancement1.Clear();
@@ -1186,7 +1196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // 15% of XP is gained for failures.
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
             xp = (int)(xp * 0.15f);
-            Skill.GiveSkillXP(Player, recipe.Skill, xp);
+            Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }

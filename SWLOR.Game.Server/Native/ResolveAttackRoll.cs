@@ -230,17 +230,16 @@ namespace SWLOR.Game.Server.Native
                 weapon != null &&
                 (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
                  Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
-            int hasITWF = attackerStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting);
+            var hasImprovedTwoWeaponFighting = attackerStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting) == 1;
+            var isShieldEquipped = offhand != null && Item.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
+            var isDualKatarsEquipped = weapon != null && Item.KatarBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                                       offhand != null && Item.KatarBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
             var percentageModifier = 0;
 
-            if (bDoubleWeapon ||
-                (offhand != null &&
-                 offhand.m_nBaseItem != (uint)BaseItem.LargeShield &&
-                 offhand.m_nBaseItem != (uint)BaseItem.SmallShield &&
-                 offhand.m_nBaseItem != (uint)BaseItem.TowerShield))
+            if (bDoubleWeapon || !isShieldEquipped || !isDualKatarsEquipped)
             {
                 // Apply the base two weapon fighting penalty.
-                if(hasITWF == 0 || weapon == offhand) // Main-hand ITWF has no penalty.
+                if(!hasImprovedTwoWeaponFighting || weapon == offhand) // Main-hand ITWF has no penalty.
                     percentageModifier -= 10;
 
                 var logMessage = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + ": " + percentageModifier);

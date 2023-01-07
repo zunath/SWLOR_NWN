@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("KEY_ITEM")
                 .Delay(1f)
                 .ReducesItemCharge()
-                .ValidationAction((user, item, target, location) =>
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var keyItemId = GetLocalInt(item, "KEY_ITEM_ID");
 
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location) =>
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var area = GetArea(user);
                     var keyItemId = GetLocalInt(item, "KEY_ITEM_ID");

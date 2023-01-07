@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
@@ -178,8 +179,8 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.Trident] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.WarHammer] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
 
@@ -281,6 +282,8 @@ namespace SWLOR.Game.Server.Service
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
+            var propertyIndex = Convert.ToInt32(EventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
+            var itemDetail = _items[itemTag];
 
             // Bypass the NWN "item use" animation.
             EventsPlugin.SkipEvent();
@@ -299,8 +302,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var itemDetail = _items[itemTag];
-            var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
+            // Check recast cooldown
+            if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
+            {
+                var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                if (isOnRecast)
+                {
+                    SendMessageToPC(user, $"This item can be used in {timeToWait}.");
+                    return;
+                }
+            }
+
+            var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation, propertyIndex);
 
             // Failed validation.
             if(!string.IsNullOrWhiteSpace(validationMessage))
@@ -312,13 +325,13 @@ namespace SWLOR.Game.Server.Service
             // Send the initialization message, if there is one.
             var initializationMessage = itemDetail.InitializationMessageAction == null
                 ? string.Empty
-                : itemDetail.InitializationMessageAction(user, item, target, targetLocation);
+                : itemDetail.InitializationMessageAction(user, item, target, targetLocation, propertyIndex);
             if (!string.IsNullOrWhiteSpace(initializationMessage))
             {
                 SendMessageToPC(user, initializationMessage);
             }
 
-            var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation) ?? 3.5f;
+            var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? 3.5f;
             // Distance checks, if necessary for this item.
             if (GetItemPossessor(target) != user && maxDistance > 0.0f)
             {
@@ -346,7 +359,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(user, () => SetFacingPoint(targetPosition));
             }
 
-            var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation) ?? 0.0f;
+            var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? 0.0f;
             // Play an animation if configured.
             if (itemDetail.ActivationAnimation != Animation.Invalid)
             {
@@ -384,17 +397,22 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Rerun validation since things may have changed since the user started the action.
-                    validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
+                    validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation, propertyIndex);
                     if (!string.IsNullOrWhiteSpace(validationMessage))
                     {
                         SendMessageToPC(user, validationMessage);
                         return;
                     }
 
-                    itemDetail.ApplyAction(user, item, target, targetLocation);
+                    itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
+
+                    if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
+                    {
+                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                    }
 
                     // Reduce item charge if specified.
-                    var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
+                    var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? false;
                     if (reducesItemCharge)
                     {
                         var charges = GetItemCharges(item) - 1;
@@ -1047,6 +1065,39 @@ namespace SWLOR.Game.Server.Service
         public static void MarkLegacyItem(uint item)
         {
             SetTag(item, "LEGACY_ITEM");
+        }
+
+        /// <summary>
+        /// Retrieves the item slot of a specific item.
+        /// If the item isn't equipped, InventorySlot.Invalid will be returned.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>The inventory slot of the item or InventorySlot.Invalid if not equipped.</returns>
+        public static InventorySlot GetItemSlot(uint creature, uint item)
+        {
+            var slot = InventorySlot.Invalid;
+
+            if (GetItemInSlot(InventorySlot.Head, creature) == item) slot = InventorySlot.Head;
+            if (GetItemInSlot(InventorySlot.Chest, creature) == item) slot = InventorySlot.Chest;
+            if (GetItemInSlot(InventorySlot.Boots, creature) == item) slot = InventorySlot.Boots;
+            if (GetItemInSlot(InventorySlot.Arms, creature) == item) slot = InventorySlot.Arms;
+            if (GetItemInSlot(InventorySlot.RightHand, creature) == item) slot = InventorySlot.RightHand;
+            if (GetItemInSlot(InventorySlot.LeftHand, creature) == item) slot = InventorySlot.LeftHand;
+            if (GetItemInSlot(InventorySlot.Cloak, creature) == item) slot = InventorySlot.Cloak;
+            if (GetItemInSlot(InventorySlot.LeftRing, creature) == item) slot = InventorySlot.LeftRing;
+            if (GetItemInSlot(InventorySlot.RightRing, creature) == item) slot = InventorySlot.RightRing;
+            if (GetItemInSlot(InventorySlot.Neck, creature) == item) slot = InventorySlot.Neck;
+            if (GetItemInSlot(InventorySlot.Belt, creature) == item) slot = InventorySlot.Belt;
+            if (GetItemInSlot(InventorySlot.Arrows, creature) == item) slot = InventorySlot.Arrows;
+            if (GetItemInSlot(InventorySlot.Bullets, creature) == item) slot = InventorySlot.Bullets;
+            if (GetItemInSlot(InventorySlot.Bolts, creature) == item) slot = InventorySlot.Bolts;
+            if (GetItemInSlot(InventorySlot.CreatureLeft, creature) == item) slot = InventorySlot.CreatureLeft;
+            if (GetItemInSlot(InventorySlot.CreatureRight, creature) == item) slot = InventorySlot.CreatureRight;
+            if (GetItemInSlot(InventorySlot.CreatureBite, creature) == item) slot = InventorySlot.CreatureBite;
+            if (GetItemInSlot(InventorySlot.CreatureArmor, creature) == item) slot = InventorySlot.CreatureArmor;
+
+            return slot;
         }
 
     }

@@ -3694,6 +3694,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 450.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Lord"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcdarklord"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {
@@ -8647,6 +8666,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nulaaaldette"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pc_droid"
                     }
                   },
                   {

@@ -671,6 +671,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 14 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab1)
@@ -678,6 +679,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 30 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab2)
@@ -685,6 +687,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 45 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab3);

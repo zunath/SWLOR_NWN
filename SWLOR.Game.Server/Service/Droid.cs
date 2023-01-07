@@ -509,6 +509,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="controller">The controller item</param>
         public static void SpawnDroid(uint player, uint controller)
         {
+            // Close AI programming if open.
+            if (Gui.IsWindowOpen(player, GuiWindowType.DroidAI))
+            {
+                Gui.CloseWindow(player, GuiWindowType.DroidAI, player);
+            }
+
             var details = LoadDroidItemPropertyDetails(controller);
 
             var droid = CreateObject(ObjectType.Creature, DroidResref, GetLocation(player), true);

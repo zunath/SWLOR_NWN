@@ -136,7 +136,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     // Reprogramming
                     else if (itemPropertyIndex == 2)
                     {
-                        var payload = new DroidProgrammingPayload(item);
+                        SetItemCursedFlag(item, true);
+                        var payload = new DroidAIPayload(item);
                         Gui.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
                     }
                 });

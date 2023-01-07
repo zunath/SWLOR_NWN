@@ -8,34 +8,34 @@ namespace SWLOR.Game.Server.Service.PerkService
     /// </summary>
     public class PerkRequirementSkill : IPerkRequirement
     {
-        private readonly SkillType _type;
-        private readonly int _requiredRank;
+        private SkillType Type { get; }
+        public int RequiredRank { get; }
 
         public PerkRequirementSkill(SkillType type, int requiredRank)
         {
-            _type = type;
-            _requiredRank = requiredRank;
+            Type = type;
+            RequiredRank = requiredRank;
         }
 
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var skill = dbPlayer.Skills[_type];
+            var skill = dbPlayer.Skills[Type];
             var rank = skill.Rank;
 
-            if (rank >= _requiredRank) 
+            if (rank >= RequiredRank) 
                 return string.Empty;
 
-            return $"Your skill rank is too low. (Your rank is {rank} versus required rank {_requiredRank})";
+            return $"Your skill rank is too low. (Your rank is {rank} versus required rank {RequiredRank})";
         }
 
         public string RequirementText
         {
             get
             {
-                var skillDetails = Skill.GetSkillDetails(_type);
-                return $"{skillDetails.Name} rank {_requiredRank}";
+                var skillDetails = Skill.GetSkillDetails(Type);
+                return $"{skillDetails.Name} rank {RequiredRank}";
             }
         }
     }

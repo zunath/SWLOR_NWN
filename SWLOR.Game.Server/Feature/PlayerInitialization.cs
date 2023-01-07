@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
             dbPlayer.RebuildComplete = true;
-            dbPlayer.NumberRebuildsAvailable = 1;
+            dbPlayer.NumberRebuildsAvailable = 0;
         }
 
         /// <summary>

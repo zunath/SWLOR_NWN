@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -57,12 +55,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants the Power Attack feat which grants a 3 DMG bonus at the cost of -5 to accuracy. [Cross Skill]")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.PowerAttack)
 
                 .AddPerkLevel()
                 .Description("Grants the Improved Power Attack feat which grants a 6 DMG bonus at the cost of -10 to accuracy. [Cross Skill]")
                 .Price(4)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedPowerAttack);
@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants an additional 5 accuracy while wielding two-handed weapons.")
                 .Price(5)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SuperiorWeaponFocus);
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants a free attack against any opponent who is within melee range when an enemy is killed. [Cross Skill]")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 10)
                 .GrantsFeat(FeatType.Cleave);
         }
@@ -219,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 12 DMG and has a DC10 Fortitude check to inflict stun for 3 seconds.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon1)
@@ -226,6 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 21 DMG and has a DC15 Fortitude check to inflict stun for 3 seconds.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon2)
@@ -233,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 34 DMG and has a DC20 Fortitude check to inflict stun for 3 seconds.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrescentMoon3);
@@ -246,6 +251,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 16 DMG to your target.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash1)
@@ -253,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 24 DMG to your target.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash2)
@@ -260,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 38 DMG to your target.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HardSlash3);
@@ -378,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 12 DMG and has a DC10 Will check to interrupt the target's abilities and concentration.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer1)
@@ -385,6 +394,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 21 DMG and has a DC15 Will check to interrupt the target's abilities and concentration.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer2)
@@ -392,6 +402,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 34 DMG and has a DC20 Will check to interrupt the target's abilities and concentration.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Skewer3);
@@ -405,6 +416,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 11 DMG.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust1)
@@ -412,6 +424,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 19 DMG.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust2)
@@ -419,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 29 DMG.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleThrust3);
@@ -537,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Attacks up to 3 nearby enemies for 10 DMG each.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl1)
@@ -544,6 +559,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Attacks up to 3 nearby enemies for 18 DMG each.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl2)
@@ -551,6 +567,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Attacks up to 3 nearby enemies for 28 DMG each.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl3);
@@ -564,6 +581,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 8 DMG and has a DC10 Reflex check to reduce your target's Evasion by 2 for 1 minute.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut1)
@@ -571,6 +589,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 17 DMG and has a DC15 Reflex check to reduce your target's Evasion by 4 for 1 minute.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.TwoHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut2)
@@ -578,6 +597,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly attacks twice, each for 25 DMG and has a DC20 Reflex check to reduce your target's Evasion by 6 for 1 minute.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CrossCut3);

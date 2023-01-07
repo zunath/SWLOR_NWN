@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -87,6 +88,7 @@ namespace SWLOR.Game.Server.Entity
             Craftsmanship = new Dictionary<SkillType, int>();
             CPBonus = new Dictionary<SkillType, int>();
             AbilityToggles = new Dictionary<AbilityToggleType, bool>();
+            Currencies = new Dictionary<CurrencyType, int>();
         }
 
 
@@ -126,8 +128,6 @@ namespace SWLOR.Game.Server.Entity
         public int STMRegen { get; set; }
         public int XPDebt { get; set; }
         public int DMXPBonus { get; set; }
-        public int NumberPerkResetsAvailable { get; set; }
-        public int NumberRebuildsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }
         public bool IsUsingDualPistolMode { get; set; }
@@ -174,6 +174,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public Dictionary<AbilityToggleType, bool> AbilityToggles { get; set; }
+        public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
     }
 

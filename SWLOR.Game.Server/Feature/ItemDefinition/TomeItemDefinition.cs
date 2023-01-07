@@ -3,24 +3,27 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
-    public class XPTomeItemDefinition: IItemListDefinition
+    public class TomeItemDefinition: IItemListDefinition
     {
+        private readonly ItemBuilder _builder = new();
+
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            var builder = new ItemBuilder();
-            XPTomes(builder);
-            PerkRefundTome(builder);
+            XPTomes();
+            PerkRefundTome();
+            APRefundTome();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private static void XPTomes(ItemBuilder builder)
+        private void XPTomes()
         {
-            builder.Create("xp_tome_1", "xp_tome_2", "xp_tome_3", "xp_tome_4")
+            _builder.Create("xp_tome_1", "xp_tome_2", "xp_tome_3", "xp_tome_4")
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
@@ -30,20 +33,17 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
         }
 
-        private static void PerkRefundTome(ItemBuilder builder)
+        private void PerkRefundTome()
         {
-            builder.Create("refund_tome")
+            _builder.Create("refund_tome")
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
                     {
                         return "Only players may use this item.";
                     }
-
-                    var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
-
-                    if (dbPlayer.NumberPerkResetsAvailable >= 99)
+                    
+                    if (Currency.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
                     {
                         return "You cannot add any more perk resets to your collection.";
                     }
@@ -52,18 +52,17 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
-
-                    dbPlayer.NumberPerkResetsAvailable++;
-
-                    DB.Set(dbPlayer);
-
-                    SendMessageToPC(user, $"You gain a reset token. (Total: {dbPlayer.NumberPerkResetsAvailable})");
+                    Currency.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a reset token. (Total: {Currency.GetCurrency(user, CurrencyType.PerkRefundToken)})");
                     DestroyObject(item);
                     Gui.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
         }
-        
+
+        private void APRefundTome()
+        {
+            
+        }
+
     }
 }

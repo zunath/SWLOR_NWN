@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using Skill = SWLOR.Game.Server.Service.Skill;
@@ -526,7 +527,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
             agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
-            RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
+            RebuildTokens = Currency.GetCurrency(Player, CurrencyType.RebuildToken).ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

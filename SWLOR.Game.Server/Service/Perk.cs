@@ -156,8 +156,6 @@ namespace SWLOR.Game.Server.Service
                             _perkLevelTiers[perkType] = new Dictionary<int, int>();
 
                         _perkLevelTiers[perkType][level] = tier;
-
-                        Console.WriteLine($"{perkDetail.Name} tier = {tier}");
                     }
 
                     // Add to the perks by category cache.

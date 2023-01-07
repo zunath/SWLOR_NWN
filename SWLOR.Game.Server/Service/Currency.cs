@@ -1,11 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CurrencyService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Currency
     {
+        private static readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new();
+
+        /// <summary>
+        /// When the module caches, cache all currency details into memory.
+        /// </summary>
+        [NWNEventHandler("mod_cache")]
+        public static void CacheCurrencies()
+        {
+            var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();
+            foreach (var currencyType in currencyTypes)
+            {
+                // Skip over the invalid currencies.
+                if (currencyType == CurrencyType.Invalid)
+                    continue;
+
+                var detail = currencyType.GetAttribute<CurrencyType, CurrencyAttribute>();
+                _currencies[currencyType] = detail;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the details about a specific currency type.
+        /// </summary>
+        /// <param name="currencyType">The type of currency to retrieve.</param>
+        /// <returns>The details about a currency.</returns>
+        public static CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType)
+        {
+            return _currencies[currencyType];
+        }
+
         /// <summary>
         /// Retrieves the amount of a specific currency held by a player.
         /// </summary>

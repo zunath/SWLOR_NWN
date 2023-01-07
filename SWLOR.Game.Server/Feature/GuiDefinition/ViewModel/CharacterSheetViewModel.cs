@@ -192,12 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string RebuildTokens
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -279,6 +273,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickKeyItems() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
+        };
+
+        public Action OnClickCurrencies() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Currencies);
         };
 
         public Action OnClickAchievements() => () =>
@@ -392,6 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             UpgradeAttribute(AbilityType.Social, "Social");
         };
+
 
         private void RefreshStats(Player dbPlayer)
         {
@@ -527,7 +527,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
             agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
-            RebuildTokens = Currency.GetCurrency(Player, CurrencyType.RebuildToken).ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

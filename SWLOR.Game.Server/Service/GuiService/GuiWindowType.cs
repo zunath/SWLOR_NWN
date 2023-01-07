@@ -48,5 +48,6 @@
         Emotes = 43,
         DroidAssembly = 44,
         DroidAI = 45,
+        Currencies = 46,
     }
 }

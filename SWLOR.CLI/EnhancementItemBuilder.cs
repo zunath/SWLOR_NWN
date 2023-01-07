@@ -79,6 +79,7 @@ namespace SWLOR.CLI
             { "Shield Recharge Rate", 49 },
             { "Thermal Damage", 51 },
             { "Thermal Defense", 55 },
+            { "Module Bonus", 45},
             { "Agility", 58 },
             { "Attack", 83 },
             { "Force Attack", 84 }

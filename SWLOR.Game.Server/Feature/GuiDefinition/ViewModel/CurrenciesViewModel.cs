@@ -36,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 currencyValues.Add(value);
             }
 
-
             CurrencyNames = currencyNames;
             CurrencyValues = currencyValues;
         }

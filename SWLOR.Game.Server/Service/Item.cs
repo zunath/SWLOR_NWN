@@ -179,8 +179,8 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.Trident] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.WarHammer] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
 

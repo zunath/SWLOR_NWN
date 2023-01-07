@@ -2146,5 +2146,23 @@
         DAHL005 = 4361,
         DABR005 = 4362,
         DALG005 = 4363,
+
+        // Attack, Force Attack enhancements, 4664-4678
+
+        ArmorEnhancementAttack1 = 4664,
+        ArmorEnhancementAttack2 = 4665,
+        ArmorEnhancementAttack3 = 4666,
+        ArmorEnhancementAttack4 = 4667,
+        ArmorEnhancementAttack5 = 4668, 
+        ArmorEnhancementForceAttack1 = 4669,
+        ArmorEnhancementForceAttack2 = 4670,
+        ArmorEnhancementForceAttack3 = 4671,
+        ArmorEnhancementForceAttack4 = 4672,
+        ArmorEnhancementForceAttack5 = 4673,
+        WeaponEnhancementForceAttack1 = 4674,
+        WeaponEnhancementForceAttack2 = 4675,
+        WeaponEnhancementForceAttack3 = 4676,
+        WeaponEnhancementForceAttack4 = 4677,
+        WeaponEnhancementForceAttack5 = 4678,
     }
 }

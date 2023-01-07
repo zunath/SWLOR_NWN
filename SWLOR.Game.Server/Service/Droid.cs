@@ -325,14 +325,6 @@ namespace SWLOR.Game.Server.Service
         public static DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
         {
             var details = new DroidItemPropertyDetails();
-            if (details.Tier < 1)
-                details.Tier = 1;
-            else if (details.Tier > 5)
-                details.Tier = 5;
-
-            details.Perks = _defaultPerksByTier[details.Tier]
-                .ToDictionary(x => x.Key, y => y.Value);
-            
             for (var ip = GetFirstItemProperty(controller); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(controller))
             {
                 var type = GetItemPropertyType(ip);
@@ -417,6 +409,14 @@ namespace SWLOR.Game.Server.Service
                     details.PersonalityType = personalityType;
                 }
             }
+
+            if (details.Tier < 1)
+                details.Tier = 1;
+            else if (details.Tier > 5)
+                details.Tier = 5;
+
+            details.Perks = _defaultPerksByTier[details.Tier]
+                .ToDictionary(x => x.Key, y => y.Value);
 
             details.Level = _levelsByTier[details.Tier];
 

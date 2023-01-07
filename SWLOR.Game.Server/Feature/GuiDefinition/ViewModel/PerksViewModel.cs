@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new(255, 0, 0);
+        private static readonly GuiColor _green = new(0, 255, 0);
 
         private const int ItemsPerPage = 30;
         private int _pages;
@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .Where(x => x.Key <= pcPerkLevel)
                         .Sum(x => x.Value.Price);
                     // Update player's DB record.
-                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(12);
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(selectedPerk);
                     dbPlayer.NumberPerkResetsAvailable--;

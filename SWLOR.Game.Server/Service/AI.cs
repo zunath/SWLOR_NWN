@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 
@@ -314,6 +315,8 @@ namespace SWLOR.Game.Server.Service
                     ClearAllActions();
                     ActionAttack(target);
                 }
+
+                SetLocalInt(self, StickyTargetRounds, rounds);
             }
             // Perk ability usage
             else

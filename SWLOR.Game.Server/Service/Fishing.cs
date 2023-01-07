@@ -281,6 +281,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
+            {
+                SendMessageToPC(player, "This fishing point has been exhausted.");
+                return;
+            }
+
             var attemptId = Guid.NewGuid().ToString();
             var position = GetPosition(player);
             SetLocalFloat(player, FishingPositionVariableX, position.X);
@@ -327,7 +333,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (!GetIsObjectValid(fishingPoint))
+            if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;

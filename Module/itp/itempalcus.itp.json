@@ -7438,6 +7438,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Autoblaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdunrautobls"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Autoblaster Shells"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdunautobolt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Lord Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmplot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Prototype Greatsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmbot006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Prototype Warform Greatsword"
                     },
                     "RESREF": {
@@ -7454,6 +7498,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeestaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Prototype Pyroform Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdunrpyro"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pyroform Shells"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vkorrdunpyrobolt"
                     }
                   },
                   {
@@ -7679,6 +7745,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cz220_droid_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Lord Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcsplot"
                     }
                   },
                   {
@@ -9230,6 +9307,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Pyroform Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcapyroform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Saboteur Armor"
                     },
                     "RESREF": {
@@ -9257,6 +9345,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcasorc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Stormcaller Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcastorm"
                     }
                   },
                   {
@@ -16071,6 +16170,116 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Armor Enhancement - Accuracy I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_acc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Accuracy II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_acc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Accuracy III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_acc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Accuracy IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_acc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Accuracy V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_acc5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Attack I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_atk1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Attack II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_atk2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Attack III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_atk3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Attack IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_atk4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Attack V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_atk5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Armor Enhancement - Control - Agriculture I"
                     },
                     "RESREF": {
@@ -16890,6 +17099,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aen_eva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Force Attack I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_frcatk1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Force Attack II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_frcatk2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Force Attack III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_frcatk3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Force Attack IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_frcatk4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Force Attack V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_frcatk5"
                     }
                   },
                   {
@@ -34776,6 +35040,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wen_eva5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Force Attack I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_frcatk1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Force Attack II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_frcatk2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Force Attack III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_frcatk3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Force Attack IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_frcatk4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Force Attack V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_frcatk5"
                     }
                   },
                   {

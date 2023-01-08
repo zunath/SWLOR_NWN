@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 79
+    "value": 74
   },
   "Charges": {
     "type": "byte",
@@ -22,11 +22,13 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Using this tome will add a Reconditioning Token to your currencies list.\n\nYou may spend this token by using any Retraining Terminal. This will let you change your starting stats and it refunds your spent AP. In addition, it will refund your starting racial bonus stat. Please access the Retraining Terminal to learn more."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,16 +43,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Droid Controller"
+      "0": "Reconditioning Tome"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 20
+    "value": 246
   },
   "PaletteID": {
     "type": "byte",
-    "value": 20
+    "value": 60
   },
   "Plot": {
     "type": "byte",
@@ -87,7 +89,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 546
+          "value": 335
         }
       },
       {
@@ -98,11 +100,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 49
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -114,11 +116,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 15
+          "value": 126
         },
         "Subtype": {
           "type": "word",
-          "value": 548
+          "value": 0
         }
       },
       {
@@ -129,11 +131,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 3
+          "value": 49
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -145,11 +147,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 15
+          "value": 126
         },
         "Subtype": {
           "type": "word",
-          "value": 547
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 49
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 3
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 126
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 49
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 126
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -164,10 +228,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "droid_control"
+    "value": "recond_tome"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "droid_control"
+    "value": "recond_tome"
   }
 }

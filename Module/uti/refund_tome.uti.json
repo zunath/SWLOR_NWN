@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "This tome can be used to refund a single perk. Only one perk can be refunded per 24 hour (real world time) period.\n\nYou will lose the perk and all perk levels. All SP spent on the perk purchases will be refunded. You may immediately spend this SP on another perk purchase."
+      "0": "This tome can be used to refund a single perk. Only one perk can be refunded per 1 hour (real world time) period.\n\nYou will lose the perk and all perk levels. All SP spent on the perk purchases will be refunded. You may immediately spend this SP on another perk purchase."
     }
   },
   "Description": {
@@ -91,6 +91,37 @@
           "type": "word",
           "value": 335
         }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 49
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 126
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
       }
     ]
   },
@@ -109,25 +140,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "refund_tome"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "PerkRefund"
-        }
-      }
-    ]
   }
 }

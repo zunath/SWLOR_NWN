@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             foreach (var player in players)
             {
                 player.RacialStat = AbilityType.Invalid;
-                player.NumberRebuildsAvailable = 1;
 
                 DB.Set(player);
             }

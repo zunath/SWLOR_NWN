@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using Skill = SWLOR.Game.Server.Service.Skill;
@@ -191,12 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string RebuildTokens
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -280,6 +275,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
+        public Action OnClickCurrencies() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Currencies);
+        };
+
         public Action OnClickAchievements() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Achievements);
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
-                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action CANNOT be undone, even with a character rebuild. Are you SURE you want to upgrade this stat?"
+                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
                 : $"Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
 
             ShowModal(promptMessage, () =>
@@ -391,6 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             UpgradeAttribute(AbilityType.Social, "Social");
         };
+
 
         private void RefreshStats(Player dbPlayer)
         {
@@ -526,7 +527,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
             agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
-            RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

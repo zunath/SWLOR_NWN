@@ -67,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public void Migrate()
         {
             UpdatePersistentStorageWeapons();
-            GrantRebuildTokenToAllPlayers();
         }
 
         private void UpdatePersistentStorageWeapons()

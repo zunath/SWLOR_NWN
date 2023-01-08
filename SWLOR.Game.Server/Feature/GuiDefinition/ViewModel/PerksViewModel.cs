@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
@@ -20,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new(255, 0, 0);
+        private static readonly GuiColor _green = new(0, 255, 0);
 
         private const int ItemsPerPage = 30;
         private int _pages;
@@ -209,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
             TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {Skill.SkillCap}";
-            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {dbPlayer.NumberPerkResetsAvailable}]";
+            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {Currency.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
             IsRefundEnabled = false;
         }
 
@@ -400,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerkSelected = true;
             IsRefundEnabled = (dbPlayer.DatePerkRefundAvailable == null ||
                                dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
-                              dbPlayer.NumberPerkResetsAvailable > 0 &&
+                              Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
                               currentUpgrade != null;
         };
 
@@ -577,7 +578,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var selectedPerk = _filteredPerks[SelectedPerkIndex];
                 var perkDetail = Perk.GetPerkDetails(selectedPerk);
 
-                if (dbPlayer.NumberPerkResetsAvailable <= 0)
+                if (Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
                 {
                     FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
                 }
@@ -606,11 +607,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .Where(x => x.Key <= pcPerkLevel)
                         .Sum(x => x.Value.Price);
                     // Update player's DB record.
-                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(12);
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(selectedPerk);
-                    dbPlayer.NumberPerkResetsAvailable--;
                     DB.Set(dbPlayer);
+
+                    Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
                     // Write an audit log and notify the player
                     Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {selectedPerk}");

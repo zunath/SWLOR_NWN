@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -214,14 +215,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
-
-                    dbPlayer.NumberRebuildsAvailable++;
-                    DB.Set(dbPlayer);
-
+                    Currency.GiveCurrency(user, CurrencyType.RebuildToken, 1);
                     Item.ReduceItemStack(item, 1);
-                    SendMessageToPC(user, $"Total Rebuild Tokens: {dbPlayer.NumberRebuildsAvailable}");
+                    SendMessageToPC(user, $"Total Rebuild Tokens: {Currency.GetCurrency(user, CurrencyType.RebuildToken)}");
                 });
         }
     }

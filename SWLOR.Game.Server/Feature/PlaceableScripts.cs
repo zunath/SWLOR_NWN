@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.KeyItemService;
 
 namespace SWLOR.Game.Server.Feature
@@ -141,25 +142,20 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer.NumberRebuildsAvailable <= 0)
+            if (Currency.GetCurrency(player, CurrencyType.RebuildToken) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red($"You do not have any rebuild tokens."));
                 return;
             }
 
-            dbPlayer.NumberRebuildsAvailable--;
-
-            DB.Set(dbPlayer);
+            Currency.TakeCurrency(player, CurrencyType.RebuildToken, 1);
 
             var waypoint = GetWaypointByTag("REBUILD_LANDING");
             var location = GetLocation(waypoint);
             AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => JumpToLocation(location));
 
-            SendMessageToPC(player, $"Remaining rebuild tokens: {dbPlayer.NumberRebuildsAvailable}");
+            SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
         }
     }
 }

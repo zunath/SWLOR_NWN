@@ -4,9 +4,9 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class CharacterRebuildDefinition: IGuiWindowDefinition
+    public class CharacterFullRebuildDefinition: IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<CharacterRebuildViewModel> _builder = new();
+        private readonly GuiWindowBuilder<CharacterFullRebuildViewModel> _builder = new();
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.CharacterMigration)

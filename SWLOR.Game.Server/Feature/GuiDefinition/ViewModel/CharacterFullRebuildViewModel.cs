@@ -18,7 +18,7 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterRebuildViewModel: GuiViewModelBase<CharacterRebuildViewModel, GuiPayloadBase>
+    public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
         [NWNEventHandler("char_rebuild")]
         public static void LoadCharacterMigrationWindow()

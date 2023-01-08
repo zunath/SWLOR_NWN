@@ -12498,6 +12498,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Reconditioning Tome"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recond_tome"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Retraining Tome"
                     },
                     "RESREF": {
@@ -37564,7 +37575,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Droid Control Unit"
+                      "value": "Droid Controller"
                     },
                     "RESREF": {
                       "type": "resref",

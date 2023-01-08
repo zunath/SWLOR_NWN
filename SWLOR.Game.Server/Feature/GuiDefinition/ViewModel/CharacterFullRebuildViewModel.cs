@@ -264,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             SkillNames = skills;
+            SkillTooltips = tooltips;
         }
 
         private void RecalculateAvailableAbilityPoints()

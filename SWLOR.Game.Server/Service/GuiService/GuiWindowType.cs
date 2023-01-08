@@ -49,5 +49,6 @@
         DroidAssembly = 44,
         DroidAI = 45,
         Currencies = 46,
+        StatRebuild = 47,
     }
 }

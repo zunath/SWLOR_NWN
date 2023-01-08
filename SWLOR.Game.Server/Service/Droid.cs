@@ -726,6 +726,10 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(GetModule(), () =>
             {
                 DelayCommand(0.1f, () => DeleteLocalBool(droid, DroidIsSpawning));
+                DelayCommand(4f, () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
+                });
             });
         }
 

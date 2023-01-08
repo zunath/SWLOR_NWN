@@ -68199,6 +68199,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "HoloNet Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "holonetterminal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Market Terminal"
                     },
                     "RESREF": {

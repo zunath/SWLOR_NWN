@@ -685,6 +685,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
             {
                 var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
+                SetName(controller, $"Droid Controller: {Name}");
+
                 var constructedDroid = Droid.LoadConstructedDroid(controller);
                 constructedDroid.Name = Name;
 

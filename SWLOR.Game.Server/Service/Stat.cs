@@ -23,8 +23,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class Stat
     {
-        private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new();
-
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
@@ -675,43 +673,7 @@ namespace SWLOR.Game.Server.Service
 
             entity.CPBonus[skillType] += adjustBy;
         }
-
-        /// <summary>
-        /// When a creature spawns, load its relevant defense information based on their equipment.
-        /// </summary>
-        [NWNEventHandler("crea_spawn_bef")]
-        public static void LoadNPCDefense()
-        {
-            var creature = OBJECT_SELF;
-            _npcDefenses[creature] = new Dictionary<CombatDamageType, int>();
-
-            foreach (var type in Combat.GetAllDamageTypes())
-            {
-                _npcDefenses[creature][type] = 0;
-            }
-
-            // Pull defense values off skin.
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
-            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-            {
-                if (GetItemPropertyType(ip) == ItemPropertyType.Defense)
-                {
-                    var damageType = (CombatDamageType)GetItemPropertySubType(ip);
-                    if (damageType == CombatDamageType.Invalid)
-                        continue;
-
-                    _npcDefenses[creature][damageType] += GetItemPropertyCostTableValue(ip);
-                }
-            }
-        }
-
-        [NWNEventHandler("crea_death_aft")]
-        public static void ClearNPCDefense()
-        {
-            if (_npcDefenses.ContainsKey(OBJECT_SELF))
-                _npcDefenses.Remove(OBJECT_SELF);
-        }
-
+        
         /// <summary>
         /// Modifies defense value based on effects found on creature.
         /// </summary>
@@ -988,10 +950,12 @@ namespace SWLOR.Game.Server.Service
                 {
                     rate = 0.7f;
                 }
-
-                if (_npcDefenses.ContainsKey(creature) && defenseBonusOverride <= 0)
+                
+                if (defenseBonusOverride <= 0)
                 {
-                    equipmentDefense += _npcDefenses[creature][type];
+                    equipmentDefense += npcStats.Defenses.ContainsKey(type) 
+                        ? npcStats.Defenses[type]
+                        : 0;
                 }
 
                 skillLevel = npcStats.Level;
@@ -1093,10 +1057,9 @@ namespace SWLOR.Game.Server.Service
                     rate = 0.7f;
                 }
 
-                if (_npcDefenses.ContainsKey(creature.m_idSelf))
-                {
-                    equipmentDefense += _npcDefenses[creature.m_idSelf][type];
-                }
+                equipmentDefense += npcStats.Defenses.ContainsKey(type)
+                    ? npcStats.Defenses[type]
+                    : 0;
 
                 skillLevel = npcStats.Level;
             }

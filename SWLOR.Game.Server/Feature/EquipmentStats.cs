@@ -477,11 +477,14 @@ namespace SWLOR.Game.Server.Feature
                 var value = 0;
                 for (var defenseIP = GetFirstItemProperty(skin); GetIsItemPropertyValid(defenseIP); defenseIP = GetNextItemProperty(skin))
                 {
-                    var subType = (CombatDamageType)GetItemPropertySubType(defenseIP);
-
-                    if (subType == damageType)
+                    if (GetItemPropertyType(defenseIP) == ItemPropertyType.Defense)
                     {
-                        value += GetItemPropertyCostTableValue(defenseIP);
+                        var subType = (CombatDamageType)GetItemPropertySubType(defenseIP);
+
+                        if (subType == damageType)
+                        {
+                            value += GetItemPropertyCostTableValue(defenseIP);
+                        }
                     }
                 }
 
@@ -494,8 +497,15 @@ namespace SWLOR.Game.Server.Feature
                     value -= amount;
                 }
 
-                var newIP = ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, value);
-                BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                if (value <= 0)
+                {
+                    BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.Defense, DurationType.Invalid, (int)damageType);
+                }
+                else
+                {
+                    var newIP = ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, value);
+                    BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                }
             }
         }
 

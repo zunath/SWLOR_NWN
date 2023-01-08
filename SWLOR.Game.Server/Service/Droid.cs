@@ -358,6 +358,8 @@ namespace SWLOR.Game.Server.Service
                     {
                         case DroidStatSubType.Tier:
                             details.Tier = value < 1 ? 1 : value;
+                            details.Perks = _defaultPerksByTier[details.Tier]
+                                .ToDictionary(x => x.Key, y => y.Value);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -430,13 +432,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (details.Tier < 1)
-                details.Tier = 1;
-            else if (details.Tier > 5)
-                details.Tier = 5;
-
-            details.Perks = _defaultPerksByTier[details.Tier]
-                .ToDictionary(x => x.Key, y => y.Value);
 
             details.Level = _levelsByTier[details.Tier];
 

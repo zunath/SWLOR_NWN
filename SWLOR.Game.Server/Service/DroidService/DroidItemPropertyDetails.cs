@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public DroidItemPropertyDetails()
         {
+            Tier = 1;
             CustomName = string.Empty;
             Skills = new Dictionary<SkillType, int>();
             Perks = new Dictionary<PerkType, int>();

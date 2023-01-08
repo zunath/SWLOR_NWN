@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Service
                 _playerAuras.Add(self, new PlayerAura());
 
             // Party Members
-            if (GetIsPC(entering) && !GetIsDM(entering) && !GetIsDMPossessed(entering) && GetFactionEqual(self, entering))
+            if (Party.IsInParty(self, entering))
             {
                 if (_playerAuras[self].PartyMembersInRange.Contains(entering))
                     return;
@@ -669,7 +669,7 @@ namespace SWLOR.Game.Server.Service
             if (!_playerAuras.ContainsKey(self))
                 _playerAuras.Add(self, new PlayerAura());
 
-            if (GetIsPC(exiting) && !GetIsDM(exiting) && !GetIsDMPossessed(exiting))
+            if (Party.IsInParty(self, exiting))
             {
                 if (!_playerAuras[self].PartyMembersInRange.Contains(exiting))
                     return;

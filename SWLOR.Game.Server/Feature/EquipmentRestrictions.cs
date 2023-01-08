@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature
         public static void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             RunUnequipTriggers(player, item);

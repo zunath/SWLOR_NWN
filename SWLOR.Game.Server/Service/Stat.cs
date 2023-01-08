@@ -1459,10 +1459,10 @@ namespace SWLOR.Game.Server.Service
         /// Applies the total number of attacks per round to a player.
         /// If a valid weapon is passed in the associated mastery perk will also be checked.
         /// </summary>
-        /// <param name="player">The player to apply attacks to</param>
+        /// <param name="creature">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        public static void ApplyAttacksPerRound(uint creature, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1506,7 +1506,7 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
             }
 
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
@@ -1522,13 +1522,13 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
-                numberOfAttacks += GetFlurryBonus(player);
+                numberOfAttacks += GetFlurryBonus(creature);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
+                numberOfAttacks += GetRapidShotBonus(creature);
             }
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
@@ -1570,13 +1570,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
-                numberOfAttacks += GetShieldBonus(player);
+                numberOfAttacks += GetShieldBonus(creature);
 
-            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
+            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             var bab = GetBABForAttacks(numberOfAttacks);
-            CreaturePlugin.SetBaseAttackBonus(player, bab);
+            CreaturePlugin.SetBaseAttackBonus(creature, bab);
         }
 
         public static void ApplyCritModifier(uint player, uint rightHandWeapon)

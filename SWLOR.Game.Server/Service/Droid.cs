@@ -271,6 +271,13 @@ namespace SWLOR.Game.Server.Service
             var itemId = GetObjectUUID(item);
             var controller = GetControllerItem(droid);
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+
+            if (slot == InventorySlot.CreatureArmor ||
+                slot == InventorySlot.CreatureBite ||
+                slot == InventorySlot.CreatureLeft ||
+                slot == InventorySlot.CreatureRight)
+                return;
+
             var constructedDroid = LoadConstructedDroid(controller);
 
             // Equipment won't be in the inventory but it does get equipped on spawn-in.
@@ -298,6 +305,13 @@ namespace SWLOR.Game.Server.Service
             var itemId = GetObjectUUID(item);
             var controller = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
+
+            if (slot == InventorySlot.CreatureArmor ||
+                slot == InventorySlot.CreatureBite ||
+                slot == InventorySlot.CreatureLeft ||
+                slot == InventorySlot.CreatureRight)
+                return;
+
             var constructedDroid = LoadConstructedDroid(controller);
 
             constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];

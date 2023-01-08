@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.DroidService
             "It's a pleasure to see you here. You'll ignore me, of course. But I can't help it, I'm programmed to like you.",
             "It's good to see you. You don't care if you see ME, of course. I'm just a lonely droid...",
             "It's wonderful to see you. Maybe you'll just loosen this restraining bolt here ... no? Oh well.",
-            "Welcome.",
+            "Hello.",
             "Well, it's nice to meet you before I rust away."
         };
 

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             XPTomes();
             PerkRefundTome();
-            APRefundTome();
+            StatRefundTome();
 
             return _builder.Build();
         }
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
         }
 
-        private void APRefundTome()
+        private void StatRefundTome()
         {
             _builder.Create("recond_tome")
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>

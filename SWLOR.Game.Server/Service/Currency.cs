@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -82,6 +83,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] += amount;
 
             DB.Set(dbPlayer);
+            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
 
         /// <summary>
@@ -106,6 +108,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] -= amount;
 
             DB.Set(dbPlayer);
+            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
     }
 }

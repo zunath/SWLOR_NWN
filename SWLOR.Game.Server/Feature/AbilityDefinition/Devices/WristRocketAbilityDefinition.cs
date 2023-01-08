@@ -43,24 +43,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target);
             });
 
-            if (dc > 0)
+            DelayCommand(delay, () =>
             {
-                DelayCommand(delay, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
+
+                if (dc > 0)
                 {
                     const float Duration = 3f;
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
-
                     dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-                    if(checkResult == SavingThrowResultType.Failed)
+                    if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
 
                         Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
-                });
-            }
+                }
+            });
         }
 
         private void WristRocket1()

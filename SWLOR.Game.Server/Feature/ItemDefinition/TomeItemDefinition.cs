@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void PerkRefundTome()
         {
             _builder.Create("refund_tome")
+                .Delay(3f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void StatRefundTome()
         {
             _builder.Create("recond_tome")
+                .Delay(3f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))

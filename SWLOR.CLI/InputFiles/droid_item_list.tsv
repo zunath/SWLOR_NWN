@@ -1,0 +1,330 @@
+Droid Head MPV I	d_hd_mpv1	Head	1	0	0	0	0	1	1	1							
+Droid Head MPW I	d_hd_mpw1	Head	1	0	0	0	0	1	1		1						
+Droid Head MPA I	d_hd_mpa1	Head	1	0	0	0	0	1	1			1					
+Droid Head MPS I	d_hd_mps1	Head	1	0	0	0	0	1	1				1				
+Droid Head MVW I	d_hd_mvw1	Head	1	0	0	0	0	1		1	1						
+Droid Head MVA I	d_hd_mva1	Head	1	0	0	0	0	1		1		1					
+Droid Head MVS I	d_hd_mvs1	Head	1	0	0	0	0	1		1			1				
+Droid Head MWA I	d_hd_mwa1	Head	1	0	0	0	0	1			1	1					
+Droid Head MWS I	d_hd_mws1	Head	1	0	0	0	0	1			1		1				
+Droid Head MAS I	d_hd_mas1	Head	1	0	0	0	0	1				1	1				
+Droid Head PVW I	d_hd_pvw1	Head	1	0	0	0	0		1	1	1						
+Droid Head PVA I	d_hd_pva1	Head	1	0	0	0	0		1	1		1					
+Droid Head PVS I	d_hd_pvs1	Head	1	0	0	0	0		1	1			1				
+Droid Head VWA I	d_hd_vwa1	Head	1	0	0	0	0			1	1	1					
+Droid Head VWS I	d_hd_vws1	Head	1	0	0	0	0			1	1		1				
+Droid Head VAS I	d_hd_vas1	Head	1	0	0	0	0			1		1	1				
+Droid Head WAS I	d_hd_was1	Head	1	0	0	0	0				1	1	1				
+Droid Body MP I	d_bd_mp1	Body	1	0	0	0	0	3	3								
+Droid Body MV I	d_bd_mv1	Body	1	0	0	0	0	3		3							
+Droid Body MW I	d_bd_mw1	Body	1	0	0	0	0	3			3						
+Droid Body MA I	d_bd_ma1	Body	1	0	0	0	0	3				3					
+Droid Body MS I	d_bd_ms1	Body	1	0	0	0	0	3					3				
+Droid Body PV I	d_bd_pv1	Body	1	0	0	0	0		3	3							
+Droid Body PW I	d_bd_pw1	Body	1	0	0	0	0		3		3						
+Droid Body PA I	d_bd_pa1	Body	1	0	0	0	0		3			3					
+Droid Body PS I	d_bd_ps1	Body	1	0	0	0	0		3				3				
+Droid Body VW I	d_bd_vw1	Body	1	0	0	0	0			3	3						
+Droid Body VA I	d_bd_va1	Body	1	0	0	0	0			3		3					
+Droid Body VS I	d_bd_vs1	Body	1	0	0	0	0			3			3				
+Droid Body WA I	d_bd_wa1	Body	1	0	0	0	0				3	3					
+Droid Body WS I	d_bd_ws1	Body	1	0	0	0	0				3		3				
+Droid Body AS I	d_bd_as1	Body	1	0	0	0	0					3	3				
+Droid Arms MPV I	d_ar_mpv1	Arms	1	0	0	0	0	1	1	1							
+Droid Arms MPW I	d_ar_mpw1	Arms	1	0	0	0	0	1	1		1						
+Droid Arms MPA I	d_ar_mpa1	Arms	1	0	0	0	0	1	1			1					
+Droid Arms MPS I	d_ar_mps1	Arms	1	0	0	0	0	1	1				1				
+Droid Arms MVW I	d_ar_mvw1	Arms	1	0	0	0	0	1		1	1						
+Droid Arms MVA I	d_ar_mva1	Arms	1	0	0	0	0	1		1		1					
+Droid Arms MVS I	d_ar_mvs1	Arms	1	0	0	0	0	1		1			1				
+Droid Arms MWA I	d_ar_mwa1	Arms	1	0	0	0	0	1			1	1					
+Droid Arms MWS I	d_ar_mws1	Arms	1	0	0	0	0	1			1		1				
+Droid Arms MAS I	d_ar_mas1	Arms	1	0	0	0	0	1				1	1				
+Droid Arms PVW I	d_ar_pvw1	Arms	1	0	0	0	0		1	1	1						
+Droid Arms PVA I	d_ar_pva1	Arms	1	0	0	0	0		1	1		1					
+Droid Arms PVS I	d_ar_pvs1	Arms	1	0	0	0	0		1	1			1				
+Droid Arms VWA I	d_ar_vwa1	Arms	1	0	0	0	0			1	1	1					
+Droid Arms VWS I	d_ar_vws1	Arms	1	0	0	0	0			1	1		1				
+Droid Arms VAS I	d_ar_vas1	Arms	1	0	0	0	0			1		1	1				
+Droid Arms WAS I	d_ar_was1	Arms	1	0	0	0	0				1	1	1				
+Droid Legs MPV I	d_lg_mpv1	Legs	1	0	0	0	0	1	1	1							
+Droid Legs MPW I	d_lg_mpw1	Legs	1	0	0	0	0	1	1		1						
+Droid Legs MPA I	d_lg_mpa1	Legs	1	0	0	0	0	1	1			1					
+Droid Legs MPS I	d_lg_mps1	Legs	1	0	0	0	0	1	1				1				
+Droid Legs MVW I	d_lg_mvw1	Legs	1	0	0	0	0	1		1	1						
+Droid Legs MVA I	d_lg_mva1	Legs	1	0	0	0	0	1		1		1					
+Droid Legs MVS I	d_lg_mvs1	Legs	1	0	0	0	0	1		1			1				
+Droid Legs MWA I	d_lg_mwa1	Legs	1	0	0	0	0	1			1	1					
+Droid Legs MWS I	d_lg_mws1	Legs	1	0	0	0	0	1			1		1				
+Droid Legs MAS I	d_lg_mas1	Legs	1	0	0	0	0	1				1	1				
+Droid Legs PVW I	d_lg_pvw1	Legs	1	0	0	0	0		1	1	1						
+Droid Legs PVA I	d_lg_pva1	Legs	1	0	0	0	0		1	1		1					
+Droid Legs PVS I	d_lg_pvs1	Legs	1	0	0	0	0		1	1			1				
+Droid Legs VWA I	d_lg_vwa1	Legs	1	0	0	0	0			1	1	1					
+Droid Legs VWS I	d_lg_vws1	Legs	1	0	0	0	0			1	1		1				
+Droid Legs VAS I	d_lg_vas1	Legs	1	0	0	0	0			1		1	1				
+Droid Legs WAS I	d_lg_was1	Legs	1	0	0	0	0				1	1	1				
+Droid Head MPV II	d_hd_mpv2	Head	2	1	0	0	0	1	1	1							
+Droid Head MPW II	d_hd_mpw2	Head	2	1	0	0	0	1	1		1						
+Droid Head MPA II	d_hd_mpa2	Head	2	1	0	0	0	1	1			1					
+Droid Head MPS II	d_hd_mps2	Head	2	1	0	0	0	1	1				1				
+Droid Head MVW II	d_hd_mvw2	Head	2	1	0	0	0	1		1	1						
+Droid Head MVA II	d_hd_mva2	Head	2	1	0	0	0	1		1		1					
+Droid Head MVS II	d_hd_mvs2	Head	2	1	0	0	0	1		1			1				
+Droid Head MWA II	d_hd_mwa2	Head	2	1	0	0	0	1			1	1					
+Droid Head MWS II	d_hd_mws2	Head	2	1	0	0	0	1			1		1				
+Droid Head MAS II	d_hd_mas2	Head	2	1	0	0	0	1				1	1				
+Droid Head PVW II	d_hd_pvw2	Head	2	1	0	0	0		1	1	1						
+Droid Head PVA II	d_hd_pva2	Head	2	1	0	0	0		1	1		1					
+Droid Head PVS II	d_hd_pvs2	Head	2	1	0	0	0		1	1			1				
+Droid Head VWA II	d_hd_vwa2	Head	2	1	0	0	0			1	1	1					
+Droid Head VWS II	d_hd_vws2	Head	2	1	0	0	0			1	1		1				
+Droid Head VAS II	d_hd_vas2	Head	2	1	0	0	0			1		1	1				
+Droid Head WAS II	d_hd_was2	Head	2	1	0	0	0				1	1	1				
+Droid Body MP II	d_bd_mp2	Body	2	0	0	0	0	4	4								
+Droid Body MV II	d_bd_mv2	Body	2	0	0	0	0	4		4							
+Droid Body MW II	d_bd_mw2	Body	2	0	0	0	0	4			4						
+Droid Body MA II	d_bd_ma2	Body	2	0	0	0	0	4				4					
+Droid Body MS II	d_bd_ms2	Body	2	0	0	0	0	4					4				
+Droid Body PV II	d_bd_pv2	Body	2	0	0	0	0		4	4							
+Droid Body PW II	d_bd_pw2	Body	2	0	0	0	0		4		4						
+Droid Body PA II	d_bd_pa2	Body	2	0	0	0	0		4			4					
+Droid Body PS II	d_bd_ps2	Body	2	0	0	0	0		4				4				
+Droid Body VW II	d_bd_vw2	Body	2	0	0	0	0			4	4						
+Droid Body VA II	d_bd_va2	Body	2	0	0	0	0			4		4					
+Droid Body VS II	d_bd_vs2	Body	2	0	0	0	0			4			4				
+Droid Body WA II	d_bd_wa2	Body	2	0	0	0	0				4	4					
+Droid Body WS II	d_bd_ws2	Body	2	0	0	0	0				4		4				
+Droid Body AS II	d_bd_as2	Body	2	0	0	0	0					4	4				
+Droid Arms MPV II	d_ar_mpv2	Arms	2	0	0	0	0	2	2	2							
+Droid Arms MPW II	d_ar_mpw2	Arms	2	0	0	0	0	2	2		2						
+Droid Arms MPA II	d_ar_mpa2	Arms	2	0	0	0	0	2	2			2					
+Droid Arms MPS II	d_ar_mps2	Arms	2	0	0	0	0	2	2				2				
+Droid Arms MVW II	d_ar_mvw2	Arms	2	0	0	0	0	2		2	2						
+Droid Arms MVA II	d_ar_mva2	Arms	2	0	0	0	0	2		2		2					
+Droid Arms MVS II	d_ar_mvs2	Arms	2	0	0	0	0	2		2			2				
+Droid Arms MWA II	d_ar_mwa2	Arms	2	0	0	0	0	2			2	2					
+Droid Arms MWS II	d_ar_mws2	Arms	2	0	0	0	0	2			2		2				
+Droid Arms MAS II	d_ar_mas2	Arms	2	0	0	0	0	2				2	2				
+Droid Arms PVW II	d_ar_pvw2	Arms	2	0	0	0	0		2	2	2						
+Droid Arms PVA II	d_ar_pva2	Arms	2	0	0	0	0		2	2		2					
+Droid Arms PVS II	d_ar_pvs2	Arms	2	0	0	0	0		2	2			2				
+Droid Arms VWA II	d_ar_vwa2	Arms	2	0	0	0	0			2	2	2					
+Droid Arms VWS II	d_ar_vws2	Arms	2	0	0	0	0			2	2		2				
+Droid Arms VAS II	d_ar_vas2	Arms	2	0	0	0	0			2		2	2				
+Droid Arms WAS II	d_ar_was2	Arms	2	0	0	0	0				2	2	2				
+Droid Legs MPV II	d_lg_mpv2	Legs	2	0	0	0	0	2	2	2							
+Droid Legs MPW II	d_lg_mpw2	Legs	2	0	0	0	0	2	2		2						
+Droid Legs MPA II	d_lg_mpa2	Legs	2	0	0	0	0	2	2			2					
+Droid Legs MPS II	d_lg_mps2	Legs	2	0	0	0	0	2	2				2				
+Droid Legs MVW II	d_lg_mvw2	Legs	2	0	0	0	0	2		2	2						
+Droid Legs MVA II	d_lg_mva2	Legs	2	0	0	0	0	2		2		2					
+Droid Legs MVS II	d_lg_mvs2	Legs	2	0	0	0	0	2		2			2				
+Droid Legs MWA II	d_lg_mwa2	Legs	2	0	0	0	0	2			2	2					
+Droid Legs MWS II	d_lg_mws2	Legs	2	0	0	0	0	2			2		2				
+Droid Legs MAS II	d_lg_mas2	Legs	2	0	0	0	0	2				2	2				
+Droid Legs PVW II	d_lg_pvw2	Legs	2	0	0	0	0		2	2	2						
+Droid Legs PVA II	d_lg_pva2	Legs	2	0	0	0	0		2	2		2					
+Droid Legs PVS II	d_lg_pvs2	Legs	2	0	0	0	0		2	2			2				
+Droid Legs VWA II	d_lg_vwa2	Legs	2	0	0	0	0			2	2	2					
+Droid Legs VWS II	d_lg_vws2	Legs	2	0	0	0	0			2	2		2				
+Droid Legs VAS II	d_lg_vas2	Legs	2	0	0	0	0			2		2	2				
+Droid Legs WAS II	d_lg_was2	Legs	2	0	0	0	0				2	2	2				
+Droid Head MPV III	d_hd_mpv3	Head	3	2	1	0	0	1	1	1							
+Droid Head MPW III	d_hd_mpw3	Head	3	2	1	0	0	1	1		1						
+Droid Head MPA III	d_hd_mpa3	Head	3	2	1	0	0	1	1			1					
+Droid Head MPS III	d_hd_mps3	Head	3	2	1	0	0	1	1				1				
+Droid Head MVW III	d_hd_mvw3	Head	3	2	1	0	0	1		1	1						
+Droid Head MVA III	d_hd_mva3	Head	3	2	1	0	0	1		1		1					
+Droid Head MVS III	d_hd_mvs3	Head	3	2	1	0	0	1		1			1				
+Droid Head MWA III	d_hd_mwa3	Head	3	2	1	0	0	1			1	1					
+Droid Head MWS III	d_hd_mws3	Head	3	2	1	0	0	1			1		1				
+Droid Head MAS III	d_hd_mas3	Head	3	2	1	0	0	1				1	1				
+Droid Head PVW III	d_hd_pvw3	Head	3	2	1	0	0		1	1	1						
+Droid Head PVA III	d_hd_pva3	Head	3	2	1	0	0		1	1		1					
+Droid Head PVS III	d_hd_pvs3	Head	3	2	1	0	0		1	1			1				
+Droid Head VWA III	d_hd_vwa3	Head	3	2	1	0	0			1	1	1					
+Droid Head VWS III	d_hd_vws3	Head	3	2	1	0	0			1	1		1				
+Droid Head VAS III	d_hd_vas3	Head	3	2	1	0	0			1		1	1				
+Droid Head WAS III	d_hd_was3	Head	3	2	1	0	0				1	1	1				
+Droid Body MP III	d_bd_mp3	Body	3	1	1	0	0	4	4								
+Droid Body MV III	d_bd_mv3	Body	3	1	1	0	0	4		4							
+Droid Body MW III	d_bd_mw3	Body	3	1	1	0	0	4			4						
+Droid Body MA III	d_bd_ma3	Body	3	1	1	0	0	4				4					
+Droid Body MS III	d_bd_ms3	Body	3	1	1	0	0	4					4				
+Droid Body PV III	d_bd_pv3	Body	3	1	1	0	0		4	4							
+Droid Body PW III	d_bd_pw3	Body	3	1	1	0	0		4		4						
+Droid Body PA III	d_bd_pa3	Body	3	1	1	0	0		4			4					
+Droid Body PS III	d_bd_ps3	Body	3	1	1	0	0		4				4				
+Droid Body VW III	d_bd_vw3	Body	3	1	1	0	0			4	4						
+Droid Body VA III	d_bd_va3	Body	3	1	1	0	0			4		4					
+Droid Body VS III	d_bd_vs3	Body	3	1	1	0	0			4			4				
+Droid Body WA III	d_bd_wa3	Body	3	1	1	0	0				4	4					
+Droid Body WS III	d_bd_ws3	Body	3	1	1	0	0				4		4				
+Droid Body AS III	d_bd_as3	Body	3	1	1	0	0					4	4				
+Droid Arms MPV III	d_ar_mpv3	Arms	3	1	1	0	0	2	2	2							
+Droid Arms MPW III	d_ar_mpw3	Arms	3	1	1	0	0	2	2		2						
+Droid Arms MPA III	d_ar_mpa3	Arms	3	1	1	0	0	2	2			2					
+Droid Arms MPS III	d_ar_mps3	Arms	3	1	1	0	0	2	2				2				
+Droid Arms MVW III	d_ar_mvw3	Arms	3	1	1	0	0	2		2	2						
+Droid Arms MVA III	d_ar_mva3	Arms	3	1	1	0	0	2		2		2					
+Droid Arms MVS III	d_ar_mvs3	Arms	3	1	1	0	0	2		2			2				
+Droid Arms MWA III	d_ar_mwa3	Arms	3	1	1	0	0	2			2	2					
+Droid Arms MWS III	d_ar_mws3	Arms	3	1	1	0	0	2			2		2				
+Droid Arms MAS III	d_ar_mas3	Arms	3	1	1	0	0	2				2	2				
+Droid Arms PVW III	d_ar_pvw3	Arms	3	1	1	0	0		2	2	2						
+Droid Arms PVA III	d_ar_pva3	Arms	3	1	1	0	0		2	2		2					
+Droid Arms PVS III	d_ar_pvs3	Arms	3	1	1	0	0		2	2			2				
+Droid Arms VWA III	d_ar_vwa3	Arms	3	1	1	0	0			2	2	2					
+Droid Arms VWS III	d_ar_vws3	Arms	3	1	1	0	0			2	2		2				
+Droid Arms VAS III	d_ar_vas3	Arms	3	1	1	0	0			2		2	2				
+Droid Arms WAS III	d_ar_was3	Arms	3	1	1	0	0				2	2	2				
+Droid Legs MPV III	d_lg_mpv3	Legs	3	1	1	0	0	2	2	2							
+Droid Legs MPW III	d_lg_mpw3	Legs	3	1	1	0	0	2	2		2						
+Droid Legs MPA III	d_lg_mpa3	Legs	3	1	1	0	0	2	2			2					
+Droid Legs MPS III	d_lg_mps3	Legs	3	1	1	0	0	2	2				2				
+Droid Legs MVW III	d_lg_mvw3	Legs	3	1	1	0	0	2		2	2						
+Droid Legs MVA III	d_lg_mva3	Legs	3	1	1	0	0	2		2		2					
+Droid Legs MVS III	d_lg_mvs3	Legs	3	1	1	0	0	2		2			2				
+Droid Legs MWA III	d_lg_mwa3	Legs	3	1	1	0	0	2			2	2					
+Droid Legs MWS III	d_lg_mws3	Legs	3	1	1	0	0	2			2		2				
+Droid Legs MAS III	d_lg_mas3	Legs	3	1	1	0	0	2				2	2				
+Droid Legs PVW III	d_lg_pvw3	Legs	3	1	1	0	0		2	2	2						
+Droid Legs PVA III	d_lg_pva3	Legs	3	1	1	0	0		2	2		2					
+Droid Legs PVS III	d_lg_pvs3	Legs	3	1	1	0	0		2	2			2				
+Droid Legs VWA III	d_lg_vwa3	Legs	3	1	1	0	0			2	2	2					
+Droid Legs VWS III	d_lg_vws3	Legs	3	1	1	0	0			2	2		2				
+Droid Legs VAS III	d_lg_vas3	Legs	3	1	1	0	0			2		2	2				
+Droid Legs WAS III	d_lg_was3	Legs	3	1	1	0	0				2	2	2				
+Droid Head MPV IV	d_hd_mpv4	Head	4	2	1	0	0	1	1	2							
+Droid Head MPW IV	d_hd_mpw4	Head	4	2	1	0	0	1	1		2						
+Droid Head MPA IV	d_hd_mpa4	Head	4	2	1	0	0	1	2			1					
+Droid Head MPS IV	d_hd_mps4	Head	4	2	1	0	0	1	2				1				
+Droid Head MVW IV	d_hd_mvw4	Head	4	2	1	0	0	1		1	2						
+Droid Head MVA IV	d_hd_mva4	Head	4	2	1	0	0	1		1		2					
+Droid Head MVS IV	d_hd_mvs4	Head	4	2	1	0	0	1		1			2				
+Droid Head MWA IV	d_hd_mwa4	Head	4	2	1	0	0	1			2	1					
+Droid Head MWS IV	d_hd_mws4	Head	4	2	1	0	0	1			1		2				
+Droid Head MAS IV	d_hd_mas4	Head	4	2	1	0	0	1				1	2				
+Droid Head PVW IV	d_hd_pvw4	Head	4	2	1	0	0		1	2	1						
+Droid Head PVA IV	d_hd_pva4	Head	4	2	1	0	0		1	1		2					
+Droid Head PVS IV	d_hd_pvs4	Head	4	2	1	0	0		1	1			2				
+Droid Head VWA IV	d_hd_vwa4	Head	4	2	1	0	0			1	1	2					
+Droid Head VWS IV	d_hd_vws4	Head	4	2	1	0	0			2	1		1				
+Droid Head VAS IV	d_hd_vas4	Head	4	2	1	0	0			1		1	2				
+Droid Head WAS IV	d_hd_was4	Head	4	2	1	0	0				2	1	1				
+Droid Body MP IV	d_bd_mp4	Body	4	1	1	0	0	5	4								
+Droid Body MV IV	d_bd_mv4	Body	4	1	1	0	0	4		5							
+Droid Body MW IV	d_bd_mw4	Body	4	1	1	0	0	4			5						
+Droid Body MA IV	d_bd_ma4	Body	4	1	1	0	0	5				4					
+Droid Body MS IV	d_bd_ms4	Body	4	1	1	0	0	4					5				
+Droid Body PV IV	d_bd_pv4	Body	4	1	1	0	0		5	4							
+Droid Body PW IV	d_bd_pw4	Body	4	1	1	0	0		4		5						
+Droid Body PA IV	d_bd_pa4	Body	4	1	1	0	0		4			5					
+Droid Body PS IV	d_bd_ps4	Body	4	1	1	0	0		5				4				
+Droid Body VW IV	d_bd_vw4	Body	4	1	1	0	0			5	4						
+Droid Body VA IV	d_bd_va4	Body	4	1	1	0	0			5		4					
+Droid Body VS IV	d_bd_vs4	Body	4	1	1	0	0			4			4				
+Droid Body WA IV	d_bd_wa4	Body	4	1	1	0	0				4	5					
+Droid Body WS IV	d_bd_ws4	Body	4	1	1	0	0				4		5				
+Droid Body AS IV	d_bd_as4	Body	4	1	1	0	0					4	5				
+Droid Arms MPV IV	d_ar_mpv4	Arms	4	1	1	0	0	2	3	2							
+Droid Arms MPW IV	d_ar_mpw4	Arms	4	1	1	0	0	3	2		2						
+Droid Arms MPA IV	d_ar_mpa4	Arms	4	1	1	0	0	3	2			2					
+Droid Arms MPS IV	d_ar_mps4	Arms	4	1	1	0	0	3	2				2				
+Droid Arms MVW IV	d_ar_mvw4	Arms	4	1	1	0	0	3		2	2						
+Droid Arms MVA IV	d_ar_mva4	Arms	4	1	1	0	0	2		3		2					
+Droid Arms MVS IV	d_ar_mvs4	Arms	4	1	1	0	0	3		2			2				
+Droid Arms MWA IV	d_ar_mwa4	Arms	4	1	1	0	0	3			2	2					
+Droid Arms MWS IV	d_ar_mws4	Arms	4	1	1	0	0	3			2		2				
+Droid Arms MAS IV	d_ar_mas4	Arms	4	1	1	0	0	3				2	2				
+Droid Arms PVW IV	d_ar_pvw4	Arms	4	1	1	0	0		3	2	2						
+Droid Arms PVA IV	d_ar_pva4	Arms	4	1	1	0	0		2	3		2					
+Droid Arms PVS IV	d_ar_pvs4	Arms	4	1	1	0	0		3	2			2				
+Droid Arms VWA IV	d_ar_vwa4	Arms	4	1	1	0	0			3	2	2					
+Droid Arms VWS IV	d_ar_vws4	Arms	4	1	1	0	0			2	3		2				
+Droid Arms VAS IV	d_ar_vas4	Arms	4	1	1	0	0			2		3	2				
+Droid Arms WAS IV	d_ar_was4	Arms	4	1	1	0	0				2	2	3				
+Droid Legs MPV IV	d_lg_mpv4	Legs	4	1	1	0	0	3	2	2							
+Droid Legs MPW IV	d_lg_mpw4	Legs	4	1	1	0	0	2	3		2						
+Droid Legs MPA IV	d_lg_mpa4	Legs	4	1	1	0	0	2	2			3					
+Droid Legs MPS IV	d_lg_mps4	Legs	4	1	1	0	0	2	2				3				
+Droid Legs MVW IV	d_lg_mvw4	Legs	4	1	1	0	0	2		3	2						
+Droid Legs MVA IV	d_lg_mva4	Legs	4	1	1	0	0	3		2		2					
+Droid Legs MVS IV	d_lg_mvs4	Legs	4	1	1	0	0	2		3			2				
+Droid Legs MWA IV	d_lg_mwa4	Legs	4	1	1	0	0	2			2	3					
+Droid Legs MWS IV	d_lg_mws4	Legs	4	1	1	0	0	2			3		2				
+Droid Legs MAS IV	d_lg_mas4	Legs	4	1	1	0	0	2				3	2				
+Droid Legs PVW IV	d_lg_pvw4	Legs	4	1	1	0	0		2	2	3						
+Droid Legs PVA IV	d_lg_pva4	Legs	4	1	1	0	0		3	2		2					
+Droid Legs PVS IV	d_lg_pvs4	Legs	4	1	1	0	0		2	3			2				
+Droid Legs VWA IV	d_lg_vwa4	Legs	4	1	1	0	0			2	3	2					
+Droid Legs VWS IV	d_lg_vws4	Legs	4	1	1	0	0			2	2		3				
+Droid Legs VAS IV	d_lg_vas4	Legs	4	1	1	0	0			3		2	2				
+Droid Legs WAS IV	d_lg_was4	Legs	4	1	1	0	0				2	3	2				
+Droid Head MPV V	d_hd_mpv5	Head	5	2	1	0	0	2	2	2							
+Droid Head MPW V	d_hd_mpw5	Head	5	2	1	0	0	2	2		2						
+Droid Head MPA V	d_hd_mpa5	Head	5	2	1	0	0	2	2			2					
+Droid Head MPS V	d_hd_mps5	Head	5	2	1	0	0	2	2				2				
+Droid Head MVW V	d_hd_mvw5	Head	5	2	1	0	0	2		2	2						
+Droid Head MVA V	d_hd_mva5	Head	5	2	1	0	0	2		2		2					
+Droid Head MVS V	d_hd_mvs5	Head	5	2	1	0	0	2		2			2				
+Droid Head MWA V	d_hd_mwa5	Head	5	2	1	0	0	2			2	2					
+Droid Head MWS V	d_hd_mws5	Head	5	2	1	0	0	2			2		2				
+Droid Head MAS V	d_hd_mas5	Head	5	2	1	0	0	2				2	2				
+Droid Head PVW V	d_hd_pvw5	Head	5	2	1	0	0		2	2	2						
+Droid Head PVA V	d_hd_pva5	Head	5	2	1	0	0		2	2		2					
+Droid Head PVS V	d_hd_pvs5	Head	5	2	1	0	0		2	2			2				
+Droid Head VWA V	d_hd_vwa5	Head	5	2	1	0	0			2	2	2					
+Droid Head VWS V	d_hd_vws5	Head	5	2	1	0	0			2	2		2				
+Droid Head VAS V	d_hd_vas5	Head	5	2	1	0	0			2		2	2				
+Droid Head WAS V	d_hd_was5	Head	5	2	1	0	0				2	2	2				
+Droid Body MP V	d_bd_mp5	Body	5	1	1	0	0	5	5								
+Droid Body MV V	d_bd_mv5	Body	5	1	1	0	0	5		5							
+Droid Body MW V	d_bd_mw5	Body	5	1	1	0	0	5			5						
+Droid Body MA V	d_bd_ma5	Body	5	1	1	0	0	5				5					
+Droid Body MS V	d_bd_ms5	Body	5	1	1	0	0	5					5				
+Droid Body PV V	d_bd_pv5	Body	5	1	1	0	0		5	5							
+Droid Body PW V	d_bd_pw5	Body	5	1	1	0	0		5		5						
+Droid Body PA V	d_bd_pa5	Body	5	1	1	0	0		5			5					
+Droid Body PS V	d_bd_ps5	Body	5	1	1	0	0		5				5				
+Droid Body VW V	d_bd_vw5	Body	5	1	1	0	0			5	5						
+Droid Body VA V	d_bd_va5	Body	5	1	1	0	0			5		5					
+Droid Body VS V	d_bd_vs5	Body	5	1	1	0	0			5			5				
+Droid Body WA V	d_bd_wa5	Body	5	1	1	0	0				5	5					
+Droid Body WS V	d_bd_ws5	Body	5	1	1	0	0				5		5				
+Droid Body AS V	d_bd_as5	Body	5	1	1	0	0					5	5				
+Droid Arms MPV V	d_ar_mpv5	Arms	5	1	1	0	0	3	3	3							
+Droid Arms MPW V	d_ar_mpw5	Arms	5	1	1	0	0	3	3		3						
+Droid Arms MPA V	d_ar_mpa5	Arms	5	1	1	0	0	3	3			3					
+Droid Arms MPS V	d_ar_mps5	Arms	5	1	1	0	0	3	3				3				
+Droid Arms MVW V	d_ar_mvw5	Arms	5	1	1	0	0	3		3	3						
+Droid Arms MVA V	d_ar_mva5	Arms	5	1	1	0	0	3		3		3					
+Droid Arms MVS V	d_ar_mvs5	Arms	5	1	1	0	0	3		3			3				
+Droid Arms MWA V	d_ar_mwa5	Arms	5	1	1	0	0	3			3	3					
+Droid Arms MWS V	d_ar_mws5	Arms	5	1	1	0	0	3			3		3				
+Droid Arms MAS V	d_ar_mas5	Arms	5	1	1	0	0	3				3	3				
+Droid Arms PVW V	d_ar_pvw5	Arms	5	1	1	0	0		3	3	3						
+Droid Arms PVA V	d_ar_pva5	Arms	5	1	1	0	0		3	3		3					
+Droid Arms PVS V	d_ar_pvs5	Arms	5	1	1	0	0		3	3			3				
+Droid Arms VWA V	d_ar_vwa5	Arms	5	1	1	0	0			3	3	3					
+Droid Arms VWS V	d_ar_vws5	Arms	5	1	1	0	0			3	3		3				
+Droid Arms VAS V	d_ar_vas5	Arms	5	1	1	0	0			3		3	3				
+Droid Arms WAS V	d_ar_was5	Arms	5	1	1	0	0				3	3	3				
+Droid Legs MPV V	d_lg_mpv5	Legs	5	1	1	0	0	3	3	3							
+Droid Legs MPW V	d_lg_mpw5	Legs	5	1	1	0	0	3	3		3						
+Droid Legs MPA V	d_lg_mpa5	Legs	5	1	1	0	0	3	3			3					
+Droid Legs MPS V	d_lg_mps5	Legs	5	1	1	0	0	3	3				3				
+Droid Legs MVW V	d_lg_mvw5	Legs	5	1	1	0	0	3		3	3						
+Droid Legs MVA V	d_lg_mva5	Legs	5	1	1	0	0	3		3		3					
+Droid Legs MVS V	d_lg_mvs5	Legs	5	1	1	0	0	3		3			3				
+Droid Legs MWA V	d_lg_mwa5	Legs	5	1	1	0	0	3			3	3					
+Droid Legs MWS V	d_lg_mws5	Legs	5	1	1	0	0	3			3		3				
+Droid Legs MAS V	d_lg_mas5	Legs	5	1	1	0	0	3				3	3				
+Droid Legs PVW V	d_lg_pvw5	Legs	5	1	1	0	0		3	3	3						
+Droid Legs PVA V	d_lg_pva5	Legs	5	1	1	0	0		3	3		3					
+Droid Legs PVS V	d_lg_pvs5	Legs	5	1	1	0	0		3	3			3				
+Droid Legs VWA V	d_lg_vwa5	Legs	5	1	1	0	0			3	3	3					
+Droid Legs VWS V	d_lg_vws5	Legs	5	1	1	0	0			3	3		3				
+Droid Legs VAS V	d_lg_vas5	Legs	5	1	1	0	0			3		3	3				
+Droid Legs WAS V	d_lg_was5	Legs	5	1	1	0	0				3	3	3				

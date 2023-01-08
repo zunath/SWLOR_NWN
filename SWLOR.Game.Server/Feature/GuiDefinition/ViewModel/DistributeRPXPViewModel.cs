@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.UnallocatedXP -= amount;
                     DB.Set(dbPlayer);
 
-                    Skill.GiveSkillXP(Player, _skillType, amount, true);
+                    Skill.GiveSkillXP(Player, _skillType, amount, true, false);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
                     Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());

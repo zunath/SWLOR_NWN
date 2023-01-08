@@ -3,10 +3,12 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using Skill = SWLOR.Game.Server.Service.Skill;
@@ -79,6 +81,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int Social
         {
             get => Get<int>();
+            set => Set(value);
+        }
+
+        public string SavingThrows
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -184,12 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string RebuildTokens
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -273,6 +275,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
+        public Action OnClickCurrencies() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Currencies);
+        };
+
         public Action OnClickAchievements() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Achievements);
@@ -293,7 +300,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAppearance() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);
+            var payload = new AppearanceEditorPayload(Player);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
         };
 
         public Action OnClickSettings() => () =>
@@ -307,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
-                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action CANNOT be undone, even with a character rebuild. Are you SURE you want to upgrade this stat?"
+                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
                 : $"Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
 
             ShowModal(promptMessage, () =>
@@ -384,6 +392,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             UpgradeAttribute(AbilityType.Social, "Social");
         };
 
+
         private void RefreshStats(Player dbPlayer)
         {
             var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
@@ -407,6 +416,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
             Agility = GetAbilityScore(Player, AbilityType.Agility);
             Social = GetAbilityScore(Player, AbilityType.Social);
+            SavingThrows = GetFortitudeSavingThrow(Player) + "/" +
+                           GetReflexSavingThrow(Player) + "/" +
+                           GetWillSavingThrow(Player);
 
             IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
             IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades || isRacialBonusAvailable;
@@ -503,35 +515,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride, SkillType.Invalid);
             Evasion = Stat.GetEvasion(Player, SkillType.Invalid);
 
-            var smithery = dbPlayer.Control.ContainsKey(SkillType.Smithery)
-                ? dbPlayer.Control[SkillType.Smithery]
-                : 0;
-            var engineering = dbPlayer.Control.ContainsKey(SkillType.Engineering)
-                ? dbPlayer.Control[SkillType.Engineering]
-                : 0;
-            var fabrication = dbPlayer.Control.ContainsKey(SkillType.Fabrication)
-                ? dbPlayer.Control[SkillType.Fabrication]
-                : 0;
-            var agriculture = dbPlayer.Control.ContainsKey(SkillType.Agriculture)
-                ? dbPlayer.Control[SkillType.Agriculture]
-                : 0;
+            var smithery = Stat.CalculateControl(Player, SkillType.Smithery);
+            var engineering = Stat.CalculateControl(Player, SkillType.Engineering);
+            var fabrication = Stat.CalculateControl(Player, SkillType.Fabrication);
+            var agriculture = Stat.CalculateControl(Player, SkillType.Agriculture);
 
             Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
 
-            smithery = dbPlayer.Craftsmanship.ContainsKey(SkillType.Smithery)
-                ? dbPlayer.Craftsmanship[SkillType.Smithery]
-                : 0;
-            engineering = dbPlayer.Craftsmanship.ContainsKey(SkillType.Engineering)
-                ? dbPlayer.Craftsmanship[SkillType.Engineering]
-                : 0;
-            fabrication = dbPlayer.Craftsmanship.ContainsKey(SkillType.Fabrication)
-                ? dbPlayer.Craftsmanship[SkillType.Fabrication]
-                : 0;
-            agriculture = dbPlayer.Craftsmanship.ContainsKey(SkillType.Agriculture)
-                ? dbPlayer.Craftsmanship[SkillType.Agriculture]
-                : 0;
+            smithery = Stat.CalculateCraftsmanship(Player, SkillType.Smithery);
+            engineering = Stat.CalculateCraftsmanship(Player, SkillType.Engineering);
+            fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
+            agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
-            RebuildTokens = dbPlayer.NumberRebuildsAvailable.ToString();
         }
 
         private void RefreshAttributes(Player dbPlayer)

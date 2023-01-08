@@ -50,11 +50,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {"raw_jasioclase", new OreDetail(5, "ref_jasioclase", 125)},
             {"ore_gostian", new OreDetail(5, "ref_gostian", 125)},
 
+            {"raw_arkoxit", new OreDetail(5, "ref_arkoxit", 150)},
+
             // Options below are for further expansion down the road.
-            {"raw_hemorgite", new OreDetail(99, "ref_hemorgite", 150)},
             {"raw_ochne", new OreDetail(99, "ref_ochne", 175)},
             {"raw_croknor", new OreDetail(99, "ref_croknor", 200)},
-            {"raw_arkoxit", new OreDetail(99, "ref_arkoxit", 225)},
+            {"raw_hemorgite", new OreDetail(99, "ref_hemorgite", 225)},
             {"raw_bisteiss", new OreDetail(99, "ref_bisteiss", 250)},
         };
 
@@ -332,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");
-                Skill.GiveSkillXP(Player, SkillType.Gathering, xp);
+                Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
 
                 _inputItemResrefs.Clear();
                 _inputItems.Clear();

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             EngineeringEquipment();
             EnhancementBlueprints();
             DroidEquipmentBlueprints();
+            DroidAssembly();
             
             return _builder.Build();
         }
@@ -253,6 +254,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.DroidEquipmentBlueprints5);
+        }
+
+        private void DroidAssembly()
+        {
+            _builder.Create(PerkCategoryType.Engineering, PerkType.DroidAssembly)
+                .Name("Droid Assembly")
+
+                .AddPerkLevel()
+                .Description("Enables the construction and programming of tier 1 droids.")
+                .Price(3)
+
+                .AddPerkLevel()
+                .Description("Enables the construction and programming of tier 2 droids.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 10)
+
+                .AddPerkLevel()
+                .Description("Enables the construction and programming of tier 3 droids.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 20)
+
+                .AddPerkLevel()
+                .Description("Enables the construction and programming of tier 4 droids.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 30)
+
+                .AddPerkLevel()
+                .Description("Enables the construction and programming of tier 5 droids.")
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 40);
         }
     }
 }

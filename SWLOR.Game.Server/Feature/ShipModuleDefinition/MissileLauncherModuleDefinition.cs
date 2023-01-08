@@ -85,7 +85,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Type(ShipModuleType.Missile)
                 .MaxDistance(55f)
                 .Description(description)
-                .RequiresTarget()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)

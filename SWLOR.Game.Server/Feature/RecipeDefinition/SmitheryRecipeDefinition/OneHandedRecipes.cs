@@ -85,6 +85,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 1)
                 .Component("hyphae_wood", 1);
+
+            // Chiro Knife
+            _builder.Create(RecipeType.ChiroKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("chi_knife")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Longswords()
@@ -154,6 +172,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
+
+            // Chiro Longsword
+            _builder.Create(RecipeType.ChiroLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("chi_longsword")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Lightsabers()
@@ -224,7 +260,23 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_high", 4)
                 .Component("ref_jasioclase", 2);
 
-
+            // Chiro Electroblade
+            _builder.Create(RecipeType.ChiroElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("chi_electroblade")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
 
             // Training Saber I
             _builder.Create(RecipeType.TrainingSaber1, SkillType.Smithery)
@@ -290,6 +342,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("emerald", 4)
                 .Component("ref_jasioclase", 2)
                 .Component("elec_high", 3);
+
+            // Lightsaber Upgrade I
+            _builder.Create(RecipeType.LightsaberUpgradeKit1, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("saber_upg1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.None, 0)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
     }

@@ -311,10 +311,11 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Create an Attack Increase effect
+        /// NOTE: On SWLOR, this is used for Accuracy.
         ///   - nBonus: size of attack bonus
         ///   - nModifierType: ATTACK_BONUS_*
         /// </summary>
-        public static Effect EffectAttackIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
+        public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
             VM.StackPush((int)nModifierType);
             VM.StackPush(nBonus);
@@ -939,10 +940,11 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Create an Attack Decrease effect.
+        /// NOTE: On SWLOR, this is used for Accuracy.
         ///   - nPenalty
         ///   - nModifierType: ATTACK_BONUS_*
         /// </summary>
-        public static Effect EffectAttackDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
+        public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
             VM.StackPush((int)nModifierType);
             VM.StackPush(nPenalty);

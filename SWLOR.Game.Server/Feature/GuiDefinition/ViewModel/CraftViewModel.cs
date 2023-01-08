@@ -549,6 +549,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 typeIP = ItemPropertyType.ModuleEnhancement;
             }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Droid)
+            {
+                typeIP = ItemPropertyType.DroidEnhancement;
+            }
 
             if (typeIP == ItemPropertyType.Invalid)
             {
@@ -640,6 +644,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.DroidEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
                     var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
@@ -920,12 +930,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
 
             const float BaseChance = 65f;
-            var craftsmanship = dbPlayer.Craftsmanship.ContainsKey(recipe.Skill)
-                ? dbPlayer.Craftsmanship[recipe.Skill]
-                : 0;
-            var control = dbPlayer.Control.ContainsKey(recipe.Skill)
-                ? dbPlayer.Control[recipe.Skill]
-                : 0;
+            var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
+            var control = Stat.CalculateControl(Player, recipe.Skill);
             var recipeLevel = recipe.Level;
             var levelDiff = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var difficultyAdjustment = Craft.GetRecipeLevelDetail(recipeLevel).DifficultyAdjustment;
@@ -1016,9 +1022,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var craftsmanship = dbPlayer.Craftsmanship.ContainsKey(recipe.Skill) 
-                ? dbPlayer.Craftsmanship[recipe.Skill]
-                : 0;
+            var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
@@ -1033,9 +1037,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var control = dbPlayer.Control.ContainsKey(recipe.Skill)
-                ? dbPlayer.Control[recipe.Skill]
-                : 0;
+            var control = Stat.CalculateControl(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = delta < 0 
                 ? 1 + 0.05f * delta 
@@ -1128,7 +1130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Give XP plus a percent bonus based on the quality achieved.
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, firstTime, qualityPercent);
-            Skill.GiveSkillXP(Player, recipe.Skill, xp);
+            Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             // Clean up and return to the Set Up mode.
             _itemPropertiesEnhancement1.Clear();
@@ -1194,7 +1196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // 15% of XP is gained for failures.
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
             xp = (int)(xp * 0.15f);
-            Skill.GiveSkillXP(Player, recipe.Skill, xp);
+            Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }

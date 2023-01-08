@@ -222,6 +222,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the raw JSON of the object in the database by a given prefix and key.
+        /// This can be useful for data migrations and one-time actions at server load.
+        /// Do not use this for normal game play as it is slow.
+        /// </summary>
+        /// <param name="id">The arbitrary key the data is stored under</param>
+        /// <returns>The raw json stored in the database under the specified key</returns>
+        public static string GetRawJson<T>(string id)
+        {
+            var keyPrefix = _keyPrefixByType[typeof(T)];
+            RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+
+            if (string.IsNullOrWhiteSpace(data))
+                return string.Empty;
+
+            return data.ToString();
+        }
+
+        /// <summary>
         /// Returns true if an entry with the specified key exists.
         /// Returns false if not.
         /// </summary>

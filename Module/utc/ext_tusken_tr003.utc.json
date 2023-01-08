@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 15.0
+    "value": 8.0
   },
   "ClassList": {
     "type": "list",
@@ -394,7 +394,7 @@
   },
   "fortbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -476,7 +476,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -838,7 +838,7 @@
   },
   "willbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",

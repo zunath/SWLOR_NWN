@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -25,8 +24,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int burningChance)
+        private void Impact(uint activator, Location targetLocation, int dmg, int dc)
         {
+            var baseDC = dc;
             const float ConeSize = 10f;
 
             AssignCommand(activator, () =>
@@ -57,16 +57,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-                    var dTarget = target; // Without this, ApplyEffect doesn't actually work. Don't ask why.
-
+                    
+                    // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
+                    var targetCopy = target;
                     DelayCommand(0.1f, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, eDMG, dTarget);
-                        ApplyEffectToObject(DurationType.Instant, eVFX, dTarget);
+                        ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
+                        ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
-                        if (Random.D100(1) <= burningChance)
+                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
+                        if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, dTarget, StatusEffectType.Burn, 30f);
+                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
                         }
                     });
                 }
@@ -87,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 6, 0);
+                    Impact(activator, targetLocation, 6, -1);
                 });
         }
 
@@ -103,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 10, 30);
+                    Impact(activator, targetLocation, 10, 8);
                 });
         }
 
@@ -119,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 50);
+                    Impact(activator, targetLocation, 16, 12);
                 });
         }
     }

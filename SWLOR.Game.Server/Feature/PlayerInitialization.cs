@@ -37,13 +37,13 @@ namespace SWLOR.Game.Server.Feature
             ClearInventory(player);
             AutoLevelPlayer(player);
             InitializeSkills(player);
-            InitializeSavingThrows(player);
             RemoveNWNSpells(player);
             ClearFeats(player);
             GrantBasicFeats(player);
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
+            InitializeSavingThrows(player);
             InitializeLanguages(player, dbPlayer);
             AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);
@@ -200,7 +200,6 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
             dbPlayer.RebuildComplete = true;
-            dbPlayer.NumberRebuildsAvailable = 1;
         }
 
         /// <summary>

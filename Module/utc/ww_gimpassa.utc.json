@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 6.0
   },
   "ClassList": {
     "type": "list",
@@ -131,7 +131,7 @@
   },
   "fortbonus": {
     "type": "short",
-    "value": 6
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -213,7 +213,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 7
+    "value": 0
   },
   "ScriptAttacked": {
     "type": "resref",

@@ -427,6 +427,60 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
+
+            // Chaos Helmet
+            _builder.Create(RecipeType.ChaosHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("ch_helmet")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
+
+            // Magus Cap
+            _builder.Create(RecipeType.MagusCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("mag_cap")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
+
+            // Immortal Cap
+            _builder.Create(RecipeType.ImmortalCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("imm_cap")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.ArmorBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("lth_high", 20)
+                .Component("fiberp_high", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
     }
 }

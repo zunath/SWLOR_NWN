@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string Description { get; set; }
         public List<FeatType> GrantedFeats { get; set; }
         public List<IPerkRequirement> Requirements { get; set; }
+        public int DroidAISlots { get; set; }
 
         public PerkLevel()
         {

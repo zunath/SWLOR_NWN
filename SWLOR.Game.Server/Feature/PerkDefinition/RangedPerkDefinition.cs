@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -89,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While equipped with a pistol or shurikens, your critical chance increases by 10%.")
                 .Price(4)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.DirtyBlow)
 
@@ -138,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Improves critical chance by 2%. [Cross Skill]")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PrecisionAim1)
@@ -145,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Improves critical chance by 4%. [Cross Skill]")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PrecisionAim2);
@@ -275,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 10 DMG to your target.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw1)
@@ -282,6 +284,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 20 DMG to your target.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw2)
@@ -289,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Instantly deals 30 DMG to your target.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw3);
@@ -302,6 +306,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 8 x 2 DMG.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot1)
@@ -309,6 +314,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 18 x 2 DMG.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot2)
@@ -316,6 +322,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 28 x 2 DMG.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DoubleShot3);
@@ -434,6 +441,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 8 DMG.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss1)
@@ -441,6 +449,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 16 DMG.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss2)
@@ -448,6 +457,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack damages up to 3 creatures within 3 meters of your target for 26 DMG.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss3);
@@ -459,22 +469,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Piercing Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 12 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 12 DMG and has a 10DC reflex check to inflict Bleed for 30 seconds.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 21 DMG and has a 75% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 21 DMG and has a 15DC reflex check to inflict Bleed for 1 minute.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 34 DMG and has a 100% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 34 DMG and has a 20DC reflex check to inflict Bleed for 1 minute.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss3);
@@ -594,6 +607,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack will tranquilize your target for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot1)
@@ -601,6 +615,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack will tranquilize your target for up to 24 seconds. Damage will break the effect prematurely.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot2)
@@ -608,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack will tranquilize up to three creatures in a cone for up to 12 seconds. Damage will break the effect prematurely.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TranquilizerShot3);
@@ -619,22 +635,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 12 DMG and has a 50% chance to inflict Bind for 12 seconds.")
+                .Description("Your next attack deals an additional 12 DMG and has a 10DC reflex check to inflict Bind for 6 seconds.")
                 .Price(2)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 21 DMG and has a 75% chance to inflict Bind for 12 seconds.")
+                .Description("Your next attack deals an additional 21 DMG and has a 15DC reflex check to inflict Bind for 6 seconds.")
                 .Price(3)
+                .DroidAISlots(1)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 34 DMG and has a 100% chance to inflict Bind for 12 seconds.")
+                .Description("Your next attack deals an additional 34 DMG and has a 20DC reflex check to inflict Bind for 6 seconds.")
                 .Price(3)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot3);

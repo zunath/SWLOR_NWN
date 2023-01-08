@@ -1777,7 +1777,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         AgricultureEquipment4 = 1810,
         AgricultureEquipment5 = 1811,
         Dash = 1812,
-        Provoke = 1813,
+        Provoke1 = 1813,
         Provoke2 = 1814,
         EnhancementBlueprints1 = 1815,
         EnhancementBlueprints2 = 1816,
@@ -1846,5 +1846,10 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Rejuvenation = 1877,
         FrenziedShout = 1878,
 
+        Screech = 1882,
+        GreaterEarthquake = 1883,
+        FlameBlast = 1884,
+        Infusion1 = 1885,
+        Infusion2 = 1886
     }
 }

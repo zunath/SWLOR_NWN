@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Copies the targeted item.")
                 .RequiresTarget()
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     if (GetObjectType(target) != ObjectType.Item)
@@ -79,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("day")
                 .Description("Sets the world time to 8 AM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     SetTime(8, 0, 0, 0);
@@ -90,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("night")
                 .Description("Sets the world time to 8 PM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     SetTime(20, 0, 0, 0);
@@ -101,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getplot")
                 .Description("Gets whether an object is marked plot.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     SendMessageToPC(user, GetPlotFlag(target) ? "Target is marked plot." : "Target is NOT marked plot.");
@@ -113,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("kill")
                 .Description("Kills your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     var amount = GetMaxHitPoints(target) + 11;
@@ -127,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("rez")
                 .Description("Revives you, heals you to full, and restores all FP/STM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
@@ -146,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("spawngold")
                 .Description("Spawns gold of a specific quantity on your character. Example: /spawngold 33")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Validate((user, args) =>
                 {
                     if (args.Length <= 0)
@@ -175,6 +182,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("tpwp")
                 .Description("Teleports you to a waypoint with a specified tag.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
@@ -204,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getlocalfloat")
                 .Description("Gets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -231,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getlocalint")
                 .Description("Gets a local integer on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -258,6 +268,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getlocalstring")
                 .Description("Gets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -288,6 +299,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("setlocalfloat")
                 .Description("Sets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -323,6 +335,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("setlocalint")
                 .Description("Sets a local int on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -357,6 +370,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("setlocalstring")
                 .Description("Sets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -396,6 +410,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("setportrait")
                 .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -429,6 +444,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("spawnitem")
                 .Description("Spawns an item of a specific quantity on your character. Example: /spawnitem my_item 3")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Validate((user, args) =>
                 {
                     if (args.Length <= 0)
@@ -470,6 +486,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("giverpxp")
                 .Description("Gives Roleplay XP to a target player.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -517,6 +534,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("resetperkcooldown")
                 .Description("Resets a player's perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -540,6 +558,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("playvfx")
                 .Description("Plays a visual effect from visualeffects.2da.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -578,6 +597,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("resetcooldown", "resetcooldowns")
                 .Description("Resets a player's ability cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -603,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("adjustfactionstanding")
                 .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
@@ -655,6 +676,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getfactionstanding")
                 .Description($"Retrieves a player's standing towards all factions. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -717,6 +739,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("setxpbonus")
                 .Description("Sets a player's XP bonus to the specified value. Example: /setxpbonus 10")
                 .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget(ObjectType.Creature)
                 .Validate((user, args) =>
                 {
@@ -758,6 +781,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("getxpbonus")
                 .Description("Gets a player's DM XP bonus.")
                 .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
@@ -779,6 +803,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("playerid")
                 .Description("Gets a player's Id.")
                 .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
@@ -793,6 +818,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("gettag")
                 .Description("Gets a target's tag.")
                 .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -807,6 +833,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("notes", "note")
                 .Description("Toggles the area notes window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
@@ -818,6 +845,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("cm")
                 .Description("Toggles the Creature Manager window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);

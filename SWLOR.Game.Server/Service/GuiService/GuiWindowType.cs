@@ -46,6 +46,10 @@
         CreatureManager = 41,
         AreaManager = 42,
         Emotes = 43,
-        HoloNet = 44,
+        DroidAssembly = 44,
+        DroidAI = 45,
+        Currencies = 46,
+        StatRebuild = 47,
+        HoloNet = 48,
     }
 }

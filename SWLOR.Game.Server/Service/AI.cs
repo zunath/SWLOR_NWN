@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 
@@ -13,9 +11,17 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AI
     {
-        private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new Dictionary<uint, HashSet<uint>>();
+        private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
+        private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
         private const string StickyTargetRounds = "AI_STICKY_TARGET_ROUNDS";
+
+        [NWNEventHandler("mod_cache")]
+        public static void CacheAIData()
+        {
+            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
+            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
+        }
 
         /// <summary>
         /// Entry point for creature heartbeat logic.
@@ -24,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureHeartbeat()
         {
             ExecuteScript("crea_hb_bef", OBJECT_SELF);
-            RestoreCreatureStats();
+            Stat.RestoreNPCStats(true);
             ProcessFlags();
             AttackHighestEnmityTarget();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
@@ -50,12 +56,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_roundend")]
         public static void CreatureCombatRoundEnd()
         {
-            if (!Activity.IsBusy(OBJECT_SELF))
+            var creature = OBJECT_SELF;
+            if (!Activity.IsBusy(creature))
             {
-                ExecuteScript("crea_rndend_bef", OBJECT_SELF);
-                ProcessPerkAI();
-                ExecuteScript("cdef_c2_default3", OBJECT_SELF);
-                ExecuteScript("crea_rndend_aft", OBJECT_SELF);
+                ExecuteScript("crea_rndend_bef", creature);
+                ProcessPerkAI(AIDefinitionType.Generic, creature, true);
+                ExecuteScript("cdef_c2_default3", creature);
+                ExecuteScript("crea_rndend_aft", creature);
             }
         }
 
@@ -129,7 +136,7 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureSpawn()
         {
             ExecuteScript("crea_spawn_bef", OBJECT_SELF);
-            LoadCreatureStats();
+            Stat.LoadNPCStats();
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
@@ -274,57 +281,61 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles custom perk usage
         /// </summary>
-        private static void ProcessPerkAI()
+        public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
         {
-            var self = OBJECT_SELF;
-
             // Petrified - do nothing else.
-            if (GetHasEffect(self, EffectTypeScript.Petrify)) 
+            if (GetHasEffect(creature, EffectTypeScript.Petrify)) 
                 return;
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = Enmity.GetHighestEnmityTarget(self);
-            if (!GetIsObjectValid(target))
+            var target = Enmity.GetHighestEnmityTarget(creature);
+            if (usesEnmity && !GetIsObjectValid(target))
             {
                 ClearAllActions();
                 return;
             }
 
             // If currently randomly walking, clear all actions.
-            if (GetCurrentAction(self) == ActionType.RandomWalk)
+            if (GetCurrentAction(creature) == ActionType.RandomWalk)
             {
                 ClearAllActions();
             }
 
             // Not currently fighting - attack target
-            if (GetCurrentAction(self) == ActionType.Invalid)
+            if (GetCurrentAction(creature) == ActionType.Invalid)
             {
-                DeleteLocalInt(self, StickyTargetRounds);
+                DeleteLocalInt(creature, StickyTargetRounds);
                 ClearAllActions();
                 ActionAttack(target);
             }
             // The AI should stick to their same target for 3 rounds before shifting to the next highest enmity target.
-            else if (target != GetAttackTarget(self))
+            else if (usesEnmity && target != GetAttackTarget(creature))
             {
-                var rounds = GetLocalInt(self, StickyTargetRounds) + 1;
+                var rounds = GetLocalInt(creature, StickyTargetRounds) + 1;
                 if (rounds > 3)
                 {
-                    DeleteLocalInt(self, StickyTargetRounds);
+                    DeleteLocalInt(creature, StickyTargetRounds);
                     ClearAllActions();
                     ActionAttack(target);
                 }
+                SetLocalInt(creature, StickyTargetRounds, rounds);
             }
             // Perk ability usage
             else
             {
-                if (!_creatureAllies.TryGetValue(self, out var allies))
+                if (!_creatureAllies.TryGetValue(creature, out var allies))
                 {
                     allies = new HashSet<uint>();
                 }
-                allies.Add(self);
+                allies.Add(creature);
 
-                var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
+                if(!GetIsObjectValid(target))
+                    target = GetAttemptedAttackTarget();
+
+                var aiDefinition = _aiDefinitions[aiType];
+                aiDefinition.PreProcessAI(creature, target, allies);
+                var (feat, featTarget) = aiDefinition.DeterminePerkAbility();
                 if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
                     ClearAllActions();
@@ -377,37 +388,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and FP as local variables.
-        /// Also load their HP per their skin, if specified.
-        /// </summary>
-        private static void LoadCreatureStats()
-        {
-            var self = OBJECT_SELF;
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
-
-            var maxHP = 0;
-            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-            {
-                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
-                {
-                    maxHP += GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            if (maxHP > 30000)
-                maxHP = 30000;
-
-            if (maxHP > 0)
-            {
-                ObjectPlugin.SetMaxHitPoints(self, maxHP);
-                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
-            }
-
-            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
-        }
-
-        /// <summary>
         /// When the creature spawns, add an AOE effect to the creature which will be used to process aggro ranges.
         /// </summary>
         private static void LoadAggroEffect()
@@ -434,35 +414,6 @@ namespace SWLOR.Game.Server.Service
             var daze = GetLocalInt(OBJECT_SELF, "DAZE");
             if (daze > 0) 
                 ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
-        }
-
-        /// <summary>
-        /// When a creature's heartbeat fires, restore their STM and FP.
-        /// </summary>
-        private static void RestoreCreatureStats()
-        {
-            var self = OBJECT_SELF;
-            var maxFP = Stat.GetMaxFP(self);
-            var maxSTM = Stat.GetMaxStamina(self);
-            var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA") + 1;
-
-            if (fp > maxFP)
-                fp = maxFP;
-            if (stm > maxSTM)
-                stm = maxSTM;
-
-            SetLocalInt(self, "FP", fp);
-            SetLocalInt(self, "STAMINA", stm);
-
-            // If out of combat - restore HP at 10% per tick.
-            if (!GetIsInCombat(self) &&
-                !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
-                GetCurrentHitPoints(self) < GetMaxHitPoints(self))
-            {
-                var hpToHeal = GetMaxHitPoints(self) * 0.1f;
-                ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
-            }
         }
 
         /// <summary>

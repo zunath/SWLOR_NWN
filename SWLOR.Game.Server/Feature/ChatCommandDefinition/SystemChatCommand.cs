@@ -11,23 +11,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class SystemChatCommand: IChatCommandListDefinition
     {
+        private readonly ChatCommandBuilder _builder = new();
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-            var builder = new ChatCommandBuilder();
+            BugCommand();
+            HelpCommand();
+            ListEmotesCommand();
+            StuckCommand();
+            EmotesWindowCommand();
 
-            BugCommand(builder);
-            HelpCommand(builder);
-            ListEmotesCommand(builder);
-            StuckCommand(builder);
-            EmotesWindowCommand(builder);
-
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private static void BugCommand(ChatCommandBuilder builder)
+        private void BugCommand()
         {
 
-            builder.Create("bug")
+            _builder.Create("bug")
                 .Description("Toggles the bug report window to submit bugs to the developers. Please include as much detail as possible.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
@@ -51,16 +51,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void HelpCommand(ChatCommandBuilder builder)
+        private void HelpCommand()
         {
-            builder.Create("help")
+            _builder.Create("help")
                 .Description("Displays all chat commands available to you.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    var appSettings = ApplicationSettings.Get();
                     var authorization = Authorization.GetAuthorizationLevel(user);
 
-                    if (authorization == AuthorizationLevel.DM)
+                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
+                        authorization == AuthorizationLevel.DM)
                     {
                         SendMessageToPC(user, ChatCommand.HelpTextDM);
                     }
@@ -74,9 +76,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        private static void ListEmotesCommand(ChatCommandBuilder builder)
+        private void ListEmotesCommand()
         {
-            builder.Create("emotes")
+            _builder.Create("emotes")
                 .Description("Displays all emotes available to you.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
@@ -84,10 +86,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, ChatCommand.HelpTextEmote);
                 });
         }
-        private static void StuckCommand(ChatCommandBuilder builder)
+        private void StuckCommand()
         {
 
-            builder.Create("stuck")
+            _builder.Create("stuck")
                 .Description("Emergency Escape Command. Use this if you get stuck on a map.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
@@ -116,9 +118,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        private static void EmotesWindowCommand(ChatCommandBuilder builder)
+        private void EmotesWindowCommand()
         {
-            builder.Create("emotegui", "emotesgui")
+            _builder.Create("emotegui", "emotesgui")
                 .Description("Displays the Emotes window.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>

@@ -11,8 +11,8 @@ namespace SWLOR.CLI
         private static readonly StructureItemCreator _structureItemCreator = new();
         private static readonly EnhancementItemBuilder _enhancementItemBuilder = new();
         private static readonly RecipeCodeBuilder _recipeCodeBuilder = new();
-        private static readonly LegacyMigrator _legacyMigrator = new();
         private static readonly AdHocTool _adHocTool = new();
+        private static readonly DroidItemBuilder _droidItemBuilder = new();
 
         static void Main(string[] args)
         {
@@ -28,6 +28,11 @@ namespace SWLOR.CLI
             var enhancementOption = app.Option(
                 "-$|-e |--enhancement",
                 "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
+                CommandOptionType.NoValue
+            );
+            var droidItemOption = app.Option(
+                "-$|-d |--droid",
+                "Generates uti files in json format for all of the entries found in droid_item_template.tsv.",
                 CommandOptionType.NoValue
             );
 
@@ -65,11 +70,6 @@ namespace SWLOR.CLI
                 "Generates uti files in json format for all of the StructureType.cs enum values.",
                 CommandOptionType.NoValue);
 
-            var legacyMigratorOption = app.Option(
-                "-$|-m |--migration",
-                "Migrates legacy data to new Redis structure.",
-                CommandOptionType.NoValue);
-
             var adHocToolOption = app.Option(
                 "-$|-a |--adhoc",
                 "Ad-hoc code testing.",
@@ -87,6 +87,11 @@ namespace SWLOR.CLI
                 if (enhancementOption.HasValue())
                 {
                     _enhancementItemBuilder.Process();
+                }
+
+                if (droidItemOption.HasValue())
+                {
+                    _droidItemBuilder.Process();
                 }
 
                 if (hakBuilderOption.HasValue())
@@ -117,11 +122,6 @@ namespace SWLOR.CLI
                 if (structureOption.HasValue())
                 {
                     _structureItemCreator.Process();
-                }
-
-                if (legacyMigratorOption.HasValue())
-                {
-                    _legacyMigrator.Process();
                 }
 
                 if (adHocToolOption.HasValue())

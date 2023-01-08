@@ -70,6 +70,8 @@ namespace SWLOR.Game.Server.Feature
             }
 
             StatusEffect.Apply(player, player, StatusEffectType.Rest, 0f);
+
+            ExecuteScript("rest_started", player);
         }
 
         /// <summary>

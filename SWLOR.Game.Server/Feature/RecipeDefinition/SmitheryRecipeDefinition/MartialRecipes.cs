@@ -84,6 +84,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("hyphae_wood", 1);
+
+            // Chiro Katar
+            _builder.Create(RecipeType.ChiroKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("chi_katar")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.MartialBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
         private void Staffs()
@@ -153,6 +171,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
+
+            // Chiro Staff
+            _builder.Create(RecipeType.ChiroStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("chi_staff")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
 
     }

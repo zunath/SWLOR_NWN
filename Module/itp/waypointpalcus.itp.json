@@ -54,6 +54,138 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir - Cave Ruins"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_caveruins"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Desert"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_desert"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Desert West"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_desertwest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grotto Caverns"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_grottocaver"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grottos"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_grottos"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Grottos Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_grottosboss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Mountain Caves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_mtncaves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Mountains"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_mtns"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Ruin Base"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_ruinbase"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Tarnished Jungles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_tarnjungles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Tarnished Jungles North"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_tarnjungnor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Tribe Village"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dath_tribevillag"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar - Animals"
                     },
                     "RESREF": {
@@ -70,6 +202,72 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hutlar_byysk_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shyrack_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Sith Ghost Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Sith Ghost Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithg_m_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Sithsnake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsnake_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Squellbug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "squellbug_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Tukata"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_spn"
                     }
                   },
                   {
@@ -378,6 +576,292 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fishing Point - Dathomir Grotto Caverns"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dathomir Grottos"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dathomir Mountains"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dathomir Tribe Village"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_026"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dathomir West Side"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Hutlar Cloning Test Site"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Hutlar Qion Foothills"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Hutlar Qion Tundra"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Hutlar Qion Valley"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_019"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Coral Isles Inner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Coral Isles Outer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_011"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Dac City Surface"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Sharptooth Jungle Caves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Sharptooth Jungle South"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Mon Cala Sunkenhedge Swamps"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Tatooine Baby Sarlacc Cave"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_020"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Tatooine Tusken Raider Cave Main Floor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Cavern"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Deepwoods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Eastern Swamplands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Lake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Lake Grounds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Mountain Valley"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Western Swamplands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Wildlands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Viscara Wildwoods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Coxxion Base Scavenge"
                     },
                     "RESREF": {
@@ -398,6 +882,121 @@
                 "type": "byte",
                 "value": 2
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Council Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduncouncilg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Guardian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunguardian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Industrial"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunindustry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Inquisitor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduninquis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Loot - Forge"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunforgeloot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Loot - Temple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduntemple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunmarauder"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduntrooper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Dungeon Warform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunwarform"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6690
@@ -408,77 +1007,6 @@
               "ID": {
                 "type": "byte",
                 "value": 3
-              },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shyrack"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shyrack_spwn"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Ghost Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sithg_spn"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Ghost Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sithg_m_spn"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sithsnake Spawn"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sithsnake_spn"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Squellbug Spawn"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "squellbug_spn"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tukata Spawn"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tukata_spn"
-                    }
-                  }
-                ]
               },
               "STRREF": {
                 "type": "dword",

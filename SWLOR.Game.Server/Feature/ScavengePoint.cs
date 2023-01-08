@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 dc += Random.D3(1);
-                Skill.GiveSkillXP(user, SkillType.Gathering, xp);
+                Skill.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
             }
 
             SetLocalBool(placeable, "FULLY_HARVESTED", true);

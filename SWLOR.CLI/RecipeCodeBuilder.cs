@@ -31,6 +31,7 @@ namespace SWLOR.CLI
                     continue;
 
                 var skill = data[0].Trim();
+                var requiresRecipe = data[1].Trim();
                 var recipeName = data[6].Trim();
                 var categoryEnumName = data[2].Trim().Replace("-", "").Replace(" ", "");
                 var recipeEnumName = data[3].Trim();
@@ -48,6 +49,14 @@ namespace SWLOR.CLI
                 var component3Quantity = data[17].Trim();
                 var component4Resref = data[18].Trim();
                 var component4Quantity = data[19].Trim();
+                var component5Resref = data[20].Trim();
+                var component5Quantity = data[21].Trim();
+                var component6Resref = data[22].Trim();
+                var component6Quantity = data[23].Trim();
+                var component7Resref = data[24].Trim();
+                var component7Quantity = data[25].Trim();
+                var component8Resref = data[26].Trim();
+                var component8Quantity = data[27].Trim();
 
                 var recipeCode = recipeTemplate
                     .Replace("%%RECIPESKILL%%", skill)
@@ -59,8 +68,18 @@ namespace SWLOR.CLI
                     .Replace("%%PERKLEVEL%%", perkLevel)
                     .Replace("%%RECIPECATEGORY%%", recipeCategory);
 
+                var recipeRequirement = string.Empty;
+                if (!string.IsNullOrWhiteSpace(requiresRecipe))
+                {
+                    recipeRequirement = $"{Environment.NewLine}\t.RequirementUnlocked()";
+                }
+
+                recipeCode = recipeCode.Replace("%%REQUIRESRECIPE%%", recipeRequirement);
+
                 var enhancements = string.Empty;
-                if (!string.IsNullOrWhiteSpace(enhancementSlots))
+                if (!string.IsNullOrWhiteSpace(enhancementSlots) && 
+                    !string.IsNullOrWhiteSpace(enhancementCategory) &&
+                    enhancementCategory != "N/A")
                 {
                     enhancements = enhancementTemplate
                         .Replace("%%ENHANCEMENTSLOTS%%", enhancementSlots)
@@ -93,6 +112,30 @@ namespace SWLOR.CLI
                     components += componentTemplate
                         .Replace("%%COMPONENTRESREF%%", component4Resref)
                         .Replace("%%COMPONENTQUANTITY%%", component4Quantity);
+                }
+                if (!string.IsNullOrWhiteSpace(component5Resref) && !string.IsNullOrWhiteSpace(component5Quantity))
+                {
+                    components += componentTemplate
+                        .Replace("%%COMPONENTRESREF%%", component5Resref)
+                        .Replace("%%COMPONENTQUANTITY%%", component5Quantity);
+                }
+                if (!string.IsNullOrWhiteSpace(component6Resref) && !string.IsNullOrWhiteSpace(component6Quantity))
+                {
+                    components += componentTemplate
+                        .Replace("%%COMPONENTRESREF%%", component6Resref)
+                        .Replace("%%COMPONENTQUANTITY%%", component6Quantity);
+                }
+                if (!string.IsNullOrWhiteSpace(component7Resref) && !string.IsNullOrWhiteSpace(component7Quantity))
+                {
+                    components += componentTemplate
+                        .Replace("%%COMPONENTRESREF%%", component7Resref)
+                        .Replace("%%COMPONENTQUANTITY%%", component7Quantity);
+                }
+                if (!string.IsNullOrWhiteSpace(component8Resref) && !string.IsNullOrWhiteSpace(component8Quantity))
+                {
+                    components += componentTemplate
+                        .Replace("%%COMPONENTRESREF%%", component8Resref)
+                        .Replace("%%COMPONENTQUANTITY%%", component8Quantity);
                 }
 
                 recipeCode = recipeCode.Replace("%%COMPONENTS%%", components);

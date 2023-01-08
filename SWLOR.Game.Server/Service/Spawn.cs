@@ -441,6 +441,14 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                // Queued respawns are pending. These must all spawn before a despawn can occur.
+                // Leave the queued despawn in place to ensure it eventually gets processed.
+                if (_queuedSpawnsByArea.ContainsKey(area) &&
+                    _queuedSpawnsByArea[area].Count > 0)
+                {
+                    continue;
+                }
+
                 if (now > despawnTime)
                 {
                     // Destroy active spawned objects from the module.
@@ -609,11 +617,11 @@ namespace SWLOR.Game.Server.Service
             else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var (objectType, resref, aiFlag, animators) = spawnTable.GetNextSpawn();
+                var spawnObject = spawnTable.GetNextSpawn();
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
-                if (string.IsNullOrWhiteSpace(resref))
+                if (string.IsNullOrWhiteSpace(spawnObject.Resref))
                 {
                     return OBJECT_INVALID;
                 }
@@ -625,16 +633,21 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);
 
-                var spawn = CreateObject(objectType, resref, location);
+                var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                AI.SetAIFlag(spawn, aiFlag);
+                AI.SetAIFlag(spawn, spawnObject.AIFlags);
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
 
-                foreach (var animator in animators)
+                foreach (var animator in spawnObject.Animators)
                 {
                     animator.SetLocalVariables(spawn);
+                }
+
+                foreach (var action in spawnObject.OnSpawnActions)
+                {
+                    action(spawn);
                 }
 
                 return spawn;

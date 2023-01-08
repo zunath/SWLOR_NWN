@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature
                         var playerId = GetObjectUUID(player);
                         var dbPlayer = DB.Get<Player>(playerId);
 
-                        if(GetIsDM(player) || dbPlayer.Settings.DisplayServerResetReminders)
+                        if(GetIsDM(player) || GetIsDMPossessed(player) || (dbPlayer != null && dbPlayer.Settings.DisplayServerResetReminders))
                             SendMessageToPC(player, message);
                     }
 
@@ -112,6 +112,21 @@ namespace SWLOR.Game.Server.Feature
                         : now.AddHours(1);
                 }
             }, TimeSpan.FromMinutes(1));
+        }
+
+
+        /// <summary>
+        /// When a player enters the server, send them a greeting and a link to the Discord server.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void WelcomeMessage()
+        {
+            var player = GetEnteringObject();
+            DelayCommand(2f, () =>
+            {
+                SendMessageToPC(player, ColorToken.Green("Welcome to Star Wars: Legends of the Old Republic!\n") +
+                                        ColorToken.White("Join our Discord at: https://discord.gg/MyQAM6m"));
+            });
         }
     }
 }

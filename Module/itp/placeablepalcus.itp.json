@@ -26918,6 +26918,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bench Elegant - Grey"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_bench_swlr02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bench, Elegant (Grey)"
                     },
                     "RESREF": {
@@ -27006,6 +27017,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chair - Chancellor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_chair_swlr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chair, Back to Back"
                     },
                     "RESREF": {
@@ -27066,6 +27088,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_chair05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Dining - Grey"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_chair_swlr02"
                     }
                   },
                   {
@@ -27226,6 +27259,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chaise Longue - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chaise Longue - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chaise Longue (Blue)"
                     },
                     "RESREF": {
@@ -27281,6 +27336,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Couch Blanket Cover - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Couch Cushion - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Couch, Blanket Cover (Red/Grey)"
                     },
                     "RESREF": {
@@ -27297,6 +27374,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_couch05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Couch, Leather - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr05"
                     }
                   },
                   {
@@ -47355,6 +47443,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bench, Leather Cushion - Brown"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_bench_swlr03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bench, Leather Cushion (Brown)"
                     },
                     "RESREF": {
@@ -48317,6 +48416,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_xrpcouc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Couch, Leather - Grey"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr06"
                     }
                   },
                   {
@@ -67968,6 +68078,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fishing Point"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fish_point"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Flawed Crystal Cluster"
                     },
                     "RESREF": {
@@ -68193,6 +68314,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mando_crate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_dath_term"
                     }
                   },
                   {
@@ -68699,6 +68831,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithcrypt_box_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Fortress - Reliquary"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrduntemple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Fortress - Supply Cache"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrdunforge"
                     }
                   },
                   {

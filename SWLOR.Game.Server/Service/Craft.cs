@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyAbilityBonus(AbilityType.Might, amount);
                 case 25: // Perception
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
-                case 26: // Attack Bonus
+                case 26: // Accuracy
                     return ItemPropertyAttackBonus(amount);
                 case 27: // Recast Reduction
                     return ItemPropertyCustom(ItemPropertyType.AbilityRecastReduction, -1, amount);
@@ -458,6 +458,89 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 56, amount);
                 case 57: // Starship EM Defense
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
+                case 58: // Agility
+                    return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
+                case 59: // Attack
+                    return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
+                case 60: // Food Bonus - Attack
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
+                case 61: // Food Bonus - Accuracy
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Accuracy, amount);
+                case 62: // Food Bonus - Physical Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
+                case 63: // Food Bonus - Force Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
+                case 64: // Food Bonus - Poison Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePoison, amount);
+                case 65: // Food Bonus - Fire Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseFire, amount);
+                case 66: // Food Bonus - Ice Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseIce, amount);
+                case 67: // Food Bonus - Electrical Defense
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseElectrical, amount);
+                case 68: // Food Bonus - Evasion
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
+                case 69: // Food Bonus - Control Smithery
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlSmithery, amount);
+                case 70: // Food Bonus - Craftsmanship Smithery
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipSmithery, amount);
+                case 71: // Food Bonus - Control Fabrication
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlFabrication, amount);
+                case 72: // Food Bonus - Craftsmanship Fabrication
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipFabrication, amount);
+                case 73: // Food Bonus - Control Engineering
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlEngineering, amount);
+                case 74: // Food Bonus - Craftsmanship Engineering
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipEngineering, amount);
+                case 75: // Food Bonus - Control Agriculture
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlAgriculture, amount);
+                case 76: // Food Bonus - Craftsmanship Agriculture
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipAgriculture, amount);
+                case 77: // Food Bonus - Might
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Might, amount);
+                case 78: // Food Bonus - Perception
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Perception, amount);
+                case 79: // Food Bonus - Vitality
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Vitality, amount);
+                case 80: // Food Bonus - Willpower
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Willpower, amount);
+                case 81: // Food Bonus - Agility
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Agility, amount);
+                case 82: // Food Bonus - Social
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
+                case 83: // Attack
+                    return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
+                case 84: // Force Attack
+                    return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
+
+                // 83-101 are free
+
+                case 102: // Droid: AI Slot
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 3, amount);
+                case 103: // Droid: HP
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 4, amount);
+                case 104: // Droid: STM
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 5, amount);
+                case 105: // Droid: MGT
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 6, amount);
+                case 106: // Droid: PER
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 7, amount);
+                case 107: // Droid: VIT
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 8, amount);
+                case 108: // Droid: WIL
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 9, amount);
+                case 109: // Droid: AGI
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
+                case 110: // Droid: SOC
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
+                case 111: // Droid: 1-Handed
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 12, amount);
+                case 112: // Droid: 2-Handed
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 13, amount);
+                case 113: // Droid: Martial Arts
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 14, amount);
+                case 114: // Droid: Ranged
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 15, amount);
 
             }
 

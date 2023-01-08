@@ -265,6 +265,12 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Activity.ClearBusy(activator);
+
+                if (!GetIsPC(activator))
+                {
+                    var combatRoundEndScript = GetEventScript(activator, EventScript.Creature_OnEndCombatRound);
+                    ExecuteScript(combatRoundEndScript, activator);
+                }
             }
 
             // Begin the main process

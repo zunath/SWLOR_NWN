@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Service
                     { PerkType.StaffProficiency, level},
                     { PerkType.PistolProficiency, level},
                     { PerkType.RifleProficiency, level},
+                    { PerkType.ThrowingWeaponProficiency, level},
                     { PerkType.CloakProficiency, level},
                     { PerkType.BeltProficiency, level},
                     { PerkType.RingProficiency, level},
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[1][PerkType.WeaponFocusStaves] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusPistols] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusRifles] = 1;
+            _defaultPerksByTier[1][PerkType.WeaponFocusThrowingWeapons] = 1;
 
             // Tier 2
             _defaultPerksByTier[2][PerkType.WeaponFocusVibroblades] = 2;
@@ -116,6 +118,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[2][PerkType.WeaponFocusStaves] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
+            _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
 
             // Tier 3
             _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;
@@ -127,6 +130,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[3][PerkType.ImprovedCriticalStaves] = 1;
             _defaultPerksByTier[3][PerkType.ImprovedCriticalPistols] = 1;
             _defaultPerksByTier[3][PerkType.ImprovedCriticalRifles] = 1;
+            _defaultPerksByTier[3][PerkType.ImprovedCriticalThrowingWeapons] = 1;
 
             _defaultPerksByTier[3][PerkType.VibrobladeMastery] = 1;
             _defaultPerksByTier[3][PerkType.FinesseVibrobladeMastery] = 1;
@@ -137,6 +141,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[3][PerkType.StaffMastery] = 1;
             _defaultPerksByTier[3][PerkType.PistolMastery] = 1;
             _defaultPerksByTier[3][PerkType.RifleMastery] = 1;
+            _defaultPerksByTier[3][PerkType.ThrowingWeaponMastery] = 1;
 
             // Tier 4
 
@@ -150,6 +155,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[5][PerkType.StaffMastery] = 2;
             _defaultPerksByTier[5][PerkType.PistolMastery] = 2;
             _defaultPerksByTier[5][PerkType.RifleMastery] = 2;
+            _defaultPerksByTier[5][PerkType.ThrowingWeaponMastery] = 2;
 
         }
 

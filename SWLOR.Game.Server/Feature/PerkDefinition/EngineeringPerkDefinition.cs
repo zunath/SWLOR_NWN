@@ -268,18 +268,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables the construction and programming of tier 2 droids.")
                 .Price(3)
+                .RequirementSkill(SkillType.Engineering, 10)
 
                 .AddPerkLevel()
                 .Description("Enables the construction and programming of tier 3 droids.")
                 .Price(3)
+                .RequirementSkill(SkillType.Engineering, 20)
 
                 .AddPerkLevel()
                 .Description("Enables the construction and programming of tier 4 droids.")
                 .Price(3)
+                .RequirementSkill(SkillType.Engineering, 30)
 
                 .AddPerkLevel()
                 .Description("Enables the construction and programming of tier 5 droids.")
-                .Price(3);
+                .Price(3)
+                .RequirementSkill(SkillType.Engineering, 40);
         }
     }
 }

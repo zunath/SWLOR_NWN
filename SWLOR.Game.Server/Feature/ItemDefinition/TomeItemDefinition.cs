@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     
                     if (Currency.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
                     {
-                        return "You cannot add any more perk resets to your collection.";
+                        return "You cannot add any more perk refunds to your collection.";
                     }
 
                     return string.Empty;
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     Currency.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
-                    SendMessageToPC(user, $"You gain a reset token. (Total: {Currency.GetCurrency(user, CurrencyType.PerkRefundToken)})");
+                    SendMessageToPC(user, $"You gain a perk refund token. (Total: {Currency.GetCurrency(user, CurrencyType.PerkRefundToken)})");
                     DestroyObject(item);
                     Gui.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
@@ -61,7 +61,27 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void APRefundTome()
         {
-            
+            _builder.Create("recond_tome")
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        return "Only players may use this item.";
+                    }
+
+                    if (Currency.GetCurrency(user, CurrencyType.StatRefundToken) >= 99)
+                    {
+                        return "You cannot add any more stat refunds to your collection.";
+                    }
+
+                    return string.Empty;
+                })
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    Currency.GiveCurrency(user, CurrencyType.StatRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a stat refund token. (Total: {Currency.GetCurrency(user, CurrencyType.StatRefundToken)})");
+                    DestroyObject(item);
+                });
         }
 
     }

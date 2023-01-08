@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
@@ -15,7 +16,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var dbPlayer in dbPlayers)
             {
-                dbPlayer.NumberRebuildsAvailable++;
+                if (!dbPlayer.Currencies.ContainsKey(CurrencyType.RebuildToken))
+                    dbPlayer.Currencies[CurrencyType.RebuildToken] = 0;
+
+                dbPlayer.Currencies[CurrencyType.RebuildToken]++;
+
                 DB.Set(dbPlayer);
             }
         }

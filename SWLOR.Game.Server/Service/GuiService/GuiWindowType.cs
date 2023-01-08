@@ -50,5 +50,8 @@
         DroidAI = 45,
         Currencies = 46,
         StatRebuild = 47,
+
+
+        DebugEnmity = 900,
     }
 }

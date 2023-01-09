@@ -137,6 +137,12 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && GetIsPC(enemy))
                 return;
 
+            // Droids & other henchmen cannot acquire enmity
+            var creatureMaster = GetMaster(creature);
+            var enemyMaster = GetMaster(enemy);
+            if (GetIsPC(creatureMaster) || GetIsPC(enemyMaster))
+                return;
+
             // Value is zero, no action necessary.
             if (amount == 0) return;
 

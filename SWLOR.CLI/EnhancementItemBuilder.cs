@@ -67,7 +67,7 @@ namespace SWLOR.CLI
             { "STM Food", 38 },
             { "STM Regen", 31 },
             { "XP Bonus", 33 },
-            { "Accuracy", 53 },
+            { "Starship Accuracy", 53 },
             { "Armor", 46 },
             { "Capacitor", 47 },
             { "EM Damage", 50 },

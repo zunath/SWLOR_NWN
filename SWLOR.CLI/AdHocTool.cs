@@ -9,17 +9,17 @@ namespace SWLOR.CLI
     {
         public void Process()
         {
-            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "172.22.160.1");
+            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "172.22.0.1");
 
             DB.Load();
 
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.CustomName), "aerlson", true);
-            var properties = DB.Search(query);
+            var query = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.Name), "adel", true);
+            var entities = DB.Search(query);
 
-            foreach (var property in properties)
+            foreach (var entity in entities)
             {
-                Console.WriteLine(property.Id);
+                Console.WriteLine($"{entity.Name} = {entity.Id}");
             }
 
         }

@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                         if (!GetIsPC(nearest))
                         {
                             var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
-                            Impact(activator, nearest, 1230 * enmityBonus);
+                            Impact(activator, nearest, 1230 + enmityBonus);
                         }
 
                         nth++;

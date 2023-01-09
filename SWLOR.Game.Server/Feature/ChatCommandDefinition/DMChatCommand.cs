@@ -617,7 +617,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("adjustfactionstanding")
                 .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {

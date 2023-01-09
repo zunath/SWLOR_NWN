@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Service
             // Skin item properties
             var levelIP = ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, details.Level);
             var hpIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, details.HP);
-            var stmIP = ItemPropertyCustom(ItemPropertyType.NPCSTM, -1, details.STM);
+            var stmIP = ItemPropertyCustom(ItemPropertyType.Stamina, -1, details.STM);
 
             BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);

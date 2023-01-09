@@ -362,9 +362,9 @@ namespace SWLOR.Game.Server.Service
                 case 8: // HP
                     return ItemPropertyCustom(ItemPropertyType.HPBonus, -1, amount);
                 case 9: // FP
-                    return ItemPropertyCustom(ItemPropertyType.FPBonus, -1, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FP, -1, amount);
                 case 10: // Stamina
-                    return ItemPropertyCustom(ItemPropertyType.STMBonus, -1, amount);
+                    return ItemPropertyCustom(ItemPropertyType.Stamina, -1, amount);
                 case 11: // Vitality
                     return ItemPropertyAbilityBonus(AbilityType.Vitality, amount);
                 case 12: // Social

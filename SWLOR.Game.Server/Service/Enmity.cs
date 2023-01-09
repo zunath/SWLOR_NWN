@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using CombatPoint = SWLOR.Game.Server.Service.CombatPoint;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Enmity
     {
         // Enemy -> Creature -> EnmityAmount mapping
-        private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new Dictionary<uint, Dictionary<uint, int>>();
+        private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
         // Creature -> EnemyList mapping
-        private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new Dictionary<uint, List<uint>>();
+        private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -115,7 +114,9 @@ namespace SWLOR.Game.Server.Service
         public static uint GetHighestEnmityTarget(uint enemy)
         {
             var enmityTable = GetEnmityTable(enemy);
-            var target = enmityTable.Count <= 0 ? OBJECT_INVALID : enmityTable.MaxBy(o => o.Value).Key;
+            var target = enmityTable.Count <= 0 
+                ? OBJECT_INVALID 
+                : enmityTable.MaxBy(o => o.Value).Key;
 
             return target;
         }
@@ -185,6 +186,8 @@ namespace SWLOR.Game.Server.Service
                     ActionAttack(creature);
                 });
             }
+
+            ExecuteScript("enmity_changed", creature);
         }
 
         /// <summary>
@@ -259,6 +262,28 @@ namespace SWLOR.Game.Server.Service
         {
             return _creatureToEnemies.ContainsKey(creature)
                    && _creatureToEnemies[creature].Count > 0;
+        }
+
+        public static Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature)
+        {
+            var enemyList = _creatureToEnemies.ContainsKey(creature) 
+                ? _creatureToEnemies[creature] 
+                : new List<uint>();
+
+            var result = new Dictionary<uint, int>();
+
+            foreach (var enemy in enemyList)
+            {
+                if(!_enemyEnmityTables.ContainsKey(enemy) ||
+                   !_enemyEnmityTables[enemy].ContainsKey(creature))
+                    continue;
+
+                var enmity = _enemyEnmityTables[enemy][creature];
+
+                result.Add(enemy, enmity);
+            }
+
+            return result;
         }
     }
 }

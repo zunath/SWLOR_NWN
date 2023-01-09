@@ -18,6 +18,7 @@ using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
+using System.Buffers.Text;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -59,6 +60,16 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The max amount of FP</returns>
         public static int GetMaxFP(uint creature, Player dbPlayer = null)
         {
+            var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+            var foodBonus = 0;
+            int baseFP;
+
+            if (foodEffect != null)
+            {
+                foodBonus = foodEffect.FP;
+            }
+
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -67,34 +78,17 @@ namespace SWLOR.Game.Server.Service
                     var playerId = GetObjectUUID(creature);
                     dbPlayer = DB.Get<Player>(playerId);
                 }
-                var baseFP = dbPlayer.MaxFP;
-                var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-                var foodBonus = 0;
+                baseFP = dbPlayer.MaxFP;
 
-                if (foodEffect != null)
-                {
-                    foodBonus = foodEffect.FP;
-                }
-
-                return baseFP + modifier * 10 + foodBonus;
             }
             // NPCs
             else
             {
-                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
-
-                var ep = 0;
-                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-                {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCFP)
-                    {
-                        ep += GetItemPropertyCostTableValue(ip);
-                    }
-                }
-
-                return ep;
+                var npcStats = GetNPCStats(creature);
+                baseFP = npcStats.FP;
             }
+
+            return baseFP + modifier * 10 + foodBonus;
         }
 
         /// <summary>
@@ -132,6 +126,16 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The max amount of STM</returns>
         public static int GetMaxStamina(uint creature, Player dbPlayer = null)
         {
+            var modifier = GetAbilityModifier(AbilityType.Agility, creature);
+            var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
+            var foodBonus = 0;
+            int baseStamina;
+
+            if (foodEffect != null)
+            {
+                foodBonus = foodEffect.STM;
+            }
+
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -141,34 +145,17 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
 
-                var baseStamina = dbPlayer.MaxStamina;
-                var modifier = GetAbilityModifier(AbilityType.Agility, creature);
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-                var foodBonus = 0;
+                baseStamina = dbPlayer.MaxStamina;
 
-                if (foodEffect != null)
-                {
-                    foodBonus = foodEffect.STM;
-                }
-
-                return baseStamina + modifier * 5 + foodBonus;
             }
             // NPCs
             else
             {
-                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
-
-                var stm = 0;
-                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-                {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCSTM)
-                    {
-                        stm += GetItemPropertyCostTableValue(ip);
-                    }
-                }
-
-                return stm;
+                var npcStats = GetNPCStats(creature);
+                baseStamina = npcStats.Stamina;
             }
+
+            return baseStamina + modifier * 5 + foodBonus;
         }
 
         /// <summary>
@@ -379,7 +366,7 @@ namespace SWLOR.Game.Server.Service
             // Reduce their HP by the amount tracked in the DB.
             if (dbPlayer.TemporaryFoodHP > 0 && !StatusEffect.HasStatusEffect(player, StatusEffectType.Food))
             {
-                Stat.AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
+                AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
                 dbPlayer.TemporaryFoodHP = 0;
                 DB.Set(dbPlayer);
             }
@@ -840,13 +827,16 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStats(creature);
 
-                if (npcStats.Skills.ContainsKey(skillType))
+                skillLevel = npcStats.Skills.ContainsKey(skillType) 
+                    ? npcStats.Skills[skillType] 
+                    : npcStats.Level;
+
+                if (attackBonusOverride <= 0)
                 {
-                    skillLevel = npcStats.Skills[skillType];
-                }
-                else
-                {
-                    skillLevel = npcStats.Level;
+                    if (skillType == SkillType.Force)
+                        attackBonus += npcStats.ForceAttack;
+                    else
+                        attackBonus += npcStats.Attack;
                 }
             }
 
@@ -885,14 +875,14 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise fallback to the NPC's level.
                 var npcStats = GetNPCStatsNative(creature);
 
-                if (npcStats.Skills.ContainsKey(skillType))
-                {
-                    skillLevel = npcStats.Skills[skillType];
-                }
+                skillLevel = npcStats.Skills.ContainsKey(skillType) 
+                    ? npcStats.Skills[skillType] 
+                    : npcStats.Level;
+
+                if (skillType == SkillType.Force)
+                    attackBonus += npcStats.Attack;
                 else
-                {
-                    skillLevel = npcStats.Level;
-                }
+                    attackBonus += npcStats.ForceAttack;
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
@@ -1306,7 +1296,7 @@ namespace SWLOR.Game.Server.Service
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
-            var evasionBonus = 0;
+            int evasionBonus;
 
             // Base NWN applies an AC bonus based on the DEX stat. The Perception stat is based upon this.
             // Perception should not increase AC in SWLOR, so this is subtracted from the AC.
@@ -1328,6 +1318,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
+                evasionBonus = npcStats.Evasion;
             }
 
             evasionBonus += CalculateEffectEvasion(creature);
@@ -1379,6 +1370,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
+                evasionBonus = npcStats.Evasion;
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
@@ -1416,7 +1408,26 @@ namespace SWLOR.Game.Server.Service
                     var skillType = (SkillType)GetItemPropertySubType(ip);
                     npcStats.Skills[skillType] = GetItemPropertyCostTableValue(ip);
                 }
-
+                else if (type == ItemPropertyType.Attack)
+                {
+                    npcStats.Attack = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.ForceAttack)
+                {
+                    npcStats.ForceAttack = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.Evasion)
+                {
+                    npcStats.Evasion = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.Stamina)
+                {
+                    npcStats.Stamina = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.FP)
+                {
+                    npcStats.FP = GetItemPropertyCostTableValue(ip);
+                }
             }
 
             return npcStats;
@@ -1449,6 +1460,26 @@ namespace SWLOR.Game.Server.Service
 
                         npcStats.Skills[skillType] = prop.m_nCostTableValue;
                     }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Attack)
+                    {
+                        npcStats.Attack = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.ForceAttack)
+                    {
+                        npcStats.ForceAttack = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Evasion)
+                    {
+                        npcStats.Evasion = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Stamina)
+                    {
+                        npcStats.Stamina = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.FP)
+                    {
+                        npcStats.FP = prop.m_nCostTableValue;
+                    }
                 }
             }
 
@@ -1459,10 +1490,10 @@ namespace SWLOR.Game.Server.Service
         /// Applies the total number of attacks per round to a player.
         /// If a valid weapon is passed in the associated mastery perk will also be checked.
         /// </summary>
-        /// <param name="player">The player to apply attacks to</param>
+        /// <param name="creature">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
-        public static void ApplyAttacksPerRound(uint player, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        public static void ApplyAttacksPerRound(uint creature, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1506,7 +1537,7 @@ namespace SWLOR.Game.Server.Service
                 return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
             }
 
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
 
             var itemType = GetBaseItemType(rightHandWeapon);
@@ -1522,13 +1553,13 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
-                numberOfAttacks += GetFlurryBonus(player);
+                numberOfAttacks += GetFlurryBonus(creature);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
-                numberOfAttacks += GetRapidShotBonus(player);
+                numberOfAttacks += GetRapidShotBonus(creature);
             }
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
@@ -1570,13 +1601,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
-                numberOfAttacks += GetShieldBonus(player);
+                numberOfAttacks += GetShieldBonus(creature);
 
-            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(player, perkType);
+            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             var bab = GetBABForAttacks(numberOfAttacks);
-            CreaturePlugin.SetBaseAttackBonus(player, bab);
+            CreaturePlugin.SetBaseAttackBonus(creature, bab);
         }
 
         public static void ApplyCritModifier(uint player, uint rightHandWeapon)
@@ -1754,8 +1785,8 @@ namespace SWLOR.Game.Server.Service
         public static void RestoreNPCStats(bool outOfCombatRegen)
         {
             var self = OBJECT_SELF;
-            var maxFP = Stat.GetMaxFP(self);
-            var maxSTM = Stat.GetMaxStamina(self);
+            var maxFP = GetMaxFP(self);
+            var maxSTM = GetMaxStamina(self);
             var fp = GetLocalInt(self, "FP") + 1;
             var stm = GetLocalInt(self, "STAMINA") + 1;
 

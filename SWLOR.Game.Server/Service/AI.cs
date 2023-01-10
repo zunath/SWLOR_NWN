@@ -13,8 +13,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        private const string StickyTargetRounds = "AI_STICKY_TARGET_ROUNDS";
-
         [NWNEventHandler("mod_cache")]
         public static void CacheAIData()
         {
@@ -30,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         {
             Stat.RestoreNPCStats(true);
             ProcessFlags();
-            AttackHighestEnmityTarget();
+            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -56,7 +54,7 @@ namespace SWLOR.Game.Server.Service
                 ProcessPerkAI(AIDefinitionType.Generic, creature, true);
             }
 
-            AttackHighestEnmityTarget();
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_attack_aft")]
         public static void CreaturePhysicalAttacked()
         {
-            AttackHighestEnmityTarget();
+            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -88,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_damaged_aft")]
         public static void CreatureDamaged()
         {
-            AttackHighestEnmityTarget();
+            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -106,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_disturb_aft")]
         public static void CreatureDisturbed()
         {
-            AttackHighestEnmityTarget();
+            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -220,27 +218,6 @@ namespace SWLOR.Game.Server.Service
         {
         }
 
-        /// <summary>
-        /// Fail-safe to ensure the creature attacks 
-        /// </summary>
-        private static void AttackHighestEnmityTarget()
-        {
-            var self = OBJECT_SELF;
-            var target = Enmity.GetHighestEnmityTarget(self);
-            if (!GetIsObjectValid(target))
-                return;
-
-            // Same target - no need to switch.
-            if (GetAttemptedAttackTarget() == target)
-                return;
-
-            AssignCommand(self, () =>
-            {
-                //SpeakString($"Target: {GetName(target)}");
-                ClearAllActions();
-                ActionAttack(target);
-            });
-        }
 
         /// <summary>
         /// Handles custom perk usage
@@ -269,21 +246,8 @@ namespace SWLOR.Game.Server.Service
             // Not currently fighting - attack target
             if (GetCurrentAction(creature) == ActionType.Invalid)
             {
-                DeleteLocalInt(creature, StickyTargetRounds);
                 ClearAllActions();
                 ActionAttack(target);
-            }
-            // The AI should stick to their same target for 3 rounds before shifting to the next highest enmity target.
-            else if (usesEnmity && target != GetAttackTarget(creature))
-            {
-                var rounds = GetLocalInt(creature, StickyTargetRounds) + 1;
-                if (rounds > 3)
-                {
-                    DeleteLocalInt(creature, StickyTargetRounds);
-                    ClearAllActions();
-                    ActionAttack(target);
-                }
-                SetLocalInt(creature, StickyTargetRounds, rounds);
             }
             // Perk ability usage
             else
@@ -306,26 +270,6 @@ namespace SWLOR.Game.Server.Service
                     ActionUseFeat(feat, featTarget);
                 }
             }
-        }
-
-        /// <summary>
-        /// Forces a creature to start attacking a different target, regardless of enmity level.
-        /// This also resets their sticky targeting.
-        /// If either the creature or the target is invalid, nothing will happen.
-        /// </summary>
-        /// <param name="creature">The creature to force a target swap upon.</param>
-        /// <param name="target">The new target.</param>
-        public static void ForceTargetSwap(uint creature, uint target)
-        {
-            if (!GetIsObjectValid(creature) || !GetIsObjectValid(target))
-                return;
-
-            DeleteLocalInt(creature, StickyTargetRounds);
-            AssignCommand(creature, () =>
-            {
-                ClearAllActions();
-                ActionAttack(target);
-            });
         }
 
         /// <summary>

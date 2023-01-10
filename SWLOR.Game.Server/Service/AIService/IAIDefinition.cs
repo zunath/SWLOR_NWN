@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.AIService
         /// <param name="self">The creature</param>
         /// <param name="target">The target</param>
         /// <param name="allies">Allies associated with this creature. Should also include this creature.</param>
-        void PreProcessAI(uint self, uint target, HashSet<uint> allies);
+        void PreProcessAI(uint self, uint target, List<uint> allies);
 
         /// <summary>
         /// Determines which perk ability to use.

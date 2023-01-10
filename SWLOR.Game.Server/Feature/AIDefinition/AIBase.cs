@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         }
 
         /// <inheritdoc />
-        public virtual void PreProcessAI(uint self, uint target, HashSet<uint> allies)
+        public virtual void PreProcessAI(uint self, uint target, List<uint> allies)
         {
             static float CalculateAverageHP(uint creature)
             {
@@ -311,15 +311,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Benevolence()
         {
             // Benevolence
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Benevolence3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence3, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.Benevolence3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Benevolence2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence2, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.Benevolence2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Benevolence1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence1, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.Benevolence1, LowestHPAlly));
             }
@@ -330,23 +330,23 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) ForceHeal()
         {
             // Force Heal
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal5, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal4, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal1, LowestHPAlly));
             }
@@ -357,23 +357,23 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) MedKit()
         {
             // Medkit
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MedKit5, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit5, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.MedKit5, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MedKit4, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit4, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.MedKit4, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MedKit3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit3, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.MedKit3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MedKit2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit2, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.MedKit2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MedKit1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit1, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.MedKit1, LowestHPAlly));
             }
@@ -384,15 +384,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoBomb()
         {
             // Kolto Bomb
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoBomb3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb3, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoBomb3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoBomb2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb2, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoBomb2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoBomb1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb1, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoBomb1, LowestHPAlly));
             }
@@ -403,15 +403,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoGrenade()
         {
             // Kolto Grenade
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoGrenade3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade3, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoGrenade3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoGrenade2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade2, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoGrenade2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoGrenade1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade1, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoGrenade1, LowestHPAlly));
             }
@@ -422,15 +422,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoRecovery()
         {
             // Kolto Recovery
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoRecovery3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery3, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoRecovery3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoRecovery2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery2, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoRecovery2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.KoltoRecovery1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery1, () => LowestHPAllyPercentage < 100))
             {
                 return (true, (FeatType.KoltoRecovery1, LowestHPAlly));
             }
@@ -703,15 +703,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) CombatEnhancement()
         {
             // Combat Enhancement
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement3, () => SelfHPPercentage >= 95))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement3, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.CombatEnhancement3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement2, () => SelfHPPercentage >= 95))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement2, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.CombatEnhancement2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement1, () => SelfHPPercentage >= 95))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement1, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.CombatEnhancement1, Self));
             }
@@ -722,19 +722,19 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Shielding()
         {
             // Shielding
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding4, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding1, Self));
             }
@@ -745,15 +745,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) StasisField()
         {
             // Stasis Field
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField3))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField3, () => !HasEffectByTag(Self, "STASIS_FIELD")))
             {
                 return (true, (FeatType.StasisField3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField2))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField2, () => !HasEffectByTag(Self, "STASIS_FIELD")))
             {
                 return (true, (FeatType.StasisField2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField1))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField1, () => !HasEffectByTag(Self, "STASIS_FIELD")))
             {
                 return (true, (FeatType.StasisField1, Self));
             }
@@ -944,15 +944,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) ForceInspiration()
         {
             // Force Inspiration
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration3))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration3, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.ForceInspiration3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration2))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration2, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.ForceInspiration2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration1))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration1, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.ForceInspiration1, Self));
             }
@@ -1549,11 +1549,11 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 return (true, (FeatType.Chi3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Benevolence2, () => SelfHPPercentage < 100f))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Chi2, () => SelfHPPercentage < 100f))
             {
                 return (true, (FeatType.Chi2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Benevolence1, () => SelfHPPercentage < 100f))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Chi1, () => SelfHPPercentage < 100f))
             {
                 return (true, (FeatType.Chi1, Self));
             }

@@ -252,11 +252,23 @@ namespace SWLOR.Game.Server.Service
             // Perk ability usage
             else
             {
-                if (!_creatureAllies.TryGetValue(creature, out var allies))
+                var master = GetMaster(creature);
+                var hasPCMaster = GetIsObjectValid(master) && GetIsPC(master);
+                var allies = new List<uint>();
+
+                if (hasPCMaster)
                 {
-                    allies = new HashSet<uint>();
+                    allies = Party.GetAllPartyMembers(creature);
                 }
-                allies.Add(creature);
+                else
+                {
+                    if (_creatureAllies.ContainsKey(creature))
+                    {
+                        allies = _creatureAllies[creature].ToList();
+                    }
+
+                    allies.Add(creature);
+                }
 
                 if(!GetIsObjectValid(target))
                     target = GetAttemptedAttackTarget();

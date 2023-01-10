@@ -44,6 +44,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <returns>true if at least one medical supplies item is found, false otherwise.</returns>
         protected bool HasMedicalSupplies(uint activator)
         {
+            // NPCs don't need supplies.
+            if (!GetIsPC(activator))
+                return true;
+
             var item = GetItemPossessedBy(activator, MedicalSuppliesItemResref);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;
@@ -56,6 +60,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <returns>true if at least one stim pack is found, false otherwise.</returns>
         protected bool HasStimPack(uint activator)
         {
+            // NPCs don't need supplies.
+            if (!GetIsPC(activator))
+                return true;
+
             var item = GetItemPossessedBy(activator, StimPackItemResref);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;
@@ -69,6 +77,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <param name="activator">The activator to take supplies from.</param>
         protected void TakeMedicalSupplies(uint activator)
         {
+            // NPCs don't need supplies.
+            if (!GetIsPC(activator))
+                return;
+
             TakeItem(activator, MedicalSuppliesItemResref);
         }
 
@@ -80,6 +92,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <param name="activator">The activator to take stim packs from.</param>
         protected void TakeStimPack(uint activator)
         {
+            // NPCs don't need supplies.
+            if (!GetIsPC(activator))
+                return;
+
             TakeItem(activator, StimPackItemResref);
         }
 

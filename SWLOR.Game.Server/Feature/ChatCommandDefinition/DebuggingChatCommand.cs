@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             //MoveDoor();
             EnmityDebugger();
+            GetObjectId();
 
             return _builder.Build();
         }
@@ -80,6 +81,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                });
+        }
+
+        private void GetObjectId()
+        {
+            _builder.Create("objectid", "oid")
+                .Description("Gets the object Id of a target")
+                .Permissions(AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    SendMessageToPC(user, $"{GetName(target)} oid = {target}");
                 });
         }
     }

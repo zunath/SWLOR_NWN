@@ -24,7 +24,7 @@ void main()
         SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED", GetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED") + 1);
         if (GetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED") > 3)
         {
-            SpeakString("Blocked by creature");
+            //SpeakString("Blocked by creature");
             SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED",0);
             ClearAllActions();
             object oEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);

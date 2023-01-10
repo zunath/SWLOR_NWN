@@ -20,6 +20,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             return _builder.Build();
         }
 
+        private string Validation(uint target)
+        {
+            if (GetIsPC(target))
+            {
+                return "This ability cannot be used on players.";
+            }
+
+            return string.Empty;
+        }
+
         private void Impact(uint activator, uint target, int enmity)
         {
             if (!LineOfSightObject(activator, target))
@@ -40,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasImpactAction((activator, target, level, location) =>
+                .HasCustomValidation((_, target, _, _) => Validation(target))
+                .HasImpactAction((activator, target, _, _) =>
                 {
                     var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
                     Impact(activator, target, 350 + enmityBonus);
@@ -58,7 +69,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
-                .HasImpactAction((activator, target, level, location) =>
+                .HasCustomValidation((_, target, _, _) => Validation(target))
+                .HasImpactAction((activator, _, _, location) =>
                 {
                     var nth = 1;
                     var nearest = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);

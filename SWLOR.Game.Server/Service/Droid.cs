@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
+        private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
         /// <summary>
@@ -268,7 +269,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetObjectUUID(item);
+            var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
@@ -302,7 +303,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetObjectUUID(item);
+            var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
 
@@ -825,8 +826,19 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        private static string GetDroidItemId(uint item)
+        {
+            if (string.IsNullOrWhiteSpace(GetLocalString(item, DroidItemId)))
+            {
+                SetLocalString(item, DroidItemId, Guid.NewGuid().ToString());
+            }
+
+            return GetLocalString(item, DroidItemId);
+        }
+
         private static void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
         {
+
             var itemType = GetBaseItemType(item);
 
             if (itemType == BaseItem.CreatureBludgeonWeapon ||
@@ -835,18 +847,19 @@ namespace SWLOR.Game.Server.Service
                 itemType == BaseItem.CreatureSlashWeapon ||
                 itemType == BaseItem.CreatureItem)
                 return;
-
-            var itemId = GetObjectUUID(item);
+            
             var controller = GetControllerItem(droid);
             var constructedDroid = LoadConstructedDroid(controller);
 
             if (wasAcquired)
             {
+                var itemId = GetDroidItemId(item);
                 constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
                 SetDroppableFlag(item, false);
             }
             else
             {
+                var itemId = GetDroidItemId(item);
                 constructedDroid.Inventory.Remove(itemId);
                 SetDroppableFlag(item, true);
             }

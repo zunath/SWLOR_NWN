@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var droid = Droid.GetDroid(user);
                     var message = string.Join(' ', args);
 
-                    AssignCommand(droid, () => ActionSpeakString(message));
+                    AssignCommand(droid, () => SpeakString(message));
                 });
         }
     }

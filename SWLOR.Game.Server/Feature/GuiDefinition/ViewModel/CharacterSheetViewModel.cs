@@ -8,14 +8,13 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, GuiPayloadBase>,
+    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
         IGuiRefreshable<ChangePortraitRefreshEvent>,
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<EquipItemRefreshEvent>,
@@ -24,6 +23,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>
     {
         private const int MaxUpgrades = 10;
+        private uint _target;
+
+        public bool IsPlayerMode
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
 
         public string PortraitResref
         {
@@ -246,7 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangePortrait() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait);
+            var payload = new ChangePortraitPayload(_target);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait, payload);
         };
 
         public Action OnClickQuests() => () =>
@@ -311,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
-            var playerId = GetObjectUUID(Player);
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
@@ -320,13 +328,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal(promptMessage, () =>
             {
-                if (GetResRef(GetArea(Player)) == "char_migration")
+                if (GetResRef(GetArea(_target)) == "char_migration")
                 {
-                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", Player, false);
+                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
                     return;
                 }
 
-                playerId = GetObjectUUID(Player);
+                playerId = GetObjectUUID(_target);
                 dbPlayer = DB.Get<Player>(playerId);
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
 
@@ -335,13 +343,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     if (dbPlayer.UnallocatedAP <= 0)
                     {
-                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", Player, false);
+                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
                         return;
                     }
 
                     if (dbPlayer.UpgradedStats[ability] >= MaxUpgrades)
                     {
-                        FloatingTextStringOnCreature("You cannot upgrade this attribute any further.", Player, false);
+                        FloatingTextStringOnCreature("You cannot upgrade this attribute any further.", _target, false);
                         return;
                     }
 
@@ -353,11 +361,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.RacialStat = ability;
                 }
 
-                CreaturePlugin.ModifyRawAbilityScore(Player, ability, 1);
+                CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
 
                 DB.Set(dbPlayer);
 
-                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", Player, false);
+                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
                 LoadData();
             });
         }
@@ -393,54 +401,72 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
 
-        private void RefreshStats(Player dbPlayer)
+        private void RefreshStats()
         {
-            var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
+            HP = GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
 
-            HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
-
-            if (dbPlayer.CharacterType == Enumeration.CharacterType.Standard)
+            if (GetClassByPosition(1, _target) == ClassType.Standard)
             {
                 FP = $"0 / 0";
             }
             else
             {
-                FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);
+                FP = Stat.GetCurrentFP(_target) + " / " + Stat.GetMaxFP(_target);
             }
 
-            STM = Stat.GetCurrentStamina(Player, dbPlayer) + " / " + Stat.GetMaxStamina(Player, dbPlayer);
-            Name = GetName(Player);
-            Might = GetAbilityScore(Player, AbilityType.Might);
-            Perception = GetAbilityScore(Player, AbilityType.Perception);
-            Vitality = GetAbilityScore(Player, AbilityType.Vitality);
-            Willpower = GetAbilityScore(Player, AbilityType.Willpower);
-            Agility = GetAbilityScore(Player, AbilityType.Agility);
-            Social = GetAbilityScore(Player, AbilityType.Social);
-            SavingThrows = GetFortitudeSavingThrow(Player) + "/" +
-                           GetReflexSavingThrow(Player) + "/" +
-                           GetWillSavingThrow(Player);
+            STM = Stat.GetCurrentStamina(_target) + " / " + Stat.GetMaxStamina(_target);
+            Name = GetName(_target);
+            Might = GetAbilityScore(_target, AbilityType.Might);
+            Perception = GetAbilityScore(_target, AbilityType.Perception);
+            Vitality = GetAbilityScore(_target, AbilityType.Vitality);
+            Willpower = GetAbilityScore(_target, AbilityType.Willpower);
+            Agility = GetAbilityScore(_target, AbilityType.Agility);
+            Social = GetAbilityScore(_target, AbilityType.Social);
+            SavingThrows = GetFortitudeSavingThrow(_target) + "/" +
+                           GetReflexSavingThrow(_target) + "/" +
+                           GetWillSavingThrow(_target);
 
-            IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
-            IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades || isRacialBonusAvailable;
-            IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades || isRacialBonusAvailable;
-            IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades || isRacialBonusAvailable;
-            IsAgilityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades || isRacialBonusAvailable;
-            IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades || isRacialBonusAvailable;
+            if (IsPlayerMode)
+            {
+                var playerId = GetObjectUUID(_target);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
+                IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
+                IsPerceptionUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades) || isRacialBonusAvailable;
+                IsVitalityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades) || isRacialBonusAvailable;
+                IsWillpowerUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades) || isRacialBonusAvailable;
+                IsAgilityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades) || isRacialBonusAvailable;
+                IsSocialUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades) || isRacialBonusAvailable;
+            }
         }
 
-        private void RefreshEquipmentStats(Player dbPlayer)
+        private void RefreshEquipmentStats()
         {
             // Builds a damage estimate using the player's stats as a baseline.
             (string, string) GetCombatInfo( uint item)
             {
                 var itemType = GetBaseItemType(item);
                 var skill = Skill.GetSkillTypeByBaseItem(itemType);
+                int skillRank;
+
+                if (GetIsPC(_target))
+                {
+                    var playerId = GetObjectUUID(_target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    skillRank = dbPlayer.Skills[skill].Rank;
+                }
+                else
+                {
+                    var npcStats = Stat.GetNPCStats(_target);
+                    skillRank = npcStats.Level;
+                }
+
                 var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
-                var damageStat = GetAbilityScore(Player, damageAbility);
-                var skillRank = dbPlayer.Skills[skill].Rank;
-                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(Player, itemType);
+                var damageStat = GetAbilityScore(_target, damageAbility);
+                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
-                var attack = Stat.GetAttack(Player, damageAbility, skill);
+                var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
                 var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var tooltip = $"Est. Damage: {min} - {max}";
@@ -448,8 +474,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (dmgText, tooltip);
             }
 
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, Player);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, Player);
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
 
             if (GetIsObjectValid(mainHand))
@@ -481,14 +507,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             
             // Strong Style (Lightsaber)
             if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleLightsaber))
+                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
             {
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
             }
             // Strong Style (Saberstaff)
             if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(Player, AbilityToggleType.StrongStyleSaberstaff))
+                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
             {
                 damageStat = AbilityType.Might;
                 accuracyStatOverride = AbilityType.Perception;
@@ -496,66 +522,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Flurry Style (Staff)
             if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
-                GetHasFeat(FeatType.CrushingStyle, Player))
+                GetHasFeat(FeatType.CrushingStyle, _target))
             {
                 damageStat = AbilityType.Perception;
                 accuracyStatOverride = AbilityType.Agility;
             } 
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
-            Attack = Stat.GetAttack(Player, damageStat, mainHandSkill);
-            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical, AbilityType.Vitality);
-            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force, AbilityType.Willpower);
+            Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            DefensePhysical = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
+            DefenseForce = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
+            
+            if (GetIsPC(_target))
+            {
+                var playerId = GetObjectUUID(_target);
+                var dbPlayer = DB.Get<Player>(playerId);
 
-            var fireDefense = dbPlayer.Defenses[CombatDamageType.Fire].ToString();
-            var poisonDefense = dbPlayer.Defenses[CombatDamageType.Poison].ToString();
-            var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
-            var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
-            DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            Accuracy = Stat.GetAccuracy(Player, mainHand, accuracyStatOverride, SkillType.Invalid);
-            Evasion = Stat.GetEvasion(Player, SkillType.Invalid);
+                var fireDefense = dbPlayer.Defenses[CombatDamageType.Fire].ToString();
+                var poisonDefense = dbPlayer.Defenses[CombatDamageType.Poison].ToString();
+                var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
+                var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
 
-            var smithery = Stat.CalculateControl(Player, SkillType.Smithery);
-            var engineering = Stat.CalculateControl(Player, SkillType.Engineering);
-            var fabrication = Stat.CalculateControl(Player, SkillType.Fabrication);
-            var agriculture = Stat.CalculateControl(Player, SkillType.Agriculture);
+                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
+            }
+            else
+            {
+                var npcStats = Stat.GetNPCStats(_target);
+                var fireDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Fire) ? npcStats.Defenses[CombatDamageType.Fire] : 0;
+                var poisonDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Poison) ? npcStats.Defenses[CombatDamageType.Poison] : 0;
+                var electricalDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Electrical) ? npcStats.Defenses[CombatDamageType.Electrical] : 0;
+                var iceDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Ice) ? npcStats.Defenses[CombatDamageType.Ice] : 0;
+
+                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
+            }
+
+            Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
+
+            var smithery = Stat.CalculateControl(_target, SkillType.Smithery);
+            var engineering = Stat.CalculateControl(_target, SkillType.Engineering);
+            var fabrication = Stat.CalculateControl(_target, SkillType.Fabrication);
+            var agriculture = Stat.CalculateControl(_target, SkillType.Agriculture);
 
             Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
 
-            smithery = Stat.CalculateCraftsmanship(Player, SkillType.Smithery);
-            engineering = Stat.CalculateCraftsmanship(Player, SkillType.Engineering);
-            fabrication = Stat.CalculateCraftsmanship(Player, SkillType.Fabrication);
-            agriculture = Stat.CalculateCraftsmanship(Player, SkillType.Agriculture);
+            smithery = Stat.CalculateCraftsmanship(_target, SkillType.Smithery);
+            engineering = Stat.CalculateCraftsmanship(_target, SkillType.Engineering);
+            fabrication = Stat.CalculateCraftsmanship(_target, SkillType.Fabrication);
+            agriculture = Stat.CalculateCraftsmanship(_target, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
         }
 
-        private void RefreshAttributes(Player dbPlayer)
+        private void RefreshAttributes()
         {
+            if (!GetIsPC(_target))
+                return;
+
+            var playerId = GetObjectUUID(_target);
+            var dbPlayer = DB.Get<Player>(playerId);
+
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
         }
 
         private void RefreshPortrait()
         {
-            PortraitResref = GetPortraitResRef(Player) + "l";
+            PortraitResref = GetPortraitResRef(_target) + "l";
         }
 
         private void LoadData()
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
-            Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
-            IsHolocomEnabled = !Space.IsPlayerInSpaceMode(Player);
+            CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
+            Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
+            IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
 
             RefreshPortrait();
-            RefreshStats(dbPlayer);
-            RefreshEquipmentStats(dbPlayer);
-            RefreshAttributes(dbPlayer);
+            RefreshStats();
+            RefreshEquipmentStats();
+            RefreshAttributes();
         }
         
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(CharacterSheetPayload initialPayload)
         {
+            _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
+            IsPlayerMode = initialPayload.IsPlayerMode;
+
             LoadData();
         }
 
@@ -566,56 +617,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(SkillXPRefreshEvent payload)
         {
-            var playerId = GetObjectUUID(Player);
+            if (!GetIsPC(_target))
+                return;
+
+            var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
 
-            RefreshStats(dbPlayer);
+            RefreshStats();
         }
 
         public void Refresh(EquipItemRefreshEvent payload)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            RefreshEquipmentStats(dbPlayer);
+            RefreshEquipmentStats();
         }
 
         public void Refresh(UnequipItemRefreshEvent payload)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            RefreshStats(dbPlayer);
-            RefreshEquipmentStats(dbPlayer);
+            RefreshStats();
+            RefreshEquipmentStats();
         }
 
         public void Refresh(StatusEffectReceivedRefreshEvent payload)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            RefreshStats(dbPlayer);
-            RefreshEquipmentStats(dbPlayer);
+            RefreshStats();
+            RefreshEquipmentStats();
         }
 
         public void Refresh(StatusEffectRemovedRefreshEvent payload)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            RefreshStats(dbPlayer);
-            RefreshEquipmentStats(dbPlayer);
+            RefreshStats();
+            RefreshEquipmentStats();
         }
     }
 }

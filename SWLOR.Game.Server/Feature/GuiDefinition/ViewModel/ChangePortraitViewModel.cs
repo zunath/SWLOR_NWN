@@ -1,12 +1,15 @@
 ﻿using System;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ChangePortraitViewModel: GuiViewModelBase<ChangePortraitViewModel, GuiPayloadBase>
+    public class ChangePortraitViewModel: GuiViewModelBase<ChangePortraitViewModel, ChangePortraitPayload>
     {
+        private uint _target;
+
         public string ActivePortrait
         {
             get => Get<string>();
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadCurrentPortrait()
         {
-            var resref = GetPortraitResRef(Player);
+            var resref = GetPortraitResRef(_target);
             var internalId = Cache.GetPortraitInternalIdByResref(resref);
             var portraitId = internalId == -1
                 ? Cache.GetPortraitInternalId(1)
@@ -64,8 +67,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(ChangePortraitPayload initialPayload)
         {
+            _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
+
             MaximumPortraits = Cache.PortraitCount;
             MaxPortraitsText = $"/ {MaximumPortraits}";
             
@@ -103,7 +108,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSaveClick() => () =>
         {
             var portraitId = Cache.GetPortraitByInternalId(_activePortraitInternalId);
-            SetPortraitId(Player, portraitId);
+            SetPortraitId(_target, portraitId);
+
+            if (Droid.IsDroid(_target))
+            {
+                var controller = Droid.GetControllerItem(_target);
+                var constructedDroid = Droid.LoadConstructedDroid(controller);
+
+                constructedDroid.PortraitId = portraitId;
+
+                Droid.SaveConstructedDroid(controller, constructedDroid);
+            }
+
             Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
         };
 

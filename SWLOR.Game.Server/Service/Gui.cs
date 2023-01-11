@@ -5,6 +5,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -379,11 +380,23 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
             if (type != GuiEventType.DisabledPanelAttemptOpen) return;
+            var target = GetLastGuiEventObject();
 
             var panelType = (GuiPanel)GetLastGuiEventInteger();
             if (panelType == GuiPanel.CharacterSheet)
             {
-                TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
+                // Player character sheet
+                if (target == player)
+                {
+                    var payload = new CharacterSheetPayload(player, true);
+                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
+                }
+                // Associate character sheet (droid, pet, etc.)
+                else if(GetMaster(target) == player)
+                {
+                    var payload = new CharacterSheetPayload(target, false);
+                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
+                }
             }
             else if (panelType == GuiPanel.Journal)
             {

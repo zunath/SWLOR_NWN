@@ -1,2 +1,55 @@
-Smithery	recipe_saberupg1	One-Handed Blueprints	LightsaberUpgrade1	Lightsaber	5	Lightsaber Upgrade I	52	1	saber_upg1	N/A	0	ref_arkoxit	2	ref_jasioclase	10	elec_high	20	chiro_shard	2	ref_veldite	5	ref_scordspar	5	ref_plagionite	5	ref_keromber	5					
-Smithery	recipe_staffupg1	Two-Handed Blueprints	SaberstaffUpgrade1	Saberstaff	5	Saberstaff Upgrade I	52	1	saberstaff_upg1	N/A	0	ref_arkoxit	2	ref_jasioclase	10	elec_high	20	chiro_shard	2	ref_veldite	5	ref_scordspar	5	ref_plagionite	5	ref_keromber	5					
+Engineering		Droid Equipment Blueprints	ControlUnitAlpha	DroidComponent	1	Control Unit Alpha	5	1	c_unit1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	ControlUnitBeta	DroidComponent	2	Control Unit Beta	15	1	c_unit2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	ControlUnitGamma	DroidComponent	3	Control Unit Gamma	25	1	 c_unit3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	ControlUnitDelta	DroidComponent	4	Control Unit Delta	35	1	c_unit4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	ControlUnitEpsilon	DroidComponent	5	Control Unit Epsilon	45	1	c_unit5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	LogicUnitAlpha	DroidComponent	1	Logic Unit Alpha	5	1	l_unit1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	LogicUnitBeta	DroidComponent	2	Logic Unit Beta	15	1	l_unit2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	LogicUnitGamma	DroidComponent	3	Logic Unit Gamma	25	1	l_unit3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	LogicUnitDelta	DroidComponent	4	Logic Unit Delta	35	1	l_unit4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	LogicUnitEpsilon	DroidComponent	5	Logic Unit Epsilon	45	1	l_unit5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	CachingUnitAlpha	DroidComponent	1	Caching Unit Alpha	5	1	ca_unit1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	CachingUnitBeta	DroidComponent	2	Caching Unit Beta	15	1	ca_unit2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	CachingUnitGamma	DroidComponent	3	Caching Unit Gamma	25	1	ca_unit3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	CachingUnitDelta	DroidComponent	4	Caching Unit Delta	35	1	ca_unit4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	CachingUnitEpsilon	DroidComponent	5	Caching Unit Epsilon	45	1	ca_unit5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DroidBrainAlpha	DroidComponent	1	Droid Brain Alpha	8	1	d_brain1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DroidBrainBeta	DroidComponent	2	Droid Brain Beta	18	1	d_brain2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DroidBrainGamma	DroidComponent	3	Droid Brain Gamma	28	1	d_brain3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DroidBrainDelta	DroidComponent	4	Droid Brain Delta	38	1	d_brain4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DroidBrainEpsilon	DroidComponent	5	Droid Brain Epsilon	48	1	d_brain5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DroidSensorAlpha	DroidComponent	1	Droid Sensor Alpha	5	1	d_sensor1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DroidSensorBeta	DroidComponent	2	Droid Sensor Beta	15	1	d_sensor2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DroidSensorGamma	DroidComponent	3	Droid Sensor Gamma	25	1	d_sensor3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DroidSensorDelta	DroidComponent	4	Droid Sensor Delta	35	1	d_sensor4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DroidSensorEpsilon	DroidComponent	5	Droid Sensor Epsilon	45	1	d_sensor5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	ManipulatorArmAlpha	DroidComponent	1	Manipulator Arm Alpha	5	1	manip_arm1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	ManipulatorArmBeta	DroidComponent	2	Manipulator Arm Beta	15	1	manip_arm2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	ManipulatorArmGamma	DroidComponent	3	Manipulator Arm Gamma	25	1	manip_arm3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	ManipulatorArmDelta	DroidComponent	4	Manipulator Arm Delta	35	1	manip_arm4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	ManipulatorArmEpsilon	DroidComponent	5	Manipulator Arm Epsilon	45	1	manip_arm5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DischargeUnitAlpha	DroidComponent	1	Discharge Unit Alpha	5	1	discharge_unit1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DischargeUnitBeta	DroidComponent	2	Discharge Unit Beta	15	1	discharge_unit2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DischargeUnitGamma	DroidComponent	3	Discharge Unit Gamma	25	1	discharge_unit3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DischargeUnitDelta	DroidComponent	4	Discharge Unit Delta	35	1	discharge_unit4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DischargeUnitEpsilon	DroidComponent	5	Discharge Unit Epsilon	45	1	discharge_unit5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DroidMotiveSystemAlpha	DroidComponent	1	Droid Motive System Alpha	5	1	dmotive_sys1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DroidMotiveSystemBeta	DroidComponent	2	Droid Motive System Beta	15	1	dmotive_sys2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DroidMotiveSystemGamma	DroidComponent	3	Droid Motive System Gamma	25	1	dmotive_sys3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DroidMotiveSystemDelta	DroidComponent	4	Droid Motive System Delta	35	1	dmotive_sys4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DroidMotiveSystemEpsilon	DroidComponent	5	Droid Motive System Epsilon	45	1	dmotive_sys5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DiagnosticCircuitAlpha	DroidComponent	1	Diagnostic Circuit Alpha	5	1	diag_circuit1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DiagnosticCircuitBeta	DroidComponent	2	Diagnostic Circuit Beta	15	1	diag_circuit2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DiagnosticCircuitGamma	DroidComponent	3	Diagnostic Circuit Gamma	25	1	diag_circuit3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DiagnosticCircuitDelta	DroidComponent	4	Diagnostic Circuit Delta	35	1	diag_circuit4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DiagnosticCircuitEpsilon	DroidComponent	5	Diagnostic Circuit Epsilon	45	1	diag_circuit5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DroidPowerSupplyAlpha	DroidComponent	1	Droid Power Supply Alpha	5	1	dp_supply1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DroidPowerSupplyBeta	DroidComponent	2	Droid Power Supply Beta	15	1	dp_supply2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DroidPowerSupplyGamma	DroidComponent	3	Droid Power Supply Gamma	25	1	dp_supply3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DroidPowerSupplyDelta	DroidComponent	4	Droid Power Supply Delta	35	1	dp_supply4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DroidPowerSupplyEpsilon	DroidComponent	5	Droid Power Supply Epsilon	45	1	dp_supply5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													
+Engineering		Droid Equipment Blueprints	DroidChassisAlpha	DroidComponent	1	Droid Chassis Alpha	5	1	d_chassis1	N/A	0	aluminum	5	elec_ruined	2	jade	4	quadrenium	4													
+Engineering		Droid Equipment Blueprints	DroidChassisBeta	DroidComponent	2	Droid Chassis Beta	15	1	d_chassis2	N/A	0	steel	5	elec_flawed	2	agate	4	vintrium	4													
+Engineering		Droid Equipment Blueprints	DroidChassisGamma	DroidComponent	3	Droid Chassis Gamma	25	1	d_chassis3	N/A	0	obsidian	5	elec_good	2	citrine	4	ionite	4													
+Engineering		Droid Equipment Blueprints	DroidChassisDelta	DroidComponent	4	Droid Chassis Delta	35	1	d_chassis4	N/A	0	crystal	5	elec_imperfect	2	ruby	4	katrium	4													
+Engineering		Droid Equipment Blueprints	DroidChassisEpsilon	DroidComponent	5	Droid Chassis Epsilon	45	1	d_chassis5	N/A	0	diamond	5	elec_high	2	emerald	4	zinsiam	4													

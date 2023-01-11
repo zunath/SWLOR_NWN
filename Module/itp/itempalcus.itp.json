@@ -28138,6 +28138,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ionite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ionite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Istavrit"
                     },
                     "RESREF": {
@@ -28583,6 +28594,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "k_hound_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Katrium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "katrium"
                     }
                   },
                   {
@@ -30871,6 +30893,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "q_tiger_paw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quadrenium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quadrenium"
                     }
                   },
                   {
@@ -34144,6 +34177,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vintrium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vintrium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viper Bile"
                     },
                     "RESREF": {
@@ -35590,6 +35634,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zafmlug_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zinsiam"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zinsiam"
                     }
                   },
                   {

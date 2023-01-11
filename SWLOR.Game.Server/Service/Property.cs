@@ -1465,6 +1465,7 @@ namespace SWLOR.Game.Server.Service
 
             // Now spawn it within the game world.
             var placeable = CreateObject(ObjectType.Placeable, structureDetail.Resref, location);
+            SetPlotFlag(placeable, true);
             AssignPropertyId(placeable, structure.Id);
 
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
@@ -2032,6 +2033,7 @@ namespace SWLOR.Game.Server.Service
                 var location = Location(area, position, staticPosition.Orientation);
 
                 var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
+                SetPlotFlag(placeable, true);
                 AssignPropertyId(placeable, property.Id);
 
                 _structurePropertyIdToPlaceable[property.Id] = placeable;

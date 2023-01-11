@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             {
                 var location = GetLocation(waypoint);
                 var terminal = CreateObject(ObjectType.Placeable, "flights_terminal", location);
+                SetPlotFlag(terminal, true);
                 SetName(terminal, $"{planet.Name} Starport Flights Terminal");
 
                 SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);

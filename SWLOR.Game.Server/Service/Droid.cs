@@ -66,36 +66,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void CacheDefaultTierPerks()
         {
-            // Standard perks to give droids per level.
-            for (var level = 1; level <= 5; level++)
-            {
-                _defaultPerksByTier[level] = new Dictionary<PerkType, int>()
-                {
-                    { PerkType.VibrobladeProficiency, level},
-                    { PerkType.FinesseVibrobladeProficiency, level},
-                    { PerkType.HeavyVibrobladeProficiency, level},
-                    { PerkType.PolearmProficiency, level},
-                    { PerkType.TwinBladeProficiency, level},
-                    { PerkType.KatarProficiency, level},
-                    { PerkType.StaffProficiency, level},
-                    { PerkType.PistolProficiency, level},
-                    { PerkType.RifleProficiency, level},
-                    { PerkType.ThrowingWeaponProficiency, level},
-                    { PerkType.CloakProficiency, level},
-                    { PerkType.BeltProficiency, level},
-                    { PerkType.RingProficiency, level},
-                    { PerkType.NecklaceProficiency, level},
-                    { PerkType.ShieldProficiency, level},
-                    { PerkType.BreastplateProficiency, level},
-                    { PerkType.HelmetProficiency, level},
-                    { PerkType.BracerProficiency, level},
-                    { PerkType.LeggingProficiency, level},
-                    { PerkType.TunicProficiency, level},
-                    { PerkType.CapProficiency, level},
-                    { PerkType.GloveProficiency, level},
-                    { PerkType.BootProficiency, level},
-                };
-            }
+            _defaultPerksByTier[1] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[2] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[3] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[4] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[5] = new Dictionary<PerkType, int>();
 
             // Tier 1
             _defaultPerksByTier[1][PerkType.WeaponFocusVibroblades] = 1;
@@ -108,6 +83,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[1][PerkType.WeaponFocusPistols] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusRifles] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusThrowingWeapons] = 1;
+            _defaultPerksByTier[1][PerkType.PointBlankShot] = 1;
 
             // Tier 2
             _defaultPerksByTier[2][PerkType.WeaponFocusVibroblades] = 2;
@@ -158,6 +134,48 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[5][PerkType.RifleMastery] = 2;
             _defaultPerksByTier[5][PerkType.ThrowingWeaponMastery] = 2;
 
+            for (var level = 5; level >= 1; level--)
+            {
+                // Standard perks to give droids per level.
+                _defaultPerksByTier[level][PerkType.VibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.FinesseVibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.HeavyVibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.PolearmProficiency] = level;
+                _defaultPerksByTier[level][PerkType.TwinBladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.KatarProficiency] = level;
+                _defaultPerksByTier[level][PerkType.StaffProficiency] = level;
+                _defaultPerksByTier[level][PerkType.PistolProficiency] = level;
+                _defaultPerksByTier[level][PerkType.RifleProficiency] = level;
+                _defaultPerksByTier[level][PerkType.ThrowingWeaponProficiency] = level;
+                _defaultPerksByTier[level][PerkType.CloakProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BeltProficiency] = level;
+                _defaultPerksByTier[level][PerkType.RingProficiency] = level;
+                _defaultPerksByTier[level][PerkType.NecklaceProficiency] = level;
+                _defaultPerksByTier[level][PerkType.ShieldProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BreastplateProficiency] = level;
+                _defaultPerksByTier[level][PerkType.HelmetProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BracerProficiency] = level;
+                _defaultPerksByTier[level][PerkType.LeggingProficiency] = level;
+                _defaultPerksByTier[level][PerkType.TunicProficiency] = level;
+                _defaultPerksByTier[level][PerkType.CapProficiency] = level;
+                _defaultPerksByTier[level][PerkType.GloveProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BootProficiency] = level;
+
+                // Previous levels' perks
+                var levelCopy = level;
+                var previousPerks = _defaultPerksByTier.Where(x => x.Key < levelCopy)
+                    .OrderByDescending(o => o.Key);
+                foreach (var (_, perksForThisLevel) in previousPerks)
+                {
+                    foreach (var (perkType, perkLevel) in perksForThisLevel)
+                    {
+                        if (!_defaultPerksByTier[level].ContainsKey(perkType))
+                        {
+                            _defaultPerksByTier[level][perkType] = perkLevel;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

@@ -16930,69 +16930,6 @@
           "type": "float",
           "value": 0.1999998539686203
         }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir - Grottos Boss"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DATHOMIR_GROTTOS_BOSS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dath_grottosboss"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.7409513592720032
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 75.03343963623047
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.671558678150177
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 41.85453796386719
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
       }
     ]
   }

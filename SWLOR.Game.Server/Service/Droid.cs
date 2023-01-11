@@ -747,6 +747,16 @@ namespace SWLOR.Game.Server.Service
                     : defaultDroid.LeftFootId,
                 droid);
 
+            if (constructedDroid.PortraitId == -1)
+            {
+                constructedDroid.PortraitId = GetPortraitId(droid);
+                SaveConstructedDroid(controller, constructedDroid);
+            }
+            else
+            {
+                SetPortraitId(droid, constructedDroid.PortraitId);
+            }
+
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
             ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);

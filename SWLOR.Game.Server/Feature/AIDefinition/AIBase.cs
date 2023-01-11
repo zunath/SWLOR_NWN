@@ -311,15 +311,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Benevolence()
         {
             // Benevolence
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence3, () => LowestHPAllyPercentage <= 50))
             {
                 return (true, (FeatType.Benevolence3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence2, () => LowestHPAllyPercentage <= 75))
             {
                 return (true, (FeatType.Benevolence2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.Benevolence1, () => LowestHPAllyPercentage <= 90))
             {
                 return (true, (FeatType.Benevolence1, LowestHPAlly));
             }
@@ -330,23 +330,23 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) ForceHeal()
         {
             // Force Heal
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 40 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal5, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 60 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal4, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 75 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 85 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 100 && SelfActiveConcentration == FeatType.Invalid))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 95 && SelfActiveConcentration == FeatType.Invalid))
             {
                 return (true, (FeatType.ForceHeal1, LowestHPAlly));
             }
@@ -357,23 +357,23 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) MedKit()
         {
             // Medkit
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit5, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit5, () => LowestHPAllyPercentage <= 50))
             {
                 return (true, (FeatType.MedKit5, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit4, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit4, () => LowestHPAllyPercentage <= 65))
             {
                 return (true, (FeatType.MedKit4, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit3, () => LowestHPAllyPercentage <= 75))
             {
                 return (true, (FeatType.MedKit3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit2, () => LowestHPAllyPercentage <= 85))
             {
                 return (true, (FeatType.MedKit2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit1, () => LowestHPAllyPercentage <= 95))
             {
                 return (true, (FeatType.MedKit1, LowestHPAlly));
             }
@@ -384,15 +384,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoBomb()
         {
             // Kolto Bomb
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb3, () => LowestHPAllyPercentage <= 65))
             {
                 return (true, (FeatType.KoltoBomb3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb2, () => LowestHPAllyPercentage <= 85))
             {
                 return (true, (FeatType.KoltoBomb2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb1, () => LowestHPAllyPercentage <= 95))
             {
                 return (true, (FeatType.KoltoBomb1, LowestHPAlly));
             }
@@ -403,15 +403,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoGrenade()
         {
             // Kolto Grenade
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade3, () => LowestHPAllyPercentage <= 60))
             {
                 return (true, (FeatType.KoltoGrenade3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade2, () => LowestHPAllyPercentage <= 75))
             {
                 return (true, (FeatType.KoltoGrenade2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade1, () => LowestHPAllyPercentage <= 90))
             {
                 return (true, (FeatType.KoltoGrenade1, LowestHPAlly));
             }
@@ -422,15 +422,15 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) KoltoRecovery()
         {
             // Kolto Recovery
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery3, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery3, () => LowestHPAllyPercentage <= 65))
             {
                 return (true, (FeatType.KoltoRecovery3, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery2, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery2, () => LowestHPAllyPercentage <= 75))
             {
                 return (true, (FeatType.KoltoRecovery2, LowestHPAlly));
             }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery1, () => LowestHPAllyPercentage < 100))
+            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery1, () => LowestHPAllyPercentage <= 90))
             {
                 return (true, (FeatType.KoltoRecovery1, LowestHPAlly));
             }

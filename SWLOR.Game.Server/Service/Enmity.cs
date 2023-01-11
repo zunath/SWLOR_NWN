@@ -144,6 +144,10 @@ namespace SWLOR.Game.Server.Service
             if (Party.IsInParty(creature, enemy))
                 return;
 
+            // Player associates cannot gain enmity towards each other
+            if (GetIsPC(GetMaster(creature)) && GetIsPC(GetMaster(enemy)))
+                return;
+
             // Value is zero, no action necessary.
             if (amount == 0) return;
 

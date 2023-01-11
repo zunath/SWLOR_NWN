@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Goads all enemies within range into attacking you.")
                 .Price(3)
-                .DroidAISlots(1)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.Armor, 15)
                 .GrantsFeat(FeatType.Provoke2);
         }

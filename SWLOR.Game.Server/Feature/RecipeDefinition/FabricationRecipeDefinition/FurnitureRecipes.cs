@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 {
     public class FurnitureRecipes : IRecipeListDefinition
     {
-        private readonly RecipeBuilder _builder = new RecipeBuilder();
+        private readonly RecipeBuilder _builder = new();
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
@@ -2704,6 +2704,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
                 .Component("hyphae_wood", 3);
+
+            // Droid Assembly Terminal
+            _builder.Create(RecipeType.DroidAssemblyTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0269")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StructureBlueprints, 5)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_imperfect", 3);
         }
     }
 }

@@ -692,6 +692,7 @@
         TablePolygonDesign = 1247,
         TableRoundGlass = 1248,
         TableDarkGlass = 1249,
+        DroidAssemblyTerminal = 1250,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

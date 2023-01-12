@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Discord;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -16,6 +17,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using static StackExchange.Redis.Role;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -229,6 +231,21 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        private static string CanGiveItemToDroid(uint item)
+        {
+            if (GetHasInventory(item))
+            {
+                return "Containers cannot be stored.";
+            }
+
+            if (GetBaseItemType(item) == BaseItem.Gold)
+            {
+                return "Credits cannot be placed inside.";
+            }
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
@@ -245,6 +262,15 @@ namespace SWLOR.Game.Server.Service
             var master = GetMaster(droid);
             var item = GetModuleItemAcquired();
 
+            var giveItemMessage = CanGiveItemToDroid(item);
+            if (!string.IsNullOrWhiteSpace(giveItemMessage))
+            {
+                SendMessageToPC(master, giveItemMessage);
+                AssignCommand(droid, () => ClearAllActions());
+                Item.ReturnItem(master, item);
+                return;
+            }
+
             var might = GetAbilityScore(droid, AbilityType.Might);
             var weight = GetWeight(droid);
             var maxWeight = Convert.ToInt32(Get2DAString("encumbrance", "Normal", might));
@@ -253,7 +279,7 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(droid, () =>
                 {
-                    ActionSpeakString("I'm sorry master. I cannot carry any more items.");
+                    SpeakString("I'm sorry master. I cannot carry any more items.");
                 });
                 Item.ReturnItem(master, item);
                 return;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Discord;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -17,7 +16,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using static StackExchange.Redis.Role;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -323,6 +321,11 @@ namespace SWLOR.Game.Server.Service
                 slot == InventorySlot.CreatureRight)
                 return;
 
+            if (GetBaseItemType(item) == BaseItem.Helmet)
+            {
+                SetHiddenWhenEquipped(item, true);
+            }
+
             var constructedDroid = LoadConstructedDroid(controller);
 
             // Equipment won't be in the inventory but it does get equipped on spawn-in.
@@ -356,6 +359,11 @@ namespace SWLOR.Game.Server.Service
                 slot == InventorySlot.CreatureLeft ||
                 slot == InventorySlot.CreatureRight)
                 return;
+
+            if (GetBaseItemType(item) == BaseItem.Helmet)
+            {
+                SetHiddenWhenEquipped(item, false);
+            }
 
             var constructedDroid = LoadConstructedDroid(controller);
 

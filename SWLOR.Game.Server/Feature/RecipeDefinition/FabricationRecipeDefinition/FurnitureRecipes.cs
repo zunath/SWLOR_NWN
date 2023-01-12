@@ -2711,7 +2711,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Resref("structure_0269")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StructureBlueprints, 5)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_imperfect", 3);
         }

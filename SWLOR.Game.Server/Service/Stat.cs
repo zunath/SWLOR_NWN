@@ -880,9 +880,9 @@ namespace SWLOR.Game.Server.Service
                     : npcStats.Level;
 
                 if (skillType == SkillType.Force)
-                    attackBonus += npcStats.Attack;
-                else
                     attackBonus += npcStats.ForceAttack;
+                else
+                    attackBonus += npcStats.Attack;
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);

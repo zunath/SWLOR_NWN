@@ -1531,6 +1531,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         TelevisionOldModel = 268,
 
+        [Structure("Droid Assembly Terminal",
+            "droid_ass_term",
+            "",
+            true,
+            0)]
+        DroidAssemblyTerminal = 269,
 
 
         // Buildings start here (5000+)

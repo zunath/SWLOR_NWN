@@ -10530,6 +10530,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Droid Assembly Terminal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0269"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Drow Altar"
               },
               "RESREF": {

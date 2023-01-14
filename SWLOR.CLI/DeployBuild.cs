@@ -5,34 +5,55 @@ namespace SWLOR.CLI
 {
     internal class DeployBuild
     {
-        private const string IniFileName = "./nwnpath.config";
-        private const string DefaultNWNFolder = "%USERPROFILE%/Documents/Neverwinter Nights/";
+        private const string DebugServerPath = "../debugserver/";
+        private const string DotnetPath = DebugServerPath + "dotnet";
+        private const string HakPath = DebugServerPath + "hak";
+        private const string ModulesPath = DebugServerPath + "modules";
+        private const string TlkPath = DebugServerPath + "tlk";
 
+        private readonly HakBuilder _hakBuilder = new();
 
         public void Process()
         {
-            var nwnPath = File.Exists(IniFileName)
-                ? File.ReadAllText(IniFileName)
-                : DefaultNWNFolder;
+            CreateDebugServerDirectory();
+            CopyBinaries();
+            BuildHaks();
+            BuildModule();
+        }
 
-            if (!Directory.Exists(nwnPath))
-                nwnPath = DefaultNWNFolder;
+        private void CreateDebugServerDirectory()
+        {
+            Directory.CreateDirectory(DebugServerPath);
+            Directory.CreateDirectory(DotnetPath);
+            Directory.CreateDirectory(HakPath);
+            Directory.CreateDirectory(ModulesPath);
+            Directory.CreateDirectory(TlkPath);
 
-            nwnPath = Environment.ExpandEnvironmentVariables(nwnPath + "dotnet");
-
-            if (Directory.Exists(nwnPath))
-                Directory.Delete(nwnPath, true);
-
-            Directory.CreateDirectory(nwnPath);
-
-            var binPath = "./bin/Debug/net6.0/";
-
-            var source = new DirectoryInfo(binPath);
-            var target = new DirectoryInfo(nwnPath);
+            var source = new DirectoryInfo("../SWLOR.Game.Server/Docker");
+            var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target);
         }
 
+        private void CopyBinaries()
+        {
+            var binPath = "../SWLOR.Game.Server/bin/Debug/net6.0/";
+
+            var source = new DirectoryInfo(binPath);
+            var target = new DirectoryInfo(DotnetPath);
+
+            CopyAll(source, target);
+        }
+
+        private void BuildHaks()
+        {
+            _hakBuilder.Process();
+        }
+
+        private void BuildModule()
+        {
+
+        }
 
         private static void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {

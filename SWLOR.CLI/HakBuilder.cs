@@ -29,7 +29,8 @@ namespace SWLOR.CLI
 
             if (File.Exists(_config.TlkPath))
             {
-                File.Copy(_config.TlkPath, $"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}");
+                var destination = $"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}";
+                File.Copy(_config.TlkPath, destination);
             }
             else
             {
@@ -154,7 +155,7 @@ namespace SWLOR.CLI
         /// <param name="folderPath">The folder where the assets are.</param>
         private void CompileHakpak(string hakName, string folderPath)
         {
-            var command = $"nwn_erf -f \"{_config.OutputPath}{hakName}.hak\" -e HAK -c ./{folderPath}";
+            var command = $"nwn_erf -f \"{_config.OutputPath}hak/{hakName}.hak\" -e HAK -c ./{folderPath}";
             Console.WriteLine($"Building hak: {hakName}.hak");
 
             using (var process = CreateProcess(command))
@@ -174,7 +175,7 @@ namespace SWLOR.CLI
                 checksum = ChecksumUtil.ChecksumFolder(folderPath);
             }
 
-            ChecksumUtil.WriteChecksumFile(_config.OutputPath + hakName + ".md5", checksum);
+            ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
         }
     }
 }

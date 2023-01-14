@@ -2,16 +2,22 @@
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Commands;
 using Ductus.FluentDocker.Extensions;
+using System.Runtime.InteropServices;
+using EnvDTE;
+using Microsoft.VisualStudio.OLE.Interop;
+using SWLOR.Game.Server.Extension;
 
 namespace SWLOR.Runner
 {
     internal class Server
     {
+        private const string ServerContainerName = "neverwinternights-swlor-server-1";
         private const string IniFileName = "./nwnpath.config";
         private const string DefaultNWNFolder = "%USERPROFILE%\\Documents\\Neverwinter Nights\\";
         private ICompositeService _service = null!;
         private readonly IHostService _docker;
         private readonly Dictionary<string, ContainerLogger> _containerLineCounts = new();
+        private volatile bool _isDebuggerRunning;
 
         public Server()
         {
@@ -28,7 +34,7 @@ namespace SWLOR.Runner
                 ? await File.ReadAllTextAsync(IniFileName)
                 : DefaultNWNFolder;
             var dockerComposePath = Environment.ExpandEnvironmentVariables(nwnPath) + "docker-compose.yml";
-            
+
             using (_service = new Builder()
                        .UseContainer()
                        .UseCompose()
@@ -57,6 +63,14 @@ namespace SWLOR.Runner
 
                             _containerLineCounts[container.Name].LineCount = lines.Count;
                         }
+
+                        if (container.Name == ServerContainerName &&
+                            !_isDebuggerRunning &&
+                            container.State == ServiceRunningState.Running)
+                        {
+                            StartVisualStudioDebugger();
+                        }
+
                     }
                 }
             }
@@ -77,5 +91,68 @@ namespace SWLOR.Runner
                 _service.Stop();
             };
         }
+
+        private void StartVisualStudioDebugger()
+        {
+            var dte = GetInstances().FirstOrDefault();
+
+            if (dte == null)
+            {
+                Console.WriteLine("Visual studio could not be located. Debugger will NOT be started.");
+                return;
+            }
+
+            try
+            {
+                var window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindCommandWindow);
+                window.Activate();
+
+                var commandWindow = window.Object as CommandWindow;
+
+                var command2 = "DebugAdapterHost.Launch " +
+                               "/LaunchJson:\"./SWLOR.Runner/launch.json\" " +
+                               "/EngineGuid:541B8A8A-6081-4506-9F0A-1CE771DEBC04";
+
+                commandWindow.SendInput(command2, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to start Visual Studio debugger. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+            }
+
+
+            _isDebuggerRunning = true;
+        }
+
+        private static IEnumerable<DTE> GetInstances()
+        {
+            var retVal = GetRunningObjectTable(0, out var rot);
+
+            if (retVal == 0)
+            {
+                rot.EnumRunning(out var enumMoniker);
+
+                var moniker = new IMoniker[1];
+                while (enumMoniker.Next(1, moniker, out _) == 0)
+                {
+                    CreateBindCtx(0, out var bindCtx);
+                    moniker[0].GetDisplayName(bindCtx, null, out var displayName);
+                    var isVisualStudio = displayName.StartsWith("!VisualStudio");
+                    if (isVisualStudio)
+                    {
+                        rot.GetObject(moniker[0], out var obj);
+                        var dte = obj as DTE;
+                        yield return dte;
+                    }
+                }
+            }
+        }
+
+        [DllImport("ole32.dll")]
+        private static extern void CreateBindCtx(int reserved, out IBindCtx ppbc);
+
+        [DllImport("ole32.dll")]
+        private static extern int GetRunningObjectTable(int reserved, out IRunningObjectTable prot);
     }
+
 }

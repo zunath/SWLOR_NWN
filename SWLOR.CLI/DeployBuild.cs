@@ -6,29 +6,29 @@ namespace SWLOR.CLI
     internal class DeployBuild
     {
         private const string IniFileName = "./nwnpath.config";
-        private const string DefaultDotnetFolder = "%USERPROFILE%/Documents/Neverwinter Nights/dotnet";
+        private const string DefaultNWNFolder = "%USERPROFILE%/Documents/Neverwinter Nights/";
 
 
         public void Process()
         {
-            var dotnetPath = File.Exists(IniFileName)
+            var nwnPath = File.Exists(IniFileName)
                 ? File.ReadAllText(IniFileName)
-                : DefaultDotnetFolder;
+                : DefaultNWNFolder;
 
-            if (!Directory.Exists(dotnetPath))
-                dotnetPath = DefaultDotnetFolder;
+            if (!Directory.Exists(nwnPath))
+                nwnPath = DefaultNWNFolder;
 
-            dotnetPath = Environment.ExpandEnvironmentVariables(dotnetPath);
+            nwnPath = Environment.ExpandEnvironmentVariables(nwnPath + "dotnet");
 
-            if (Directory.Exists(dotnetPath))
-                Directory.Delete(dotnetPath, true);
+            if (Directory.Exists(nwnPath))
+                Directory.Delete(nwnPath, true);
 
-            Directory.CreateDirectory(dotnetPath);
+            Directory.CreateDirectory(nwnPath);
 
             var binPath = "./bin/Debug/net6.0/";
 
             var source = new DirectoryInfo(binPath);
-            var target = new DirectoryInfo(dotnetPath);
+            var target = new DirectoryInfo(nwnPath);
 
             CopyAll(source, target);
         }

@@ -13,8 +13,7 @@ namespace SWLOR.Web.Controllers
 
         private static readonly Dictionary<int, Download> _downloads = new Dictionary<int, Download>
         {
-            {1, new Download { LocalPath = "/var/www/swlor_public_files/SWLOR GUI.zip", ContentType = "application/octet-stream", FileName = "SWLORGUI.zip"}},
-            {2, new Download{ LocalPath = "/var/www/swlor_public_files/SWLOR-In-A-Box.zip", ContentType = "application/octet-stream ", FileName = "SWLOR-In-A-Box.zip"} },
+            {1, new Download { LocalPath = "/var/www/swlor_public_files/SWLOR GUI.zip", ContentType = "application/octet-stream", FileName = "SWLORGUI.zip"}}
         };
 
         public IActionResult Get(int id)

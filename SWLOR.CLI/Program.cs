@@ -13,26 +13,33 @@ namespace SWLOR.CLI
         private static readonly RecipeCodeBuilder _recipeCodeBuilder = new();
         private static readonly AdHocTool _adHocTool = new();
         private static readonly DroidItemBuilder _droidItemBuilder = new();
+        private static readonly DeployBuild _deployBuild = new();
 
         static void Main(string[] args)
         {
             var app = new CommandLineApplication();
 
             // Set up the options.
+            var adHocToolOption = app.Option(
+                "-$|-a |--adhoc",
+                "Ad-hoc code testing.",
+                CommandOptionType.NoValue);
+
             var placeableOption = app.Option(
                 "-$|-c |--placeable",
                 "Generates utp files in json format for all of the entries found in placeables.2da.",
                 CommandOptionType.NoValue
             );
 
-            var enhancementOption = app.Option(
-                "-$|-e |--enhancement",
-                "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
-                CommandOptionType.NoValue
-            );
             var droidItemOption = app.Option(
                 "-$|-d |--droid",
                 "Generates uti files in json format for all of the entries found in droid_item_template.tsv.",
+                CommandOptionType.NoValue
+            );
+
+            var enhancementOption = app.Option(
+                "-$|-e |--enhancement",
+                "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
                 CommandOptionType.NoValue
             );
 
@@ -48,15 +55,15 @@ namespace SWLOR.CLI
                 CommandOptionType.NoValue
             );
 
+            var deployOption = app.Option(
+                "-$|-o |--outputDeploy",
+                "Deploys DLLs in the bin folder to the NWN dotnet directory.",
+                CommandOptionType.NoValue
+            );
+
             var modulePackerOption = app.Option(
                 "-$|-p |--pack",
                 "Packs a module at the specified path. Target must be the path to a .mod file.",
-                CommandOptionType.SingleValue
-            );
-
-            var moduleUnpackOption = app.Option(
-                "-$|-u |--unpack",
-                "Unpacks a module within the running directory. Target must be the path to a .mod file.",
                 CommandOptionType.SingleValue
             );
 
@@ -70,10 +77,11 @@ namespace SWLOR.CLI
                 "Generates uti files in json format for all of the StructureType.cs enum values.",
                 CommandOptionType.NoValue);
 
-            var adHocToolOption = app.Option(
-                "-$|-a |--adhoc",
-                "Ad-hoc code testing.",
-                CommandOptionType.NoValue);
+            var moduleUnpackOption = app.Option(
+                "-$|-u |--unpack",
+                "Unpacks a module within the running directory. Target must be the path to a .mod file.",
+                CommandOptionType.SingleValue
+            );
 
             app.HelpOption("-? | -h | --help");
 
@@ -127,6 +135,11 @@ namespace SWLOR.CLI
                 if (adHocToolOption.HasValue())
                 {
                     _adHocTool.Process();
+                }
+
+                if (deployOption.HasValue())
+                {
+                    _deployBuild.Process();
                 }
 
                 return 0;

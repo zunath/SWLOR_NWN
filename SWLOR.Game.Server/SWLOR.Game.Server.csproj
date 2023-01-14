@@ -38,6 +38,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(SolutionDir)\SWLOR.Game.Server\SWLOR.CLI.exe -o" />
+    <Exec Command="cd $(SolutionDir)Build\&#xD;&#xA;SWLOR.CLI.exe -o" />
   </Target>
 </Project>

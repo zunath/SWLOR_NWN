@@ -267,6 +267,7 @@ __pycache__/
 
 # SWLOR
 SWLOR.Game.Server/nwnpath.config
+debugserver
 
 # Packed modules are generated from Module source files; keep them out of Git and LFS.
 *.[mM][oO][dD]

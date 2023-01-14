@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SWLOR.Runner": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false
+    }
+  }
+}

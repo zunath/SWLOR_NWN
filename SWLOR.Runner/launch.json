@@ -1,0 +1,14 @@
+﻿{
+  "version": "0.2.0",
+  "adapter": "docker.exe",
+  "adapterArgs": "exec -i debugserver-swlor-server-1 /remote_debugger/vsdbg/vsdbg --interpreter=vscode",
+  "debuggerPath": "/remote_debugger/vsdbg/vsdbg",
+  "configurations": [
+    {
+      "name": ".NET Core Docker Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": 1
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "TlkPath": "../SWLOR_Haks/swlor2_tlk/swlor2_tlk.tlk",
+  "OutputPath": "../debugserver/",
+  "HakList": [
+    {
+      "Name":  "swlor2_2da",
+      "Path": "../SWLOR_Haks/swlor2_2da/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_add_doors",
+      "Path": "../SWLOR_Haks/swlor2_add_doors/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_add_loads",
+      "Path": "../SWLOR_Haks/swlor2_add_loads/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_add_skies",
+      "Path": "../SWLOR_Haks/swlor2_add_skies/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_add_tiles",
+      "Path": "../SWLOR_Haks/swlor2_add_tiles/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core0",
+      "Path": "../SWLOR_Haks/swlor2_core0/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core1",
+      "Path": "../SWLOR_Haks/swlor2_core1/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core2",
+      "Path": "../SWLOR_Haks/swlor2_core2/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core3",
+      "Path": "../SWLOR_Haks/swlor2_core3/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core4",
+      "Path": "../SWLOR_Haks/swlor2_core4/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core5",
+      "Path": "../SWLOR_Haks/swlor2_core5/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core6",
+      "Path": "../SWLOR_Haks/swlor2_core6/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_core7",
+      "Path": "../SWLOR_Haks/swlor2_core7/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_dds",
+      "Path": "../SWLOR_Haks/swlor2_dds/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_dwk",
+      "Path": "../SWLOR_Haks/swlor2_dwk/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_ext_tiles",
+      "Path": "../SWLOR_Haks/swlor2_ext_tiles/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_gui",
+      "Path": "../SWLOR_Haks/swlor2_gui/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_ini",
+      "Path": "../SWLOR_Haks/swlor2_ini/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_itp",
+      "Path": "../SWLOR_Haks/swlor2_itp/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_mdl",
+      "Path": "../SWLOR_Haks/swlor2_mdl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_mtr",
+      "Path": "../SWLOR_Haks/swlor2_mtr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_music",
+      "Path": "../SWLOR_Haks/swlor2_music/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_plt",
+      "Path": "../SWLOR_Haks/swlor2_plt/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_portraits",
+      "Path": "../SWLOR_Haks/swlor2_portraits/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pwk",
+      "Path": "../SWLOR_Haks/swlor2_pwk/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_set",
+      "Path": "../SWLOR_Haks/swlor2_set/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_shd",
+      "Path": "../SWLOR_Haks/swlor2_shd/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_ssf",
+      "Path": "../SWLOR_Haks/swlor2_ssf/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_tga",
+      "Path": "../SWLOR_Haks/swlor2_tga/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_txi",
+      "Path": "../SWLOR_Haks/swlor2_txi/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_wav",
+      "Path": "../SWLOR_Haks/swlor2_wav/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_wok",
+      "Path": "../SWLOR_Haks/swlor2_wok/",
+      "CompileModels": false
+    },
+  ]
+}

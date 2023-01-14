@@ -53,7 +53,7 @@ namespace SWLOR.CLI
         private void BuildModule()
         {
             var modulePath = "../Module/Star Wars LOR v2.mod";
-            File.Copy(modulePath, ModulesPath + "/Star Wars LOR v2.mod");
+            File.Copy(modulePath, ModulesPath + "/Star Wars LOR v2.mod", true);
         }
 
         private static void CopyAll(DirectoryInfo source, DirectoryInfo target)

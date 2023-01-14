@@ -11,9 +11,7 @@ namespace SWLOR.Runner
 {
     internal class Server
     {
-        private const string ServerContainerName = "neverwinternights-swlor-server-1";
-        private const string IniFileName = "./nwnpath.config";
-        private const string DefaultNWNFolder = "%USERPROFILE%\\Documents\\Neverwinter Nights\\";
+        private const string ServerContainerName = "debugserver-swlor-server-1";
         private ICompositeService _service = null!;
         private readonly IHostService _docker;
         private readonly Dictionary<string, ContainerLogger> _containerLineCounts = new();
@@ -30,10 +28,8 @@ namespace SWLOR.Runner
             Console.WriteLine($"Starting server");
             RegisterEvents();
 
-            var nwnPath = File.Exists(IniFileName)
-                ? await File.ReadAllTextAsync(IniFileName)
-                : DefaultNWNFolder;
-            var dockerComposePath = Environment.ExpandEnvironmentVariables(nwnPath) + "docker-compose.yml";
+            var debugServerPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
+            var dockerComposePath = debugServerPath + "debugserver/docker-compose.yml";
 
             using (_service = new Builder()
                        .UseContainer()

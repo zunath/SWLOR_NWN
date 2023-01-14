@@ -17,23 +17,26 @@ It serves as a replacement for NWScript and handles most server features and fun
 
 Refer to the quick start guide below and be sure to post any issues on our forums. The link to the forums is above.
 
-# Quick-start guide for SWLOR server developers
+# Prerequisites: 
 
-1.) Install Git from here: https://git-scm.com/downloads
+Git: https://git-scm.com/downloads
+  
+Docker: https://www.docker.com/products/docker-desktop/
+  
+Visual Studio 2022: https://www.visualstudio.com/downloads/
 
-2.) Install Visual Studio Community Edition 2022 from here: https://www.visualstudio.com/downloads/
+Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/
 
-3.) Start up Visual Studio.
+# Installation:
 
-4.) Under the Team Explorer window click the Clone button.
+1. At command line: git clone --recursive https://github.com/zunath/SWLOR_NWN.git
+  
+2. Open SWLOR.Game.Server.sln with Visual Studio
+  
+3. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
+  
+4. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
 
-5.) Type in: https://github.com/zunath/SWLOR_NWN.git
-
-6.) Select a location on your PC to put the source code.
-
-7.) Click Clone and wait until it finishes downloading the files.
-
-8.) Open the project you just cloned.
 
 # Development Guide
 

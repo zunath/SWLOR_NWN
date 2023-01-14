@@ -34,6 +34,7 @@ namespace SWLOR.Runner
             using (_service = new Builder()
                        .UseContainer()
                        .UseCompose()
+                       .ForceRecreate()
                        .FromFile(dockerComposePath)
                        .RemoveOrphans()
                        .Build()

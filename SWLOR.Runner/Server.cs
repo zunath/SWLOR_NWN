@@ -11,7 +11,7 @@ namespace SWLOR.Runner
         private const string DefaultNWNFolder = "%USERPROFILE%\\Documents\\Neverwinter Nights\\";
         private ICompositeService _service = null!;
         private readonly IHostService _docker;
-        private readonly Dictionary<string, int> _containerLineCounts = new();
+        private readonly Dictionary<string, ContainerLogger> _containerLineCounts = new();
 
         public Server()
         {
@@ -19,13 +19,13 @@ namespace SWLOR.Runner
             _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
         }
 
-        public void Run()
+        public async Task RunAsync()
         {
             Console.WriteLine($"Starting server");
             RegisterEvents();
 
             var nwnPath = File.Exists(IniFileName)
-                ? File.ReadAllText(IniFileName)
+                ? await File.ReadAllTextAsync(IniFileName)
                 : DefaultNWNFolder;
             var dockerComposePath = Environment.ExpandEnvironmentVariables(nwnPath) + "docker-compose.yml";
             
@@ -42,18 +42,20 @@ namespace SWLOR.Runner
                     foreach (var container in _service.Containers)
                     {
                         if (!_containerLineCounts.ContainsKey(container.Name))
-                            _containerLineCounts[container.Name] = 0;
+                            _containerLineCounts[container.Name] = new ContainerLogger();
 
                         using (var logs = _docker.Host.Logs(container.Id, showTimeStamps: true))
                         {
                             var lines = logs.ReadToEnd();
+                            var containerLogger = _containerLineCounts[container.Name];
 
-                            foreach (var line in lines.Skip(_containerLineCounts[container.Name]))
+                            foreach (var line in lines.Skip(containerLogger.LineCount))
                             {
+                                Console.ForegroundColor = containerLogger.Color;
                                 Console.WriteLine(line);
                             }
 
-                            _containerLineCounts[container.Name] = lines.Count;
+                            _containerLineCounts[container.Name].LineCount = lines.Count;
                         }
                     }
                 }

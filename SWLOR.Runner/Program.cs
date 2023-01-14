@@ -7,13 +7,11 @@ namespace SWLOR.Runner
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
             var server = host.Services.GetRequiredService<Server>();
-            server.Run();
-
-            host.Run();
+            await server.RunAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -24,8 +22,6 @@ namespace SWLOR.Runner
                 })
                 .ConfigureServices(services =>
                 {
-
-
                     services.AddTransient<Server>();
                 })
                 .ConfigureLogging(builder =>

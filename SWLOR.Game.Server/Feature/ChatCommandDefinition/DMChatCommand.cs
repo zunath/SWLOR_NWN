@@ -11,6 +11,11 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
+using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.Game.Server.Core.NWNX;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Webhook;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -45,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetTag();
             Notes();
             CreatureManager();
+            Broadcast();
 
             return _builder.Build();
         }
@@ -842,6 +848,46 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                });
+        }
+        private void Broadcast()
+        {
+            _builder.Create("broadcast", "bc")
+                .Description("Sends your DM shout to Discord.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                        return "Please enter a message.";
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var message = string.Join(" ", args);
+                    var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
+
+                    for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
+                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
+                    
+                    var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
+                    Task.Run(async () =>
+                    {
+                        using (var client = new DiscordWebhookClient(url))
+                        {
+                            var embed = new EmbedBuilder
+                            {
+                                Author = new EmbedAuthorBuilder
+                                {
+                                    Name = authorName
+                                },
+                                Description = message,
+                                Color = Color.Orange
+                            };
+
+                            await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                        }
+                    });
                 });
         }
     }

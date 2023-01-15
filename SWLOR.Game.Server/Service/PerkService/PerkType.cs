@@ -265,7 +265,17 @@
         Infusion = 260,
         Alacrity = 261,
         Clarity = 262,
-        // 263 is free
-        DroidAssembly = 264
+        Tame = 263,
+        DroidAssembly = 264,
+        Reward = 265,
+        Stabling = 266,
+        PetManagement = 267,
+        Snarl = 268,
+        Growl = 269,
+        SoothePet = 270,
+        ReviveBeast = 271,
+        DNAManipulation = 272,
+        IncubationProcessing = 273,
+        ErraticGenius = 274,
     }
 }

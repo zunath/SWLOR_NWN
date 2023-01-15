@@ -189,6 +189,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         DroidController = 90,
         [RecastGroup("Stat Rebuild", "Stat Rebuild", false)]
         StatRebuild = 91,
+        [RecastGroup("Tame", "Tame", true)]
+        Tame = 92,
+        [RecastGroup("Reward", "Reward", true)]
+        Reward = 93,
+        [RecastGroup("Snarl/Growl", "Snarl/Growl", true)]
+        SnarlGrowl = 94,
+        [RecastGroup("Soothe Pet", "Soothe Pet", true)]
+        SoothePet = 95,
+        [RecastGroup("Revive Beast", "Rev. Beast", true)]
+        ReviveBeast = 96,
     }
 
     public class RecastGroupAttribute: Attribute

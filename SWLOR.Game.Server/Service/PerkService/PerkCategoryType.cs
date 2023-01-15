@@ -111,6 +111,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("One Handed - Shield", true)]
         OneHandedShield = 35,
+
+        [PerkCategory("Beast Mastery - Training", true)]
+        BeastMasteryTraining = 36,
+
+        [PerkCategory("Beast Mastery - Incubation", true)]
+        BeastMasteryIncubation = 37,
     }
 
     public class PerkCategoryAttribute : Attribute

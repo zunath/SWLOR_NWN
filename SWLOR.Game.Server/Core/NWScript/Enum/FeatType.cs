@@ -1846,10 +1846,22 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Rejuvenation = 1877,
         FrenziedShout = 1878,
 
+        // 1879-1881 are open
+
         Screech = 1882,
         GreaterEarthquake = 1883,
         FlameBlast = 1884,
         Infusion1 = 1885,
-        Infusion2 = 1886
+        Infusion2 = 1886,
+        Tame = 1887,
+        Reward1 = 1888,
+        Reward2 = 1889,
+        Reward3 = 1890,
+        Snarl = 1891,
+        Growl = 1892,
+        SoothePet = 1893,
+        ReviveBeast1 = 1894,
+        ReviveBeast2 = 1895,
+        ReviveBeast3 = 1896,
     }
 }

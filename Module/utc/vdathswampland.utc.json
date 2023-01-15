@@ -76,17 +76,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16,
+        "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitebug"
+          "value": "jungle_bug_claw"
         }
       },
       {
-        "__struct_id": 32,
+        "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitebug"
+          "value": "jungle_bug_claw"
         }
       },
       {

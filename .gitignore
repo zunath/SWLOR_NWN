@@ -269,6 +269,7 @@ __pycache__/
 SWLOR.Game.Server/nwnpath.config
 debugserver
 Module/temp0
+Module/Star Wars LOR v2.BackupMod
 
 # Packed modules are generated from Module source files; keep them out of Git and LFS.
 *.[mM][oO][dD]

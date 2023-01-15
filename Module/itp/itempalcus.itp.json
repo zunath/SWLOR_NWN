@@ -6537,6 +6537,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jungle Bug Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jungle_bug_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Hound Bite"
                     },
                     "RESREF": {

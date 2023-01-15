@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
-                var authorName = GetName(Player);
+                var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
 
                 Task.Run(async () =>
                 {

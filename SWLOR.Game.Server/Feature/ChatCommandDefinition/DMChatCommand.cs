@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetTag();
             Notes();
             CreatureManager();
-            DMBroadcast();
+            Broadcast();
 
             return _builder.Build();
         }
@@ -850,9 +850,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
                 });
         }
-        private void DMBroadcast()
+        private void Broadcast()
         {
-            _builder.Create("bc")
+            _builder.Create("broadcast", "bc")
                 .Description("Sends your DM shout to Discord.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Validate((user, args) =>
@@ -864,19 +864,24 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var dmMessage = string.Join(" ", args);
+                    var message = string.Join(" ", args);
                     var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
-                        ChatPlugin.SendMessage(ChatChannel.DMShout, dmMessage, user, onlinePlayer);
-
+                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
+                    
+                    var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     Task.Run(async () =>
                     {
                         using (var client = new DiscordWebhookClient(url))
                         {
                             var embed = new EmbedBuilder
                             {
-                                Description = dmMessage,
+                                Author = new EmbedAuthorBuilder
+                                {
+                                    Name = authorName
+                                },
+                                Description = message,
                                 Color = Color.Orange
                             };
 

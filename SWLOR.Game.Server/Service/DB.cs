@@ -312,6 +312,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Searches the Redis DB for raw JSON records matching the query criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
+        /// <param name="query">The query to run.</param>
+        /// <returns>An enumerable of raw json values matching the criteria.</returns>
+        public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
+            where T: EntityBase
+        {
+            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
+
+            foreach (var doc in result.Documents)
+            {
+                // Remove the 'Index:' prefix.
+                var recordId = doc.Id.Remove(0, 6);
+                yield return _multiplexer.GetDatabase().JsonGet(recordId).ToString();
+            }
+        }
+
+        /// <summary>
         /// Searches the Redis DB for the number of records matching the query criteria.
         /// This only retrieves the number of records. Use Search() if you need the actual results.
         /// </summary>

@@ -85,8 +85,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         TranquilizerShot = 38,
         [RecastGroup("Crippling Shot", "Crippling Shot", true)]
         CripplingShot = 39,
-        [RecastGroup("Grenades", "Grenades", true)]
-        Grenades = 40,
+        [RecastGroup("Frag Grenade", "Frag Grenade", true)]
+        FragGrenade = 40,
         [RecastGroup("Rest", "Rest", true)]
         Rest = 41,
         [RecastGroup("Knockdown", "Knockdown", true)]
@@ -189,6 +189,24 @@ namespace SWLOR.Game.Server.Service.AbilityService
         DroidController = 90,
         [RecastGroup("Stat Rebuild", "Stat Rebuild", false)]
         StatRebuild = 91,
+        [RecastGroup("Concussion Grenade", "Conc. Grenade", true)]
+        ConcussionGrenade = 92,
+        [RecastGroup("Flashbang Grenade", "Flash. Grenade", true)]
+        FlashbangGrenade = 93,
+        [RecastGroup("Ion Grenade", "Ion Grenade", true)]
+        IonGrenade = 94,
+        [RecastGroup("Kolto Grenade", "Kolto Grenade", true)]
+        KoltoGrenade = 95,
+        [RecastGroup("Adhesive Grenade", "Adhe. Grenade", true)]
+        AdhesiveGrenade = 96,
+        [RecastGroup("Smoke Bomb", "Smoke Bomb", true)]
+        SmokeBomb = 97,
+        [RecastGroup("Kolto Bomb", "Kolto Bomb", true)]
+        KoltoBomb = 98,
+        [RecastGroup("Incendiary Bomb", "Incen. Bomb", true)]
+        IncendiaryBomb = 99,
+        [RecastGroup("Gas Bomb", "Gas Bomb", true)]
+        GasBomb = 100,
     }
 
     public class RecastGroupAttribute: Attribute

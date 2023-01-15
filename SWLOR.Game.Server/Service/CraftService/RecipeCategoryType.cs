@@ -118,6 +118,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidLegs = 54,
         [RecipeCategory("Droid Body", true)]
         DroidBody = 55,
+        [RecipeCategory("Droid Instruction", true)]
+        DroidInstruction = 56,
 
     }
 

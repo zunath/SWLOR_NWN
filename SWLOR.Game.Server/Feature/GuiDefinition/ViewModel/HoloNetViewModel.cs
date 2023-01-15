@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public const int MaxHoloNetTextLength = 600;
-        private const int Price = 2500;
+        public const int BroadcastPrice = 2500;
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -49,13 +49,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                if (GetGold(Player) < Price)
+                if (GetGold(Player) < BroadcastPrice)
                 {
                     SendMessageToPC(Player, ColorToken.Red("Insufficient credits to make this HoloNet broadcast."));
                     return;
                 }
 
-                AssignCommand(Player, () => TakeGoldFromCreature(Price, Player, true));
+                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 var authorName = GetName(Player);
 

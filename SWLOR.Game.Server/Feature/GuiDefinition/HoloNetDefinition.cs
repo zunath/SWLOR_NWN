@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .BindOnClicked(model => model.OnClickSubmit())
                             .SetHeight(35f)
-                            .SetText("Broadcast")
+                            .SetText($"Broadcast ({HoloNetViewModel.BroadcastPrice}cr)")
                             .SetIsEnabled(true);
 
                         row.AddButton()

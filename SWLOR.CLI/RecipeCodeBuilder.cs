@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SWLOR.Game.Server.Service;
@@ -22,7 +23,7 @@ namespace SWLOR.CLI
 
             var recipeTemplate = File.ReadAllText(Template);
             var inputLines = File.ReadAllLines(InputData);
-            var output = string.Empty;
+            var recipes = new Dictionary<int, List<string>>();
 
             foreach (var line in inputLines)
             {
@@ -143,7 +144,24 @@ namespace SWLOR.CLI
                 recipeCode += Environment.NewLine;
                 recipeCode += Environment.NewLine;
 
-                output += recipeCode;
+                var tier = Convert.ToInt32(perkLevel);
+                if (!recipes.ContainsKey(tier))
+                    recipes[tier] = new List<string>();
+
+                recipes[tier].Add(recipeCode);
+            }
+
+            var output = string.Empty;
+            foreach (var (tier, textList) in recipes)
+            {
+                output += $"private void Tier{tier}()" + Environment.NewLine + "{" + Environment.NewLine + "\t";
+
+                foreach (var text in textList)
+                {
+                    output += text;
+                }
+
+                output += Environment.NewLine + "}";
             }
 
             File.WriteAllText($"{OutputFolder}/Recipes.txt", output);

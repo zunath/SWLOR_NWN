@@ -32,7 +32,7 @@ namespace SWLOR.CLI
             var source = new DirectoryInfo("../SWLOR.Game.Server/Docker");
             var target = new DirectoryInfo(DebugServerPath);
 
-            CopyAll(source, target);
+            CopyAll(source, target, "swlor.env");
         }
 
         private void CopyBinaries()
@@ -42,7 +42,7 @@ namespace SWLOR.CLI
             var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);
 
-            CopyAll(source, target);
+            CopyAll(source, target, string.Empty);
         }
 
         private void BuildHaks()
@@ -56,18 +56,23 @@ namespace SWLOR.CLI
             File.Copy(modulePath, ModulesPath + "/Star Wars LOR v2.mod", true);
         }
 
-        private static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        private static void CopyAll(DirectoryInfo source, DirectoryInfo target, string excludeFile)
         {
             Directory.CreateDirectory(target.FullName);
             foreach (var fi in source.GetFiles())
             {
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                var targetPath = Path.Combine(target.FullName, fi.Name);
+
+                if (File.Exists(targetPath) && fi.Name == excludeFile)
+                    continue;
+
+                fi.CopyTo(targetPath, true);
             }
             foreach (var diSourceSubDir in source.GetDirectories())
             {
                 var nextTargetSubDir =
                     target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
+                CopyAll(diSourceSubDir, nextTargetSubDir, excludeFile);
             }
         }
     }

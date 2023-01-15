@@ -51,8 +51,7 @@
         Currencies = 46,
         StatRebuild = 47,
         AssociateCharacterSheet = 48,
-
-
+        HoloNet = 49,
         DebugEnmity = 900,
     }
 }

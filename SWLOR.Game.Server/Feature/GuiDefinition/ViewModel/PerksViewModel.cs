@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRefund() => () =>
         {
-            ShowModal($"You may only refund one perk per 12 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
+            ShowModal($"You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);

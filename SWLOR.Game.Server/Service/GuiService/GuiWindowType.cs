@@ -50,6 +50,6 @@
         DroidAI = 45,
         Currencies = 46,
         StatRebuild = 47,
-        HoloNet = 48,
+        HoloNet = 49,
     }
 }

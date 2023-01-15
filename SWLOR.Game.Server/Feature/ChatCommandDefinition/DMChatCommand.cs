@@ -856,6 +856,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("bc")
                 .Description("Sends your DM shout to Discord.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                        return "Please enter a message.";
+
+                    return string.Empty;
+                })
                 .Action((user, target, location, args) =>
                 {
                     var dmMessage = string.Join(" ", args);

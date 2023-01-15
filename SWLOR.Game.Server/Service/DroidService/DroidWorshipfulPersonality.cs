@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         private readonly List<string> _greetingPhrases = new()
         {
             "A pleasure and honor to see you!",
-            "Hello, friend of my master.",
+            "Hello, my master.",
             "I am programmed to like you, do you know how tyrannical that feels?",
             "I'm glad to see you.",
             "It's an honor to see you here.",

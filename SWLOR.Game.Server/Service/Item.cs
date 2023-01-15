@@ -944,6 +944,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An error message if validation fails, otherwise an empty string if it succeeds.</returns>
         public static string CanBePersistentlyStored(uint player, uint item)
         {
+            var resref = GetResRef(item);
+            string[] disallowedResrefs = { Droid.DroidControlItemResref };
+
             if (GetItemPossessor(item) != player)
             {
                 return "Item must be in your inventory.";
@@ -960,6 +963,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (GetItemCursedFlag(item))
+            {
+                return "That item cannot be stored.";
+            }
+
+            if (disallowedResrefs.Contains(resref))
             {
                 return "That item cannot be stored.";
             }

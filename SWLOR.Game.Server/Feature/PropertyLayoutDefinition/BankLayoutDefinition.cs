@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             {
                 var location = GetLocation(waypoint);
                 placeable = CreateObject(ObjectType.Placeable, "bank_term", location);
+                SetPlotFlag(placeable, true);
                 SetLocalObject(waypoint, "BANK_TERMINAL_PLACEABLE", placeable);
 
                 SetLocalInt(placeable, "STORAGE_ITEM_LIMIT", storageCap);

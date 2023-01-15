@@ -24,7 +24,7 @@
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.6.86" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.90" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
@@ -38,6 +38,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(SolutionDir)NWN.Python\deployBuild.exe -b $(ProjectDir)$(OutDir)" />
+    <Exec Command="cd $(SolutionDir)Build\&#xD;&#xA;SWLOR.CLI.exe -o" />
   </Target>
 </Project>

@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Feature
         public static void RegisterStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
-            _statChangeActions[ItemPropertyType.FPBonus] = ApplyFPBonus;
+            _statChangeActions[ItemPropertyType.FP] = ApplyFPBonus;
             _statChangeActions[ItemPropertyType.FPRegen] = ApplyFPRegenBonus;
-            _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
+            _statChangeActions[ItemPropertyType.Stamina] = ApplySTMBonus;
             _statChangeActions[ItemPropertyType.STMRegen] = ApplySTMRegenBonus;
             _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
@@ -185,6 +185,11 @@ namespace SWLOR.Game.Server.Feature
                 {
                     ObjectPlugin.SetMaxHitPoints(creature, maxHP);
                 }
+
+                if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
+                {
+                    SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
+                }
             }
         }
 
@@ -220,7 +225,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.FPBonus, amount, isAdding);
+                ReapplyNPCStat(creature, ItemPropertyType.FP, amount, isAdding);
             }
         }
 
@@ -292,7 +297,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.STMBonus, amount, isAdding);
+                ReapplyNPCStat(creature, ItemPropertyType.Stamina, amount, isAdding);
             }
         }
 
@@ -477,11 +482,14 @@ namespace SWLOR.Game.Server.Feature
                 var value = 0;
                 for (var defenseIP = GetFirstItemProperty(skin); GetIsItemPropertyValid(defenseIP); defenseIP = GetNextItemProperty(skin))
                 {
-                    var subType = (CombatDamageType)GetItemPropertySubType(defenseIP);
-
-                    if (subType == damageType)
+                    if (GetItemPropertyType(defenseIP) == ItemPropertyType.Defense)
                     {
-                        value += GetItemPropertyCostTableValue(defenseIP);
+                        var subType = (CombatDamageType)GetItemPropertySubType(defenseIP);
+
+                        if (subType == damageType)
+                        {
+                            value += GetItemPropertyCostTableValue(defenseIP);
+                        }
                     }
                 }
 
@@ -494,8 +502,15 @@ namespace SWLOR.Game.Server.Feature
                     value -= amount;
                 }
 
-                var newIP = ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, value);
-                BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                if (value <= 0)
+                {
+                    BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.Defense, DurationType.Invalid, (int)damageType);
+                }
+                else
+                {
+                    var newIP = ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, value);
+                    BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                }
             }
         }
 

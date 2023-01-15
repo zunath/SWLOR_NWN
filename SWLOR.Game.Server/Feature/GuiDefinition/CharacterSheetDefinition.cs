@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .BindText(model => model.CharacterType)
                             .SetHeight(20f);
+
+                        row.BindIsVisible(model => model.IsPlayerMode);
                     });
 
                     col.AddRow(row =>
@@ -143,6 +145,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(IncreaseButtonSize)
                             .SetText("+")
                             .SetIsVisible(false);
+                        
+                        row.BindIsVisible(model => model.IsPlayerMode);
                     });
 
                     col.AddRow(row =>
@@ -163,6 +167,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(IncreaseButtonSize)
                             .SetText("+")
                             .SetIsVisible(false);
+
+                            row.BindIsVisible(model => model.IsPlayerMode);
                     });
 
                     col.AddRow(row =>
@@ -571,7 +577,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             group.SetShowBorder(false);
                         });
                     });
+
+                    col.BindIsVisible(model => model.IsPlayerMode);
                 })
+                
                 
                 ;
 

@@ -14,7 +14,7 @@ namespace SWLOR.CLI
         private const string ConfigFilePath = "./hakbuilder.json";
         private HakBuilderConfig _config;
         private List<HakBuilderHakpak> _haksToProcess;
-        private readonly Dictionary<string, string> _checksumDictionary = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _checksumDictionary = new();
 
         public void Process()
         {
@@ -29,7 +29,8 @@ namespace SWLOR.CLI
 
             if (File.Exists(_config.TlkPath))
             {
-                File.Copy(_config.TlkPath, $"{_config.OutputPath}{Path.GetFileName(_config.TlkPath)}");
+                var destination = $"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}";
+                File.Copy(_config.TlkPath, destination);
             }
             else
             {
@@ -70,15 +71,15 @@ namespace SWLOR.CLI
                 if (Directory.Exists(_config.OutputPath))
                 {
                     // Delete .tlk
-                    if (File.Exists($"{_config.OutputPath}{Path.GetFileName(_config.TlkPath)}"))
+                    if (File.Exists($"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}"))
                     {
-                        File.Delete($"{_config.OutputPath}{Path.GetFileName(_config.TlkPath)}");
+                        File.Delete($"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}");
                     }
 
                     Parallel.ForEach(_config.HakList, hak =>
                     {
                         // Check whether .hak file exists
-                        if (!File.Exists(_config.OutputPath + hak.Name + ".hak"))
+                        if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".hak"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
                             return;
@@ -88,14 +89,14 @@ namespace SWLOR.CLI
                         _checksumDictionary.Add(hak.Name, checksumFolder);
 
                         // Check whether .sha checksum file exists
-                        if (!File.Exists(_config.OutputPath + hak.Name + ".md5"))
+                        if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".md5"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
                             return;
                         }
 
                         // When checksums are equal or hak folder doesn't exist -> remove hak from the list
-                        var checksumFile = ChecksumUtil.ReadChecksumFile(_config.OutputPath + hak.Name + ".md5");
+                        var checksumFile = ChecksumUtil.ReadChecksumFile(_config.OutputPath + "hak/" + hak.Name + ".md5");
                         if (checksumFolder == checksumFile)
                         {
                             _haksToProcess.Remove(hak);
@@ -106,7 +107,7 @@ namespace SWLOR.CLI
                     // Delete outdated haks and checksums
                     Parallel.ForEach(_haksToProcess, hak =>
                     {
-                        var filePath = _config.OutputPath + hak.Name;
+                        var filePath = _config.OutputPath + "hak/" + hak.Name;
                         if (File.Exists(filePath + ".hak"))
                         {
                             File.Delete(filePath + ".hak");
@@ -154,7 +155,7 @@ namespace SWLOR.CLI
         /// <param name="folderPath">The folder where the assets are.</param>
         private void CompileHakpak(string hakName, string folderPath)
         {
-            var command = $"nwn_erf -f \"{_config.OutputPath}{hakName}.hak\" -e HAK -c ./{folderPath}";
+            var command = $"nwn_erf -f \"{_config.OutputPath}hak/{hakName}.hak\" -e HAK -c ./{folderPath}";
             Console.WriteLine($"Building hak: {hakName}.hak");
 
             using (var process = CreateProcess(command))
@@ -174,7 +175,7 @@ namespace SWLOR.CLI
                 checksum = ChecksumUtil.ChecksumFolder(folderPath);
             }
 
-            ChecksumUtil.WriteChecksumFile(_config.OutputPath + hakName + ".md5", checksum);
+            ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
         }
     }
 }

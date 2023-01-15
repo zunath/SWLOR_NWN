@@ -58,34 +58,34 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Increases DMG of one-handed weapons by 2 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
-                .DroidAISlots(1)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.Doublehand1)
 
                 .AddPerkLevel()
                 .Description("Increases DMG of one-handed weapons by 6 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
-                .DroidAISlots(1)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Doublehand2)
 
                 .AddPerkLevel()
                 .Description("Increases DMG of one-handed weapons by 10 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
-                .DroidAISlots(2)
+                .DroidAISlots(4)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.Doublehand3)
 
                 .AddPerkLevel()
                 .Description("Increases DMG of one-handed weapons by 14 when no off-hand item is equipped. [Cross Skill]")
                 .Price(1)
-                .DroidAISlots(2)
+                .DroidAISlots(5)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .GrantsFeat(FeatType.Doublehand4)
 
                 .AddPerkLevel()
                 .Description("Increases DMG of one-handed weapons by 19 when no off-hand item is equipped. [Cross Skill]")
                 .Price(2)
-                .DroidAISlots(3)
+                .DroidAISlots(6)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .GrantsFeat(FeatType.Doublehand5);
         }
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While equipped with a shield, you gain an additional attack with your main-hand weapon.")
                 .Price(4)
-                .DroidAISlots(2)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .GrantsFeat(FeatType.ShieldMaster);
         }
@@ -241,14 +241,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Bashes an enemy for 16 DMG and has a DC14 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
-                .DroidAISlots(2)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.ShieldBash2)
 
                 .AddPerkLevel()
                 .Description("Bashes an enemy for 24 DMG and has a DC16 Will check to inflict Dazed for 3 seconds.")
                 .Price(3)
-                .DroidAISlots(2)
+                .DroidAISlots(4)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .GrantsFeat(FeatType.ShieldBash3);
         }
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While equipped with a shield, you automatically attempt to deflect ranged attacks once per round.")
                 .Price(3)
-                .DroidAISlots(1)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Bulwark);
         }
@@ -281,13 +281,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants +1 to Will, Fortitude, and Reflex saves when equipped with a shield.")
                 .Price(2)
-                .DroidAISlots(1)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
 
                 .AddPerkLevel()
                 .Description("Grants +2 to Will, Fortitude, and Reflex saves when equipped with a shield.")
                 .Price(3)
-                .DroidAISlots(2)
+                .DroidAISlots(4)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 
                 .TriggerEquippedItem((player, item, slot, type, level) =>
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants a 10% chance to restore 4 STM when damaged while equipped with a shield.")
                 .Price(2)
-                .DroidAISlots(1)
+                .DroidAISlots(3)
                 .RequirementCannotHavePerk(PerkType.Clarity)
                 .RequirementSkill(SkillType.OneHanded, 25);
         }
@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 8 DMG and has a DC10 Fortitude check to inflict Poison for 30 seconds.")
                 .Price(3)
-                .DroidAISlots(1)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab1)
@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 18 DMG and has a DC15 Fortitude check to inflict Poison for 1 minute.")
                 .Price(3)
-                .DroidAISlots(1)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab2)
@@ -657,7 +657,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 28 DMG and has a DC20 Fortitude check to inflict Poison for 1 minute.")
                 .Price(3)
-                .DroidAISlots(2)
+                .DroidAISlots(4)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab3);
@@ -671,7 +671,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 14 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(2)
-                .DroidAISlots(1)
+                .DroidAISlots(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab1)
@@ -679,7 +679,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 30 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
-                .DroidAISlots(1)
+                .DroidAISlots(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab2)
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 45 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
-                .DroidAISlots(2)
+                .DroidAISlots(4)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab3);

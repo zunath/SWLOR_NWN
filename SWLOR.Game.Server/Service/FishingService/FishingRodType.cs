@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         Halcyon = 8,
         [FishingRod("judge_rod")]
         Judge = 9,
-        [FishingRod("mazemonger_rod")]
+        [FishingRod("mazemong_rod")]
         MazeMonger = 10,
         [FishingRod("willow_rod")]
         Willow = 11,

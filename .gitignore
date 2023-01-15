@@ -262,5 +262,11 @@ __pycache__/
 *.pyc
 /SWLOR.Game.Server/Data/Migrations/2020-06-24.1.sql
 
-# Milliorn
+# VS Code
 .vscode/settings.json
+
+# SWLOR
+SWLOR.Game.Server/nwnpath.config
+debugserver
+Module/temp0
+Module/Star Wars LOR v2.BackupMod

@@ -1,0 +1,3 @@
+[submodule "SWLOR_Haks"]
+	path = SWLOR_Haks
+	url = https://github.com/zunath/SWLOR_Haks

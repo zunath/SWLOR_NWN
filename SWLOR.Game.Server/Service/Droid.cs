@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
+        private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
         /// <summary>
@@ -65,36 +66,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void CacheDefaultTierPerks()
         {
-            // Standard perks to give droids per level.
-            for (var level = 1; level <= 5; level++)
-            {
-                _defaultPerksByTier[level] = new Dictionary<PerkType, int>()
-                {
-                    { PerkType.VibrobladeProficiency, level},
-                    { PerkType.FinesseVibrobladeProficiency, level},
-                    { PerkType.HeavyVibrobladeProficiency, level},
-                    { PerkType.PolearmProficiency, level},
-                    { PerkType.TwinBladeProficiency, level},
-                    { PerkType.KatarProficiency, level},
-                    { PerkType.StaffProficiency, level},
-                    { PerkType.PistolProficiency, level},
-                    { PerkType.RifleProficiency, level},
-                    { PerkType.ThrowingWeaponProficiency, level},
-                    { PerkType.CloakProficiency, level},
-                    { PerkType.BeltProficiency, level},
-                    { PerkType.RingProficiency, level},
-                    { PerkType.NecklaceProficiency, level},
-                    { PerkType.ShieldProficiency, level},
-                    { PerkType.BreastplateProficiency, level},
-                    { PerkType.HelmetProficiency, level},
-                    { PerkType.BracerProficiency, level},
-                    { PerkType.LeggingProficiency, level},
-                    { PerkType.TunicProficiency, level},
-                    { PerkType.CapProficiency, level},
-                    { PerkType.GloveProficiency, level},
-                    { PerkType.BootProficiency, level},
-                };
-            }
+            _defaultPerksByTier[1] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[2] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[3] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[4] = new Dictionary<PerkType, int>();
+            _defaultPerksByTier[5] = new Dictionary<PerkType, int>();
 
             // Tier 1
             _defaultPerksByTier[1][PerkType.WeaponFocusVibroblades] = 1;
@@ -107,6 +83,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[1][PerkType.WeaponFocusPistols] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusRifles] = 1;
             _defaultPerksByTier[1][PerkType.WeaponFocusThrowingWeapons] = 1;
+            _defaultPerksByTier[1][PerkType.PointBlankShot] = 1;
 
             // Tier 2
             _defaultPerksByTier[2][PerkType.WeaponFocusVibroblades] = 2;
@@ -119,6 +96,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
+            _defaultPerksByTier[2][PerkType.RapidReload] = 1;
 
             // Tier 3
             _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;
@@ -157,6 +135,48 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[5][PerkType.RifleMastery] = 2;
             _defaultPerksByTier[5][PerkType.ThrowingWeaponMastery] = 2;
 
+            for (var level = 5; level >= 1; level--)
+            {
+                // Standard perks to give droids per level.
+                _defaultPerksByTier[level][PerkType.VibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.FinesseVibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.HeavyVibrobladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.PolearmProficiency] = level;
+                _defaultPerksByTier[level][PerkType.TwinBladeProficiency] = level;
+                _defaultPerksByTier[level][PerkType.KatarProficiency] = level;
+                _defaultPerksByTier[level][PerkType.StaffProficiency] = level;
+                _defaultPerksByTier[level][PerkType.PistolProficiency] = level;
+                _defaultPerksByTier[level][PerkType.RifleProficiency] = level;
+                _defaultPerksByTier[level][PerkType.ThrowingWeaponProficiency] = level;
+                _defaultPerksByTier[level][PerkType.CloakProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BeltProficiency] = level;
+                _defaultPerksByTier[level][PerkType.RingProficiency] = level;
+                _defaultPerksByTier[level][PerkType.NecklaceProficiency] = level;
+                _defaultPerksByTier[level][PerkType.ShieldProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BreastplateProficiency] = level;
+                _defaultPerksByTier[level][PerkType.HelmetProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BracerProficiency] = level;
+                _defaultPerksByTier[level][PerkType.LeggingProficiency] = level;
+                _defaultPerksByTier[level][PerkType.TunicProficiency] = level;
+                _defaultPerksByTier[level][PerkType.CapProficiency] = level;
+                _defaultPerksByTier[level][PerkType.GloveProficiency] = level;
+                _defaultPerksByTier[level][PerkType.BootProficiency] = level;
+
+                // Previous levels' perks
+                var levelCopy = level;
+                var previousPerks = _defaultPerksByTier.Where(x => x.Key < levelCopy)
+                    .OrderByDescending(o => o.Key);
+                foreach (var (_, perksForThisLevel) in previousPerks)
+                {
+                    foreach (var (perkType, perkLevel) in perksForThisLevel)
+                    {
+                        if (!_defaultPerksByTier[level].ContainsKey(perkType))
+                        {
+                            _defaultPerksByTier[level][perkType] = perkLevel;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -210,6 +230,21 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        private static string CanGiveItemToDroid(uint item)
+        {
+            if (GetHasInventory(item))
+            {
+                return "Containers cannot be stored.";
+            }
+
+            if (GetBaseItemType(item) == BaseItem.Gold)
+            {
+                return "Credits cannot be placed inside.";
+            }
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
@@ -226,6 +261,15 @@ namespace SWLOR.Game.Server.Service
             var master = GetMaster(droid);
             var item = GetModuleItemAcquired();
 
+            var giveItemMessage = CanGiveItemToDroid(item);
+            if (!string.IsNullOrWhiteSpace(giveItemMessage))
+            {
+                SendMessageToPC(master, giveItemMessage);
+                AssignCommand(droid, () => ClearAllActions());
+                Item.ReturnItem(master, item);
+                return;
+            }
+
             var might = GetAbilityScore(droid, AbilityType.Might);
             var weight = GetWeight(droid);
             var maxWeight = Convert.ToInt32(Get2DAString("encumbrance", "Normal", might));
@@ -234,7 +278,7 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(droid, () =>
                 {
-                    ActionSpeakString("I'm sorry master. I cannot carry any more items.");
+                    SpeakString("I'm sorry master. I cannot carry any more items.");
                 });
                 Item.ReturnItem(master, item);
                 return;
@@ -268,9 +312,21 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetObjectUUID(item);
+            var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+
+            if (slot == InventorySlot.CreatureArmor ||
+                slot == InventorySlot.CreatureBite ||
+                slot == InventorySlot.CreatureLeft ||
+                slot == InventorySlot.CreatureRight)
+                return;
+
+            if (GetBaseItemType(item) == BaseItem.Helmet)
+            {
+                SetHiddenWhenEquipped(item, true);
+            }
+
             var constructedDroid = LoadConstructedDroid(controller);
 
             // Equipment won't be in the inventory but it does get equipped on spawn-in.
@@ -295,9 +351,21 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetObjectUUID(item);
+            var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
             var slot = Item.GetItemSlot(droid, item);
+
+            if (slot == InventorySlot.CreatureArmor ||
+                slot == InventorySlot.CreatureBite ||
+                slot == InventorySlot.CreatureLeft ||
+                slot == InventorySlot.CreatureRight)
+                return;
+
+            if (GetBaseItemType(item) == BaseItem.Helmet)
+            {
+                SetHiddenWhenEquipped(item, false);
+            }
+
             var constructedDroid = LoadConstructedDroid(controller);
 
             constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
@@ -344,6 +412,8 @@ namespace SWLOR.Game.Server.Service
                     {
                         case DroidStatSubType.Tier:
                             details.Tier = value < 1 ? 1 : value;
+                            details.Perks = _defaultPerksByTier[details.Tier]
+                                .ToDictionary(x => x.Key, y => y.Value);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -416,13 +486,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (details.Tier < 1)
-                details.Tier = 1;
-            else if (details.Tier > 5)
-                details.Tier = 5;
-
-            details.Perks = _defaultPerksByTier[details.Tier]
-                .ToDictionary(x => x.Key, y => y.Value);
 
             details.Level = _levelsByTier[details.Tier];
 
@@ -561,7 +624,7 @@ namespace SWLOR.Game.Server.Service
             // Skin item properties
             var levelIP = ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, details.Level);
             var hpIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, details.HP);
-            var stmIP = ItemPropertyCustom(ItemPropertyType.NPCSTM, -1, details.STM);
+            var stmIP = ItemPropertyCustom(ItemPropertyType.Stamina, -1, details.STM);
 
             BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
@@ -719,6 +782,16 @@ namespace SWLOR.Game.Server.Service
                     : defaultDroid.LeftFootId,
                 droid);
 
+            if (constructedDroid.PortraitId == -1)
+            {
+                constructedDroid.PortraitId = GetPortraitId(droid);
+                SaveConstructedDroid(controller, constructedDroid);
+            }
+            else
+            {
+                SetPortraitId(droid, constructedDroid.PortraitId);
+            }
+
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
             ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
@@ -726,6 +799,10 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(GetModule(), () =>
             {
                 DelayCommand(0.1f, () => DeleteLocalBool(droid, DroidIsSpawning));
+                DelayCommand(4f, () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
+                });
             });
         }
 
@@ -812,8 +889,19 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        private static string GetDroidItemId(uint item)
+        {
+            if (string.IsNullOrWhiteSpace(GetLocalString(item, DroidItemId)))
+            {
+                SetLocalString(item, DroidItemId, Guid.NewGuid().ToString());
+            }
+
+            return GetLocalString(item, DroidItemId);
+        }
+
         private static void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
         {
+
             var itemType = GetBaseItemType(item);
 
             if (itemType == BaseItem.CreatureBludgeonWeapon ||
@@ -822,18 +910,19 @@ namespace SWLOR.Game.Server.Service
                 itemType == BaseItem.CreatureSlashWeapon ||
                 itemType == BaseItem.CreatureItem)
                 return;
-
-            var itemId = GetObjectUUID(item);
+            
             var controller = GetControllerItem(droid);
             var constructedDroid = LoadConstructedDroid(controller);
 
             if (wasAcquired)
             {
+                var itemId = GetDroidItemId(item);
                 constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
                 SetDroppableFlag(item, false);
             }
             else
             {
+                var itemId = GetDroidItemId(item);
                 constructedDroid.Inventory.Remove(itemId);
                 SetDroppableFlag(item, true);
             }

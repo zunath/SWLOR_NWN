@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         Meatball = 7,
         [FishingBait("sinking_minnow", "sinking_minnow99")]
         SinkingMinnow = 8,
-        [FishingBait("drill_calamary", "drill_calamary99")]
+        [FishingBait("drill_calamary", "drill_calamar99")]
         DrillCalamary = 9,
         [FishingBait("worm_lure", "worm_lure99")]
         WormLure = 10,

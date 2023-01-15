@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using CombatPoint = SWLOR.Game.Server.Service.CombatPoint;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Enmity
     {
         // Enemy -> Creature -> EnmityAmount mapping
-        private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new Dictionary<uint, Dictionary<uint, int>>();
+        private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
         // Creature -> EnemyList mapping
-        private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new Dictionary<uint, List<uint>>();
+        private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -115,7 +114,9 @@ namespace SWLOR.Game.Server.Service
         public static uint GetHighestEnmityTarget(uint enemy)
         {
             var enmityTable = GetEnmityTable(enemy);
-            var target = enmityTable.Count <= 0 ? OBJECT_INVALID : enmityTable.MaxBy(o => o.Value).Key;
+            var target = enmityTable.Count <= 0 
+                ? OBJECT_INVALID 
+                : enmityTable.MaxBy(o => o.Value).Key;
 
             return target;
         }
@@ -128,12 +129,23 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of enmity to adjust by</param>
         public static void ModifyEnmity(uint creature, uint enemy, int amount)
         {
+            if (GetIsPC(enemy))
+                return;
+
             // Enmity shouldn't matter if you're dead.
             if (GetIsDead(creature) || GetIsDead(enemy))
                 return;
 
             // Players cannot be placed on an enmity table against each other.
             if (GetIsPC(creature) && GetIsPC(enemy))
+                return;
+
+            // Party members (droids, pets, associates) cannot gain enmity
+            if (Party.IsInParty(creature, enemy))
+                return;
+
+            // Player associates cannot gain enmity towards each other
+            if (GetIsPC(GetMaster(creature)) && GetIsPC(GetMaster(enemy)))
                 return;
 
             // Value is zero, no action necessary.
@@ -171,20 +183,10 @@ namespace SWLOR.Game.Server.Service
 
             // Update this creature's list of enemies.
             _creatureToEnemies[creature] = enemyList;
-            
-            // If one creature is a player, add the NPC to the Combat Point tracker.
-            if (GetIsPC(creature)) { CombatPoint.AddPlayerToNPCReferenceToCache(creature, enemy); }
-            else if (GetIsPC(enemy)) { CombatPoint.AddPlayerToNPCReferenceToCache(enemy, creature); }
 
-            // In the event that this enemy does not have a target, immediately start attacking this creature.
-            if (GetAttackTarget(enemy) == OBJECT_INVALID)
-            {
-                AssignCommand(enemy, () =>
-                {
-                    ClearAllActions();
-                    ActionAttack(creature);
-                });
-            }
+            AttackHighestEnmityTarget(enemy);
+
+            ExecuteScript("enmity_changed", creature);
         }
 
         /// <summary>
@@ -259,6 +261,58 @@ namespace SWLOR.Game.Server.Service
         {
             return _creatureToEnemies.ContainsKey(creature)
                    && _creatureToEnemies[creature].Count > 0;
+        }
+
+        /// <summary>
+        /// Forces a creature to attack the highest enmity target.
+        /// If creature does not have enmity, nothing will happen.
+        /// If new target is the same as existing, nothing will happen.
+        /// </summary>
+        public static void AttackHighestEnmityTarget(uint creature)
+        {
+            var target = GetHighestEnmityTarget(creature);
+
+            if (!GetIsObjectValid(target))
+                return;
+
+            // Same target - no need to switch.
+            var attackTarget = GetAttackTarget(creature);
+
+            if (attackTarget == target)
+                return;
+
+            AssignCommand(creature, () =>
+            {
+                ClearAllActions();
+                ActionAttack(target);
+            });
+        }
+
+        /// <summary>
+        /// Retrieves all of the enmity table information for a given creature.
+        /// </summary>
+        /// <param name="creature">The creature whose tables will be retrieved</param>
+        /// <returns>A dictionary of enmity values for a given creature.</returns>
+        public static Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature)
+        {
+            var enemyList = _creatureToEnemies.ContainsKey(creature) 
+                ? _creatureToEnemies[creature] 
+                : new List<uint>();
+
+            var result = new Dictionary<uint, int>();
+
+            foreach (var enemy in enemyList)
+            {
+                if(!_enemyEnmityTables.ContainsKey(enemy) ||
+                   !_enemyEnmityTables[enemy].ContainsKey(creature))
+                    continue;
+
+                var enmity = _enemyEnmityTables[enemy][creature];
+
+                result.Add(enemy, enmity);
+            }
+
+            return result;
         }
     }
 }

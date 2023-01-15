@@ -1,2 +1,132 @@
-Smithery	recipe_saberupg1	One-Handed Blueprints	LightsaberUpgrade1	Lightsaber	5	Lightsaber Upgrade I	52	1	saber_upg1	N/A	0	ref_arkoxit	2	ref_jasioclase	10	elec_high	20	chiro_shard	2	ref_veldite	5	ref_scordspar	5	ref_plagionite	5	ref_keromber	5					
-Smithery	recipe_staffupg1	Two-Handed Blueprints	SaberstaffUpgrade1	Saberstaff	5	Saberstaff Upgrade I	52	1	saberstaff_upg1	N/A	0	ref_arkoxit	2	ref_jasioclase	10	elec_high	20	chiro_shard	2	ref_veldite	5	ref_scordspar	5	ref_plagionite	5	ref_keromber	5					
+Engineering		Droid Equipment Blueprints	InstructionDoublehand1	DroidInstruction	1	Doublehand I	10	1	id_doublehand1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionDoublehand2	DroidInstruction	2	Doublehand II	20	1	id_doublehand2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionDoublehand3	DroidInstruction	3	Doublehand III	30	1	id_doublehand3	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionDoublehand4	DroidInstruction	4	Doublehand IV	40	1	id_doublehand4	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionDoublehand5	DroidInstruction	5	Doublehand V	50	1	id_doublehand5	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionDualWield	DroidInstruction	1	Dual Wield	10	1	id_dualwield	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionBulwark	DroidInstruction	2	Bulwark	20	1	id_bulwark	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldMaster	DroidInstruction	3	Shield Master	30	1	id_shmaster	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldBash1	DroidInstruction	1	Shield Bash I	10	1	id_shbash1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldBash2	DroidInstruction	3	Shield Bash II	30	1	id_shbash2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldBash3	DroidInstruction	4	Shield Bash III	40	1	id_shbash3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldResistance1	DroidInstruction	3	Shield Resistance I	30	1	id_shresist1	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionShieldResistance2	DroidInstruction	4	Shield Resistance II	40	1	id_shresist2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionAlacrity	DroidInstruction	3	Alacrity	30	1	id_alacrity	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionPoisonStab1	DroidInstruction	2	Poison Stab I	20	1	id_pstab1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPoisonStab2	DroidInstruction	4	Poison Stab II	40	1	id_pstab2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPoisonStab3	DroidInstruction	5	Poison Stab III	50	1	id_pstab3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionBackstab1	DroidInstruction	1	Backstab I	10	1	id_backstab1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionBackstab2	DroidInstruction	3	Backstab II	30	1	id_backstab2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionBackstab3	DroidInstruction	4	Backstab III	40	1	id_backstab3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPowerAttack1	DroidInstruction	2	Power Attack I	20	1	id_pwrattack1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPowerAttack2	DroidInstruction	3	Power Attack II	30	1	id_pwrattack2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionSuperiorWeaponFocus	DroidInstruction	4	Superior Weapon Focus	40	1	id_supweapfoc	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionCleave	DroidInstruction	2	Cleave	20	1	id_cleave	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionCrescentMoon1	DroidInstruction	2	Crescent Moon I	20	1	id_cmoon1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionCrescentMoon2	DroidInstruction	4	Crescent Moon II	40	1	id_cmoon2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionCrescentMoon3	DroidInstruction	5	Crescent Moon III	50	1	id_cmoon3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionHardSlash1	DroidInstruction	1	Hard Slash I	10	1	id_hardslash1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionHardSlash2	DroidInstruction	3	Hard Slash II	30	1	id_hardslash2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionHardSlash3	DroidInstruction	4	Hard Slash III	40	1	id_hardslash3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSkewer1	DroidInstruction	2	Skewer I	20	1	id_skewer1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSkewer2	DroidInstruction	4	Skewer II	40	1	id_skewer2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSkewer3	DroidInstruction	5	Skewer III	50	1	id_skewer3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleThrust1	DroidInstruction	1	Double Thrust I	10	1	id_dthrust1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleThrust2	DroidInstruction	3	Double Thrust II	30	1	id_dthrust2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleThrust3	DroidInstruction	4	Double Thrust III	40	1	id_dthrust3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSpinningWhirl1	DroidInstruction	2	Spinning Whirl I	20	1	id_spinwhirl1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSpinningWhirl2	DroidInstruction	4	Spinning Whirl II	40	1	id_spinwhirl2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSpinningWhirl3	DroidInstruction	5	Spinning Whirl III	50	1	id_spinwhirl3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionCrossCut1	DroidInstruction	1	Cross Cut I	10	1	id_crosscut1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionCrossCut2	DroidInstruction	3	Cross Cut II	30	1	id_crosscut2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionCrossCut3	DroidInstruction	4	Cross Cut III	40	1	id_crosscut3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionKnockdown	DroidInstruction	2	Knockdown	20	1	id_knockdown	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionInnerStrength1	DroidInstruction	4	Inner Strength I	40	1	id_innstr1	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionInnerStrength2	DroidInstruction	5	Inner Strength II	50	1	id_innstr2	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionChi1	DroidInstruction	1	Chi I	10	1	id_chi1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionChi2	DroidInstruction	3	Chi II	30	1	id_chi2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionChi3	DroidInstruction	5	Chi III	50	1	id_chi3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionElectricFist1	DroidInstruction	2	Electric Fist I	20	1	id_elecfist1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionElectricFist2	DroidInstruction	4	Electric Fist II	40	1	id_elecfist2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionElectricFist3	DroidInstruction	5	Electric Fist III	50	1	id_elecfist3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionStrikingCobra1	DroidInstruction	1	Striking Cobra I	10	1	id_strcobra1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionStrikingCobra2	DroidInstruction	3	Striking Cobra II	30	1	id_strcobra2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionStrikingCobra3	DroidInstruction	4	Striking Cobra III	40	1	id_strcobra3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSlam1	DroidInstruction	2	Slam I	20	1	id_slam1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSlam2	DroidInstruction	4	Slam II	40	1	id_slam2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionSlam3	DroidInstruction	5	Slam III	50	1	id_slam3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionLegSweep1	DroidInstruction	1	Leg Sweep I	10	1	id_legsweep1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionLegSweep2	DroidInstruction	3	Leg Sweep II	30	1	id_legsweep2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionLegSweep3	DroidInstruction	4	Leg Sweep III	40	1	id_legsweep3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPrecisionAim1	DroidInstruction	4	Precision Aim I	40	1	id_precaim1	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionPrecisionAim2	DroidInstruction	5	Precision Aim II	50	1	id_precaim2	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionDirtyBlow	DroidInstruction	3	Dirty Blow	30	1	id_dirtyblow	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionQuickDraw1	DroidInstruction	2	Quick Draw I	20	1	id_quickdraw1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionQuickDraw2	DroidInstruction	4	Quick Draw II	40	1	id_quickdraw2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionQuickDraw3	DroidInstruction	5	Quick Draw III	50	1	id_quickdraw3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleShot1	DroidInstruction	1	Double Shot I	10	1	id_dblshot1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleShot2	DroidInstruction	3	Double Shot II	30	1	id_dblshot2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionDoubleShot3	DroidInstruction	4	Double Shot III	40	1	id_dblshot3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionExplosiveToss1	DroidInstruction	2	Explosive Toss I	20	1	id_exptoss1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionExplosiveToss2	DroidInstruction	4	Explosive Toss II	40	1	id_exptoss2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionExplosiveToss3	DroidInstruction	5	Explosive Toss III	50	1	id_exptoss3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionPiercingToss1	DroidInstruction	1	Piercing Toss I	10	1	id_ptoss1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionPiercingToss2	DroidInstruction	3	Piercing Toss II	30	1	id_ptoss2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionPiercingToss3	DroidInstruction	4	Piercing Toss III	40	1	id_ptoss3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionTranquilizerShot1	DroidInstruction	2	Tranquilizer Shot I	20	1	id_tranqshot1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionTranquilizerShot2	DroidInstruction	4	Tranquilizer Shot II	40	1	id_tranqshot2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionTranquilizerShot3	DroidInstruction	5	Tranquilizer Shot III	50	1	id_tranqshot3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionCripplingShot1	DroidInstruction	1	Crippling Shot I	10	1	id_crippshot1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionCripplingShot2	DroidInstruction	3	Crippling Shot II	30	1	id_crippshot2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionCripplingShot3	DroidInstruction	4	Crippling Shot III	40	1	id_crippshot3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionFragGrenade1	DroidInstruction	1	Frag Grenade I	10	1	id_fraggren1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionFragGrenade2	DroidInstruction	2	Frag Grenade II	20	1	id_fraggren2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionFragGrenade3	DroidInstruction	4	Frag Grenade III	40	1	id_fraggren3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionConcussionGrenade1	DroidInstruction	1	Concussion Grenade I	10	1	id_concgren1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionConcussionGrenade2	DroidInstruction	4	Concussion Grenade II	40	1	id_concgren2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionConcussionGrenade3	DroidInstruction	5	Concussion Grenade III	50	1	id_concgren3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionFlashbangGrenade1	DroidInstruction	2	Flashbang Grenade I	20	1	id_flashgren1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionFlashbangGrenade2	DroidInstruction	4	Flashbang Grenade II	40	1	id_flashgren2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionFlashbangGrenade3	DroidInstruction	5	Flashbang Grenade III	50	1	id_flashgren3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionIonGrenade1	DroidInstruction	1	Ion Grenade I	10	1	id_iongren1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionIonGrenade2	DroidInstruction	3	Ion Grenade II	30	1	id_iongren2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionIonGrenade3	DroidInstruction	4	Ion Grenade III	40	1	id_iongren3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoGrenade1	DroidInstruction	1	Kolto Grenade I	10	1	id_koltgren1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoGrenade2	DroidInstruction	3	Kolto Grenade II	30	1	id_koltgren2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoGrenade3	DroidInstruction	4	Kolto Grenade III	40	1	id_koltgren3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionAdhesiveGrenade1	DroidInstruction	3	Adhesive Grenade I	30	1	id_adhgren1	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionAdhesiveGrenade2	DroidInstruction	4	Adhesive Grenade II	40	1	id_adhgren2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionAdhesiveGrenade3	DroidInstruction	5	Adhesive Grenade III	50	1	id_adhgren3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionFlamethrower1	DroidInstruction	1	Flamethrower I	10	1	id_flamethrow1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionFlamethrower2	DroidInstruction	3	Flamethrower II	30	1	id_flamethrow2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionFlamethrower3	DroidInstruction	5	Flamethrower III	50	1	id_flamethrow3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionWristRocket1	DroidInstruction	2	Wrist Rocket I	20	1	id_wristrck1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionWristRocket2	DroidInstruction	3	Wrist Rocket II	30	1	id_wristrck2	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionWristRocket3	DroidInstruction	5	Wrist Rocket III	50	1	id_wristrck3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionProvoke1	DroidInstruction	1	Provoke I	10	1	id_provoke1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionProvoke2	DroidInstruction	2	Provoke II	20	1	id_provoke2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionMedKit1	DroidInstruction	1	Med Kit I	10	1	id_medkit1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionMedKit2	DroidInstruction	2	Med Kit II	20	1	id_medkit2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionMedKit3	DroidInstruction	3	Med Kit III	30	1	id_medkit3	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionMedKit4	DroidInstruction	4	Med Kit IV	40	1	id_medkit4	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionMedKit5	DroidInstruction	5	Med Kit V	50	1	id_medkit5	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoRecovery1	DroidInstruction	2	Kolto Recovery I	20	1	id_kolt1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoRecovery2	DroidInstruction	4	Kolto Recovery II	40	1	id_kolt2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionKoltoRecovery3	DroidInstruction	5	Kolto Recovery III	50	1	id_kolt3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionResuscitation1	DroidInstruction	2	Resuscitation I	20	1	id_resusc1	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionResuscitation2	DroidInstruction	4	Resuscitation II	40	1	id_resusc2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionResuscitation3	DroidInstruction	5	Resuscitation III	50	1	id_resusc3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionTreatmentKit1	DroidInstruction	1	Treatment Kit I	10	1	id_treatkit1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionTreatmentKit2	DroidInstruction	2	Treatment Kit II	20	1	id_treatkit2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionStasisField1	DroidInstruction	3	Stasis Field I	30	1	id_stasisf1	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionStasisField2	DroidInstruction	4	Stasis Field II	40	1	id_stasisf2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionStasisField3	DroidInstruction	5	Stasis Field III	50	1	id_stasisf3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionCombatEnhancement1	DroidInstruction	3	Combat Enhancement I	30	1	id_combenh1	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionCombatEnhancement2	DroidInstruction	4	Combat Enhancement II	40	1	id_combenh2	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionCombatEnhancement3	DroidInstruction	5	Combat Enhancement III	50	1	id_combenh3	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionShielding1	DroidInstruction	1	Shielding I	10	1	id_shielding1	N/A	0	jade	1	elec_ruined	2	quadrenium	1															
+Engineering		Droid Equipment Blueprints	InstructionShielding2	DroidInstruction	2	Shielding II	20	1	id_shielding2	N/A	0	agate	1	elec_flawed	2	vintrium	1															
+Engineering		Droid Equipment Blueprints	InstructionShielding3	DroidInstruction	4	Shielding III	40	1	id_shielding3	N/A	0	ruby	1	elec_imperfect	2	katrium	1															
+Engineering		Droid Equipment Blueprints	InstructionShielding4	DroidInstruction	5	Shielding IV	50	1	id_shielding4	N/A	0	emerald	1	elec_high	2	zinsiam	1															
+Engineering		Droid Equipment Blueprints	InstructionInfusion1	DroidInstruction	3	Infusion I	30	1	id_infusion1	N/A	0	citrine	1	elec_good	2	ionite	1															
+Engineering		Droid Equipment Blueprints	InstructionInfusion2	DroidInstruction	5	Infusion II	50	1	id_infusion2	N/A	0	emerald	1	elec_high	2	zinsiam	1															

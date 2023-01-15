@@ -211,7 +211,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-                var dbPermissions = DB.Search(permissionQuery).ToList();
+                var permissionCount = (int)DB.SearchCount(permissionQuery);
+                var dbPermissions = DB.Search(permissionQuery
+                        .AddPaging(permissionCount, 0))
+                    .ToList();
 
                 if (dbPermissions.Count > 0)
                 {
@@ -220,7 +223,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                         .AddFieldSearch(nameof(WorldProperty.Id), propertyIds)
                         .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-                    var properties = DB.Search(propertyQuery);
+                    var propertyCount = (int)DB.SearchCount(propertyQuery);
+
+                    var properties = DB.Search(propertyQuery
+                        .AddPaging(propertyCount, 0));
 
                     foreach (var property in properties)
                     {

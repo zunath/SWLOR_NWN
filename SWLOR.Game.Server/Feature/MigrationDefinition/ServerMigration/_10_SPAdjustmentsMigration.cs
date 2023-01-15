@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
@@ -92,6 +94,38 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         public int Version => 10;
         public void Migrate()
+        {
+            RemoveGrenadesRecast();
+            RefundSP();
+        }
+
+        private void RemoveGrenadesRecast()
+        {
+            var dbQuery = new DBQuery<Player>();
+            var playerCount = (int)DB.SearchCount(dbQuery);
+            var dbPlayersRaw = DB.SearchRawJson(dbQuery
+                .AddPaging(playerCount, 0));
+
+            foreach (var dbPlayerJson in dbPlayersRaw)
+            {
+                var jObject = JObject.Parse(dbPlayerJson);
+                var recastTimers = jObject["RecastTimes"];
+
+                if (recastTimers?["Grenades"] != null)
+                {
+                    foreach (var token in recastTimers.FindTokens("Grenades"))
+                        token.Rename("FragGrenade");
+
+                    var dbPlayer = jObject.ToObject<Player>();
+
+                    DB.Set(dbPlayer);
+
+                    Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
+                }
+            }
+        }
+
+        private void RefundSP()
         {
             var dbQuery = new DBQuery<Player>();
             var playerCount = (int)DB.SearchCount(dbQuery);

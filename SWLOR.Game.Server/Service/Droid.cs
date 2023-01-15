@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
+            _defaultPerksByTier[2][PerkType.RapidReload] = 1;
 
             // Tier 3
             _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;

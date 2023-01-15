@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempt to knockdown a target for 2 seconds with an 8DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
-                .Price(2)
+                .Price(1)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush1)
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempt to knockdown a target for 2 seconds with a 14DC fortitude check. If resisted, target is slowed for 2 seconds. DC scales with WIL.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush3)
@@ -78,35 +78,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10 physical DMG to a single target.")
-                .Price(2)
+                .Price(1)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock1)
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 15 physical DMG to a single target.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock2)
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 25 physical DMG to a single target.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock3)
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 34 physical DMG to a single target.")
-                .Price(5)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock4)
 
                 .AddPerkLevel()
                 .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 43 physical DMG to a single target.")
-                .Price(6)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock5);
@@ -139,20 +139,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 8 DMG. Can hit up to 1 targets along the path thrown.")
-                .Price(3)
+                .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber1)
 
                 .AddPerkLevel()
                 .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 17 DMG. Can hit up to 2 targets along the path thrown.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber2)
 
                 .AddPerkLevel()
                 .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 24 DMG. Can hit up to 3 targets along the path thrown.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber3);
@@ -165,21 +165,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempt to tranquilize a single target for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun1)
 
                 .AddPerkLevel()
                 .Description("Target and nearest other enemy within 10m is Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
                 .Description("Target and all other enemies within 10m are Tranquilized for six seconds with a 12DC will check. If resisted, target gets -10 to Accuracy and Evasion.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun3);
@@ -226,14 +226,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("The caster gets -10 Accuracy & Evasion but nearby party members get +6 Accuracy & Evasion.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BattleInsight1)
 
                 .AddPerkLevel()
                 .Description("The caster gets -16 Accuracy & Evasion but nearby party members get +12 Accuracy & Evasion.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BattleInsight2);
@@ -246,14 +246,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempt to confuse a single non-mechanical target with a 12DC will check for six seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
                 .Description("Attempt to confuse all hostile non-mechanical targets within 10m with a 12DC will check for six seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick2);
@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Heals a single target for 20 HP every six seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceDrain)
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Heals a single target for 30 HP every six seconds.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceDrain)
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 12 DMG to a single target.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 19 DMG to a single target.")
-                .Price(5)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 28 DMG to a single target.")
-                .Price(5)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 40 DMG to a single target.")
-                .Price(6)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Converts 25% of the user's FP into HP.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBody)
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Converts 50% of the user's FP into HP.")
-                .Price(6)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBody)
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempts to steal 20 HP from a target every six seconds with a 14DC will check.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceHeal)
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempts to steal 30 HP from a target every six seconds with a 14DC will check.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceHeal)
@@ -417,7 +417,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 12 DMG to a single target.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)
@@ -425,7 +425,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 19 DMG to a single target.")
-                .Price(5)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 28 DMG to a single target.")
-                .Price(5)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)
@@ -441,7 +441,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 40 DMG to a single target.")
-                .Price(6)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceBurst)
@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Converts 25% of the user's HP into FP.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceMind)
@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Converts 50% of the user's HP into FP.")
-                .Price(6)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceMind)
@@ -477,14 +477,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants 5% concealment to other party members while concentrating.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Premonition1)
 
                 .AddPerkLevel()
                 .Description("Grants 10% concealment to other party members while concentrating.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Premonition2);
@@ -527,7 +527,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Restores 40 HP to a single target.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.CreepingTerror)
@@ -535,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Restores 80 HP to a single target.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.CreepingTerror)
@@ -557,7 +557,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Increases your target's physical defense by 10 for 15 minutes.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceRage)
@@ -609,7 +609,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempts to Paralyze a target for 2 seconds with an 8DC will check and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.Benevolence)
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attempts to Paralyze a target for 2 seconds with a 12DC will check and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.Benevolence)
@@ -639,7 +639,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Increases your target's Attack by 10 for 15 minutes.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .RequirementCannotHavePerk(PerkType.ForceValor)
@@ -661,14 +661,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Increases your target's MGT, AGI, and WIL by 1 for 15 minutes. Does not stack with Combat Enhancement.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceInspiration1)
 
                 .AddPerkLevel()
                 .Description("Increases your target's MGT, AGI, and WIL by 2 for 15 minutes. Does not stack with Combat Enhancement.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceInspiration2)

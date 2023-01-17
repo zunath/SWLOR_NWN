@@ -1,0 +1,18 @@
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+using System.Collections.Generic;
+
+namespace SWLOR.Game.Server.Service.BeastMasteryService
+{
+    public class BeastDetail
+    {
+        public BeastType Type { get; set; }
+        public AbilityType AccuracyStat { get; set; }
+        public AbilityType DamageStat { get; set; }
+        public Dictionary<int, BeastLevel> Levels { get; set; }
+
+        public BeastDetail()
+        {
+            Levels = new Dictionary<int, BeastLevel>();
+        }
+    }
+}

@@ -5,8 +5,6 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
     public class BeastLevel
     {
-        public AbilityType AccuracyStat { get; set; }
-        public AbilityType DamageStat { get; set; }
 
         public Dictionary<AbilityType, int> Stats { get; set; }
 

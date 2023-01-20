@@ -49,6 +49,14 @@ This happens because you didn't clone with the --recursive command. Redo step 2.
 
 You need to install docker.
 
+**'Missing required HAK file' error on login**
+
+Copy the files in the hak directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/hak folder.
+
+**'Unable to load module' error**
+
+Delete all docker containers and images, then delete all files in the debugserver/modules, debugserver/tlk, and debugserver/hak folders. Then rerun the application.
+
 # Development Guide
 
 Please refer to this guide for setting up your development environment: https://wiki.starwarsnwn.com/en/Development/Environment-SetUp

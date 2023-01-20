@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
@@ -77,6 +78,38 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             return this;
         }
 
+        public BeastBuilder MaxAttackBonus(int max)
+        {
+            _activeLevel.MaxAttackBonus = max;
+
+            return this;
+        }
+        public BeastBuilder MaxAccuracyBonus(int max)
+        {
+            _activeLevel.MaxAccuracyBonus = max;
+
+            return this;
+        }
+        public BeastBuilder MaxEvasionBonus(int max)
+        {
+            _activeLevel.MaxEvasionBonus = max;
+
+            return this;
+        }
+
+        public BeastBuilder MaxDefenseBonus(CombatDamageType type, int max)
+        {
+            _activeLevel.MaxDefenseBonuses[type] = max;
+
+            return this;
+        }
+
+        public BeastBuilder MaxSavingThrowBonus(SavingThrow type, int max)
+        {
+            _activeLevel.MaxSavingThrowBonuses[type] = max;
+
+            return this;
+        }
 
         public Dictionary<BeastType, BeastDetail> Build()
         {

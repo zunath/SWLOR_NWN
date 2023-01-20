@@ -82,17 +82,46 @@ namespace SWLOR.CLI
                 var wil = data[9];
                 var agi = data[10];
                 var soc = data[11];
+                var attackBonusMax = data[14];
+                var accuracyBonusMax = data[15];
+                var evasionBonusMax = data[16];
+                var physicalDefenseMax = data[17];
+                var forceDefenseMax = data[18];
+                var fireDefenseMax = data[19];
+                var poisonDefenseMax = data[21];
+                var electricalDefenseMax = data[22];
+                var iceDefenseMax = data[20];
+                var willMax = data[24];
+                var fortitudeMax = data[23];
+                var reflexMax = data[25];
+
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())
                     .Replace("%%HP%%", hp)
                     .Replace("%%STM%%", stm)
                     .Replace("%%FP%%", fp)
+
                     .Replace("%%MGT%%", mgt)
                     .Replace("%%PER%%", per)
                     .Replace("%%VIT%%", vit)
                     .Replace("%%WIL%%", wil)
                     .Replace("%%AGI%%", agi)
-                    .Replace("%%SOC%%", soc);
+                    .Replace("%%SOC%%", soc)
+
+                    .Replace("%%MAXATTACKBONUS%%", attackBonusMax)
+                    .Replace("%%MAXACCURACYBONUS%%", accuracyBonusMax)
+                    .Replace("%%MAXEVASIONBONUS%%", evasionBonusMax)
+
+                    .Replace("%%MAXPHYSICALDEFENSE%%", physicalDefenseMax)
+                    .Replace("%%MAXFORCEDEFENSE%%", forceDefenseMax)
+                    .Replace("%%MAXFIREDEFENSE%%", fireDefenseMax)
+                    .Replace("%%MAXPOISONDEFENSE%%", poisonDefenseMax)
+                    .Replace("%%MAXELECTRICALDEFENSE%%", electricalDefenseMax)
+                    .Replace("%%MAXICEDEFENSE%%", iceDefenseMax)
+
+                    .Replace("%%MAXWILL%%", willMax)
+                    .Replace("%%MAXFORTITUDE%%", fortitudeMax)
+                    .Replace("%%MAXREFLEX%%", reflexMax);
             }
 
             foreach (var(type, detail) in beasts)

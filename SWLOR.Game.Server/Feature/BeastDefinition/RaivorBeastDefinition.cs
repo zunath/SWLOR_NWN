@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Raivor)
+                .Appearance(AppearanceType.LizardLargeBrown)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)
                 .Role(BeastRoleType.Balanced)
 

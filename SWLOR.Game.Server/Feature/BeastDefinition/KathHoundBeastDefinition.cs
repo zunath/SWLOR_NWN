@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.KathHound)
+                .Appearance(AppearanceType.KathHound)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage)
 

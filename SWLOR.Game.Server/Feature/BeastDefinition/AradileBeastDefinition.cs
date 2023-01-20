@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Aradile)
+                .Appearance(AppearanceType.LizardGiantBrown)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

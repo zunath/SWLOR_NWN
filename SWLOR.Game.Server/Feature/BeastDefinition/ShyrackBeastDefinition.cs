@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Shyrack)
+                .Appearance(AppearanceType.Shyrack)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

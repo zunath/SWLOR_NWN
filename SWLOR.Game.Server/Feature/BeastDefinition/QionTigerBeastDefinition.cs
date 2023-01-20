@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.QionTiger)
+                .Appearance(AppearanceType.CatTigerWhite)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Octotench)
+                .Appearance(AppearanceType.OctopusMedium)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 

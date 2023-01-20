@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Microtench)
+                .Appearance(AppearanceType.OctopusSmall)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Evasion)
 

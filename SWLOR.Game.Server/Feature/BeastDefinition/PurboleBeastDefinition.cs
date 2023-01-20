@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Purbole)
+                .Appearance(AppearanceType.Gibberling1)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
                 .Role(BeastRoleType.Evasion)
 

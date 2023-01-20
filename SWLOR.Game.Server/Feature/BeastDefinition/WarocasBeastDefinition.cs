@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Warocas)
+                .Appearance(AppearanceType.BirdOstrich)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
                 .Role(BeastRoleType.Balanced)
 

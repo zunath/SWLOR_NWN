@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.JungleBug)
+                .Appearance(AppearanceType.InsectWaspGiant)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion)
 

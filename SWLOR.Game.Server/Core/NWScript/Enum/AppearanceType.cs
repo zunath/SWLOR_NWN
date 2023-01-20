@@ -428,10 +428,25 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         BWingSmall = 966,
         FreighterSmall = 967,
         CorvetteSmall = 968,
+
+        SnakeViperSwampLarge = 1231,
+        SnakeViperSwampMedium = 1232,
+
+        RodentCapybara = 1438,
+
+        InsectWaspGiant = 1494,
+
+        Gibberling1 = 1933,
+        Gibberling2 = 1934,
+
         VLambda = 2002,
         VEWing = 2003,
         Skyhopper = 2004,
         VYWing = 2005,
+
+        MutantAlligator = 2121,
+
+        PterosaurAnurognathus = 2137,
         Turret1 = 2152,
         Turret2 = 2153,
         Turret3 = 2154,
@@ -441,6 +456,40 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         DeathStar = 2172,
         NebulonB = 2173,
         LargeCargoShip = 2174,
+
+        LizardLargeBrown = 2985,
+
+        MonsterA = 3117,
+        MonsterB = 3118,
+        MonsterC = 3119,
+
+        CrocAztec = 3221,
+
+        LizardGiantBrown = 3230,
+
+        InsectTickGiant = 3428,
+        InsectTickHuge = 3429,
+        InsectTickLarge = 3430,
+
+        OctopusMedium = 3456,
+        OctopusSmall = 3457,
+
+        SlugHuge = 3472,
+        SlugLarge = 3473,
+        SlugMedium = 3474,
+        SlugSmall = 3475,
+
+        TortoiseMedium = 3489,
+
+        SpiderCrystalB = 3521,
+
+        Scutellus = 6315,
+
+        BuletteSmallUndead = 6330,
+
+        CatTigerWhite = 6402,
+
+        BirdOstrich = 6408,
 
         Bothan = 10000,
         Chiss = 10001,
@@ -454,7 +503,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Echani = 10009,
         MonCalamari = 10010,
 
+        KathHound = 10020,
+        Kinrath = 10021,
+
         Ugnaught = 10033,
+
+        Shyrack = 10045,
 
         NeutralDropship = 10054,
         NeutralCondor = 10055,

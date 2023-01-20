@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.SandBeetle)
+                .Appearance(AppearanceType.BeetleSlicer)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 

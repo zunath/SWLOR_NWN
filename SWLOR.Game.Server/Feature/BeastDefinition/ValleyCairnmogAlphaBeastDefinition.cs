@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.ValleyCairnmogAlpha)
+                .Appearance(AppearanceType.MonsterA)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

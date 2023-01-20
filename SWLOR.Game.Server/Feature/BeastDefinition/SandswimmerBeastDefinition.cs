@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Sandswimmer)
+                .Appearance(AppearanceType.Aranea)
                 .CombatStats(AbilityType.Willpower, AbilityType.Vitality)
                 .Role(BeastRoleType.Force)
 

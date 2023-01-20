@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Gimpassa)
+                .Appearance(AppearanceType.TortoiseMedium)
                 .CombatStats(AbilityType.Vitality, AbilityType.Willpower)
                 .Role(BeastRoleType.Force)
 

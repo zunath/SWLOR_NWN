@@ -60,7 +60,9 @@ namespace SWLOR.CLI
                 var accuracyStat = data[12];
                 var damageStat = data[13];
                 var role = data[1];
+                var appearance = data[27];
                 detail.Code = template
+                    .Replace("%%APPEARANCETYPE%%", appearance)
                     .Replace("%%CLASSNAME%%", className)
                     .Replace("%%BEASTTYPE%%", beastType)
                     .Replace("%%ACCURACYSTAT%%", GetAbilityEnumName(accuracyStat))

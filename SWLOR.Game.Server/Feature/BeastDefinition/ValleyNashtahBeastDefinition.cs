@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.ValleyNashtah)
+                .Appearance(AppearanceType.Basilisk)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Balanced)
 

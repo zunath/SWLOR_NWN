@@ -1,0 +1,12 @@
+
+                // Level %%LEVEL%%
+                .AddLevel()
+                .HP(%%HP%%)
+                .FP(%%FP%%)
+                .STM(%%STM%%)
+                .Stat(AbilityType.Might, %%MGT%%)
+                .Stat(AbilityType.Perception, %%PER%%)
+                .Stat(AbilityType.Vitality, %%VIT%%)
+                .Stat(AbilityType.Willpower, %%WIL%%)
+                .Stat(AbilityType.Agility, %%AGI%%)
+                .Stat(AbilityType.Social, %%SOC%%)

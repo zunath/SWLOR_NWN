@@ -5,9 +5,10 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
     public class BeastLevel
     {
-
+        public int HP { get; set; }
+        public int STM { get; set; }
+        public int FP { get; set; }
         public Dictionary<AbilityType, int> Stats { get; set; }
-
 
         public BeastLevel()
         {

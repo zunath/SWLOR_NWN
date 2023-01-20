@@ -1850,6 +1850,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         GreaterEarthquake = 1883,
         FlameBlast = 1884,
         Infusion1 = 1885,
-        Infusion2 = 1886
+        Infusion2 = 1886,
+        ZenMarksmanship = 1887
     }
 }

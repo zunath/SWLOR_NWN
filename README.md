@@ -29,13 +29,25 @@ Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights
 
 # Installation:
 
-1. At command line: git clone --recursive https://github.com/zunath/SWLOR_NWN.git
+1. Fork this repo.
+
+2. At command line: git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git
   
-2. Open SWLOR.Game.Server.sln with Visual Studio
+3. Open SWLOR.Game.Server.sln with Visual Studio
   
-3. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
+4. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
   
-4. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
+5. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
+
+# Troubleshooting
+
+**'TLK does not exist' error:**
+
+This happens because you didn't clone with the --recursive command. Redo step 2.
+
+**'Type initializer for Ductus.FluentDocker.Extensions.CommandExtensions threw an exception' error:**
+
+You need to install docker.
 
 
 # Development Guide

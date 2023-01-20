@@ -53,6 +53,10 @@ You need to install docker.
 
 Copy the files in the hak directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/hak folder.
 
+**'Missing required TLK file' error on login**
+
+Copy the swlor2_tlk.tlk file in the tlk directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/tlk folder.
+
 **'Unable to load module' error**
 
 Delete all docker containers and images, then delete all files in the debugserver/modules, debugserver/tlk, and debugserver/hak folders. Then rerun the application.

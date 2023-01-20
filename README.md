@@ -31,7 +31,7 @@ Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights
 
 1. Fork this repo.
 
-2. At command line: git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git
+2. At command line: ``git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git``
   
 3. Open SWLOR.Game.Server.sln with Visual Studio
   
@@ -48,7 +48,6 @@ This happens because you didn't clone with the --recursive command. Redo step 2.
 **'Type initializer for Ductus.FluentDocker.Extensions.CommandExtensions threw an exception' error:**
 
 You need to install docker.
-
 
 # Development Guide
 

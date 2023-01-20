@@ -126,15 +126,19 @@ namespace SWLOR.CLI
 
             foreach (var(type, detail) in beasts)
             {
-                var levels = detail.Levels.OrderBy(o => o.Key).Select(s => s.Value);
+                var levels = detail.Levels.OrderBy(o => o.Key);
                 var levelText = string.Empty;
+                var levelFunctionCalls = string.Empty;
 
-                foreach (var level in levels)
+                foreach (var (levelId, level) in levels)
                 {
                     levelText += level;
+                    levelFunctionCalls += $"\t\t\tLevel{levelId}();" + Environment.NewLine;
                 }
 
-                var output = detail.Code.Replace("%%LEVELLIST%%", levelText);
+                var output = detail.Code
+                    .Replace("%%LEVELLIST%%", levelText)
+                    .Replace("%%LEVELCALLS%%", levelFunctionCalls);
                 File.WriteAllText($"{OutputFolder}/{type}BeastDefinition.cs", output);
             }
         }

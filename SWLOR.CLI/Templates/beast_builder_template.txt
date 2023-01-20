@@ -14,13 +14,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
             _builder.Create(BeastType.%%BEASTTYPE%%)
                 .Appearance(AppearanceType.%%APPEARANCETYPE%%)
                 .CombatStats(AbilityType.%%ACCURACYSTAT%%, AbilityType.%%DAMAGESTAT%%)
-                .Role(BeastRoleType.%%BEASTROLE%%)
+                .Role(BeastRoleType.%%BEASTROLE%%);
 
-                %%LEVELLIST%%
-
-                ;
+%%LEVELCALLS%%
 
             return _builder.Build();
         }
+
+        %%LEVELLIST%%
     }
 }

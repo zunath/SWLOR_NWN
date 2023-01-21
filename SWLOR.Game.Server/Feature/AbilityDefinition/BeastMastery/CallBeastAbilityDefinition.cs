@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = DB.Get<Player>(playerId);
                     
-                    Service.BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId);
+                    Service.BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
                 });
         }
     }

@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Entity
         public int UnallocatedSP { get; set; }
         public bool IsDead { get; set; }
 
+        public int PortraitId { get; set; }
+        public int SoundSetId { get; set; }
+
         public BeastType Type { get; set; }
 
         public BeastFoodType FavoriteFood { get; set; }
@@ -43,6 +46,8 @@ namespace SWLOR.Game.Server.Entity
         {
             Level = 1;
             Perks = new Dictionary<PerkType, int>();
+            PortraitId = -1;
+            SoundSetId = -1;
 
             DefensePurities = new Dictionary<CombatDamageType, int>
             {

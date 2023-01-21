@@ -411,10 +411,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                FP = Stat.GetCurrentFP(_target) + " / " + Stat.GetMaxFP(_target);
+                var currentFP = Stat.GetCurrentFP(_target);
+                var maxFP = Stat.GetMaxFP(_target);
+                if (currentFP < 0)
+                    currentFP = 0;
+                if (maxFP < 0)
+                    maxFP = 0;
+
+                FP = $"{currentFP} / {maxFP}";
             }
 
-            STM = Stat.GetCurrentStamina(_target) + " / " + Stat.GetMaxStamina(_target);
+            var currentSTM = Stat.GetCurrentStamina(_target);
+            var maxSTM = Stat.GetMaxStamina(_target);
+            if (currentSTM < 0)
+                currentSTM = 0;
+            if (maxSTM < 0)
+                maxSTM = 0;
+
+            STM = $"{currentSTM} / {maxSTM}";
             Name = GetName(_target);
             Might = GetAbilityScore(_target, AbilityType.Might);
             Perception = GetAbilityScore(_target, AbilityType.Perception);

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Reward, 60f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(3)
+                .RequirementStamina(6)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Reward, 60f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(4)
+                .RequirementStamina(8)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Reward, 60f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(5)
+                .RequirementStamina(10)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>

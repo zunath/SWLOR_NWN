@@ -375,23 +375,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player rests, any droids they have active also rest.
-        /// </summary>
-        [NWNEventHandler("rest_started")]
-        public static void OnPlayerRest()
-        {
-            var player = OBJECT_SELF;
-            var droid = GetDroid(player);
-            if (!GetIsObjectValid(droid))
-                return;
-        
-            AssignCommand(droid, () =>
-            {
-                ActionRest();
-            });
-        }
-
-        /// <summary>
         /// Loads item property details from a droid's controller item.
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>

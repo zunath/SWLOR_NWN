@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             return _beastXPRequirements[level];
         }
 
-        public static void SpawnBeast(uint player, string beastId)
+        public static void SpawnBeast(uint player, string beastId, int percentHeal)
         {
             if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
             {
@@ -145,8 +145,8 @@ namespace SWLOR.Game.Server.Service
             SetBeastType(beast, dbBeast.Type);
 
             SetCreatureAppearanceType(beast, beastDetail.Appearance);
-            SetPortraitId(beast, beastDetail.PortraitId);
-            CreaturePlugin.SetSoundset(beast, beastDetail.SoundSetId);
+            SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
+            CreaturePlugin.SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
             
             ApplyStats(beast);
 
@@ -175,7 +175,14 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(4f, () =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(beast)), beast);
+                    SetCurrentHitPoints(beast, 1);
+
+                    if (percentHeal > 0)
+                    {
+                        var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
+                        ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
+                    }
+                        
                 });
             });
         }
@@ -243,6 +250,18 @@ namespace SWLOR.Game.Server.Service
             var hatedFood = availableFoods[Random.Next(availableFoods.Count)];
 
             return (likedFood, hatedFood);
+        }
+
+        /// <summary>
+        /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
+        /// </summary>
+        [NWNEventHandler("space_enter")]
+        [NWNEventHandler("asso_rem_bef")]
+        public static void RemoveAssociate()
+        {
+            var player = OBJECT_SELF;
+            var beast = GetAssociate(AssociateType.Henchman, player);
+            DestroyObject(beast);
         }
 
         [NWNEventHandler("beast_blocked")]

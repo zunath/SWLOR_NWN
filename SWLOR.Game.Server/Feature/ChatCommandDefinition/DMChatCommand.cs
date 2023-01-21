@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using NRediSearch.QueryBuilder;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             Broadcast();
+            SetScale();
 
             return _builder.Build();
         }
@@ -888,6 +890,53 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
                         }
                     });
+                });
+        }
+
+        private void SetScale()
+        {
+            const int MaxAmount = 50;
+
+            _builder.Create("setscale")
+                .Description("Sets an object's scale.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    // Missing an amount argument?
+                    if (args.Length <= 0)
+                    {
+                        return "Please specify the object's scale you want to set to. Valid range: 0.1-" + MaxAmount;
+                    }
+
+                    // Can't parse the amount?
+                    if (!float.TryParse(args[0], out var value))
+                    {
+                        return "Please specify a value between 0.1 and " + MaxAmount + ".";
+                    }
+
+                    // Amount is outside of our allowed range?
+                    if (value < 0.1 || value > MaxAmount)
+                    {
+                        return "Please specify a value between 0.1 and " + MaxAmount + ".";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    // Allows the scale value to be a decimal number.
+                    float finalvalue = float.TryParse(args[0], out var value) ? value : 1;
+
+                    // Ensures that the decimal number does not go beyond the third decimal place.
+                    finalvalue = (float)Math.Truncate(finalvalue * 1000) / 1000;
+
+                    SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalvalue);
+
+                    // Lets the DM know what he set the scale to.
+                    var targetname = GetName(target);
+                    SendMessageToPC(user, $"{targetname} scaled to {finalvalue}.");
                 });
         }
     }

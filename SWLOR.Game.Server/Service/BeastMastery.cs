@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
@@ -9,10 +8,11 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -24,12 +24,14 @@ namespace SWLOR.Game.Server.Service
 
         private const string BeastResref = "pc_beast";
         public const int MaxLevel = 50;
+        private static int _highestDelta;
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             LoadBeasts();
             LoadFoods();
+            LoadHighestDelta();
         }
 
         private static void LoadBeasts()
@@ -56,6 +58,11 @@ namespace SWLOR.Game.Server.Service
         {
             _beastFoods = Enum.GetValues<BeastFoodType>().ToList();
             _beastFoods.Remove(BeastFoodType.Invalid);
+        }
+
+        private static void LoadHighestDelta()
+        {
+            _highestDelta = _deltaXP.Keys.Max();
         }
 
         public static BeastDetail GetBeastDetail(BeastType type)
@@ -96,6 +103,10 @@ namespace SWLOR.Game.Server.Service
             {
                 dbBeast.XP = 0;
             }
+            else
+            {
+                SendMessageToPC(player, $"{dbBeast.Name} earned {amount} XP.");
+            }
 
             while (dbBeast.XP >= requiredXP)
             {
@@ -114,6 +125,8 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbBeast);
             ApplyStats(beast);
+
+            Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
         public static int GetRequiredXP(int level)
@@ -252,6 +265,31 @@ namespace SWLOR.Game.Server.Service
             return (likedFood, hatedFood);
         }
 
+        [NWNEventHandler("cp_xp_distribute")]
+        public static void CombatPointXPDistributed()
+        {
+            var player = OBJECT_SELF;
+            var beast = GetAssociate(AssociateType.Henchman, player);
+
+            if (GetBeastType(beast) == BeastType.Invalid)
+                return;
+
+            var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
+            var npcStats = Stat.GetNPCStats(npc);
+            var beastId = GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            var delta = dbBeast.Level - npcStats.Level;
+            if (delta > _highestDelta)
+                delta = _highestDelta;
+
+            if (!_deltaXP.ContainsKey(delta))
+                return;
+
+            var xp = _deltaXP[delta];
+            GiveBeastXP(beast, xp);
+        }
+
         /// <summary>
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
@@ -262,6 +300,24 @@ namespace SWLOR.Game.Server.Service
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
             DestroyObject(beast);
+        }
+
+        /// <summary>
+        /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
+        /// </summary>
+        [NWNEventHandler("mod_acquire")]
+        public static void OnAcquireItem()
+        {
+            var beast = GetModuleItemAcquiredBy();
+            if (GetBeastType(beast) == BeastType.Invalid)
+                return;
+            
+            var master = GetMaster(beast);
+            var item = GetModuleItemAcquired();
+
+            SendMessageToPC(master, "Beasts cannot hold items.");
+            AssignCommand(beast, () => ClearAllActions());
+            Item.ReturnItem(master, item);
         }
 
         [NWNEventHandler("beast_blocked")]
@@ -472,6 +528,21 @@ namespace SWLOR.Game.Server.Service
             { 98,  1040000 },
             { 99,  1120000 },
             { 100, 1600000 }
+        };
+
+        private static readonly Dictionary<int, int> _deltaXP = new()
+        {
+            { 6, 1200 },
+            { 5, 1050 },
+            { 4, 976 },
+            { 3, 900 },
+            { 2, 750 },
+            { 1, 676 },
+            { 0, 600 },
+            { -1, 450 },
+            { -2, 300 },
+            { -3, 150 },
+            { -4, 76 }
         };
     }
 }

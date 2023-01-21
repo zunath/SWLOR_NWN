@@ -6493,17 +6493,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beast Claw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "beast_claw"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Colicoid Claw"
                     },
                     "RESREF": {
@@ -6520,17 +6509,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cryspider_bite"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Droid Claw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "droidclaw"
                     }
                   },
                   {
@@ -6641,6 +6619,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "octotench_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "PC Beast Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "PC Droid Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "droidclaw"
                     }
                   },
                   {

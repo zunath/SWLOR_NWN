@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(droid, EventScript.Creature_OnSpellCastAt, "droid_spellcast");
             SetEventScript(droid, EventScript.Creature_OnUserDefined, "droid_userdef");
 
-            AssignCommand(droid, () => ActionSpeakString(personality.GreetingPhrase()));
+            AssignCommand(droid, () => SpeakString(personality.GreetingPhrase()));
 
             AddHenchman(player, droid);
             SetLocalObject(player, DroidObjectVariable, droid);
@@ -811,7 +811,7 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(droid, () =>
             {
-                ActionSpeakString(personality.DismissedPhrase());
+                SpeakString(personality.DismissedPhrase());
             });
 
             DestroyObject(droid, 0.1f);
@@ -983,7 +983,7 @@ namespace SWLOR.Game.Server.Service
             var droidDetail = LoadDroidItemPropertyDetails(item);
             var personality = _droidPersonalities[droidDetail.PersonalityType];
 
-            ActionSpeakString(personality.DeathPhrase());
+            SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
             Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
             CloseAppearanceEditor(player);

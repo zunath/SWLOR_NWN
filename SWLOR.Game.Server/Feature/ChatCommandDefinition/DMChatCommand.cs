@@ -16,7 +16,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using NRediSearch.QueryBuilder;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

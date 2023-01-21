@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
@@ -14,7 +13,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -104,12 +102,23 @@ namespace SWLOR.Game.Server.Service
             SetLocalInt(beast, "BEAST_TYPE", (int)type);
         }
 
-        public static void GiveBeastXP(uint beast, int amount)
+        public static void GiveBeastXP(uint beast, int amount, bool ignoreBonuses)
         {
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
             var maxBeastLevel = Perk.GetEffectivePerkLevel(player, PerkType.Tame) * 10;
+
+            if (!ignoreBonuses)
+            {
+                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
+                {
+                    var xpBonus = StatusEffect.GetEffectData<int>(beast, StatusEffectType.PetFood);
+
+                    amount += (int)(amount * (xpBonus * 0.01f));
+                }
+            }
+
 
             var requiredXP = GetRequiredXP(dbBeast.Level);
             dbBeast.XP += amount;
@@ -315,7 +324,7 @@ namespace SWLOR.Game.Server.Service
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
 
-            var delta = dbBeast.Level - npcStats.Level;
+            var delta = npcStats.Level - dbBeast.Level;
             if (delta > _highestDelta)
                 delta = _highestDelta;
 
@@ -323,7 +332,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var xp = _deltaXP[delta];
-            GiveBeastXP(beast, xp);
+            GiveBeastXP(beast, xp, false);
         }
 
         /// <summary>
@@ -350,6 +359,15 @@ namespace SWLOR.Game.Server.Service
             
             var master = GetMaster(beast);
             var item = GetModuleItemAcquired();
+            var type = GetBaseItemType(item);
+
+            // Creature items are OK to acquire.
+            if (type == BaseItem.CreatureBludgeonWeapon ||
+                type == BaseItem.CreaturePierceWeapon ||
+                type == BaseItem.CreatureSlashPierceWeapon ||
+                type == BaseItem.CreatureSlashWeapon ||
+                type == BaseItem.CreatureItem)
+                return;
 
             SendMessageToPC(master, "Beasts cannot hold items.");
             AssignCommand(beast, () => ClearAllActions());

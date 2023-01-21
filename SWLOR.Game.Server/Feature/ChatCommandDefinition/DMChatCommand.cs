@@ -528,7 +528,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     else if (BeastMastery.IsPlayerBeast(target))
                     {
                         var player = GetMaster(target);
-                        BeastMastery.GiveBeastXP(target, amount);
+                        BeastMastery.GiveBeastXP(target, amount, true);
 
                         SendMessageToPC(player, $"A DM has awarded your beast with {amount} XP.");
                     }

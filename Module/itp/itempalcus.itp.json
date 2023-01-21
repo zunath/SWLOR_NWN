@@ -37943,6 +37943,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blubbery Fish Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_blubbfish_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blubbery Fish Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_blubbfish_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blubbery Fish Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_blubbfish_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blubbery Fish Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_blubbfish_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blubbery Fish Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_blubbfish_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bonefish Broth"
                     },
                     "RESREF": {
@@ -38075,6 +38130,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Coarse Fish Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_coarsefish_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coarse Fish Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_coarsefish_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coarse Fish Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_coarsefish_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coarse Fish Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_coarsefish_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coarse Fish Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_coarsefish_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cooked Bibikibo"
                     },
                     "RESREF": {
@@ -38091,6 +38201,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cooked_crayfish"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Fish Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedfish_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Fish Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedfish_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Fish Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedfish_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Fish Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedfish_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Fish Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedfish_5"
                     }
                   },
                   {
@@ -38124,6 +38289,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cooked_mackerel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Meat Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedmeat_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Meat Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedmeat_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Meat Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedmeat_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Meat Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedmeat_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooked Meat Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_cookedmeat_5"
                     }
                   },
                   {
@@ -38273,6 +38493,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dry Fruit Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_dryfruit_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dry Fruit Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_dryfruit_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dry Fruit Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_dryfruit_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dry Fruit Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_dryfruit_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dry Fruit Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_dryfruit_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Duskhaven Keycard"
                     },
                     "RESREF": {
@@ -38311,6 +38586,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fat_greedie_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Fish Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattyfish_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Fish Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattyfish_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Fish Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattyfish_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Fish Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattyfish_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Fish Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattyfish_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Meat Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattymeat_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Meat Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattymeat_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Meat Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattymeat_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Meat Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattymeat_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fatty Meat Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_fattymeat_5"
                     }
                   },
                   {
@@ -38476,6 +38861,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ikran_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juicy Fruit Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_juicyfruit_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juicy Fruit Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_juicyfruit_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juicy Fruit Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_juicyfruit_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juicy Fruit Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_juicyfruit_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juicy Fruit Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_juicyfruit_5"
                     }
                   },
                   {
@@ -39142,6 +39582,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sour Fruit Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sourfruit_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sour Fruit Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sourfruit_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sour Fruit Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sourfruit_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sour Fruit Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sourfruit_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sour Fruit Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sourfruit_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Soy Ramen"
                     },
                     "RESREF": {
@@ -39219,6 +39714,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Stringy Meat Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_stringymeat_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stringy Meat Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_stringymeat_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stringy Meat Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_stringymeat_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stringy Meat Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_stringymeat_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stringy Meat Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_stringymeat_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sugar Cookies"
                     },
                     "RESREF": {
@@ -39235,6 +39785,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "surprise_sandwic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Fruit Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sweetfood_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Fruit Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sweetfood_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Fruit Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sweetfood_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Fruit Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sweetfood_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sweet Fruit Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_sweetfood_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tender Meat Substitute I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_tendermeat_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tender Meat Substitute II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_tendermeat_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tender Meat Substitute III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_tendermeat_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tender Meat Substitute IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_tendermeat_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tender Meat Substitute V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pf_tendermeat_5"
                     }
                   },
                   {

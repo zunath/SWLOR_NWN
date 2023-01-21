@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.ShearMite)
                 .Appearance(AppearanceType.BeetleStag)
+                .SoundSetId(9)
+                .PortraitId(156)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage);
 

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.WildwoodsKinrath)
                 .Appearance(AppearanceType.Kinrath)
+                .SoundSetId(88)
+                .PortraitId(302)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion);
 

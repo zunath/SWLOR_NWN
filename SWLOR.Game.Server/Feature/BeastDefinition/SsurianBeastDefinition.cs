@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Ssurian)
                 .Appearance(AppearanceType.CrocAztec)
+                .SoundSetId(250)
+                .PortraitId(315)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)
                 .Role(BeastRoleType.Tank);
 

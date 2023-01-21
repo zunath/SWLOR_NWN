@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Shyrack)
                 .Appearance(AppearanceType.Shyrack)
+                .SoundSetId(65535)
+                .PortraitId(184)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Balanced);
 

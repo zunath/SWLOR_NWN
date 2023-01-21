@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.SandBeetle)
                 .Appearance(AppearanceType.BeetleSlicer)
+                .SoundSetId(9)
+                .PortraitId(154)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Damage);
 

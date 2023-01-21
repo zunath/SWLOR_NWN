@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Sandswimmer)
                 .Appearance(AppearanceType.Aranea)
+                .SoundSetId(396)
+                .PortraitId(143)
                 .CombatStats(AbilityType.Willpower, AbilityType.Vitality)
                 .Role(BeastRoleType.Force);
 

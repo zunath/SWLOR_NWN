@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Microtench)
                 .Appearance(AppearanceType.OctopusSmall)
+                .SoundSetId(442)
+                .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Evasion);
 

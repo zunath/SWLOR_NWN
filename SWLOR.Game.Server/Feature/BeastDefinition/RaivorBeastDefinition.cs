@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Raivor)
                 .Appearance(AppearanceType.LizardLargeBrown)
+                .SoundSetId(97)
+                .PortraitId(1268)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)
                 .Role(BeastRoleType.Balanced);
 

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.QionSlug)
                 .Appearance(AppearanceType.SlugHuge)
+                .SoundSetId(397)
+                .PortraitId(92)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank);
 

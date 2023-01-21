@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ImmunitySpecificSpell = 53,
         ImmunitySpellSchool = 54,
         ThievesTools = 55,
-        AttackBonus = 56,
+        AccuracyBonus = 56, // NWN Attack Bonus replaced with Accuracy Bonus
         AttackBonusVsAlignmentGroup = 57,
         AttackBonusVsRacialGroup = 58,
         AttackBonusVsSpecificAlignment = 59,

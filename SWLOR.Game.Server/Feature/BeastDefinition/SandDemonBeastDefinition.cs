@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.SandDemon)
                 .Appearance(AppearanceType.SpiderDemon)
+                .SoundSetId(390)
+                .PortraitId(718)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser);
 

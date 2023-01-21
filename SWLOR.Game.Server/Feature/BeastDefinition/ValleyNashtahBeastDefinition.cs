@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.ValleyNashtah)
                 .Appearance(AppearanceType.Basilisk)
+                .SoundSetId(396)
+                .PortraitId(625)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Balanced);
 

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Octotench)
                 .Appearance(AppearanceType.OctopusMedium)
+                .SoundSetId(442)
+                .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank);
 

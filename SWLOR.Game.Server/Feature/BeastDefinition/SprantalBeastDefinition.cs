@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Sprantal)
                 .Appearance(AppearanceType.MutantAlligator)
+                .SoundSetId(902)
+                .PortraitId(623)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Damage);
 

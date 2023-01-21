@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Klorslug)
                 .Appearance(AppearanceType.BuletteSmallUndead)
+                .SoundSetId(396)
+                .PortraitId(819)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank);
 

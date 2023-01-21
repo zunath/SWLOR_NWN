@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Viper)
                 .Appearance(AppearanceType.SnakeViperSwampMedium)
+                .SoundSetId(260)
+                .PortraitId(2104)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion);
 

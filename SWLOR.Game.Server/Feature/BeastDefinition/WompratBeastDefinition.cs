@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Womprat)
                 .Appearance(AppearanceType.RodentCapybara)
+                .SoundSetId(249)
+                .PortraitId(603)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion);
 

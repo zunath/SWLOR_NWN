@@ -25,6 +25,20 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             return this;
         }
 
+        public BeastBuilder PortraitId(int portraitId)
+        {
+            _activeBeast.PortraitId = portraitId;
+
+            return this;
+        }
+
+        public BeastBuilder SoundSetId(int soundSetId)
+        {
+            _activeBeast.SoundSetId = soundSetId;
+
+            return this;
+        }
+
         public BeastBuilder Role(BeastRoleType role)
         {
             _activeBeast.Role = role;

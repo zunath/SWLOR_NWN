@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Scorchellus)
                 .Appearance(AppearanceType.Scutellus)
+                .SoundSetId(442)
+                .PortraitId(2096)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Balanced);
 

@@ -6,7 +6,8 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
     public class BeastDetail
     {
         public AppearanceType Appearance { get; set; }
-        public BeastType Type { get; set; }
+        public int PortraitId { get; set; }
+        public int SoundSetId { get; set; }
         public BeastRoleType Role { get; set; }
         public AbilityType AccuracyStat { get; set; }
         public AbilityType DamageStat { get; set; }

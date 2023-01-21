@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.KathHound)
                 .Appearance(AppearanceType.KathHound)
+                .SoundSetId(919)
+                .PortraitId(321)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage);
 

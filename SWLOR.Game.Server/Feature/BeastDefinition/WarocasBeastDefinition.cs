@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Warocas)
                 .Appearance(AppearanceType.BirdOstrich)
+                .SoundSetId(452)
+                .PortraitId(168)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
                 .Role(BeastRoleType.Balanced);
 

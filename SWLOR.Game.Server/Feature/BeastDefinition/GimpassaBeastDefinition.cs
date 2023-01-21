@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Gimpassa)
                 .Appearance(AppearanceType.TortoiseMedium)
+                .SoundSetId(452)
+                .PortraitId(1039)
                 .CombatStats(AbilityType.Vitality, AbilityType.Willpower)
                 .Role(BeastRoleType.Force);
 

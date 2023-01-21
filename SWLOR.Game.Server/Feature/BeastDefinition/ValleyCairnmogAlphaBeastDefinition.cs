@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.ValleyCairnmogAlpha)
                 .Appearance(AppearanceType.MonsterA)
+                .SoundSetId(104)
+                .PortraitId(819)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser);
 

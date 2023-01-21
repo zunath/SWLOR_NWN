@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.JungleBug)
                 .Appearance(AppearanceType.InsectWaspGiant)
+                .SoundSetId(6)
+                .PortraitId(2067)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion);
 

@@ -1,6 +1,304 @@
-﻿namespace SWLOR.Game.Server.Service
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
+
+namespace SWLOR.Game.Server.Service
 {
     public static class BeastMastery
     {
+        private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
+
+        private const string BeastResref = "pc_beast";
+        private const int MaxLevel = 50;
+
+        [NWNEventHandler("mod_cache")]
+        public static void CacheData()
+        {
+            LoadBeasts();
+        }
+
+        private static void LoadBeasts()
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IBeastListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
+            {
+                var instance = (IBeastListDefinition)Activator.CreateInstance(type);
+                var beasts = instance.Build();
+
+                foreach (var (beastType, beastDetail) in beasts)
+                {
+                    _beasts[beastType] = beastDetail;
+                }
+            }
+
+            Console.WriteLine($"Loaded {_beasts.Count} beasts.");
+        }
+
+        public static BeastDetail GetBeastDetail(BeastType type)
+        {
+            return _beasts[type];
+        }
+
+        public static string GetBeastId(uint beast)
+        {
+            return GetLocalString(beast, "BEAST_ID");
+        }
+
+        public static void SetBeastId(uint beast, string beastId)
+        {
+            SetLocalString(beast, "BEAST_ID", beastId);
+        }
+
+        public static BeastType GetBeastType(uint beast)
+        {
+            return (BeastType)GetLocalInt(beast, "BEAST_TYPE");
+        }
+
+        public static void SetBeastType(uint beast, BeastType type)
+        {
+            SetLocalInt(beast, "BEAST_TYPE", (int)type);
+        }
+
+        public static void GiveBeastXP(uint beast, int amount)
+        {
+            var player = GetMaster(beast);
+            var beastId = GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            var requiredXP = GetRequiredXP(dbBeast.Level);
+            dbBeast.XP += amount;
+
+            if (dbBeast.Level >= MaxLevel)
+            {
+                dbBeast.XP = 0;
+            }
+
+            while (dbBeast.XP >= requiredXP)
+            {
+                dbBeast.XP -= requiredXP;
+                dbBeast.UnallocatedSP++;
+                dbBeast.Level++;
+
+                requiredXP = GetRequiredXP(dbBeast.Level);
+                if (dbBeast.Level >= MaxLevel)
+                {
+                    dbBeast.XP = 0;
+                }
+
+                SendMessageToPC(player, $"{dbBeast.Name} reaches level {dbBeast.Level}!");
+            }
+
+            DB.Set(dbBeast);
+            ApplyStats(beast);
+        }
+
+        public static int GetRequiredXP(int level)
+        {
+            return _beastXPRequirements[level];
+        }
+
+        public static void SpawnBeast(uint player, string beastId)
+        {
+            if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
+            {
+                SendMessageToPC(player, "Only one companion may be active at a time.");
+                return;
+            }
+
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            if (dbBeast == null)
+            {
+                SendMessageToPC(player, "Unable to locate beast in DB. Notify an admin.");
+                return;
+            }
+
+            var beastDetail = GetBeastDetail(dbBeast.Type);
+            var beast = CreateObject(ObjectType.Creature, BeastResref, GetLocation(player));
+
+            SetBeastId(beast, beastId);
+            SetBeastType(beast, dbBeast.Type);
+
+            SetCreatureAppearanceType(beast, beastDetail.Appearance);
+            SetPortraitId(beast, beastDetail.PortraitId);
+            CreaturePlugin.SetSoundset(beast, beastDetail.SoundSetId);
+
+            ApplyStats(beast);
+
+            AddHenchman(player, beast);
+        }
+
+        private static void ApplyStats(uint beast)
+        {
+            var beastId = GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+            var beastDetail = GetBeastDetail(dbBeast.Type);
+
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
+            var claw = GetItemInSlot(InventorySlot.CreatureRight, beast);
+
+            var level = beastDetail.Levels[dbBeast.Level];
+
+            ObjectPlugin.SetMaxHitPoints(beast, level.HP);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+
+            var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
+            var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
+            var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
+
+            var physicalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f));
+            var forceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f));
+            var fireDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f));
+            var iceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Ice] * (dbBeast.DefensePurities[CombatDamageType.Ice] * 0.01f));
+            var poisonDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f));
+            var electricalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f));
+
+            var willBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
+            var fortitudeBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
+            var reflexBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
+
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, physicalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, forceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, fireDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, iceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, poisonDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, electricalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Will, willBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Fortitude, fortitudeBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+        }
+
+
+        private static readonly Dictionary<int, int> _beastXPRequirements = new()
+        {
+            { 0,   2200 },
+            { 1,   3300 },
+            { 2,   4400 },
+            { 3,   5500 },
+            { 4,   6600 },
+            { 5,   7700 },
+            { 6,   8800 },
+            { 7,   9680 },
+            { 8,   10560 },
+            { 9,   11440 },
+            { 10,  12320 },
+            { 11,  16800 },
+            { 12,  17920 },
+            { 13,  19040 },
+            { 14,  20160 },
+            { 15,  21280 },
+            { 16,  22400 },
+            { 17,  23520 },
+            { 18,  24640 },
+            { 19,  25760 },
+            { 20,  26880 },
+            { 21,  34000 },
+            { 22,  34680 },
+            { 23,  35360 },
+            { 24,  36040 },
+            { 25,  36720 },
+            { 26,  37400 },
+            { 27,  38080 },
+            { 28,  38760 },
+            { 29,  39440 },
+            { 30,  40120 },
+            { 31,  40800 },
+            { 32,  41480 },
+            { 33,  42160 },
+            { 34,  42840 },
+            { 35,  43520 },
+            { 36,  44200 },
+            { 37,  44880 },
+            { 38,  45560 },
+            { 39,  46240 },
+            { 40,  46920 },
+            { 41,  56000 },
+            { 42,  56800 },
+            { 43,  57600 },
+            { 44,  58400 },
+            { 45,  59200 },
+            { 46,  60000 },
+            { 47,  60800 },
+            { 48,  61600 },
+            { 49,  64000 },
+            { 50,  73600 },
+            { 51,  99840 },
+            { 52,  111360 },
+            { 53,  122880 },
+            { 54,  134400 },
+            { 55,  145920 },
+            { 56,  157440 },
+            { 57,  168960 },
+            { 58,  180480 },
+            { 59,  192000 },
+            { 60,  206400 },
+            { 61,  220800 },
+            { 62,  235200 },
+            { 63,  249600 },
+            { 64,  264000 },
+            { 65,  278400 },
+            { 66,  292800 },
+            { 67,  307200 },
+            { 68,  326400 },
+            { 69,  345600 },
+            { 70,  364800 },
+            { 71,  432000 },
+            { 72,  453600 },
+            { 73,  475200 },
+            { 74,  480600 },
+            { 75,  486000 },
+            { 76,  491400 },
+            { 77,  496800 },
+            { 78,  502200 },
+            { 79,  507600 },
+            { 80,  513000 },
+            { 81,  576000 },
+            { 82,  582000 },
+            { 83,  588000 },
+            { 84,  594000 },
+            { 85,  600000 },
+            { 86,  606000 },
+            { 87,  612000 },
+            { 88,  618000 },
+            { 89,  624000 },
+            { 90,  636000 },
+            { 91,  864000 },
+            { 92,  880000 },
+            { 93,  896000 },
+            { 94,  912000 },
+            { 95,  928000 },
+            { 96,  944000 },
+            { 97,  960000 },
+            { 98,  1040000 },
+            { 99,  1120000 },
+            { 100, 1600000 }
+        };
     }
 }

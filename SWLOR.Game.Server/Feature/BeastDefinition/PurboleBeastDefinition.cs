@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Purbole)
                 .Appearance(AppearanceType.Gibberling1)
+                .SoundSetId(250)
+                .PortraitId(315)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
                 .Role(BeastRoleType.Evasion);
 

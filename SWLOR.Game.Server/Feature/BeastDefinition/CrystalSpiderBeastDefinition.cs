@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.CrystalSpider)
                 .Appearance(AppearanceType.SpiderCrystalB)
+                .SoundSetId(88)
+                .PortraitId(300)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)
                 .Role(BeastRoleType.Force);
 

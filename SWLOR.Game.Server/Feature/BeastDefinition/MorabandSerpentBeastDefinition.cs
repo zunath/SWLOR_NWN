@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.MorabandSerpent)
                 .Appearance(AppearanceType.SnakeViperSwampLarge)
+                .SoundSetId(97)
+                .PortraitId(2104)
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)
                 .Role(BeastRoleType.Force);
 

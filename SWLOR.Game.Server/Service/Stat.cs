@@ -1082,7 +1082,7 @@ namespace SWLOR.Game.Server.Service
             for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
             {
                 var type = GetItemPropertyType(ip);
-                if (type == ItemPropertyType.AttackBonus ||
+                if (type == ItemPropertyType.AccuracyBonus ||
                     type == ItemPropertyType.EnhancementBonus)
                 {
                     accuracyBonus += GetItemPropertyCostTableValue(ip);
@@ -1139,7 +1139,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var ip in weapon.m_lstPassiveProperties)
                 {
-                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
                         ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
                     {
                         accuracyBonus += ip.m_nCostTableValue;

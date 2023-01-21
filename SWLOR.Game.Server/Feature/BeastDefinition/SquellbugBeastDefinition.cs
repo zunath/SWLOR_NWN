@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Squellbug)
                 .Appearance(AppearanceType.InsectTickGiant)
+                .SoundSetId(9)
+                .PortraitId(154)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage);
 

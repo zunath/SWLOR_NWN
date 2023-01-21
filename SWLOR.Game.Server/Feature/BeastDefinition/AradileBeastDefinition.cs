@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         {
             _builder.Create(BeastType.Aradile)
                 .Appearance(AppearanceType.LizardGiantBrown)
+                .SoundSetId(442)
+                .PortraitId(4279)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser);
 

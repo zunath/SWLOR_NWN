@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -20,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
         IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
-        IGuiRefreshable<StatusEffectRemovedRefreshEvent>
+        IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
+        IGuiRefreshable<BeastGainXPRefreshEvent>
     {
         private const int MaxUpgrades = 10;
         private uint _target;
@@ -31,6 +33,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShowSP
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowAPOrLevel
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         public string PortraitResref
         {
@@ -50,6 +63,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string STM
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string APOrLevelLabel
         {
             get => Get<string>();
             set => Set(value);
@@ -181,7 +200,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string AP
+        public string APOrLevel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string APOrLevelTooltip
         {
             get => Get<string>();
             set => Set(value);
@@ -589,14 +614,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshAttributes()
         {
-            if (!GetIsPC(_target))
-                return;
+            if (GetIsPC(_target))
+            {
+                var playerId = GetObjectUUID(_target);
+                var dbPlayer = DB.Get<Player>(playerId);
 
-            var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+                SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+                APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
+            }
+            else if (BeastMastery.GetBeastType(_target) != BeastType.Invalid)
+            {
+                var beastId = BeastMastery.GetBeastId(_target);
+                var dbBeast = DB.Get<Beast>(beastId);
 
-            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
+                SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+            }
         }
 
         private void RefreshPortrait()
@@ -610,6 +644,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
 
+            if (IsPlayerMode)
+            {
+                APOrLevelLabel = "AP";
+                APOrLevelTooltip = "Ability Points - Used to increase your attributes.";
+            }
+            else
+            {
+                APOrLevelLabel = "Level";
+            }
+
             RefreshPortrait();
             RefreshStats();
             RefreshEquipmentStats();
@@ -620,6 +664,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
             IsPlayerMode = initialPayload.IsPlayerMode;
+            ShowSP = IsPlayerMode || BeastMastery.GetBeastType(_target) != BeastType.Invalid;
+            ShowAPOrLevel = ShowSP;
 
             LoadData();
         }
@@ -638,9 +684,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
-
+            APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
+            
             RefreshStats();
+        }
+
+        public void Refresh(BeastGainXPRefreshEvent payload)
+        {
+            var isBeast = BeastMastery.GetBeastType(_target) != BeastType.Invalid;
+            if (!isBeast)
+                return;
+
+            var beastId = BeastMastery.GetBeastId(_target);
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
+            APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

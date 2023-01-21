@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         private static List<BeastFoodType> _beastFoods = new();
 
         private const string BeastResref = "pc_beast";
-        private const int MaxLevel = 50;
+        public const int MaxLevel = 50;
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()

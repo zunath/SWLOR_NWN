@@ -146,19 +146,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("+")
                             .SetIsVisible(false);
                         
-                        row.BindIsVisible(model => model.IsPlayerMode);
+                        row.BindIsVisible(model => model.ShowSP);
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("AP")
+                            .BindText(model => model.APOrLevelLabel)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Ability Points - Used to increase your attributes.");
+                            .BindTooltip(model => model.APOrLevelTooltip);
 
                         row.AddLabel()
-                            .BindText(model => model.AP)
+                            .BindText(model => model.APOrLevel)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("+")
                             .SetIsVisible(false);
 
-                            row.BindIsVisible(model => model.IsPlayerMode);
+                            row.BindIsVisible(model => model.ShowAPOrLevel);
                     });
 
                     col.AddRow(row =>

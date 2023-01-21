@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(29)
+				.HP(64)
 				.FP(6)
 				.STM(6)
 				.Stat(AbilityType.Might, 12)
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(41)
+				.HP(76)
 				.FP(6)
 				.STM(6)
 				.Stat(AbilityType.Might, 12)
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(53)
+				.HP(88)
 				.FP(7)
 				.STM(7)
 				.Stat(AbilityType.Might, 13)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(65)
+				.HP(100)
 				.FP(7)
 				.STM(7)
 				.Stat(AbilityType.Might, 13)
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(77)
+				.HP(112)
 				.FP(8)
 				.STM(8)
 				.Stat(AbilityType.Might, 13)
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(89)
+				.HP(124)
 				.FP(8)
 				.STM(8)
 				.Stat(AbilityType.Might, 13)
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(101)
+				.HP(136)
 				.FP(9)
 				.STM(9)
 				.Stat(AbilityType.Might, 13)
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(113)
+				.HP(148)
 				.FP(9)
 				.STM(9)
 				.Stat(AbilityType.Might, 13)
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(125)
+				.HP(160)
 				.FP(10)
 				.STM(10)
 				.Stat(AbilityType.Might, 14)
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(137)
+				.HP(172)
 				.FP(10)
 				.STM(10)
 				.Stat(AbilityType.Might, 14)
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(149)
+				.HP(184)
 				.FP(11)
 				.STM(11)
 				.Stat(AbilityType.Might, 14)
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(161)
+				.HP(196)
 				.FP(11)
 				.STM(11)
 				.Stat(AbilityType.Might, 14)
@@ -429,7 +429,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(173)
+				.HP(208)
 				.FP(12)
 				.STM(12)
 				.Stat(AbilityType.Might, 14)
@@ -456,7 +456,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(185)
+				.HP(220)
 				.FP(12)
 				.STM(12)
 				.Stat(AbilityType.Might, 14)
@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(197)
+				.HP(232)
 				.FP(13)
 				.STM(13)
 				.Stat(AbilityType.Might, 15)
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(209)
+				.HP(244)
 				.FP(13)
 				.STM(13)
 				.Stat(AbilityType.Might, 15)
@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(221)
+				.HP(256)
 				.FP(14)
 				.STM(14)
 				.Stat(AbilityType.Might, 15)
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(233)
+				.HP(268)
 				.FP(14)
 				.STM(14)
 				.Stat(AbilityType.Might, 15)
@@ -591,7 +591,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(245)
+				.HP(280)
 				.FP(15)
 				.STM(15)
 				.Stat(AbilityType.Might, 15)
@@ -618,7 +618,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(257)
+				.HP(292)
 				.FP(15)
 				.STM(15)
 				.Stat(AbilityType.Might, 15)
@@ -645,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(269)
+				.HP(304)
 				.FP(16)
 				.STM(16)
 				.Stat(AbilityType.Might, 16)
@@ -672,7 +672,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(281)
+				.HP(316)
 				.FP(16)
 				.STM(16)
 				.Stat(AbilityType.Might, 16)
@@ -699,7 +699,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(293)
+				.HP(328)
 				.FP(17)
 				.STM(17)
 				.Stat(AbilityType.Might, 16)
@@ -726,7 +726,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(305)
+				.HP(340)
 				.FP(17)
 				.STM(17)
 				.Stat(AbilityType.Might, 16)
@@ -753,7 +753,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(317)
+				.HP(352)
 				.FP(18)
 				.STM(18)
 				.Stat(AbilityType.Might, 16)
@@ -780,7 +780,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(329)
+				.HP(364)
 				.FP(18)
 				.STM(18)
 				.Stat(AbilityType.Might, 16)
@@ -807,7 +807,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(341)
+				.HP(376)
 				.FP(19)
 				.STM(19)
 				.Stat(AbilityType.Might, 17)
@@ -834,7 +834,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(353)
+				.HP(388)
 				.FP(19)
 				.STM(19)
 				.Stat(AbilityType.Might, 17)
@@ -861,7 +861,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(365)
+				.HP(400)
 				.FP(20)
 				.STM(20)
 				.Stat(AbilityType.Might, 17)
@@ -888,7 +888,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(377)
+				.HP(412)
 				.FP(20)
 				.STM(20)
 				.Stat(AbilityType.Might, 17)
@@ -915,7 +915,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(389)
+				.HP(424)
 				.FP(21)
 				.STM(21)
 				.Stat(AbilityType.Might, 17)
@@ -942,7 +942,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(401)
+				.HP(436)
 				.FP(21)
 				.STM(21)
 				.Stat(AbilityType.Might, 17)
@@ -969,7 +969,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(413)
+				.HP(448)
 				.FP(22)
 				.STM(22)
 				.Stat(AbilityType.Might, 18)
@@ -996,7 +996,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(425)
+				.HP(460)
 				.FP(22)
 				.STM(22)
 				.Stat(AbilityType.Might, 18)
@@ -1023,7 +1023,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(437)
+				.HP(472)
 				.FP(23)
 				.STM(23)
 				.Stat(AbilityType.Might, 18)
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(449)
+				.HP(484)
 				.FP(23)
 				.STM(23)
 				.Stat(AbilityType.Might, 18)
@@ -1077,7 +1077,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(461)
+				.HP(496)
 				.FP(24)
 				.STM(24)
 				.Stat(AbilityType.Might, 18)
@@ -1104,7 +1104,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(473)
+				.HP(508)
 				.FP(24)
 				.STM(24)
 				.Stat(AbilityType.Might, 18)
@@ -1131,7 +1131,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(485)
+				.HP(520)
 				.FP(25)
 				.STM(25)
 				.Stat(AbilityType.Might, 19)
@@ -1158,7 +1158,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(497)
+				.HP(532)
 				.FP(25)
 				.STM(25)
 				.Stat(AbilityType.Might, 19)
@@ -1185,7 +1185,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(509)
+				.HP(544)
 				.FP(26)
 				.STM(26)
 				.Stat(AbilityType.Might, 19)
@@ -1212,7 +1212,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(521)
+				.HP(556)
 				.FP(26)
 				.STM(26)
 				.Stat(AbilityType.Might, 19)
@@ -1239,7 +1239,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(533)
+				.HP(568)
 				.FP(27)
 				.STM(27)
 				.Stat(AbilityType.Might, 19)
@@ -1266,7 +1266,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(545)
+				.HP(580)
 				.FP(27)
 				.STM(27)
 				.Stat(AbilityType.Might, 19)
@@ -1293,7 +1293,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(557)
+				.HP(592)
 				.FP(28)
 				.STM(28)
 				.Stat(AbilityType.Might, 20)
@@ -1320,7 +1320,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(569)
+				.HP(604)
 				.FP(28)
 				.STM(28)
 				.Stat(AbilityType.Might, 20)
@@ -1347,7 +1347,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(581)
+				.HP(616)
 				.FP(29)
 				.STM(29)
 				.Stat(AbilityType.Might, 20)
@@ -1374,7 +1374,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(593)
+				.HP(628)
 				.FP(29)
 				.STM(29)
 				.Stat(AbilityType.Might, 20)

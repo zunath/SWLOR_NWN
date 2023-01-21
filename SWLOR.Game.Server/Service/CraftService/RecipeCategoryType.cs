@@ -120,6 +120,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidBody = 55,
         [RecipeCategory("Droid Instruction", true)]
         DroidInstruction = 56,
+        [RecipeCategory("Pet Food", true)]
+        PetFood = 57,
 
     }
 

@@ -217,6 +217,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SoothePet = 104,
         [RecastGroup("Revive Beast", "Rev. Beast", true)]
         ReviveBeast = 105,
+        [RecastGroup("Call Beast", "Call Beast", true)]
+        CallBeast = 106,
     }
 
     public class RecastGroupAttribute: Attribute

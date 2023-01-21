@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
 {
@@ -25,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
             _builder.Create(FeatType.Tame, PerkType.Tame)
                 .Name("Tame")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Tame, 60f * 10f)
+                .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
+                .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
@@ -50,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                         return "Only NPCs may be targeted.";
                     }
 
-                    if (GetIsObjectValid(GetMaster(target)))
+                    if (GetIsObjectValid(GetMaster(target)) || GetIsDead(target) || !GetIsObjectValid(target))
                     {
                         return "That target cannot be tamed.";
                     }
@@ -71,12 +74,48 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
 
                     return string.Empty;
                 })
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    var tameLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame);
+                    var playerId = GetObjectUUID(activator);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var beastType = Service.BeastMastery.GetBeastType(target);
+                    var beastDetail = Service.BeastMastery.GetBeastDetail(beastType);
+                    var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
+                    var npcStats = Stat.GetNPCStats(target);
+                    var socialMod = GetAbilityModifier(AbilityType.Social, activator);
+                    var chance = 40 + (skill - npcStats.Level) * 3 + socialMod * 4;
 
+                    if (chance > 95)
+                        chance = 95;
 
+                    if (Random.D100(1) > chance)
+                    {
+                        SendMessageToPC(activator, ColorToken.Red($"Failed to tame {GetName(target)}..."));
+                        Enmity.ModifyEnmity(activator, target, 600);
+                        return;
+                    }
 
+                    var (likedFood, hatedFood) = Service.BeastMastery.GetLikedAndHatedFood();
+
+                    var dbBeast = new Beast
+                    {
+                        Name = GetName(target),
+                        OwnerPlayerId = playerId,
+                        Level = 1,
+                        UnallocatedSP = 1,
+                        IsDead = false,
+                        Type = beastType,
+                        FavoriteFood = likedFood,
+                        HatedFood = hatedFood
+                    };
+
+                    DB.Set(dbBeast);
+
+                    dbPlayer.ActiveBeastId = dbBeast.Id;
+                    DB.Set(dbPlayer);
+
+                    SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
+                    DestroyObject(target);
                 });
         }
     }

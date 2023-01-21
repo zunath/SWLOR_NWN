@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
@@ -8,14 +9,18 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class BeastMastery
     {
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
+        private static List<BeastFoodType> _beastFoods = new();
 
         private const string BeastResref = "pc_beast";
         private const int MaxLevel = 50;
@@ -24,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             LoadBeasts();
+            LoadFoods();
         }
 
         private static void LoadBeasts()
@@ -44,6 +50,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_beasts.Count} beasts.");
+        }
+
+        private static void LoadFoods()
+        {
+            _beastFoods = Enum.GetValues<BeastFoodType>().ToList();
+            _beastFoods.Remove(BeastFoodType.Invalid);
         }
 
         public static BeastDetail GetBeastDetail(BeastType type)
@@ -128,16 +140,44 @@ namespace SWLOR.Game.Server.Service
             var beastDetail = GetBeastDetail(dbBeast.Type);
             var beast = CreateObject(ObjectType.Creature, BeastResref, GetLocation(player));
 
+            SetName(beast, dbBeast.Name);
             SetBeastId(beast, beastId);
             SetBeastType(beast, dbBeast.Type);
 
             SetCreatureAppearanceType(beast, beastDetail.Appearance);
             SetPortraitId(beast, beastDetail.PortraitId);
             CreaturePlugin.SetSoundset(beast, beastDetail.SoundSetId);
-
+            
             ApplyStats(beast);
 
             AddHenchman(player, beast);
+
+            // Scripts
+            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, "beast_blocked");
+            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, "beast_roundend");
+            SetEventScript(beast, EventScript.Creature_OnDialogue, "beast_convers");
+            SetEventScript(beast, EventScript.Creature_OnDamaged, "beast_damaged");
+            SetEventScript(beast, EventScript.Creature_OnDeath, "beast_death");
+            SetEventScript(beast, EventScript.Creature_OnDisturbed, "beast_disturbed");
+            SetEventScript(beast, EventScript.Creature_OnHeartbeat, "beast_hb");
+            SetEventScript(beast, EventScript.Creature_OnNotice, "beast_perception");
+            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, "beast_attacked");
+            SetEventScript(beast, EventScript.Creature_OnRested, "beast_rest");
+            SetEventScript(beast, EventScript.Creature_OnSpawnIn, "beast_spawn");
+            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, "beast_spellcast");
+            SetEventScript(beast, EventScript.Creature_OnUserDefined, "beast_userdef");
+
+            // Ensure the spawn script gets called as it normally gets skipped
+            // because it doesn't exist at the time of the beast being created.
+            ExecuteScriptNWScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
+
+            AssignCommand(GetModule(), () =>
+            {
+                DelayCommand(4f, () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(beast)), beast);
+                });
+            });
         }
 
         private static void ApplyStats(uint beast)
@@ -150,9 +190,9 @@ namespace SWLOR.Game.Server.Service
             var claw = GetItemInSlot(InventorySlot.CreatureRight, beast);
 
             var level = beastDetail.Levels[dbBeast.Level];
-
-            ObjectPlugin.SetMaxHitPoints(beast, level.HP);
+            
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCHP, -1, level.HP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -195,6 +235,120 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
+        public static (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
+        {
+            var availableFoods = _beastFoods.ToList();
+            var likedFood = availableFoods[Random.Next(availableFoods.Count)];
+            availableFoods.Remove(likedFood);
+            var hatedFood = availableFoods[Random.Next(availableFoods.Count)];
+
+            return (likedFood, hatedFood);
+        }
+
+        [NWNEventHandler("beast_blocked")]
+        public static void BeastOnBlocked()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_block", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("beast_roundend")]
+        public static void BeastOnEndCombatRound()
+        {
+            var beast = OBJECT_SELF;
+            if (!Activity.IsBusy(beast))
+            {
+                ExecuteScriptNWScript("x0_ch_hen_combat", OBJECT_SELF);
+                AI.ProcessPerkAI(AIDefinitionType.Beast, beast, false);
+            }
+        }
+
+        [NWNEventHandler("beast_convers")]
+        public static void BeastOnConversation()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_conv", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("beast_damaged")]
+        public static void BeastOnDamaged()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_damage", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("beast_death")]
+        public static void BeastOnDeath()
+        {
+            var beast = OBJECT_SELF;
+            ExecuteScriptNWScript("x2_hen_death", beast);
+
+            var beastId = GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+            dbBeast.IsDead = true;
+
+            DB.Set(dbBeast);
+        }
+
+        [NWNEventHandler("beast_disturbed")]
+        public static void BeastOnDisturbed()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_distrb", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("beast_hb")]
+        public static void BeastOnHeartbeat()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_heart", OBJECT_SELF);
+            Stat.RestoreNPCStats(false);
+        }
+
+        [NWNEventHandler("beast_perception")]
+        public static void BeastOnPerception()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_percep", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("beast_attacked")]
+        public static void BeastOnPhysicalAttacked()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_attack", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("beast_rest")]
+        public static void BeastOnRested()
+        {
+            var beast = OBJECT_SELF;
+            ExecuteScriptNWScript("x0_ch_hen_rest", beast);
+
+            AssignCommand(beast, () => ClearAllActions());
+
+            StatusEffect.Apply(beast, beast, StatusEffectType.Rest, 0f);
+        }
+
+        [NWNEventHandler("beast_spawn")]
+        public static void BeastOnSpawn()
+        {
+            var beast = OBJECT_SELF;
+            ExecuteScriptNWScript("x0_ch_hen_spawn", beast);
+            AssignCommand(beast, () =>
+            {
+                SetIsDestroyable(true, false, false);
+            });
+            Stat.LoadNPCStats();
+        }
+
+        [NWNEventHandler("beast_spellcast")]
+        public static void BeastOnSpellCastAt()
+        {
+            ExecuteScriptNWScript("x2_hen_spell", OBJECT_SELF);
+
+        }
+
+        [NWNEventHandler("beast_userdef")]
+        public static void BeastOnUserDefined()
+        {
+            ExecuteScriptNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
+        }
 
         private static readonly Dictionary<int, int> _beastXPRequirements = new()
         {

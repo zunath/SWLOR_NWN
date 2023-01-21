@@ -5,5 +5,6 @@
         Invalid = 0,
         Generic = 1,
         Droid = 2,
+        Beast = 3,
     }
 }

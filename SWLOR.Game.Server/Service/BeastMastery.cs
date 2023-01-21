@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
@@ -184,6 +185,21 @@ namespace SWLOR.Game.Server.Service
             ApplyStats(beast);
 
             AddHenchman(player, beast);
+
+
+            // Perks
+            foreach (var (perk, level) in dbBeast.Perks)
+            {
+                var perkDefinition = Perk.GetPerkDetails(perk);
+                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
+                    ? perkDefinition.PerkLevels[level].GrantedFeats
+                    : new List<FeatType>();
+
+                foreach (var feat in perkFeats)
+                {
+                    CreaturePlugin.AddFeat(beast, feat);
+                }
+            }
 
             // Scripts
             SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, "beast_blocked");

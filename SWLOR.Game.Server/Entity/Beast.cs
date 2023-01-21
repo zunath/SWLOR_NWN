@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Entity
 
         public int XP { get; set; }
         public int UnallocatedSP { get; set; }
+        public bool IsDead { get; set; }
 
         public BeastType Type { get; set; }
 

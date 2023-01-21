@@ -1863,5 +1863,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ReviveBeast1 = 1894,
         ReviveBeast2 = 1895,
         ReviveBeast3 = 1896,
+        CallBeast = 1897,
     }
 }

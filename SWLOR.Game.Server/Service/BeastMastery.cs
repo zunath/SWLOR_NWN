@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -85,6 +86,18 @@ namespace SWLOR.Game.Server.Service
             return (BeastType)GetLocalInt(beast, "BEAST_TYPE");
         }
 
+        public static bool IsPlayerBeast(uint beast)
+        {
+            if (GetBeastType(beast) == BeastType.Invalid)
+                return false;
+
+            var master = GetMaster(beast);
+            if (!GetIsObjectValid(master) || !GetIsPC(master))
+                return false;
+
+            return true;
+        }
+
         public static void SetBeastType(uint beast, BeastType type)
         {
             SetLocalInt(beast, "BEAST_TYPE", (int)type);
@@ -95,6 +108,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
+            var maxBeastLevel = Perk.GetEffectivePerkLevel(player, PerkType.Tame) * 10;
 
             var requiredXP = GetRequiredXP(dbBeast.Level);
             dbBeast.XP += amount;
@@ -110,6 +124,12 @@ namespace SWLOR.Game.Server.Service
 
             while (dbBeast.XP >= requiredXP)
             {
+                if (dbBeast.Level >= maxBeastLevel)
+                {
+                    dbBeast.XP = GetRequiredXP(dbBeast.Level) - 1;
+                    break;
+                }
+
                 dbBeast.XP -= requiredXP;
                 dbBeast.UnallocatedSP++;
                 dbBeast.Level++;
@@ -271,7 +291,7 @@ namespace SWLOR.Game.Server.Service
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
 
-            if (GetBeastType(beast) == BeastType.Invalid)
+            if (!IsPlayerBeast(beast))
                 return;
 
             var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
@@ -309,7 +329,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnAcquireItem()
         {
             var beast = GetModuleItemAcquiredBy();
-            if (GetBeastType(beast) == BeastType.Invalid)
+            if (!IsPlayerBeast(beast))
                 return;
             
             var master = GetMaster(beast);

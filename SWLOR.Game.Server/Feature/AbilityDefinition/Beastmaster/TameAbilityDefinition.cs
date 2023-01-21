@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class TameAbilityDefinition: IAbilityListDefinition
     {
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                         return "That target cannot be tamed.";
                     }
 
-                    var type = Service.BeastMastery.GetBeastType(target);
+                    var type = BeastMastery.GetBeastType(target);
                     if (type == BeastType.Invalid)
                     {
                         return "That target cannot be tamed.";
@@ -78,8 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                 {
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    var beastType = Service.BeastMastery.GetBeastType(target);
-                    var beastDetail = Service.BeastMastery.GetBeastDetail(beastType);
+                    var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
                     var npcStats = Stat.GetNPCStats(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
@@ -95,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                         return;
                     }
 
-                    var (likedFood, hatedFood) = Service.BeastMastery.GetLikedAndHatedFood();
+                    var (likedFood, hatedFood) = BeastMastery.GetLikedAndHatedFood();
 
                     var dbBeast = new Beast
                     {
@@ -104,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                         Level = 1,
                         UnallocatedSP = 1,
                         IsDead = false,
-                        Type = beastType,
+                        Type = type,
                         FavoriteFood = likedFood,
                         HatedFood = hatedFood
                     };

@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -483,8 +484,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             const int MaxAmount = 500000;
             
-            _builder.Create("giverpxp")
-                .Description("Gives Roleplay XP to a target player.")
+            _builder.Create("giverpxp", "xp")
+                .Description("Gives XP to a target player or beast.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -512,20 +513,30 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsPC(target) || GetIsDM(target))
+                    var amount = int.Parse(args[0]);
+
+                    if (GetIsPC(target) && !GetIsDM(target))
                     {
-                        SendMessageToPC(user, "Only players may be targeted with this command.");
-                        return;
+                        var playerId = GetObjectUUID(target);
+                        var dbPlayer = DB.Get<Player>(playerId);
+                        dbPlayer.UnallocatedXP += amount;
+
+                        DB.Set(dbPlayer);
+                        SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
+                        Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
+                    }
+                    else if (BeastMastery.IsPlayerBeast(target))
+                    {
+                        var player = GetMaster(target);
+                        BeastMastery.GiveBeastXP(target, amount);
+
+                        SendMessageToPC(player, $"A DM has awarded your beast with {amount} XP.");
+                    }
+                    else
+                    {
+                        SendMessageToPC(user, "Only players or beasts may be targeted with this command.");
                     }
 
-                    var amount = int.Parse(args[0]);
-                    var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    dbPlayer.UnallocatedXP += amount;
-                    
-                    DB.Set(dbPlayer);
-                    SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
-                    Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
                 });
         }
 

@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);
-            if (BeastMastery.GetBeastType(associate) != BeastType.Invalid)
+            if (BeastMastery.IsPlayerBeast(associate))
             {
                 AddCombatPoint(player, target, SkillType.BeastMastery);
             }

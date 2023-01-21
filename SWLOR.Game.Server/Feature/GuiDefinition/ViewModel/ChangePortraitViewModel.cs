@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 Droid.SaveConstructedDroid(controller, constructedDroid);
             }
-            else if (BeastMastery.GetBeastType(_target) != BeastType.Invalid)
+            else if (BeastMastery.IsPlayerBeast(_target))
             {
                 var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = DB.Get<Beast>(beastId);

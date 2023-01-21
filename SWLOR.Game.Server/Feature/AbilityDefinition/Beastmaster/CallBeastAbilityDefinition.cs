@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class CallBeastAbilityDefinition: IAbilityListDefinition
     {
@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
+                    var maxBeastLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame) * 10;
+
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
                     {
                         return "Only players may use this ability.";
@@ -57,6 +59,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                         return "Your beast is unconscious.";
                     }
 
+                    if (dbBeast.Level > maxBeastLevel)
+                    {
+                        return $"Your Tame level is too low to call this beast. (Required: {maxBeastLevel/10})";
+                    }
+
                     return string.Empty;
                 })
                 .HasImpactAction((activator, target, level, location) =>
@@ -64,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.BeastMastery
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = DB.Get<Player>(playerId);
                     
-                    Service.BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
                 });
         }
     }

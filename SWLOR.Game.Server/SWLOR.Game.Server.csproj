@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Feature\AbilityDefinition\Beast\" />
     <Folder Include="Feature\BeastDefinition\" />
   </ItemGroup>
 

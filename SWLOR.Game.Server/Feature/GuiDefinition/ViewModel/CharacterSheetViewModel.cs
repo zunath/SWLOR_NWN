@@ -622,7 +622,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
             }
-            else if (BeastMastery.GetBeastType(_target) != BeastType.Invalid)
+            else if (BeastMastery.IsPlayerBeast(_target))
             {
                 var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = DB.Get<Beast>(beastId);
@@ -664,7 +664,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
             IsPlayerMode = initialPayload.IsPlayerMode;
-            ShowSP = IsPlayerMode || BeastMastery.GetBeastType(_target) != BeastType.Invalid;
+            ShowSP = IsPlayerMode || BeastMastery.IsPlayerBeast(_target);
             ShowAPOrLevel = ShowSP;
 
             LoadData();
@@ -691,8 +691,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(BeastGainXPRefreshEvent payload)
         {
-            var isBeast = BeastMastery.GetBeastType(_target) != BeastType.Invalid;
-            if (!isBeast)
+            if (!BeastMastery.IsPlayerBeast(_target))
                 return;
 
             var beastId = BeastMastery.GetBeastId(_target);

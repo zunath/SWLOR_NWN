@@ -98,12 +98,14 @@ namespace SWLOR.CLI
                 var willMax = data[24];
                 var fortitudeMax = data[23];
                 var reflexMax = data[25];
+                var dmg = data[31];
 
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())
                     .Replace("%%HP%%", hp)
                     .Replace("%%STM%%", stm)
                     .Replace("%%FP%%", fp)
+                    .Replace("%%DMG%%", dmg)
 
                     .Replace("%%MGT%%", mgt)
                     .Replace("%%PER%%", per)

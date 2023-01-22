@@ -85,6 +85,13 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             return this;
         }
 
+        public BeastBuilder DMG(int amount)
+        {
+            _activeLevel.DMG = amount;
+
+            return this;
+        }
+
         public BeastBuilder Stat(AbilityType type, int value)
         {
             _activeLevel.Stats[type] = value;

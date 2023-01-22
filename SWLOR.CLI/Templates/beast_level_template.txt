@@ -6,6 +6,7 @@
 				.HP(%%HP%%)
 				.FP(%%FP%%)
 				.STM(%%STM%%)
+				.DMG(%%DMG%%)
 				.Stat(AbilityType.Might, %%MGT%%)
 				.Stat(AbilityType.Perception, %%PER%%)
 				.Stat(AbilityType.Vitality, %%VIT%%)

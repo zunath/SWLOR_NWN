@@ -8,11 +8,13 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -20,6 +22,7 @@ namespace SWLOR.Game.Server.Service
     public static class BeastMastery
     {
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
+        private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
 
         private const string BeastResref = "pc_beast";
@@ -30,6 +33,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             LoadBeasts();
+            LoadBeastRoles();
             LoadFoods();
             LoadHighestDelta();
         }
@@ -54,6 +58,16 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_beasts.Count} beasts.");
         }
 
+        private static void LoadBeastRoles()
+        {
+            var types = Enum.GetValues(typeof(BeastRoleType)).Cast<BeastRoleType>();
+            foreach (var type in types)
+            {
+                var detail = type.GetAttribute<BeastRoleType, BeastRoleAttribute>();
+                _beastRoles[type] = detail;
+            }
+        }
+
         private static void LoadFoods()
         {
             _beastFoods = Enum.GetValues<BeastFoodType>().ToList();
@@ -68,6 +82,11 @@ namespace SWLOR.Game.Server.Service
         public static BeastDetail GetBeastDetail(BeastType type)
         {
             return _beasts[type];
+        }
+
+        public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
+        {
+            return _beastRoles[type];
         }
 
         public static string GetBeastId(uint beast)

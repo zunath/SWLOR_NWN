@@ -184,12 +184,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 31 and 40.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 35)
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 41 and 50.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 45);
 
         }

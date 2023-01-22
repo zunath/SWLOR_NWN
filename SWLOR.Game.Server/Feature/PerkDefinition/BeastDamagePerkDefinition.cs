@@ -1,9 +1,10 @@
 ﻿using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class BeastPerkDefinition : IPerkListDefinition
+    public class BeastDamagePerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -24,26 +25,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("")
                 .Price(1)
                 .RequirementBeastLevel(5)
+                .RequirementBeastRole(BeastRoleType.Damage)
 
                 .AddPerkLevel()
                 .Description("")
                 .Price(1)
                 .RequirementBeastLevel(15)
+                .RequirementBeastRole(BeastRoleType.Damage)
 
                 .AddPerkLevel()
                 .Description("")
                 .Price(1)
                 .RequirementBeastLevel(25)
+                .RequirementBeastRole(BeastRoleType.Damage)
 
                 .AddPerkLevel()
                 .Description("")
                 .Price(2)
                 .RequirementBeastLevel(35)
+                .RequirementBeastRole(BeastRoleType.Damage)
 
                 .AddPerkLevel()
                 .Description("")
                 .Price(2)
-                .RequirementBeastLevel(45);
+                .RequirementBeastLevel(45)
+                .RequirementBeastRole(BeastRoleType.Damage);
         }
     }
 }

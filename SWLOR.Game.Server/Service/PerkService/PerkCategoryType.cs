@@ -117,6 +117,27 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Beast Mastery - Incubation", true)]
         BeastMasteryIncubation = 37,
+
+        [PerkCategory("Beast - General", true)]
+        BeastGeneral = 38,
+
+        [PerkCategory("Beast - Damage", true)]
+        BeastDamage = 39,
+
+        [PerkCategory("Beast - Tank", true)]
+        BeastTank = 40,
+
+        [PerkCategory("Beast - Balanced", true)]
+        BeastBalanced = 41,
+
+        [PerkCategory("Beast - Bruiser", true)]
+        BeastBruiser = 42,
+
+        [PerkCategory("Beast - Evasion", true)]
+        BeastEvasion = 43,
+
+        [PerkCategory("Beast - Force", true)]
+        BeastForce = 44,
     }
 
     public class PerkCategoryAttribute : Attribute

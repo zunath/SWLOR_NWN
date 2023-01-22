@@ -15,15 +15,15 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
 
         // Active categories only
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _activeCategories = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategories = new();
 
         // All perks, including inactive
         private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
         private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
 
         // Active perks only
-        private static readonly Dictionary<PerkType, PerkDetail> _activePerks = new();
-        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>> _activePerksByCategory = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerks = new();
+        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>> _activePerksByCategory = new();
 
         // Trigger Actions
         private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (categoryDetail.IsActive)
                 {
-                    _activePerksByCategory[category] = new Dictionary<PerkType, PerkDetail>();
+                    _activePerksByCategory[category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
                 }
             }
 
@@ -96,12 +96,18 @@ namespace SWLOR.Game.Server.Service
                     // Add to active cache if the perk is active
                     if (perkDetail.IsActive)
                     {
-                        _activePerks[perkType] = perkDetail;
+                        if (!_activePerks.ContainsKey(perkDetail.GroupType))
+                            _activePerks[perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
+
+                        _activePerks[perkDetail.GroupType][perkType] = perkDetail;
 
                         if (!_activePerksByCategory.ContainsKey(perkDetail.Category))
-                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkType, PerkDetail>();
+                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
 
-                        _activePerksByCategory[perkDetail.Category][perkType] = perkDetail;
+                        if (!_activePerksByCategory[perkDetail.Category].ContainsKey(perkDetail.GroupType))
+                            _activePerksByCategory[perkDetail.Category][perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
+
+                        _activePerksByCategory[perkDetail.Category][perkDetail.GroupType][perkType] = perkDetail;
 
                         if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
                         {
@@ -119,7 +125,10 @@ namespace SWLOR.Game.Server.Service
                     // Add to active category cache if the perk and category are both active.
                     if (perkDetail.IsActive && categoryDetail.IsActive)
                     {
-                        _activeCategories[perkDetail.Category] = categoryDetail;
+                        if(!_activeCategories.ContainsKey(perkDetail.GroupType))
+                            _activeCategories[perkDetail.GroupType] = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+
+                        _activeCategories[perkDetail.GroupType][perkDetail.Category] = categoryDetail;
                     }
 
                     foreach (var (level, perkLevel) in perkDetail.PerkLevels)
@@ -166,7 +175,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_allPerks.Count} perks.");
+            Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
         }
 
         /// <summary>
@@ -274,12 +283,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves a list of all active perks, excluding inactive ones.
+        /// Retrieves a list of all active perks, excluding inactive ones, by group.
         /// </summary>
         /// <returns>A list of all active perks.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetAllActivePerks()
+        public static Dictionary<PerkType, PerkDetail> GetAllActivePerks(PerkGroupType group)
         {
-            return _activePerks.ToDictionary(x => x.Key, y => y.Value);
+            return _activePerks[group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -295,19 +305,22 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all active perk categories, excluding inactive ones.
         /// </summary>
         /// <returns>A list of all active perk categories.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories()
+        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
         {
-            return _activeCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _activeCategories[group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
-        /// Retrieves a list of all active perks by the specified category.
+        /// Retrieves a list of all active perks by the specified category, by group.
         /// </summary>
+        /// <param name="group">The group to filter by.</param>
         /// <param name="category">The category to search by.</param>
         /// <returns>A list of all active perks in the specified category.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
+        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkGroupType group, PerkCategoryType category)
         {
-            return _activePerksByCategory[category].ToDictionary(x => x.Key, y => y.Value);
+            return _activePerksByCategory[category][group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>

@@ -277,5 +277,7 @@
         DNAManipulation = 272,
         IncubationProcessing = 273,
         ErraticGenius = 274,
+
+        Bite = 275,
     }
 }

@@ -37740,6 +37740,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pet Treat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pet_treat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pet Treat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pet_treat50"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Saberstaff Upgrade Kit I"
                     },
                     "RESREF": {

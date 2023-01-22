@@ -64,19 +64,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reward")
 
                 .AddPerkLevel()
-                .Description("Restores X HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 50 HP to your pet. Consumes a treat item on use.")
                 .Price(1)
                 .RequirementSkill(SkillType.BeastMastery, 5)
                 .GrantsFeat(FeatType.Reward1)
 
                 .AddPerkLevel()
-                .Description("Restores X HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 90 HP to your pet. Consumes a treat item on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.Reward2)
 
                 .AddPerkLevel()
-                .Description("Restores X HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 130 HP to your pet. Consumes a treat item on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 45)
                 .GrantsFeat(FeatType.Reward3);

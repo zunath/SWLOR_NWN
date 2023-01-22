@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(15)
                 .IsCastedAbility()
@@ -73,7 +75,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    Service.BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -83,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(17)
                 .IsCastedAbility()
@@ -99,7 +104,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     DB.Set(dbBeast);
 
                     var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
-                    Service.BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -109,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(18)
                 .IsCastedAbility()
@@ -125,7 +133,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     DB.Set(dbBeast);
 
                     var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
-                    Service.BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

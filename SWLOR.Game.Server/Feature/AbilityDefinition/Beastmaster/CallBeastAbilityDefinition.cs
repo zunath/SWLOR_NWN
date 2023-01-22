@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -72,6 +73,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var dbPlayer = DB.Get<Player>(playerId);
                     
                     BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+
+                    Enmity.ModifyEnmityOnAll(activator, 230);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

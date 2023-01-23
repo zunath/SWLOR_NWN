@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -28,30 +29,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.BolsterArmor1)
 
                 .AddPerkLevel()
                 .Description("Increases the beast's physical defense by 10 for 5 minutes.")
                 .Price(1)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.BolsterArmor2)
 
                 .AddPerkLevel()
                 .Description("Increases the beast's physical defense by 15 for 5 minutes.")
                 .Price(1)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.BolsterArmor3)
 
                 .AddPerkLevel()
                 .Description("Increases the beast's physical defense by 20 for 5 minutes.")
                 .Price(2)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.BolsterArmor4)
 
                 .AddPerkLevel()
                 .Description("Increases the beast's physical defense by 25 for 5 minutes.")
                 .Price(2)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Tank);
+                .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.BolsterArmor5);
         }
 
         private void Anger()
@@ -65,30 +71,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.Anger1)
 
                 .AddPerkLevel()
                 .Description("Goads a single target into attacking the beast.")
                 .Price(1)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.Anger2)
 
                 .AddPerkLevel()
                 .Description("Goads a single target into attacking the beast.")
                 .Price(1)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.Anger3)
 
                 .AddPerkLevel()
                 .Description("Goads all enemies within range into attacking the beast.")
                 .Price(2)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.Anger4)
 
                 .AddPerkLevel()
                 .Description("Goads all enemies within range into attacking the beast.")
                 .Price(2)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Tank);
+                .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.Anger5);
         }
 
         private void FocusAttention()
@@ -102,30 +113,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.FocusAttention1)
 
                 .AddPerkLevel()
                 .Description("The beast's enmity generation is increased by 20%.")
                 .Price(2)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.FocusAttention2)
 
                 .AddPerkLevel()
                 .Description("The beast's enmity generation is increased by 30%.")
                 .Price(2)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.FocusAttention3)
 
                 .AddPerkLevel()
                 .Description("The beast's enmity generation is increased by 40%.")
                 .Price(3)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.FocusAttention4)
 
                 .AddPerkLevel()
                 .Description("The beast's enmity generation is increased by 50%.")
                 .Price(3)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Tank);
+                .RequirementBeastRole(BeastRoleType.Tank)
+                .GrantsFeat(FeatType.FocusAttention5);
         }
     }
 }

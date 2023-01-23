@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -171,6 +172,10 @@ namespace SWLOR.Game.Server.Service
             if (!_enemyEnmityTables[enemy].ContainsKey(creature))
                 _enemyEnmityTables[enemy][creature] = 0;
 
+            // Percent adjustment from feats/effects.
+            var percentAdjustment = CalculateEnmityAdjustment(creature);
+            amount += (int)(amount * (percentAdjustment * 0.01f));
+
             // Modify the enemy's enmity toward this creature.
             var enmityValue = _enemyEnmityTables[enemy][creature] + amount;
 
@@ -187,6 +192,29 @@ namespace SWLOR.Game.Server.Service
             AttackHighestEnmityTarget(enemy);
 
             ExecuteScript("enmity_changed", creature);
+        }
+
+        /// <summary>
+        /// Determines the percent change that should be applied to enmity acquisition.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <returns>The enmity adjustment percentage.</returns>
+        private static int CalculateEnmityAdjustment(uint creature)
+        {
+            var percentAdjustment = 0;
+
+            if (GetHasFeat(FeatType.FocusAttention5, creature))
+                percentAdjustment += 50;
+            else if (GetHasFeat(FeatType.FocusAttention4, creature))
+                percentAdjustment += 40;
+            else if (GetHasFeat(FeatType.FocusAttention3, creature))
+                percentAdjustment += 30;
+            else if (GetHasFeat(FeatType.FocusAttention2, creature))
+                percentAdjustment += 20;
+            else if (GetHasFeat(FeatType.FocusAttention1, creature))
+                percentAdjustment += 10;
+
+            return percentAdjustment;
         }
 
         /// <summary>

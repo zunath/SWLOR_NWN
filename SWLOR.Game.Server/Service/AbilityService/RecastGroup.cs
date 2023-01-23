@@ -219,6 +219,40 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ReviveBeast = 105,
         [RecastGroup("Call Beast", "Call Beast", true)]
         CallBeast = 106,
+        [RecastGroup("Diseased Touch", "Dis. Touch", true)]
+        DiseasedTouch = 107,
+        [RecastGroup("Clip", "Clip", true)]
+        Clip = 108,
+        [RecastGroup("Spinning Claw", "Spin. Claw", true)]
+        SpinningClaw = 109,
+        [RecastGroup("Flame Breath", "Flm. Breath", true)]
+        FlameBreath = 110,
+        [RecastGroup("Shocking Slash", "Shock. Slash", true)]
+        ShockingSlash = 111,
+        [RecastGroup("Bolster Armor", "Bolst. Arm.", true)]
+        BolsterArmor = 112,
+        [RecastGroup("Anger", "Anger", true)]
+        Anger = 113,
+        [RecastGroup("AOE Anger", "AOE Anger", true)]
+        AOEAnger = 114,
+        [RecastGroup("Claw", "Claw", true)]
+        Claw = 115,
+        [RecastGroup("Bolster Attack", "Bolst. Atk.", true)]
+        BolsterAttack = 116,
+        [RecastGroup("Hasten", "Hasten", true)]
+        Hasten = 117,
+        [RecastGroup("Poison Breath", "Poison Breath", true)]
+        PoisonBreath = 118,
+        [RecastGroup("Ice Breath", "Ice Breath", true)]
+        IceBreath = 119,
+        [RecastGroup("Evasive Manuever", "Eva. Maneuver", true)]
+        EvasiveManeuver = 120,
+        [RecastGroup("Assault", "Assault", true)]
+        Assault = 121,
+        [RecastGroup("Force Touch", "Force Touch", true)]
+        ForceTouch = 122,
+        [RecastGroup("Innervate", "Innervate", true)]
+        Innervate = 123,
     }
 
     public class RecastGroupAttribute: Attribute

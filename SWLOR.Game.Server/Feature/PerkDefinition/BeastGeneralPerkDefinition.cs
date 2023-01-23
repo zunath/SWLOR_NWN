@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.BeastMasteryService;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 
@@ -27,26 +27,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("The beast's next attack deals an additional 8 poison DMG and has a DC8 Fortitude check to inflict Disease for 30 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(5)
+                .GrantsFeat(FeatType.DiseasedTouch1)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 11 poison DMG and has a DC10 Fortitude check to inflict Disease for 30 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(15)
+                .GrantsFeat(FeatType.DiseasedTouch2)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 14 poison DMG and has a DC12 Fortitude check to inflict Disease for 30 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(25)
+                .GrantsFeat(FeatType.DiseasedTouch3)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 17 poison DMG and has a DC14 Fortitude check to inflict Disease for 30 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(35)
+                .GrantsFeat(FeatType.DiseasedTouch4)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 20 poison DMG and has a DC16 Fortitude check to inflict Disease for 30 seconds.")
                 .Price(2)
-                .RequirementBeastLevel(45);
+                .RequirementBeastLevel(45)
+                .GrantsFeat(FeatType.DiseasedTouch5);
         }
 
         private void Clip()
@@ -59,26 +64,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("The beast's next attack deals an additional 10 physical DMG and has a DC8 Fortitude check to inflict Stun for 3 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(5)
+                .GrantsFeat(FeatType.Clip1)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 12 physical DMG and has a DC10 Fortitude check to inflict Stun for 3 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(15)
+                .GrantsFeat(FeatType.Clip2)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 14 physical DMG and has a DC12 Fortitude check to inflict Stun for 3 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(25)
+                .GrantsFeat(FeatType.Clip3)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 16 physical DMG and has a DC14 Fortitude check to inflict Stun for 3 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(35)
+                .GrantsFeat(FeatType.Clip4)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 18 physical DMG and has a DC16 Fortitude check to inflict Stun for 3 seconds.")
                 .Price(2)
-                .RequirementBeastLevel(45);
+                .RequirementBeastLevel(45)
+                .GrantsFeat(FeatType.Clip5);
         }
 
         private void SpinningClaw()
@@ -91,26 +101,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("The beast attacks up to 3 nearby enemies for 8 physical DMG each.")
                 .Price(2)
                 .RequirementBeastLevel(5)
+                .GrantsFeat(FeatType.SpinningClaw1)
 
                 .AddPerkLevel()
                 .Description("The beast attacks up to 3 nearby enemies for 12 physical DMG each.")
                 .Price(2)
                 .RequirementBeastLevel(15)
+                .GrantsFeat(FeatType.SpinningClaw2)
 
                 .AddPerkLevel()
                 .Description("The beast attacks up to 3 nearby enemies for 15 physical DMG each.")
                 .Price(2)
                 .RequirementBeastLevel(25)
+                .GrantsFeat(FeatType.SpinningClaw3)
 
                 .AddPerkLevel()
                 .Description("The beast attacks up to 3 nearby enemies for 18 physical DMG each.")
                 .Price(2)
                 .RequirementBeastLevel(35)
+                .GrantsFeat(FeatType.SpinningClaw4)
 
                 .AddPerkLevel()
                 .Description("The beast attacks up to 3 nearby enemies for 21 physical DMG each.")
                 .Price(2)
-                .RequirementBeastLevel(45);
+                .RequirementBeastLevel(45)
+                .GrantsFeat(FeatType.SpinningClaw5);
         }
 
     }

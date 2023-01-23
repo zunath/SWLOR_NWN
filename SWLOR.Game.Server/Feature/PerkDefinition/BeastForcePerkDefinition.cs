@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.BeastMasteryService;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 
@@ -28,30 +29,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceTouch1)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 16 force DMG.")
                 .Price(1)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceTouch2)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 20 force DMG.")
                 .Price(1)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceTouch3)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 24 force DMG.")
                 .Price(2)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceTouch4)
 
                 .AddPerkLevel()
                 .Description("The beast's next attack deals an additional 28 force DMG.")
                 .Price(2)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Force);
+                .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceTouch5);
         }
 
         private void Innervate()
@@ -65,30 +71,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.Innervate1)
 
                 .AddPerkLevel()
                 .Description("The beast restores 40 HP to a single target.")
                 .Price(1)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.Innervate2)
 
                 .AddPerkLevel()
                 .Description("The beast restores 60 HP to a single target.")
                 .Price(1)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.Innervate3)
 
                 .AddPerkLevel()
                 .Description("The beast restores 80 HP to a single target.")
                 .Price(2)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.Innervate4)
 
                 .AddPerkLevel()
                 .Description("The beast restores 120 HP to a single target.")
                 .Price(2)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Force);
+                .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.Innervate5);
         }
 
         private void ForceLink()
@@ -102,18 +113,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceLink1)
 
                 .AddPerkLevel()
                 .Description("Grants a 20% chance to restore 1 FP to the Beastmaster when the beast lands an attack on an enemy.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceLink2)
 
                 .AddPerkLevel()
                 .Description("Grants a 30% chance to restore 1 FP to the Beastmaster when the beast lands an attack on an enemy.")
                 .Price(4)
                 .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Force);
+                .RequirementBeastRole(BeastRoleType.Force)
+                .GrantsFeat(FeatType.ForceLink3);
         }
     }
 }

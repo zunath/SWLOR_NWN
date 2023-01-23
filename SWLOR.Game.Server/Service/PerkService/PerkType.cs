@@ -269,7 +269,7 @@
         DroidAssembly = 264,
         Reward = 265,
         Stabling = 266,
-        PetManagement = 267,
+        // 267 is free
         Snarl = 268,
         Growl = 269,
         SoothePet = 270,

@@ -1,7 +1,10 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -102,6 +105,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Innervate5);
         }
 
+        [NWNEventHandler("item_on_hit")]
+        public static void OnForceLinkHit()
+        {
+            var beast = OBJECT_SELF;
+            var item = GetSpellCastItem();
+
+            if (!BeastMastery.IsPlayerBeast(beast) || GetResRef(item) != BeastMastery.BeastClawResref)
+            {
+                return;
+            }
+
+            var player = GetMaster(beast);
+            if (GetIsPC(player) && !GetIsDead(player))
+            {
+                var chance = Perk.GetEffectivePerkLevel(beast, PerkType.ForceLink) * 10;
+
+                if (Random.D100(1) <= chance)
+                {
+                    Stat.RestoreFP(player, 1);
+                }
+            }
+        }
         private void ForceLink()
         {
             _builder.Create(PerkCategoryType.BeastForce, PerkType.ForceLink)

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PerkService;
@@ -380,12 +382,18 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The effective perk level of a creature.</returns>
         public static int GetEffectivePerkLevel(uint creature, PerkType perkType)
         {
-            if (GetIsDM(creature) && !GetIsDMPossessed(creature)) return 0;
+            if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
+                return 0;
 
-            // Players only
+            // Players
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
             {
                 return GetPlayerPerkLevel(creature, perkType);
+            }
+            // Beasts
+            else if (BeastMastery.IsPlayerBeast(creature))
+            {
+                return GetBeastPerkLevel(creature, perkType);
             }
             // Creatures or DM-possessed creatures
             else
@@ -443,17 +451,70 @@ namespace SWLOR.Game.Server.Service
             foreach (var (level, detail) in perkLevels)
             {
                 // No requirements set for this perk level. Return the level.
-                if (detail.Requirements.Count <= 0) return level;
+                if (detail.Requirements.Count <= 0) 
+                    return level;
 
                 foreach (var req in detail.Requirements)
                 {
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) return level;
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
+                        return level;
                 }
             }
 
             // Otherwise none of the perk level requirements passed. Player's effective level is zero.
             return 0;
         }
+
+        /// <summary>
+        /// Retrieves a beast's effective perk level.
+        /// </summary>
+        /// <param name="beast"></param>
+        /// <param name="perkType"></param>
+        /// <returns></returns>
+        private static int GetBeastPerkLevel(uint beast, PerkType perkType)
+        {
+
+            // todo: merge with player branch
+            var beastId = BeastMastery.GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            if (dbBeast == null)
+                return 0;
+
+            var player = GetMaster(beast);
+            if (!GetIsPC(player) || !GetIsObjectValid(player))
+                return 0;
+
+            var beastPerkLevel = dbBeast.Perks.ContainsKey(perkType) ? dbBeast.Perks[perkType] : 0;
+
+            // Early exit if player doesn't have the perk at all.
+            if (beastPerkLevel <= 0) return 0;
+
+            // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
+            var perk = GetPerkDetails(perkType);
+            var perkLevels = perk.PerkLevels
+                .Where(x => x.Key <= beastPerkLevel)
+                .OrderByDescending(o => o.Key);
+
+            // Iterate over each perk level and check requirements.
+            // The first perk level the player passes requirements on is the player's effective level.
+            foreach (var (level, detail) in perkLevels)
+            {
+                // No requirements set for this perk level. Return the level.
+                if (detail.Requirements.Count <= 0) 
+                    return level;
+
+                foreach (var req in detail.Requirements)
+                {
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
+                        return level;
+                }
+            }
+
+
+            return 0;
+        }
+
 
         /// <summary>
         /// This will mark a perk as unlocked for a player.

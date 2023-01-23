@@ -2,6 +2,9 @@
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -100,6 +103,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.IceBreath5);
+        }
+
+
+        [NWNEventHandler("item_on_hit")]
+        public static void OnEnduranceLinkHit()
+        {
+            var beast = OBJECT_SELF;
+            var item = GetSpellCastItem();
+
+            if (!BeastMastery.IsPlayerBeast(beast) || GetResRef(item) != BeastMastery.BeastClawResref)
+            {
+                return;
+            }
+
+            var player = GetMaster(beast);
+            if (GetIsPC(player) && !GetIsDead(player))
+            {
+                var chance = Perk.GetEffectivePerkLevel(beast, PerkType.EnduranceLink) * 10;
+
+                if (Random.D100(1) <= chance)
+                {
+                    Stat.RestoreStamina(player, 1);
+                }
+            }
         }
 
         private void EnduranceLink()

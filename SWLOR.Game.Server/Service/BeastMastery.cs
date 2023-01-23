@@ -14,7 +14,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         private static List<BeastFoodType> _beastFoods = new();
 
         private const string BeastResref = "pc_beast";
+        public const string BeastClawResref = "beast_claw";
         public const int MaxLevel = 50;
         private static int _highestDelta;
 

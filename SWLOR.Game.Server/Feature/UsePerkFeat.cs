@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature
         }
 
         // Variable names for queued abilities.
-        private const string ActiveAbilityName = "ACTIVE_ABILITY";
         private const string ActiveAbilityIdName = "ACTIVE_ABILITY_ID";
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
@@ -325,11 +324,10 @@ namespace SWLOR.Game.Server.Feature
         {
             var abilityId = Guid.NewGuid().ToString();
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
-            SetLocalInt(activator, ActiveAbilityName, (int)feat);
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
-
+            
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
@@ -344,13 +342,11 @@ namespace SWLOR.Game.Server.Feature
 
         public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
         {
-
-            string abilityName = GetLocalString(target, ActiveAbilityName);
+            var abilityName = GetLocalString(target, ActiveAbilityIdName);
             if (string.IsNullOrWhiteSpace(abilityName))
                 return;
 
             // Remove the local variables.
-            DeleteLocalInt(target, ActiveAbilityName);
             DeleteLocalString(target, ActiveAbilityIdName);
             DeleteLocalInt(target, ActiveAbilityFeatIdName);
             DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
@@ -378,7 +374,7 @@ namespace SWLOR.Game.Server.Feature
             // If this method was triggered by our own armor (from getting hit), return. 
             if (GetBaseItemType(item) == BaseItem.Armor) return;
 
-            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityName);
+            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
             if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;
@@ -386,7 +382,6 @@ namespace SWLOR.Game.Server.Feature
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
 
-            DeleteLocalInt(activator, ActiveAbilityName);
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);
             DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
@@ -416,7 +411,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler("item_val_bef")]
+        [NWNEventHandler("item_eqp_bef")]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -428,7 +423,6 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
-            DeleteLocalInt(player, ActiveAbilityName);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);
             DeleteLocalInt(player, ActiveAbilityEffectivePerkLevelName);

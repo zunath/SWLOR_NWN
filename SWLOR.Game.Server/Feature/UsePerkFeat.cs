@@ -342,9 +342,12 @@ namespace SWLOR.Game.Server.Feature
 
         public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
         {
-            var abilityName = GetLocalString(target, ActiveAbilityIdName);
-            if (string.IsNullOrWhiteSpace(abilityName))
+            var abilityId = GetLocalString(target, ActiveAbilityIdName);
+            if (string.IsNullOrWhiteSpace(abilityId))
                 return;
+
+            var featType = (FeatType)GetLocalInt(target, ActiveAbilityIdName);
+            var abilityDetail = Ability.GetAbilityDetail(featType);
 
             // Remove the local variables.
             DeleteLocalString(target, ActiveAbilityIdName);
@@ -352,10 +355,10 @@ namespace SWLOR.Game.Server.Feature
             DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
 
             // Notify the activator and nearby players
-            SendMessageToPC(target, $"Your weapon ability {abilityName} is no longer queued.");
+            SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
 
             if (sendMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityName} readied.");
+                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 
@@ -41,6 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Temporary, effect, beastmaster, 30f + bonusDuration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
             }
+
+            Enmity.ModifyEnmityOnAll(activator, 300 * numAttacks);
         }
 
         private void Hasten1()

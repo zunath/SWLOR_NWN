@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private void ImpactAction(uint activator, uint target, int dmg)
         {
             var beastmaster = GetMaster(activator);
-            var beastmasterStat = GetAbilityModifier(AbilityType.Willpower, beastmaster) / 2;
-            var beastStat = GetAbilityModifier(AbilityType.Willpower, activator) / 2;
+            var beastmasterStat = GetAbilityScore(beastmaster, AbilityType.Willpower) / 2;
+            var beastStat = GetAbilityScore(activator, AbilityType.Willpower) / 2;
 
             var totalStat = beastmasterStat + beastStat;
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Invalid);

@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Service
                 if (now < city.Dates[PropertyDateType.Upkeep])
                 {
                     Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
-                    return;
+                    continue;
                 }
                 else
                 {

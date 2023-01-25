@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Wounding)
                 .TickAction((source, target, effectData) =>
                 {
-                    var damage = EffectDamage(d2());
+                    var perception = GetAbilityModifier(AbilityType.Perception, source);
+                    var damage = EffectDamage(d2() + perception * 2);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
 
                     var location = GetLocation(target);

@@ -1258,6 +1258,7 @@ namespace SWLOR.Game.Server.Service
             var evasionBonus = 0;
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
 
+            // Soldiers Speed
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersSpeed))
             {
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
@@ -1281,10 +1282,24 @@ namespace SWLOR.Game.Server.Service
 
                 }
             }
+
+            // Food Effects
             if (foodEffect != null)
             {
                 evasionBonus += foodEffect.Evasion;
             }
+
+            // Evasive Maneuver
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver1))
+                evasionBonus += 5;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver2))
+                evasionBonus += 10;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver3))
+                evasionBonus += 15;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver4))
+                evasionBonus += 20;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver5))
+                evasionBonus += 25;
 
             return evasionBonus;
         }

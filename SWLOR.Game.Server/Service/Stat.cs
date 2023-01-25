@@ -19,6 +19,7 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
 using System.Buffers.Text;
+using System.Collections;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -674,27 +675,39 @@ namespace SWLOR.Game.Server.Service
 
             if (type == CombatDamageType.Physical)
             {
+                // Iron Shell
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
                     defense += 20;
 
+                // Shielding
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
                     defense += 5;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
                     defense += 10;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
                     defense += 15;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
                     defense += 20;
 
+                // Force Valor
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
                     defense += 10;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
                     defense += 20;
 
+                // Bolster Armor
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor1))
+                    defense += 5;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor2))
+                    defense += 10;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor3))
+                    defense += 15;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor4))
+                    defense += 20;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor5))
+                    defense += 25;
+
+                // Frenzied Shout
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.FrenziedShout))
                 {
                     var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.FrenziedShout);
@@ -717,6 +730,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                // Food Effects
                 if(foodEffect != null)
                     defense += foodEffect.DefensePhysical;
             }
@@ -751,11 +765,13 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAttack(uint creature, int attack)
         {
+            // Force Rage
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage1))
                 attack += 10;
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage2))
                 attack += 20;
 
+            // Soldiers Strike
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersStrike))
             {
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
@@ -779,11 +795,24 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Food Effects
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
             if (foodEffect != null)
             {
                 attack += foodEffect.Attack;
             }
+
+            // Bolster Attack
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack1))
+                attack += 5;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack2))
+                attack += 10;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack3))
+                attack += 15;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack4))
+                attack += 20;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack5))
+                attack += 25;
 
             return attack;
         }

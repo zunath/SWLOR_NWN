@@ -23,6 +23,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
+        private void Impact(uint activator, StatusEffectType statusEffect)
+        {
+            var master = GetMaster(activator);
+            var beastmasterStat = GetAbilityModifier(AbilityType.Might, master) / 2;
+            var beastStat = GetAbilityModifier(AbilityType.Might, activator) / 2;
+            var totalStat = beastmasterStat + beastStat;
+
+            var duration = 5 * 60f + totalStat * 10;
+            StatusEffect.Apply(activator, activator, statusEffect, duration);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+        }
+
         private void BolsterAttack1()
         {
             _builder.Create(FeatType.BolsterAttack1, PerkType.BolsterAttack)
@@ -35,8 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.BolsterAttack1, 5 * 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+                    Impact(activator, StatusEffectType.BolsterAttack1);
                 });
         }
         private void BolsterAttack2()
@@ -51,8 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.BolsterAttack2, 5 * 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+                    Impact(activator, StatusEffectType.BolsterAttack2);
                 });
         }
         private void BolsterAttack3()
@@ -67,8 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.BolsterAttack3, 5 * 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+                    Impact(activator, StatusEffectType.BolsterAttack3);
                 });
         }
         private void BolsterAttack4()
@@ -83,8 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.BolsterAttack4, 5 * 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+                    Impact(activator, StatusEffectType.BolsterAttack4);
                 });
         }
         private void BolsterAttack5()
@@ -99,8 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.BolsterAttack5, 5 * 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
+                    Impact(activator, StatusEffectType.BolsterAttack5);
                 });
         }
 

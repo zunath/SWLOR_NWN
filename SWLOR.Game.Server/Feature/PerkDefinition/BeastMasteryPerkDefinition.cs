@@ -88,18 +88,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Stabling")
 
                 .AddPerkLevel()
-                .Description("Permits you to store up to one beast at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 15)
-
-                .AddPerkLevel()
                 .Description("Permits you to store up to two beasts at a stable.")
                 .Price(1)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to three beasts at a stable.")
-                .Price(1)
+                .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
         

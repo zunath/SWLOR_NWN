@@ -72,5 +72,6 @@
         EvasiveManeuver3 = 67,
         EvasiveManeuver4 = 68,
         EvasiveManeuver5 = 69,
+        Disease = 70,
     }
 }

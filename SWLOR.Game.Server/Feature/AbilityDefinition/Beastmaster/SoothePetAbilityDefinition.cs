@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     StatusEffect.Remove(beast, StatusEffectType.Poison);
                     StatusEffect.Remove(beast, StatusEffectType.Shock);
                     StatusEffect.Remove(beast, StatusEffectType.Burn);
+                    StatusEffect.Remove(beast, StatusEffectType.Disease);
 
                     RemoveEffect(beast, 
                         EffectTypeScript.Disease, 

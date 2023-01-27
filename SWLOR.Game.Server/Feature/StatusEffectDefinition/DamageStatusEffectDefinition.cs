@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -7,26 +8,31 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class DamageStatusEffectDefinition: IStatusEffectListDefinition
     {
+        private readonly StatusEffectBuilder _builder = new();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
-            var builder = new StatusEffectBuilder();
-            Bleed(builder);
-            Poison(builder);
-            Shock(builder);
-            Burn(builder);
+            Bleed();
+            Disease();
+            Poison();
+            Shock();
+            Burn();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void Bleed(StatusEffectBuilder builder)
+        private void Bleed()
         {
-            builder.Create(StatusEffectType.Bleed)
+            _builder.Create(StatusEffectType.Bleed)
                 .Name("Bleed")
                 .EffectIcon(EffectIconType.Wounding)
                 .TickAction((source, target, effectData) =>
                 {
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
+
                     var perception = GetAbilityModifier(AbilityType.Perception, source);
-                    var damage = EffectDamage(d2() + perception * 2);
+                    var damage = EffectDamage(d2() + perception * 2 * level);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
 
                     var location = GetLocation(target);
@@ -36,9 +42,28 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 });
         }
 
-        private void Poison(StatusEffectBuilder builder)
+        private void Disease()
         {
-            builder.Create(StatusEffectType.Poison)
+            _builder.Create(StatusEffectType.Disease)
+                .Name("Disease")
+                .EffectIcon(EffectIconType.Disease)
+                .TickAction((source, target, effectData) =>
+                {
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
+
+                    var perception = GetAbilityModifier(AbilityType.Perception, source);
+                    var damage = EffectDamage(d2() + perception * level);
+                    ApplyEffectToObject(DurationType.Instant, damage, target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), target, 5.9f);
+                });
+        }
+
+        private void Poison()
+        {
+            _builder.Create(StatusEffectType.Poison)
                 .Name("Poison")
                 .EffectIcon(EffectIconType.Poison)
                 .TickAction((source, target, effectData) =>
@@ -53,9 +78,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 });
         }
 
-        private void Shock(StatusEffectBuilder builder)
+        private void Shock()
         {
-            builder.Create(StatusEffectType.Shock)
+            _builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
                 .EffectIcon(EffectIconType.Shocked)
                 .TickAction((source, target, effectData) =>
@@ -67,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 });
         }
         
-        private void Burn(StatusEffectBuilder builder)
+        private void Burn()
         {
-            builder.Create(StatusEffectType.Burn)
+            _builder.Create(StatusEffectType.Burn)
                 .Name("Burn")
                 .EffectIcon(EffectIconType.Burning)
                 .TickAction((source, target, effectData) =>

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _builder.Create(FeatType.DiseasedTouch1, PerkType.DiseasedTouch)
                 .Name("Diseased Touch I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Claw, 60f)
+                .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()

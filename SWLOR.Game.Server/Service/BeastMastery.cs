@@ -121,26 +121,43 @@ namespace SWLOR.Game.Server.Service
             SetLocalInt(beast, "BEAST_TYPE", (int)type);
         }
 
-        public static void GiveBeastXP(uint beast, int amount, bool ignoreBonuses)
+        public static void GiveBeastXP(uint beast, int xp, bool ignoreBonuses)
         {
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
             var maxBeastLevel = Perk.GetEffectivePerkLevel(player, PerkType.Tame) * 10;
+            var bonusPercentage = 0f;
 
             if (!ignoreBonuses)
             {
+                // Food Bonus
                 if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
                 {
                     var xpBonus = StatusEffect.GetEffectData<int>(beast, StatusEffectType.PetFood);
 
-                    amount += (int)(amount * (xpBonus * 0.01f));
+                    bonusPercentage += xpBonus * 0.01f;
                 }
+
+                // Dedication bonus
+                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.Dedication))
+                {
+                    var source = StatusEffect.GetEffectData<uint>(beast, StatusEffectType.Dedication);
+
+                    if (GetIsObjectValid(source))
+                    {
+                        var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Dedication);
+                        var social = GetAbilityScore(source, AbilityType.Social);
+                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
+                    }
+                }
+
+                xp += (int)(xp * bonusPercentage);
             }
 
 
             var requiredXP = GetRequiredXP(dbBeast.Level);
-            dbBeast.XP += amount;
+            dbBeast.XP += xp;
 
             if (dbBeast.Level >= MaxLevel)
             {
@@ -148,7 +165,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                SendMessageToPC(player, $"{dbBeast.Name} earned {amount} XP.");
+                SendMessageToPC(player, $"{dbBeast.Name} earned {xp} XP.");
             }
 
             while (dbBeast.XP >= requiredXP)

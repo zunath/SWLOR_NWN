@@ -1301,6 +1301,10 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver5))
                 evasionBonus += 25;
 
+            // Assault
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Assault))
+                evasionBonus += 10;
+
             return evasionBonus;
         }
 

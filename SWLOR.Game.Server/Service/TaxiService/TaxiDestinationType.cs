@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Service.TaxiService
         VelesFoszEstate = 9,
         [TaxiDestination(1, "Veles Apartments", "TAXI_VELES_APARTMENTS", 100)]
         VelesApartments = 10,
+        [TaxiDestination(1, "Outpost Hope", "TAXI_VELES_OUTPOST", 1000)]
+        OutpostHope = 11,
     }
 
     public class TaxiDestinationAttribute: Attribute

@@ -157,5 +157,26 @@ namespace SWLOR.Game.Server.Feature
 
             SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
         }
+
+        /// <summary>
+        /// When the module loads, sets the Cursed flag onto all items within a placeable with the local string 'viewonly_storage'.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void ViewOnlyStorage()
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                for (var placeable = GetFirstObjectInArea(area); GetIsObjectValid(placeable); placeable = GetNextObjectInArea(area))
+                {
+                    if (GetObjectType(placeable) == ObjectType.Placeable && GetLocalBool(placeable, "viewonly_storage"))
+                    {
+                        for (var item = GetFirstItemInInventory(placeable); GetIsObjectValid(item); item = GetNextItemInInventory(placeable))
+                        {
+                            SetItemCursedFlag(item, true);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -11,17 +11,17 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
-    public class FlameBreathAbilityDefinition : IAbilityListDefinition
+    public class IceBreathAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            FlameBreath1();
-            FlameBreath2();
-            FlameBreath3();
-            FlameBreath4();
-            FlameBreath5();
+            IceBreath1();
+            IceBreath2();
+            IceBreath3();
+            IceBreath4();
+            IceBreath5();
 
             return _builder.Build();
         }
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Flamethrower), activator, 2f);
+                ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Icestorm), targetLocation);
             });
 
             var beastmaster = GetMaster(activator);
@@ -42,14 +42,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var totalStat = beastStat + beastmasterStat;
 
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Fire, AbilityType.Vitality);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Ice, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -59,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defenderStat,
                         0);
 
-                    var eDMG = EffectDamage(damage, DamageType.Fire);
+                    var eDMG = EffectDamage(damage, DamageType.Cold);
                     Enmity.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
@@ -67,13 +66,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     DelayCommand(0.1f, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
-                        ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
                         dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Burn, 30f, level);
+                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Freezing, 30f, level);
                         }
                     });
                 }
@@ -82,12 +80,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void FlameBreath1()
+        private void IceBreath1()
         {
-            _builder.Create(FeatType.FlameBreath1, PerkType.FlameBreath)
-                .Name("Flame Breath I")
+            _builder.Create(FeatType.IceBreath1, PerkType.IceBreath)
+                .Name("Ice Breath I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.IceBreath, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
@@ -97,12 +95,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1, level);
                 });
         }
-        private void FlameBreath2()
+        private void IceBreath2()
         {
-            _builder.Create(FeatType.FlameBreath2, PerkType.FlameBreath)
-                .Name("Flame Breath II")
+            _builder.Create(FeatType.IceBreath2, PerkType.IceBreath)
+                .Name("Ice Breath II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.IceBreath, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -112,12 +110,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1, level);
                 });
         }
-        private void FlameBreath3()
+        private void IceBreath3()
         {
-            _builder.Create(FeatType.FlameBreath3, PerkType.FlameBreath)
-                .Name("Flame Breath III")
+            _builder.Create(FeatType.IceBreath3, PerkType.IceBreath)
+                .Name("Ice Breath III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.IceBreath, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
                 .IsCastedAbility()
@@ -127,12 +125,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8, level);
                 });
         }
-        private void FlameBreath4()
+        private void IceBreath4()
         {
-            _builder.Create(FeatType.FlameBreath4, PerkType.FlameBreath)
-                .Name("Flame Breath IV")
+            _builder.Create(FeatType.IceBreath4, PerkType.IceBreath)
+                .Name("Ice Breath IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.IceBreath, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
                 .IsCastedAbility()
@@ -142,12 +140,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12, level);
                 });
         }
-        private void FlameBreath5()
+        private void IceBreath5()
         {
-            _builder.Create(FeatType.FlameBreath5, PerkType.FlameBreath)
-                .Name("Flame Breath V")
+            _builder.Create(FeatType.IceBreath5, PerkType.IceBreath)
+                .Name("Ice Breath V")
                 .Level(5)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.IceBreath, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

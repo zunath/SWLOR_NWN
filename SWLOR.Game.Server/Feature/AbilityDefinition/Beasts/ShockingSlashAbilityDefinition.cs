@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int dc)
+        private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
         {
             var baseDC = dc;
             const float ConeSize = 10f;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Shock, 30f);
+                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Shock, 30f, level);
                         }
                     });
                 }
@@ -92,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator,_, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, -1);
+                    Impact(activator, targetLocation, 8, -1, level);
                 });
         }
         private void ShockingSlash2()
@@ -107,9 +107,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 12, -1);
+                    Impact(activator, targetLocation, 12, -1, level);
                 });
         }
         private void ShockingSlash3()
@@ -122,9 +122,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(6)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 8);
+                    Impact(activator, targetLocation, 16, 8, level);
                 });
         }
         private void ShockingSlash4()
@@ -137,9 +137,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(7)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 20, 12);
+                    Impact(activator, targetLocation, 20, 12, level);
                 });
         }
         private void ShockingSlash5()
@@ -152,9 +152,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
-                .HasImpactAction((activator, _, _, targetLocation) =>
+                .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 24, 14);
+                    Impact(activator, targetLocation, 24, 14, level);
                 });
         }
     }

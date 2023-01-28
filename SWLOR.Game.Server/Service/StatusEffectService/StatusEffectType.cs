@@ -74,5 +74,6 @@
         EvasiveManeuver5 = 69,
         Disease = 70,
         Assault = 71,
+        Freezing = 72,
     }
 }

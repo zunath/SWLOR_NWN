@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             Poison();
             Shock();
             Burn();
+            Freezing();
 
             return _builder.Build();
         }
@@ -68,7 +69,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Poison)
                 .TickAction((source, target, effectData) =>
                 {
-                    var amount = Random.Next(3, 7);
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
+
+                    var agility = GetAbilityModifier(AbilityType.Agility, source);
+                    var amount = Random.Next(3, 7) + agility * level;
                     var damage = EffectDamage(amount, DamageType.Acid);
                     var decreasedAC = EffectACDecrease(2);
 
@@ -102,12 +108,35 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Burning)
                 .TickAction((source, target, effectData) =>
                 {
-                    var amount = Random.Next(2, 4);
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
+
+                    var might = GetAbilityModifier(AbilityType.Might, source);
+                    var amount = Random.Next(2, 4) + might * 2 * level;
                     var damage = EffectDamage(amount, DamageType.Fire);
 
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                 });
         }
 
+        private void Freezing()
+        {
+            _builder.Create(StatusEffectType.Freezing)
+                .Name("Freezing")
+                .EffectIcon(EffectIconType.DamageImmunityColdDecrease)
+                .TickAction((source, target, effectData) =>
+                {
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
+
+                    var perception = GetAbilityModifier(AbilityType.Perception, source);
+                    var damage = EffectDamage(d2() + perception * level);
+                    ApplyEffectToObject(DurationType.Instant, damage, target);
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 5.9f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 2), target, 5.9f);
+                });
+        }
     }
 }

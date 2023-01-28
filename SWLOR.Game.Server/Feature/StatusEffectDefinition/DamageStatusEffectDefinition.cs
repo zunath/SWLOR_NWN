@@ -85,10 +85,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Shocked)
                 .TickAction((source, target, effectData) =>
                 {
-                    var damage = EffectDamage(d4(), DamageType.Electrical);
-                    ApplyEffectToObject(DurationType.Instant, damage, target);
+                    var level = effectData == null ? 1 : (int)effectData;
+                    if (level < 1)
+                        level = 1;
 
-                    var location = GetLocation(target);                                       
+                    var agility = GetAbilityModifier(AbilityType.Agility, source);
+                    var damage = EffectDamage(d4() + agility * 2 * level, DamageType.Electrical);
+                    ApplyEffectToObject(DurationType.Instant, damage, target);                                  
                 });
         }
         

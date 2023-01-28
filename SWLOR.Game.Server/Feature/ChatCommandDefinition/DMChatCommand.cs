@@ -870,7 +870,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
                     
-                    var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
+                    var authorName = $"{GetName(user)}";
                     Task.Run(async () =>
                     {
                         using (var client = new DiscordWebhookClient(url))

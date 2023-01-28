@@ -16,9 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
-        private static readonly GuiColor _green = new(0, 255, 0);
-        private static readonly GuiColor _red = new(255, 0, 0);
-
         private const int StructuresPerPage = 20;
         private int SelectedStructureIndex { get; set; }
         private bool _skipPaginationSearch;
@@ -226,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _skipPaginationSearch = true;
             Instructions = string.Empty;
-            InstructionColor = _green;
+            InstructionColor = GuiColor.Green;
 
             var area = GetArea(Player);
             var propertyId = Property.GetPropertyId(area);
@@ -393,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (permission == null || !permission.Permissions[PropertyPermissionType.RetrieveStructures])
                 {
                     Instructions = $"No permission!";
-                    InstructionColor = _red;
+                    InstructionColor = GuiColor.Red;
                     return;
                 }
 
@@ -402,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!structureDetail.CanBeRetrieved)
                 {
                     Instructions = "This structure cannot be retrieved.";
-                    InstructionColor = _red;
+                    InstructionColor = GuiColor.Red;
                     return;
                 }
 
@@ -416,7 +413,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
                 {
                     Instructions = $"Remove items from storage first.";
-                    InstructionColor = _red;
+                    InstructionColor = GuiColor.Red;
                     return;
                 }
                 
@@ -458,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (StructureName.Length <= 0)
             {
                 Instructions = $"Name is required.";
-                InstructionColor = _red;
+                InstructionColor = GuiColor.Red;
                 return;
             }
 
@@ -483,7 +480,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StructureNames[SelectedStructureIndex] = StructureName;
 
             Instructions = $"Structure saved!";
-            InstructionColor = _green;
+            InstructionColor = GuiColor.Green;
 
             Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.PositionChanged, structure, placeable);
         };

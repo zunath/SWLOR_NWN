@@ -12,9 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
-        private static GuiColor _red = new GuiColor(255, 0, 0);
-        private static GuiColor _white = new GuiColor(255, 255, 255);
-
         private List<string> _candidatePlayerIds = new List<string>();
         private int _selectedCandidateIndex;
         private string _electionId;
@@ -74,12 +71,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (election.CandidatePlayerIds.Contains(playerId))
                 {
                     MainActionButtonText = "Exit Race";
-                    MainActionButtonColor = _red;
+                    MainActionButtonColor = GuiColor.Red;
                 }
                 else
                 {
                     MainActionButtonText = "Enter Race";
-                    MainActionButtonColor = _white;
+                    MainActionButtonColor = GuiColor.White;
                 }
             }
             else if(election.Stage == ElectionStageType.Voting)
@@ -87,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Instructions = "Please select from the list of candidates below. You may only vote for one candidate per election. This choice can be changed as many times as you'd like until the end of the election. Select the 'Abstain' option if you would prefer not to vote.";
 
                 MainActionButtonText = "Cast Vote";
-                MainActionButtonColor = _white;
+                MainActionButtonColor = GuiColor.White;
             }
 
             var candidates = election.CandidatePlayerIds.Count > 0

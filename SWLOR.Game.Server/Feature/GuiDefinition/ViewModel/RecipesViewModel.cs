@@ -15,9 +15,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
         private const int RecordsPerPage = 20;
@@ -276,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
-                recipeColors.Add(canCraft ? _green : _red);
+                recipeColors.Add(canCraft ? GuiColor.Green : GuiColor.Red);
                 recipeToggles.Add(false);
                 _recipeTypes.Add(type);
             }

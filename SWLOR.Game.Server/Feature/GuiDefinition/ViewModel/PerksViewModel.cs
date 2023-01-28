@@ -22,9 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
-        private static readonly GuiColor _red = new(255, 0, 0);
-        private static readonly GuiColor _green = new(0, 255, 0);
-
         private const int ItemsPerPage = 30;
         private int _pages;
         private bool _initialLoadDone;
@@ -357,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 perkButtonIcons.Add(detail.IconResref);
                 perkButtonTexts.Add($"{detail.Name} ({rank} / {detail.PerkLevels.Count})");
                 perkDetailSelected.Add(false);
-                perkButtonColors.Add(meetsRequirements ? _green : _red);
+                perkButtonColors.Add(meetsRequirements ? GuiColor.Green : GuiColor.Red);
             }
 
             PerkButtonColors = perkButtonColors;
@@ -404,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (nextUpgrade == null)
             {
                 requirements.Add("MAXED");
-                requirementColors.Add(_green);
+                requirementColors.Add(GuiColor.Green);
             }
             else
             {
@@ -414,11 +411,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
                     {
-                        requirementColors.Add(_green);
+                        requirementColors.Add(GuiColor.Green);
                     }
                     else
                     {
-                        requirementColors.Add(_red);
+                        requirementColors.Add(GuiColor.Red);
                         meetsRequirements = false;
                     }
                 }
@@ -426,7 +423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (nextUpgrade.Requirements.Count <= 0)
                 {
                     requirements.Add("None");
-                    requirementColors.Add(_green);
+                    requirementColors.Add(GuiColor.Green);
                 }
             }
 
@@ -715,7 +712,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
 
-                    PerkButtonColors[_selectedPerkIndex] = meetsRequirements ? _green : _red;
+                    PerkButtonColors[_selectedPerkIndex] = meetsRequirements ? GuiColor.Green : GuiColor.Red;
                     SelectedRequirements = requirements;
                     SelectedRequirementColors = requirementColors;
                     IsBuyEnabled = nextUpgrade != null &&

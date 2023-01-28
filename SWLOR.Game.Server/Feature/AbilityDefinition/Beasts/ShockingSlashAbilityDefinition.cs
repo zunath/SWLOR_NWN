@@ -11,17 +11,17 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
-    public class FlameBreathAbilityDefinition : IAbilityListDefinition
+    public class ShockingSlashAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            FlameBreath1();
-            FlameBreath2();
-            FlameBreath3();
-            FlameBreath4();
-            FlameBreath5();
+            ShockingSlash1();
+            ShockingSlash2();
+            ShockingSlash3();
+            ShockingSlash4();
+            ShockingSlash5();
 
             return _builder.Build();
         }
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Flamethrower), activator, 2f);
+                ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), targetLocation);
             });
 
             var beastmaster = GetMaster(activator);
@@ -42,14 +42,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var totalStat = beastStat + beastmasterStat;
 
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
+            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Electricity);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Fire, AbilityType.Vitality);
+                    var defense = Stat.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defenderStat,
                         0);
 
-                    var eDMG = EffectDamage(damage, DamageType.Fire);
+                    var eDMG = EffectDamage(damage, DamageType.Electrical);
                     Enmity.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
+                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Shock, 30f);
                         }
                     });
                 }
@@ -82,12 +82,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void FlameBreath1()
+        private void ShockingSlash1()
         {
-            _builder.Create(FeatType.FlameBreath1, PerkType.FlameBreath)
-                .Name("Flame Breath I")
+            _builder.Create(FeatType.ShockingSlash1, PerkType.ShockingSlash)
+                .Name("Shocking Slash I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
@@ -97,12 +97,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1);
                 });
         }
-        private void FlameBreath2()
+        private void ShockingSlash2()
         {
-            _builder.Create(FeatType.FlameBreath2, PerkType.FlameBreath)
-                .Name("Flame Breath II")
+            _builder.Create(FeatType.ShockingSlash2, PerkType.ShockingSlash)
+                .Name("Shocking Slash II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -112,12 +112,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1);
                 });
         }
-        private void FlameBreath3()
+        private void ShockingSlash3()
         {
-            _builder.Create(FeatType.FlameBreath3, PerkType.FlameBreath)
-                .Name("Flame Breath III")
+            _builder.Create(FeatType.ShockingSlash3, PerkType.ShockingSlash)
+                .Name("Shocking Slash III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
                 .IsCastedAbility()
@@ -127,12 +127,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8);
                 });
         }
-        private void FlameBreath4()
+        private void ShockingSlash4()
         {
-            _builder.Create(FeatType.FlameBreath4, PerkType.FlameBreath)
-                .Name("Flame Breath IV")
+            _builder.Create(FeatType.ShockingSlash4, PerkType.ShockingSlash)
+                .Name("Shocking Slash IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
                 .IsCastedAbility()
@@ -142,12 +142,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12);
                 });
         }
-        private void FlameBreath5()
+        private void ShockingSlash5()
         {
-            _builder.Create(FeatType.FlameBreath5, PerkType.FlameBreath)
-                .Name("Flame Breath V")
+            _builder.Create(FeatType.ShockingSlash5, PerkType.ShockingSlash)
+                .Name("Shocking Slash V")
                 .Level(5)
-                .HasRecastDelay(RecastGroup.FlameBreath, 60f)
+                .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

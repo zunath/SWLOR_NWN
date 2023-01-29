@@ -9683,6 +9683,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Beast Stable Terminal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0270"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bed Roll"
               },
               "RESREF": {

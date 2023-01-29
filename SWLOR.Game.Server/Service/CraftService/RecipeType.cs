@@ -693,6 +693,7 @@
         TableRoundGlass = 1248,
         TableDarkGlass = 1249,
         DroidAssemblyTerminal = 1250,
+        BeastStablesTerminal = 1251,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

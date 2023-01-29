@@ -236,11 +236,15 @@ namespace SWLOR.Game.Server.Feature
             void CompleteActivation(string id, float abilityRecastDelay)
             {
                 DeleteLocalInt(activator, id);
+                Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
                 if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                     return;
-
+                
+                if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
+                    return;
+                
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
@@ -262,8 +266,6 @@ namespace SWLOR.Game.Server.Feature
                         });
                     }
                 }
-
-                Activity.ClearBusy(activator);
 
                 if (!GetIsPC(activator))
                 {

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "Only NPCs may be targeted.";
                     }
 
-                    if (GetIsObjectValid(GetMaster(target)) || GetIsDead(target) || !GetIsObjectValid(target))
+                    if (GetIsObjectValid(GetMaster(target)) || GetIsDead(target) || GetCurrentHitPoints(target) <= 0 || !GetIsObjectValid(target))
                     {
                         return "That target cannot be tamed.";
                     }

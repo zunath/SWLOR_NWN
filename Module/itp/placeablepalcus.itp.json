@@ -67759,6 +67759,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beast Stables Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bst_stables_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bisteiss Vein"
                     },
                     "RESREF": {

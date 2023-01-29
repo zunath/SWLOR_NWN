@@ -206,16 +206,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public string Control
+        public string Role
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string Craftsmanship
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+
         public string SavingThrows
         {
             get => Get<string>();
@@ -296,8 +292,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ToggleMakeActiveButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string XPTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsBeastSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _selectedBeastIndex = -1;
+            IsBeastSelected = false;
+            ToggleMakeActiveButtonText = "Make Active";
+            XPTooltip = $"XP: 0 / 0";
             InstructionsColor = GuiColor.Red;
             Instructions = string.Empty;
 
@@ -307,7 +325,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Name = string.Empty;
 
-            WatchOnClient(model => model.BeastToggles);
             WatchOnClient(model => model.Name);
         }
         
@@ -343,6 +360,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BeastToggles = beastToggles;
             BeastNameColors = beastNameColors;
             BeastCount = $"Beasts: {dbBeasts.Count} / {perkLevel}";
+            _selectedBeastIndex = -1;
+            ClearSelectedBeast();
+        }
+
+        private void ClearSelectedBeast()
+        {
+            if (_selectedBeastIndex > -1)
+                return;
+
+            IsBeastSelected = false;
+            Name = string.Empty;
+            HP = string.Empty;
+            FP = string.Empty;
+            STM = string.Empty;
+            SP = string.Empty;
+            Level = string.Empty;
+
+            Might = string.Empty;
+            Perception = string.Empty;
+            Vitality = string.Empty;
+            Willpower = string.Empty;
+            Agility = string.Empty;
+            Social = string.Empty;
+
+            MainHand = string.Empty;
+            OffHand = string.Empty;
+
+            Attack = string.Empty;
+            Accuracy = string.Empty;
+            Evasion = string.Empty;
+
+            PhysicalDefense = string.Empty;
+            ForceDefense = string.Empty;
+            ElementalDefense = string.Empty;
+
+            Role = string.Empty;
+            SavingThrows = string.Empty;
+
+            PerkNames = new GuiBindingList<string>();
+
+            AttackPurity = string.Empty;
+            AccuracyPurity = string.Empty;
+            EvasionPurity = string.Empty;
+
+            PhysicalDefensePurity = string.Empty;
+            ForceDefensePurity = string.Empty;
+            FireDefensePurity = string.Empty;
+            IceDefensePurity = string.Empty;
+            PoisonDefensePurity = string.Empty;
+            ElectricalDefensePurity = string.Empty;
+
+            FortitudePurity = string.Empty;
+            ReflexPurity = string.Empty;
+            WillPurity = string.Empty;
+
+            XPTooltip = $"XP: 0 / 0";
         }
 
         private void LoadSelectedBeast()
@@ -350,13 +423,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_selectedBeastIndex <= -1)
                 return;
 
+            var playerId = GetObjectUUID(Player);
             var beastId = _beastIds[_selectedBeastIndex];
             var dbBeast = DB.Get<Beast>(beastId);
+            var dbPlayer = DB.Get<Player>(playerId);
             var beastDetails = BeastMastery.GetBeastDetail(dbBeast.Type);
+            var roleDetails = BeastMastery.GetBeastRoleDetail(beastDetails.Role);
             var level = beastDetails.Levels[dbBeast.Level];
+
+            if (dbPlayer.ActiveBeastId == beastId)
+            {
+                ToggleMakeActiveButtonText = "Make Inactive";
+            }
+            else
+            {
+                ToggleMakeActiveButtonText = "Make Active";
+            }
 
             // Details Page
             Name = dbBeast.Name;
+            XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
 
             var hp = level.HP + 40 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
             var fp = Stat.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
@@ -399,8 +485,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ForceDefense = $"{forceDefense}";
             ElementalDefense = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
 
-            Control = "-";
-            Craftsmanship = "-";
+            Role = roleDetails.Name;
 
             var fortitude = (level.Stats[AbilityType.Might] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
             var reflex = (level.Stats[AbilityType.Perception] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
@@ -434,6 +519,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FortitudePurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Fortitude]}%";
             ReflexPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Reflex]}%";
             WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
+
+            IsBeastSelected = true;
         }
 
         private void ClearInstructions()
@@ -443,19 +530,58 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBeast() => () =>
         {
+            if (_selectedBeastIndex > -1)
+            {
+                BeastToggles[_selectedBeastIndex] = false;
+            }
+            
             _selectedBeastIndex = NuiGetEventArrayIndex();
+
+            BeastToggles[_selectedBeastIndex] = true;
 
             LoadSelectedBeast();
             ClearInstructions();
+            IsBeastSelected = true;
         };
 
-        public Action OnClickMakeActive() => () =>
+        public Action OnClickToggleActive() => () =>
         {
+            ClearInstructions();
+            if (_selectedBeastIndex <= -1)
+                return;
+
+            var beast = GetAssociate(AssociateType.Henchman, Player);
+            if (BeastMastery.IsPlayerBeast(beast))
+            {
+                Instructions = "Dismiss your active beast first.";
+                return;
+            }
+
+            var beastNameColors = new GuiBindingList<GuiColor>();
+            for (var index = 0; index < BeastNames.Count; index++)
+            {
+                beastNameColors.Add(GuiColor.White);
+            }
+            BeastNameColors = beastNameColors;
+
+            var beastId = _beastIds[_selectedBeastIndex];
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            if (dbPlayer.ActiveBeastId == beastId)
+            {
+                dbPlayer.ActiveBeastId = string.Empty;
+                ToggleMakeActiveButtonText = "Make Active";
+                BeastNameColors[_selectedBeastIndex] = GuiColor.White;
+            }
+            else
+            {
+                dbPlayer.ActiveBeastId = beastId;
+                ToggleMakeActiveButtonText = "Make Inactive";
+                BeastNameColors[_selectedBeastIndex] = GuiColor.Green;
+            }
 
-            LoadBeasts();
+            DB.Set(dbPlayer);
         };
 
         public Action OnClickReleaseBeast() => () =>
@@ -463,12 +589,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"WARNING: Releasing a beast will permanently remove it forever. This action is irreversible. Are you sure you want to release this beast?",
                 () =>
                 {
+                    if (_selectedBeastIndex <= -1)
+                        return;
 
-                    ChangePartialView(BeastDetailsPartial, PartialViewStats);
+                    var beastId = _beastIds[_selectedBeastIndex];
+                    var playerId = GetObjectUUID(Player);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var beast = GetAssociate(AssociateType.Henchman, Player);
+                    if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
+                    {
+                        DestroyObject(beast);
+                    }
+
+                    if (dbPlayer.ActiveBeastId == beastId)
+                    {
+                        dbPlayer.ActiveBeastId = string.Empty;
+                        DB.Set(dbPlayer);
+                    }
+
+                    DB.Delete<Beast>(beastId);
+
+                    BeastNameColors.RemoveAt(_selectedBeastIndex);
+                    BeastNames.RemoveAt(_selectedBeastIndex);
+                    BeastToggles.RemoveAt(_selectedBeastIndex);
+
+                    _selectedBeastIndex = -1;
+                    IsBeastSelected = false;
+                    ClearSelectedBeast();
+
+                    IsPerksToggled = false;
+                    IsPuritiesToggled = false;
+                    IsStatsToggled = true;
+
+                    LoadBeasts();
                 },
                 () =>
                 {
-                    ChangePartialView(BeastDetailsPartial, PartialViewStats);
+                    IsPerksToggled = false;
+                    IsPuritiesToggled = false;
+                    IsStatsToggled = true;
                 });
         };
 

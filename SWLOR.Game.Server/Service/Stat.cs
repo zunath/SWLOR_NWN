@@ -20,6 +20,7 @@ using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
 using System.Buffers.Text;
 using System.Collections;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -89,7 +90,12 @@ namespace SWLOR.Game.Server.Service
                 baseFP = npcStats.FP;
             }
 
-            return baseFP + modifier * 10 + foodBonus;
+            return GetMaxFP(baseFP, modifier, foodBonus);
+        }
+
+        public static int GetMaxFP(int baseFP, int modifier, int bonus)
+        {
+            return baseFP + modifier * 10 + bonus;
         }
 
         /// <summary>
@@ -156,7 +162,12 @@ namespace SWLOR.Game.Server.Service
                 baseStamina = npcStats.Stamina;
             }
 
-            return baseStamina + modifier * 5 + foodBonus;
+            return GetMaxStamina(baseStamina, modifier, foodBonus);
+        }
+
+        public static int GetMaxStamina(int baseFP, int modifier, int bonus)
+        {
+            return baseFP + modifier * 5 + bonus;
         }
 
         /// <summary>
@@ -871,7 +882,7 @@ namespace SWLOR.Game.Server.Service
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
 
-            return 8 + (2 * skillLevel) + stat + attackBonus;
+            return GetAttack(skillLevel, stat, attackBonus);
         }
 
         public static int GetAttackNative(CNWSCreature creature, BaseItem itemType)
@@ -915,8 +926,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
+            
+            return GetAttack(skillLevel, stat, attackBonus);
+        }
 
-            return 8 + (2 * skillLevel) + stat + attackBonus;
+        /// <summary>
+        /// Retrieves the raw attack based on the level, stat, and any bonuses.
+        /// </summary>
+        /// <param name="level">The level (NPC or skill)</param>
+        /// <param name="stat">The raw stat points</param>
+        /// <param name="bonus">The amount of bonus attack or force attack</param>
+        /// <returns></returns>
+        public static int GetAttack(int level, int stat, int bonus)
+        {
+            return 8 + (2 * level) + stat + bonus;
         }
 
         /// <summary>
@@ -1142,7 +1165,7 @@ namespace SWLOR.Game.Server.Service
             else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
                 accuracyBonus -= 10;
 
-            return stat * 3 + skillLevel + accuracyBonus;
+            return GetAccuracy(skillLevel, stat, accuracyBonus);
         }
 
         /// <summary>
@@ -1194,8 +1217,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
+            
+            return GetAccuracy(skillLevel, stat, accuracyBonus);
+        }
 
-            return stat * 3 + skillLevel + accuracyBonus;
+        /// <summary>
+        /// Gets the calculated accuracy for a given level, stat, and bonus.
+        /// </summary>
+        /// <param name="level">The level (skill/NPC)</param>
+        /// <param name="stat">The raw accuracy stat amount</param>
+        /// <param name="bonus">The amount of bonus accuracy.</param>
+        /// <returns>The calculated accuracy result.</returns>
+        public static int GetAccuracy(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
         }
 
         private static int CalculateEffectAccuracy(uint creature, int accuracy)
@@ -1373,7 +1408,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
+            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
 
         /// <summary>
@@ -1422,10 +1457,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
-
-            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
+            
+            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
-        
+
+        /// <summary>
+        /// Gets the evasion based on level, stat, and bonuses.
+        /// </summary>
+        /// <param name="level">The level (skill/NPC)</param>
+        /// <param name="stat">The raw agility stat</param>
+        /// <param name="bonus">The amount of bonus evasion</param>
+        /// <returns></returns>
+        public static int GetEvasion(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
+        }
+
         /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.

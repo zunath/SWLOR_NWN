@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -65,14 +66,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .SetText("HP")
-                            .SetColor(139, 0, 0)
+                            .SetColor(GuiColor.HPColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetTooltip("Hit Points - When these hit zero, you die.");
 
                         row.AddLabel()
                             .BindText(model => model.HP)
-                            .SetColor(139, 0, 0)
+                            .SetColor(GuiColor.HPColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
@@ -87,14 +88,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .SetText("FP")
-                            .SetColor(0, 138, 250)
+                            .SetColor(GuiColor.FPColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetTooltip("Force Points - Resource used to activate force abilities. Force sensitive characters only.");
 
                         row.AddLabel()
                             .BindText(model => model.FP)
-                            .SetColor(0, 138, 250)
+                            .SetColor(GuiColor.FPColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
@@ -109,14 +110,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .SetText("STM")
-                            .SetColor(0, 139, 0)
+                            .SetColor(GuiColor.STMColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetTooltip("Stamina - Resource used to activate non-force abilities.");
 
                         row.AddLabel()
                             .BindText(model => model.STM)
-                            .SetColor(0, 139, 0)
+                            .SetColor(GuiColor.STMColor)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 

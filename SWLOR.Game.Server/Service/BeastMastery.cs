@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -513,6 +514,20 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnUserDefined()
         {
             ExecuteScriptNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
+        }
+
+        [NWNEventHandler("beast_term")]
+        public static void OpenStablesMenu()
+        {
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Only players may use this terminal."));
+                return;
+            }
+            
+            Gui.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
         private static readonly Dictionary<int, int> _beastXPRequirements = new()

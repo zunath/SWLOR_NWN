@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -70,6 +71,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     if (tameLevel < npcStats.Level)
                     {
                         return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
+                    }
+
+                    var maxBeasts = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.Stabling);
+                    var dbQuery = new DBQuery<Beast>()
+                        .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
+                    var beastCount = (int)DB.SearchCount(dbQuery);
+                    if (beastCount >= maxBeasts)
+                    {
+                        return $"You have already tamed the maximum number of beasts your perks support.";
                     }
 
                     return string.Empty;

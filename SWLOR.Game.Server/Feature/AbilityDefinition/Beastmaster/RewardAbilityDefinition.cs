@@ -66,6 +66,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return "You do not have an active beast.";
             }
 
+            if (GetDistanceBetween(beast, activator) >= 15f)
+            {
+                return "Your beast is too far away.";
+            }
+
             return string.Empty;
         }
 

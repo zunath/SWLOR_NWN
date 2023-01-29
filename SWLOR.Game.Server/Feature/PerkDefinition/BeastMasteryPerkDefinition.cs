@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -86,6 +89,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Stabling)
                 .Name("Stabling")
+                .RefundRequirement((player, type, level) =>
+                {
+                    var playerId = GetObjectUUID(player);
+                    var dbQuery = new DBQuery<Beast>()
+                        .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
+                    var beastCount = (int)DB.SearchCount(dbQuery);
+                    if (beastCount > 1)
+                        return $"Too many beasts are stored at the stable. Release them before refunding this perk.";
+
+                    return string.Empty;
+                })
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to two beasts at a stable.")

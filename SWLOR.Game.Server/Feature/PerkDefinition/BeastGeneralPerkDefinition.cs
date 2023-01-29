@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             DiseasedTouch();
             Clip();
             SpinningClaw();
+            BeastSpeed();
 
             return _builder.Build();
         }
@@ -126,6 +127,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementBeastLevel(45)
                 .GrantsFeat(FeatType.SpinningClaw5);
+        }
+
+        private void BeastSpeed()
+        {
+            _builder.Create(PerkCategoryType.BeastGeneral, PerkType.BeastSpeed)
+                .Name("Beast Speed")
+                .GroupType(PerkGroupType.Beast)
+
+                .AddPerkLevel()
+                .Description("The beast gains an additional attack per round.")
+                .Price(3)
+                .RequirementBeastLevel(15)
+
+                .AddPerkLevel()
+                .Description("The beast gains an additional attack per round.")
+                .Price(3)
+                .RequirementBeastLevel(30)
+
+                .AddPerkLevel()
+                .Description("The beast gains an additional attack per round.")
+                .Price(3)
+                .RequirementBeastLevel(45);
         }
 
     }

@@ -501,6 +501,7 @@ namespace SWLOR.Game.Server.Service
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
+            Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureRight));
         }
 
         [NWNEventHandler("beast_spellcast")]

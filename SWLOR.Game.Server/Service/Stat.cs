@@ -1701,6 +1701,9 @@ namespace SWLOR.Game.Server.Service
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
+            // Beast Speed (1-3)
+            numberOfAttacks += Perk.GetEffectivePerkLevel(creature, PerkType.BeastSpeed);
+
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);
         }

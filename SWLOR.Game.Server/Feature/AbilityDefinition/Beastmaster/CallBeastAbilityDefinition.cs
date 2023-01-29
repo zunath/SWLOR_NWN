@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
+                    if (GetIsInCombat(activator) || Enmity.HasEnmity(activator))
+                    {
+                        return "You are in combat and cannot call your beast.";
+                    }
+
                     var maxBeastLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame) * 10;
 
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))

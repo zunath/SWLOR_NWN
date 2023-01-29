@@ -43,7 +43,7 @@
         ForceDrain4 = 38,
         ForceDrain5 = 39,
         Shock = 40,
-        Tranquilize = 41,
+        // 41 is free
         Burn = 42,
         Rest = 43,
         IronShell = 44,

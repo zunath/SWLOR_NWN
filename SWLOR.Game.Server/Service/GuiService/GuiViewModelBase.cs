@@ -362,10 +362,10 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         public Action OnModalConfirmClick() => () =>
         {
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
-
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
         };
 
         public Action OnModalCancelClick() => () =>

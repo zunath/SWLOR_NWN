@@ -457,6 +457,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .SetText("Learning")
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
                             });
                             rootRow.AddColumn(col =>
                             {
@@ -499,6 +507,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.FireDefensePurity)
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .BindText(model => model.LearningPurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -547,6 +562,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .SetText("")
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
                             });
                             rootRow.AddColumn(col =>
                             {
@@ -589,6 +612,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.WillPurity)
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .SetText("")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });

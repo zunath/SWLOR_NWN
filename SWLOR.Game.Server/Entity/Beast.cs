@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Entity
 
         public int EvasionPurity { get; set; }
         
+        public int LearningPurity { get; set; }
+
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }
 
         public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }

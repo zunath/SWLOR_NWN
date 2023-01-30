@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -115,7 +116,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         IsDead = false,
                         Type = type,
                         FavoriteFood = likedFood,
-                        HatedFood = hatedFood
+                        HatedFood = hatedFood,
+
+                        AttackPurity = Random.Next(0, 10),
+                        AccuracyPurity = Random.Next(0, 10),
+                        EvasionPurity = Random.Next(0, 10),
+                        LearningPurity = Random.Next(0, 10),
+
+                        DefensePurities = new Dictionary<CombatDamageType, int>
+                        {
+                            { CombatDamageType.Physical, Random.Next(0, 10) },
+                            { CombatDamageType.Force, Random.Next(0, 10) },
+                            { CombatDamageType.Fire, Random.Next(0, 10) },
+                            { CombatDamageType.Ice, Random.Next(0, 10) },
+                            { CombatDamageType.Poison, Random.Next(0, 10) },
+                            { CombatDamageType.Electrical, Random.Next(0, 10) },
+                        },
+
+                        SavingThrowPurities = new Dictionary<SavingThrow, int>
+                        {
+                            { SavingThrow.Fortitude, Random.Next(0, 10)},
+                            { SavingThrow.Will, Random.Next(0, 10)},
+                            { SavingThrow.Reflex, Random.Next(0, 10)},
+                        }
                     };
 
                     DB.Set(dbBeast);

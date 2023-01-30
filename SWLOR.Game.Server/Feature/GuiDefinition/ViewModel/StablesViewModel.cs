@@ -286,6 +286,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string LearningPurity
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PerkNames
         {
             get => Get<GuiBindingList<string>>();
@@ -415,6 +421,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ReflexPurity = string.Empty;
             WillPurity = string.Empty;
 
+            LearningPurity = string.Empty;
+
             XPTooltip = $"XP: 0 / 0";
         }
 
@@ -519,6 +527,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FortitudePurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Fortitude]}%";
             ReflexPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Reflex]}%";
             WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
+
+            LearningPurity = $"{dbBeast.LearningPurity}%";
 
             IsBeastSelected = true;
         }

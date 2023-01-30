@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             CreatureManager();
             Broadcast();
             SetScale();
+            GetScale();
 
             return _builder.Build();
         }
@@ -916,7 +917,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     // Amount is outside of our allowed range?
-                    if (value < 0.1 || value > MaxAmount)
+                    if (value < 0.1f || value > MaxAmount)
                     {
                         return "Please specify a value between 0.1 and " + MaxAmount + ".";
                     }
@@ -926,16 +927,32 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     // Allows the scale value to be a decimal number.
-                    float finalvalue = float.TryParse(args[0], out var value) ? value : 1;
+                    var finalValue = float.TryParse(args[0], out var value) ? value : 1f;
 
-                    // Ensures that the decimal number does not go beyond the third decimal place.
-                    finalvalue = (float)Math.Truncate(finalvalue * 1000) / 1000;
+                    SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalValue);
 
-                    SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalvalue);
+                    // Lets the DM know what he set the scale to, but round it to the third decimal place.
+                    var targetName = GetName(target);
+                    string shownValue = finalValue.ToString("0.###");
 
-                    // Lets the DM know what he set the scale to.
-                    var targetname = GetName(target);
-                    SendMessageToPC(user, $"{targetname} scaled to {finalvalue}.");
+                    SendMessageToPC(user, $"{targetName} scaled to {shownValue}.");
+                });
+        }
+
+        private void GetScale()
+        {
+            _builder.Create("getscale")
+                .Description("Gets an object's scale.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    var targetScale = GetObjectVisualTransform(target, ObjectVisualTransform.Scale);
+                    var targetName = GetName(target);
+                    string shownScale = targetScale.ToString("0.###");
+
+                    SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
                 });
         }
     }

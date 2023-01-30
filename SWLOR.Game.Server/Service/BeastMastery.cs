@@ -453,6 +453,9 @@ namespace SWLOR.Game.Server.Service
 
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
+            if (dbBeast == null)
+                return;
+
             dbBeast.IsDead = true;
 
             DB.Set(dbBeast);

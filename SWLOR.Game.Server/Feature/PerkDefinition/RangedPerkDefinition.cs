@@ -666,7 +666,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Zen Marksmanship")
 
                 .AddPerkLevel()
-                .Description("Your ranged attacks now use Willpower for damage if your Willpower is higher than your Perception, for Pistols and Rifles, or your Might, for Shurikens.")
+                .Description("Your ranged attacks now use Willpower for damage if your Willpower is higher than your weapon's damage stat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .RequirementCharacterType(CharacterType.Standard)

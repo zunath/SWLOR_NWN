@@ -52,6 +52,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
+        /// </summary>
+        [NWNEventHandler("object_destroyed")]
+        public static void CreatureDestroyed()
+        {
+            var enemy = OBJECT_SELF;
+            ClearEnmityTables(enemy);
+            RemoveCreatureEnmity(enemy);
+        }
+
+        /// <summary>
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
         [NWNEventHandler("mod_death")]

@@ -1121,6 +1121,26 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
         public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
         {
+            var accuracyBonus = 0;
+
+            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+            {
+                var type = GetItemPropertyType(ip);
+
+                // Attack Bonus / Enhancement Bonus found on the weapon.
+                if (type == ItemPropertyType.AccuracyBonus ||
+                    type == ItemPropertyType.EnhancementBonus)
+                {
+                    accuracyBonus += GetItemPropertyCostTableValue(ip);
+                }
+                // Accuracy Stat Override - Always "wins" even if another override was passed in.
+                else if (type == ItemPropertyType.AccuracyStat)
+                {
+                    statOverride = (AbilityType)GetItemPropertySubType(ip);
+                }
+            }
+
+
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ? 
                 Item.GetWeaponAccuracyAbilityType(baseItemType) :
@@ -1128,18 +1148,7 @@ namespace SWLOR.Game.Server.Service
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
             var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
             var skillLevel = 0;
-            var accuracyBonus = 0;
 
-            // Attack Bonus / Enhancement Bonus found on the weapon.
-            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
-            {
-                var type = GetItemPropertyType(ip);
-                if (type == ItemPropertyType.AccuracyBonus ||
-                    type == ItemPropertyType.EnhancementBonus)
-                {
-                    accuracyBonus += GetItemPropertyCostTableValue(ip);
-                }
-            }
 
             // Creature skill level / NPC level
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -1177,6 +1186,26 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
         public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
         {
+            var accuracyBonus = 0;
+
+            if (weapon != null)
+            {
+                foreach (var ip in weapon.m_lstPassiveProperties)
+                {
+                    // Attack Bonus / Enhancement Bonus found on the weapon.
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
+                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    {
+                        accuracyBonus += ip.m_nCostTableValue;
+                    }
+                    // Accuracy Stat Override - Always "wins" even if another override was passed in.
+                    else if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyStat)
+                    {
+                        statOverride = (AbilityType)ip.m_nSubType;
+                    }
+                }
+            }
+
             var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
                 Item.GetWeaponAccuracyAbilityType(baseItemType) :
@@ -1184,20 +1213,7 @@ namespace SWLOR.Game.Server.Service
             var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
-            var accuracyBonus = 0;
 
-            // Attack Bonus / Enhancement Bonus found on the weapon.
-            if (weapon != null)
-            {
-                foreach (var ip in weapon.m_lstPassiveProperties)
-                {
-                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
-                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
-                    {
-                        accuracyBonus += ip.m_nCostTableValue;
-                    }
-                }
-            }
 
             // Creature skill level / NPC level
             if (creature.m_bPlayerCharacter == 1)

@@ -289,7 +289,9 @@ namespace SWLOR.Game.Server.Service
             var beastDetail = GetBeastDetail(dbBeast.Type);
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
-            var claw = GetItemInSlot(InventorySlot.CreatureRight, beast);
+            var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
+
+            Console.WriteLine($"claw = {GetName(claw)}");
 
             var level = beastDetail.Levels[dbBeast.Level];
             
@@ -297,7 +299,10 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCHP, -1, level.HP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);

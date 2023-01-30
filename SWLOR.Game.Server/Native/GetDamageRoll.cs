@@ -498,9 +498,11 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            var per = Stat.GetStatValueNative(attacker, AbilityType.Perception);
             var wil = Stat.GetStatValueNative(attacker, AbilityType.Willpower);
-            var mgt = Stat.GetStatValueNative(attacker, AbilityType.Might);
+
+            var weaponDamageAbilityType = Item.GetWeaponDamageAbilityType(baseItemType);
+
+            var weaponDamageAbilityStat = Stat.GetStatValueNative(attacker, weaponDamageAbilityType);
 
             if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
             {
@@ -514,17 +516,17 @@ namespace SWLOR.Game.Server.Native
             }
             else if (Item.PistolBaseItemTypes.Contains(baseItemType))
             {
-                if (wil > per && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
                     return attacker.m_pStats.GetWISStat();
             }
             else if (Item.RifleBaseItemTypes.Contains(baseItemType))
             {
-                if (wil > per && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
                     return attacker.m_pStats.GetWISStat();
             }
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
             {
-                if (wil > mgt && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
                     return attacker.m_pStats.GetWISStat();
             }
             else if (Item.StaffBaseItemTypes.Contains(baseItemType))

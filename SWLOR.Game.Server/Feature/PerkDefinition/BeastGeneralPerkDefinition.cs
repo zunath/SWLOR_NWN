@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -134,6 +136,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             _builder.Create(PerkCategoryType.BeastGeneral, PerkType.BeastSpeed)
                 .Name("Beast Speed")
                 .GroupType(PerkGroupType.Beast)
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var beast = GetAssociate(AssociateType.Henchman, player);
+                    if (!BeastMastery.IsPlayerBeast(beast))
+                        return;
+
+                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var beast = GetAssociate(AssociateType.Henchman, player);
+                    if (!BeastMastery.IsPlayerBeast(beast))
+                        return;
+
+                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                })
 
                 .AddPerkLevel()
                 .Description("The beast gains an additional attack per round.")

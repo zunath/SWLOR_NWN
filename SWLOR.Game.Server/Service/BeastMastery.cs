@@ -298,9 +298,7 @@ namespace SWLOR.Game.Server.Service
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
             var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
-
-            Console.WriteLine($"claw = {GetName(claw)}");
-
+            
             var level = beastDetail.Levels[dbBeast.Level];
             
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

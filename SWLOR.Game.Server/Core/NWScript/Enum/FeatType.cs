@@ -1851,6 +1851,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         FlameBlast = 1884,
         Infusion1 = 1885,
         Infusion2 = 1886,
-        ZenMarksmanship = 1887
+        ZenMarksmanship = 1995
     }
 }

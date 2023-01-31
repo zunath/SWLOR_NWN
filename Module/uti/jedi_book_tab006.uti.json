@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Shien/Djem-So:\n\nThe twin forms Shien & Djem-So, also known as the Way of the Krayt Dragon, are defensive forms that deal in the reflecting of blaster bolts and the riposting of melee attacks, respectively. Commonly described as a foil to the E-8's volume-fire and the Makashi saber form, these twin forms excel in dealing with opponents who seek to control the flow of battle by changing intervals of blaster fire or by controlling the movements of the combatant, much in the way krayt dragons repel its natural predator - the Sand Demon - by burrowing when it burrows, to deny it the opportunity to bite at its soft underbelly, and barrel rolling to crush the ones that mount it in an attempt to strike at its spine.\n\nThe twin forms share a philosophy with the martial arts hijkata, who is not a form of strength, but rather unbalancing an opponent with its own strength, redirecting its force and using it against them.\n\nWhat Shien & Djem-So teaches:\n\nGlibness: This is not to imply a deceitful nature as a core of their being, but rather it implies a cleverness that is dependent on all actors making the first move, to gauge what they react to positively, reflecting that to keep them appeased and learn what displeases them, so as to know how to wield deceptive practices against those who depend on solving situations with lying, as well as anticipating where treachery can best strike during critical junctions that would soon see a situation resolved.\n\nIt is to remain like the krayt dragon on the hunt, still and camouflaging with the sand, difficult to see after extended periods of time where the sand has filled the gaps of their scales and dulling any texture. Hide your true intentions until you are certain who serves which interest and how to delicately solve this situation with subtlety and careful steps. To ensure the completion of a situation without the wrong party catching hint of your intent."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 6"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab006"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab006"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Makashi:\n\nMakashi, or the Way of the Ysalamiri, is a form based on precision - exacts in every way that it can be measured, only just enough of a movement to stay at arm's length, deflect an incoming attack, make attacks with the intent to disarm or subdue an opponent or maintaining their position, never in excess, so as to remain ready for a prolonged encounter. It is a form that hyper-focuses on one target and never relents, no matter how long it takes. All outside presences are distractions and are not held in the equation.\n\nit is a form that seeks victory, even against an opponent who's exact nature is unknown to the wielder.\n\nWhat Makashi Teaches:\n\nTenacity: This is not to imply that such a mentality is bullheaded, for the perceptions that perceive the outside world still exist. It is merely a focus on a root of a problem, never over-exerting in the event of further action is required to solve it, controlling personal investments so as to not push them ahead of their current pace. Just as well, when a problem seems initially unassailable, time, pressure and commitment can have it give way under said unrelenting tenacity."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 3"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab003"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab003"
+  }
+}

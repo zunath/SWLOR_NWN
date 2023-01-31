@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Ataru:\n\nAtaru, or the Way of the Hawk Bat, is a form that is swift to act, given motion by agility, speed and overwhelming volume, often beginning its assault by aerial attack or by charge, never stopping or standing its ground, instead flowing along with the movement of that which it tries to assail, or using the force projected by its target to recoil off of, and attempt an assault on another angle, backflipping from dealt blows, sprinting in the direction of an incoming swing and circling until the fullest extent of the target's joints can stretch, and strike in that angle that they cannot reach.\n\nIt is a form that considered wholly aggressive, or likened to a candle that burns twice as bright, the wielder serving as both a conduit for the instinct that guides their hands, and the Force, which speeds them along like the all-circling, biting sand of a haboob, destructive and certain to overwhelm a target, but doomed to stillness, sooner or later.\n\nClosest relatable to wielding a blaster, Ataru's endgame state is acting with such swiftness that the first to draw and the first to strike is the victor, ending a battle in seconds.\n\nWhat Ataru teaches:\n\nDecisiveness: This is not to imply celerity, as swift action is not unplanned haste, but acting on a known course of action immediately to stem the tide before it can begin to flow. Just as Ataru can end a fight before it begins, the mentality of decisive action can be used to disarm lies where they are found, as well as make truths evident before an unseen actor can wrap a lie around the truth - seen especially with the Sith, who's lies run paralleled with the truth and giving themselves just enough room for deniability or explanation should it ever come to light.\n\nIn many ways, action taken now can prevent greater catastrophe from occurring later. Crumbling infrastructure can be repaired now to prevent greater harm upon its collapse. Food can be given today to prevent starvation tomorrow."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 5"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab005"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab005"
+  }
+}

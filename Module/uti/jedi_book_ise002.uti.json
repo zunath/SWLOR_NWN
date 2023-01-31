@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Soresu, An Abridged History\n\nAs stated in the introduction, Soresu came into being as a response to the widespread use of blasters. The preceding Forms of Shii-Cho and Makashi proved inadequate to the task of providing a suitable retort. While Makashi had proved to be more than efficient in the context of duels against other lightsaber wielders, its shortcomings were laid bare by the use of blasters. This led to an upsurge in Shii-Cho's use, for its Blast-Deflection techniques were, for a time, effective against the crude blasters being used in those bygone days. Further advancements in blaster weapon technology outpaced Shii-Cho's defensive capabilities, however, and so the Form was refined. Shii-Cho's sweeping strikes were tightened around the body, to better provide an omnidirectional defense. Additionally, as the threat of dark Jedi once more returned to the Order's ever growing list of concerns, Makashi's defensive cadences were also incorporated into the sequences of this nascent Form developing from Shii-Cho.\n\nIt was from these pragmatic origins that Soresu was born, and, over the subsequent years it has found a place in the skillset of Jedi from many different Paths, and become the ultimate expression of our Order's non-aggressive philosophy."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The Long Dance, Part 2"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_isesor2"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_ise002"
+  }
+}

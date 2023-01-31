@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The Jedi Way\nAn essay on philosophies of the lightsaber forms.\nBy Tabby Waynolds\n\nIntroduction:\n\nAsk any warrior culture, from the Mandalorians, to the Echani, and all will agree that combat is an expression of self, in some way, shape or form. While it's more difficult to observe it in the modern age between blaster slingers, it's significantly more pronounced among the Jedi, who's ability in the Force, means to combat the enemies of civil society through both spoken word and battle alike and demeanor are all linked together.\n\nIt is because of this that the pursuit in the mastery of mind, body and soul is all the more important. Like buoyancy, one lifts all of the others.\n\nThe forms, and how they reflect the Jedi way:\n\nWhile the Jedi Order is joined on the three pillars of both their faith and their structure, often their duties take them far, far away and their duties as mediators depend upon them to make decisions based on discretion. It is here that jedi can differ from one another - despite common perceptions, the jedi do not eschew their nature as sapients, they merely strive to master it, which can be observed in the Jedi Code and its interpretations.\n\nThey are people, complete with their own hopes, wants, dreams, fears and hatreds. A jedi will not be a slave to either, but they still shape their decision making.\n\nAnd as people, they form their own preferences and creations based on either the existing that conform to their current standing beliefs, or something that is a true reflection of their beliefs. This is not to imply that they are close-minded and subject themselves to an echo chamber, for the Jedi Way is much like living itself, constantly absorbing information and learning from it and processing how it fits into their view of the galaxy. It is because of this that the forms serve both as bodyguards and guides to navigate life for the wielder, the course of actions these forms require inviting new ways for it to be used in social situations."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 1"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab001"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab001"
+  }
+}

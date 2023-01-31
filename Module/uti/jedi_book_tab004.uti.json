@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Soresu:\n\nSoresu, or the Way of the Mynock, is a form that, by itself, lacks any aggressive moves. It is a form described by its practitioners and masters as a form with the intent to survive a battle, not win it, much in the way mynocks do in the wild - they are not hunting predators but scavengers who flutter around and about their would-be pursuers, sometimes a predator species, sometimes a janitor with a broom. It requires stamina, a perceptive eye to perceive incoming attacks not immediately in front of them, and a keen wit to seek feints from those ahead of them.\n\nIt is a wildly popular form among the jedi, either to add its protective moves to one's toolkit, or to do away with the vicious nature of combat by tiring aggressors until they're willing to surrender or can be disarmed and detained.\n\nWhat Soresu teaches:\n\nPatience: This is not to imply complacency, as someone standing still has not ceased to be, and is instead waiting for the initial shock of a situation to pass over and around them, like a stone in a stream, unmoved by its currents, yet in the heart of it, all the same. It is this patience that encourages one to wait, see all actors visible and hidden, see what is at stake and estimate whether this is a matter a jedi should involve themselves with at all.\n\nWhile slow-going and burdensome, it allows one to form a complete picture of the situation, and walk into it with all advantages that can be wielded to see it brought to a satisfactory conclusion."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 4"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab004"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab004"
+  }
+}

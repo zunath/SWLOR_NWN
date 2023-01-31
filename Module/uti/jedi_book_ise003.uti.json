@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The Philosophy of Soresu\n\nSoresu is, in many ways, akin to a dance between the practitioner and their adversary. An elegant and graceful thing whose reactive nature allows the shrewd practitioner to match an adversary's cadence and rhythm. One works in harmony with one's foe, patiently taking on their aggression and rancor, using it to determine the appropriate positioning, timing, and methodology needed to nullify the threat. Note the emphasis on nullification here. The objective is not to cripple or slay one's foe, but rather, to nullify a threat. This can be done through force of arms, or gentle words, or another form entirely. Soresu's reactive nature allows for its practitioners to explore alternative avenues of conflict resolution, an important thing for us Jedi, for while it is true that Jedi must be prepared to take a life when lightsabers are ignited, we must never forget our charge of preservation and protection.\n\nTo truly master Soresu, it is my belief that one must understand and embrace the notion of striking last. This is an important cornerstone of the Form. The only strike that truly matters in conflict is the one that brings it to an end.\n\nAmong the Echani, it is a commonly held belief that there is no such thing as a sword. It exists both within, and without. It could be something held, or it could be one's fists, or it could be the mind or the tongue. Battle can be waged and won with countless implements, and so we are encouraged to focus upon a singular action, for to train too broadly is to invite defeat. Existence and the act of combat are much alike. The essence of both, the purity of both can be distilled into a singular action, and that is to Cut. To act without doubt or indecisiveness in order to achieve one's objective, whatever it may be.\n\nEvery step of the Long Dance is but a prelude to a singular moment of clarity, wherein we strike decisively and bring an end to the conflict. Soresu's nigh impenetrable defenses are but a means to an end. Never forget this."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The Long Dance, Part 3"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_isesor3"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_ise003"
+  }
+}

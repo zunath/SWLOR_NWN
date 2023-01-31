@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The forms themselves, and the lessons they have to offer for navigating the galaxy:\n\nShii-Cho:\n\nShii-Cho, or the Way of the Sarlacc, is the mother root from which most forms originate. It is named after the sarlacc because of the patience it requires, much in the way a sarlacc must wait for its chance to feed without any movement that could spook the herd, often for years on end. In motion it is variety of simple wide sweeping attacks that either seek to put a single opponent on the retreat and corner them, or to attack multiple enemies in an open field environment.\n\nIt is the form taught to all initiates to understand the basics of combat, footing and to condition them for further studying. It is a fundamental form, that teaches all of the basics, and requires no critical study to become an adept at, nor know when to wield it, for it suits all occasions.\n\nWhat Shii Cho teaches:\n\nSimplicity: This is not to imply ignorance but rather it is a lens that even the most brilliant minds of the modern age sometimes fail to see through - breaking the world around them into its most basic parts. Simple truths, simple solutions, this form requires the wielder be a practical, hands-on actor in combat, and such a mentality can be decidedly useful in dealing in the on-goings of other people.\n\nThese are their needs, this is what they stand to gain from it, this is who stands to lose from it, the simplest solution is thus and can be worked up from there to reach a conclusion that all involved parties can agree on, but above all; is this a matter that requires a Jedi's judgement? If the answer is no, it may not be a matter for a Jedi at all."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 2"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab002"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab002"
+  }
+}

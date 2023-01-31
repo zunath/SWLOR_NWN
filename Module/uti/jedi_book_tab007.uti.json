@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Niman:\n\nThe form Niman, also known as the Way of the Rancor, is the union of many forms brought under one. It is a form that has focused on eliminating shortcomings by coupling one form with another. It never over-extends, it is cautionary when it goes on the attack, it is easy to retreat into a defensive stance.\n\nMuch like Shii Cho, Niman is easy to become adept at as all of its primary moves are starter moves from other forms, and is sufficient in all situations it might find itself in. Like the Rancor, ever hyper-sensitive to its environment and adapting to suit the current natural order, so too does the Niman practitioner, shifting its strengths to suit the situation, based on its wide variety of techniques to choose from.\n\nWhat Niman teaches:\n\nAdaptation: This is not to imply conformity, but rather Niman teaches those who practice it to rebel against stagnation, ever-changing their approach to situations to match the age and the people that live in the moment. I would go as far to say that it is called the Scholar's Form not because it is so simple that a scholar or diplomat can practice their form for a few hours then be about their day, but because it learns, intercompares and analyzes information between a distant age and the present. \n\nThis much is as true for its performance in combat as it is for its wielder to learn the people they mean to serve. To be a master of this form, I reckon, is to require an open mind, capable of following the on-goings of the world as they develop, minute by minute, be it in evolution of combat styles, or in political atmospheres, perspectives on life, or otherwise."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 7"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab007"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab007"
+  }
+}

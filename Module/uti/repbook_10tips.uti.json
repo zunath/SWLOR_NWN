@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 206
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Top 10 Tips to Survive the War\n- By Corporal Docker A. Barns\n\n1. Listen to orders! Kark about it after the operation! Shove your brain aside to a dark place until the operation is over and you can give your AAR.\n\n2. Run, don't walk! When you are under enemy fire, the best way to survive it is to KEEP MOVING!\n\n3. Watch your buddy's back! Those Sith-spit soldiers of Mally's love to shoot your back, so watch your buddy's back and let him watch yours!\n\n4. Clean your energy cells! Lost more than a few brothers and sisters who think that those Corellian scrap-heap blaster rifles can't go wrong. They are wrong! They can! Clean the energy cells between operations and keep them pristine!\n\n5. DON'T. LOSE. YOUR. RIFLE! Your blaster rifle is your life! It is your new spouse! Don't lose it, or you are just a liability.\n\n6. All the staff in the mess hall are sirs and ma'ams. Trust me, don't piss them off.\n\n7. Keep an extra pair of socks with you at all time. This goes without saying. Don't be a sockless dimwit.\n\n8. Don't grab a tailhead by the lekku. That's just asking to be smacked in the face. Those lekkus are sensitive!\n\n9. Don't dig too deeply. I don't know about this one, but the locals here at Viscara keep telling me about it. They keep saying not to dig too deeply, and I am going to believe them.\n\n10. Watch the skies! Buddy of mine lived so long because he has a sixth-sense as to artillery strikes and bombing runs. Hone your instincts for those, too, and you'll live to the end of your service.\n\nStay strong, brother and sister. For the Republic!"
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "10 Tips to Survive the War"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 34
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "repbook_10tips"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "repbook_10tips"
+  }
+}

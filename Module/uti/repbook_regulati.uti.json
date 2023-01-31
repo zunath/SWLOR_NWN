@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 206
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Abridged Guide to the Code and Regulations\n- By Lieutenant Marbury Grant\n\nWelcome to the Republic. Chances are, you haven't read or can't understand the library of code and regulations that govern the armed forces of the Galactic Republic. If you are part of the Special Forces, you may be of the view that you have better things to do than spend four years at the University of Coruscant learning the laws of our grand Republic. So, here's the important ones. Read them and remember them.\n\nONE. Follow orders. You are a soldier, not a militiaman, not a mercenary, not a bounty hunter. The Republic shelters you, feeds you, gives you protection, and arms you. You listen to orders and follow them. Don't like the orders? Voice your misgivings before the operation or after the operation.\n\nTWO. Don't shame us. You are a soldier of the Republic, and you'll be seen as such. If you do embarrassing things, we'll all be embarrassed. Don't do embarrassing things. Don't try to snog a Jedi, or dance with a Revanite next to the pyre, or harm a civilian \"by accident\". The reputation of your squad, of Outpost Hope, of your commanders and the Republic, rests on you.\n\nTHREE. Don't break the law. This really falls flatly under two, but it ought go without speaking that the Republic will not tolerate the commissioning of war crimes or unlawful actions by its uniformed men and women. If you break the law, you will be tried at a military tribunal and you will face the appropriate sanctions and punishments. Don't break the law.\n\nYou are a soldier of the Republic. We will hold you to standards befitting one. Keep to those standards, and you will rise high in the ranks. Fail them, and you will either find yourself swiftly summarily discharged, or worse.\n\nYou are a soldier of the Republic. Uphold the ideals of the Republic."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Abridged Guide to Regulations"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 36
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "repbook_regulations"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "repbook_regulati"
+  }
+}

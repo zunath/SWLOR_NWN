@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Soresu, The Long Dance,\nAn Instructional Treatise by\nIsena Authal\n\nSoresu, also known as the Way of the Mynock, or the Resilience Form, is the third Form of lightsaber combat. Originally devised as an answer to the advent of blasters and other energy weapon platforms, Soresu has, over the long years, grown to become the ultimate manifestation of defensive Lightsaber combat, regardless of the nature or number of foes faced. Indeed, when utilised by a seasoned practitioner, the Resilience Form allows them to survive even the deadliest of skirmishes through deft bladework, economic movements, and a profound connection with the swirling currents of the Living Force.\n\nHowever, it is important to understand that no Form or Technique is utterly infallible. To succumb to the conceit of Soresu's invincibility is to invite complacency, and has been the undoing of many a promising practitioner. Pride, they say, comes before the fall. Do not allow Pride to take root within your heart. On the other side of the spectrum is the belief that due to its defensive nature, Soresu forgoes all means of attack and is, therefore, a Form only suited for victory through attrition, no matter the collateral cost. This is patently untrue. While Soresu is a reactive Form, this does not necessarily mean passivity. To the contrary, a skilled practitioner of the Form can utilise its flowing movements and heightened battlefield awareness to manipulate the flow of battle to create openings to exploit. "
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The Long Dance, Part 1"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_isesor1"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_isesor"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Conclusion\n\nWhile these forms have philosophies that influence the wielder in day-to-day life as much as they do in battle, there is one final piece of information I'd like to share, based not on my time in the Jedi Order, but rather being alive: stagnation invites trouble.\n\nIdeas need to be brought to bear in the galaxy and put to the test in day-to-day situations. That which does not have an answer to problems needs to be addressed to prepare an answer.\n\nThe old ways may serve for a time, but the Galaxy is ever-changing, and no single thing always works. You may have noticed I start every dissection of the forms with \"This is not to imply\". That is on purpose, as it is a shadow of these merits, swift to envelope them when given the chance.\n\nSimplicity may invite ignorance to higher possibilities.\n\nDogged pursuit of tenacity may invite obliviousness.\n\nPatience humored overlong can invite complacency and paralyze the observer with indecision from the constant flow of new information, as the galaxy turns ever onwards.\n\nDecisiveness as a response of action to every problem may lead to a poorly formulated plan and the speed of such urgency may be too swift to stop. Just as Ataru is so dependent on its speed that you cannot abort its attacks, a decision made in haste may be too swift to stop before it is made in error.\n\nGlibness, if worn like a mask for too long, can soon lead to a life ever-projecting a lie, and can invite delusions of the imagination to replace the sometimes unpleasant picture of reality.\n\nEver eager adaptation to the modern world can lead to conformity, and the devolution of a refined craft by those who simply seek ease of access.\n\nWith such dangers that are so easy to fall into, and no safeguards to protect against them, it falls upon you to ask questions frequently, not just to your peers or masters, but yourself, to keep perspective on the what, when, why, how and where of all things. What it is, when was it established and why was it made under whatever circumstances, how it came to be and where was it established.\n\nMay the Force be with you,\nTabby Waynolds."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An Introduction to Lightsaber Forms, Part 8"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 51
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 107
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "jedi_book_tab008"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "jedi_book_tab008"
+  }
+}

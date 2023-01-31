@@ -42805,6 +42805,154 @@
                 "type": "byte",
                 "value": 107
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "10 Tips to Survive the War"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "repbook_10tips"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Abridged Guide to Regulations"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "repbook_regulati"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 6"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 7"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "An Introduction to Lightsaber Forms, Part 8"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_tab008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Long Dance, Part 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_isesor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Long Dance, Part 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_ise002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "The Long Dance, Part 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jedi_book_ise003"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16778250

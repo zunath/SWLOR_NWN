@@ -472,17 +472,38 @@ namespace SWLOR.Game.Server.Native
                 return -1;
 
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
-            if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var wil = Stat.GetStatValueNative(attacker, AbilityType.Willpower);
+            var weaponDamageAbilityType = Item.GetWeaponDamageAbilityType(baseItemType);
+            var weaponDamageAbilityStat = Stat.GetStatValueNative(attacker, weaponDamageAbilityType);
+
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
                     return attacker.m_pStats.GetSTRStat();
             }
-            else if (Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            else if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
             {
                 if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return attacker.m_pStats.GetSTRStat();
-            } 
-            else if (Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            }
+            else if (Item.PistolBaseItemTypes.Contains(baseItemType))
+            {
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                    return attacker.m_pStats.GetWISStat();
+            }
+            else if (Item.RifleBaseItemTypes.Contains(baseItemType))
+            {
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                    return attacker.m_pStats.GetWISStat();
+            }
+            else if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+            {
+                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
+                    return attacker.m_pStats.GetWISStat();
+            }
+            else if (Item.StaffBaseItemTypes.Contains(baseItemType))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
                     return attacker.m_pStats.GetDEXStat();

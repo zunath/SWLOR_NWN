@@ -933,7 +933,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     // Lets the DM know what he set the scale to, but round it to the third decimal place.
                     var targetName = GetName(target);
-                    string shownValue = finalValue.ToString("0.###");
+                    var shownValue = finalValue.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} scaled to {shownValue}.");
                 });
@@ -950,7 +950,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var targetScale = GetObjectVisualTransform(target, ObjectVisualTransform.Scale);
                     var targetName = GetName(target);
-                    string shownScale = targetScale.ToString("0.###");
+                    var shownScale = targetScale.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
                 });

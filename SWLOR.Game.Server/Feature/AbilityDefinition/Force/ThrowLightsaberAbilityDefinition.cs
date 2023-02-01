@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var validWeapon = GetIsObjectValid(weapon) &&
                                  (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
                                   Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)));
+                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)));
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -59,17 +60,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             BiowarePosition.TurnToFaceObject(target, activator);
             
             AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
 
             switch (level)
             {
                 case 1:
-                    dmg = 8;
+                    dmg = 10 + (willBonus * 2);
                     break;
                 case 2:
-                    dmg = 17;
+                    dmg = 25 + (willBonus * 3);
                     break;
                 case 3:
-                    dmg = 24;
+                    dmg = 40 + (willBonus * 4);
                     break;
             }
 
@@ -129,9 +131,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(2)
+                .RequirementFP(1)
+                .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -143,9 +147,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(4)
+                .RequirementFP(2)
+                .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -157,9 +163,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(6)
+                .RequirementFP(2)
+                .RequirementStamina(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()

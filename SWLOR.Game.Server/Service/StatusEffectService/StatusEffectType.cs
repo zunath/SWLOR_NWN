@@ -55,6 +55,10 @@
         ForceValor1 = 50,
         ForceValor2 = 51,
         ForceRage1 = 52,
-        ForceRage2 = 53
+        ForceRage2 = 53,
+        ForceBody1 = 54,
+        ForceBody2 = 55,
+        ForceMind1 = 56,
+        ForceMind2 = 57
     }
 }

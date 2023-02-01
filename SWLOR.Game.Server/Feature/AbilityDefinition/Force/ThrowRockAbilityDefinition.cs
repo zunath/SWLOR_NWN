@@ -27,23 +27,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
 
             switch (level)
             {
                 case 1:
-                    dmg = 10;
+                    dmg = 10 + (willBonus * 2);
                     break;
                 case 2:
-                    dmg = 15;
+                    dmg = 20 + (willBonus * 3);
                     break;
                 case 3:
-                    dmg = 25;
+                    dmg = 30 + (willBonus * 4);
                     break;
                 case 4:
-                    dmg = 34;
+                    dmg = 40 + (willBonus * 5);
                     break;
                 case 5:
-                    dmg = 43;
+                    dmg = 50 + (willBonus * 6);
                     break;
             }
 
@@ -82,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock1, PerkType.ThrowRock)
                 .Name("Throw Rock I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 10f)
+                .HasActivationDelay(1f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -97,7 +99,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock2, PerkType.ThrowRock)
                 .Name("Throw Rock II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 10f)
+                .HasActivationDelay(1f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
@@ -112,7 +115,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock3, PerkType.ThrowRock)
                 .Name("Throw Rock III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 10f)
+                .HasActivationDelay(1f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -127,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock4, PerkType.ThrowRock)
                 .Name("Throw Rock IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 10f)
+                .HasActivationDelay(1f)
                 .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()
@@ -141,7 +146,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock5, PerkType.ThrowRock)
                 .Name("Throw Rock V")
                 .Level(5)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 10f)
+                .HasActivationDelay(1f)
                 .HasMaxRange(40.0f)
                 .RequirementFP(8)
                 .IsCastedAbility()

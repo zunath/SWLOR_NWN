@@ -77,35 +77,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Rock")
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10 physical DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 10 + Willpower Mod * 2 physical DMG to a single target.")
                 .Price(1)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock1)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 15 physical DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 20 + Willpower Mod * 3 physical DMG to a single target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock2)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 25 physical DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 30 + Willpower Mod * 4 physical DMG to a single target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock3)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 34 physical DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 40 + Willpower Mod * 5 physical DMG to a single target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock4)
 
                 .AddPerkLevel()
-                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 43 physical DMG to a single target.")
+                .Description("Telekinetically launches a chunk of the environment at the enemy. Deals 50 + Willpower Mod * 6 physical DMG to a single target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -138,20 +138,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
-                .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 8 DMG. Can hit up to 1 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber, saberstaff or one-handed vibroblade up to 15m for 10 + Willpower Mod * 2 DMG. Can hit up to 1 targets along the path thrown.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber1)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 17 DMG. Can hit up to 2 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber, saberstaff or one-handed vibroblade up to 15m for 25 + Willpower Mod * 3 DMG. Can hit up to 2 targets along the path thrown.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber2)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped one-handed lightsaber or one-handed vibroblade up to 15m for 24 DMG. Can hit up to 3 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber, saberstaff or one-handed vibroblade up to 15m for 40 + Willpower Mod * 4 DMG. Can hit up to 3 targets along the path thrown.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Heal")
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 10 HP every six seconds.")
+                .Description("Heals a single target for 10 + (Willpower Mod * 2) + (Willpower Mod/2)d10 HP every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal1)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 15 HP every six seconds.")
+                .Description("Heals a single target for 20 + (Willpower Mod * 4) + (Willpower Mod/2)d10 HP every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal2)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 20 HP every six seconds.")
+                .Description("Heals a single target for 30 + (Willpower Mod * 6) + (Willpower Mod/2)d10 HP every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal3)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 25 HP every six seconds.")
+                .Description("Heals a single target for 40 + (Willpower Mod * 8) + (Willpower Mod/2)d10 HP every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal4)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 30 HP every six seconds.")
+                .Description("Heals a single target for 50 + (Willpower Mod * 10) + (Willpower Mod/2)d10 HP every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Burst")
 
                 .AddPerkLevel()
-                .Description("Deals 12 DMG to a single target.")
+                .Description("Deals 10 + Willpower Mod * 2 DMG to all targets around the point of impact.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 19 DMG to a single target.")
+                .Description("Deals 16 + Willpower Mod * 4 DMG to all targets around the point of impact.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 28 DMG to a single target.")
+                .Description("Deals 22 + Willpower Mod * 6 DMG to all targets around the point of impact.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
-                .Description("Deals 40 DMG to a single target.")
+                .Description("Deals 30 + Willpower Mod * 8 DMG to all targets around the point of impact.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -344,23 +344,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
         private void ForceMind()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceMind)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceMind)
                 .Name("Force Mind")
 
                 .AddPerkLevel()
-                .Description("Converts 25% of the user's FP into HP.")
+                .Description("PLACEHOLDER.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.ForceBody)
                 .GrantsFeat(FeatType.ForceMind1)
 
                 .AddPerkLevel()
-                .Description("Converts 50% of the user's FP into HP.")
+                .Description("PLACEHOLDER.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.ForceBody)
                 .GrantsFeat(FeatType.ForceMind2);
         }
 
@@ -370,7 +368,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Drain")
 
                 .AddPerkLevel()
-                .Description("Attempts to steal 10 HP from a target every six seconds with a 14DC will check.")
+                .Description("Attempts to steal 10 + Willpower Mod + (Willpower Mod)d2 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -378,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
-                .Description("Attempts to steal 15 HP from a target every six seconds with a 14DC will check.")
+                .Description("Attempts to steal 15 + Willpower Mod + (Willpower Mod)d3 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -386,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
-                .Description("Attempts to steal 20 HP from a target every six seconds with a 14DC will check.")
+                .Description("Attempts to steal 20 + Willpower Mod * 2 + (Willpower Mod)d4 HP from a target every six seconds with a 14DC will check.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -394,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain3)
 
                 .AddPerkLevel()
-                .Description("Attempts to steal 25 HP from a target every six seconds with a 14DC will check.")
+                .Description("Attempts to steal 25 + Willpower Mod * 2 + (Willpower Mod)d6 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -402,7 +400,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain4)
 
                 .AddPerkLevel()
-                .Description("Attempts to steal 30 HP from a target every six seconds with a 14DC will check.")
+                .Description("Attempts to steal 30 + Willpower Mod * 3 + (Willpower Mod)d8 HP from a target every six seconds with a 14DC will check.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -416,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lightning")
 
                 .AddPerkLevel()
-                .Description("Deals 12 DMG to a single target.")
+                .Description("Deals 10 + Willpower Mod * 2 DMG to up to 6 targets around the point of impact. Drains 7 FP. If sufficient FP is not available, drains health.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -424,7 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 19 DMG to a single target.")
+                .Description("Deals 16 + Willpower Mod * 4 DMG to up to 6 targets around the point of impact. Drains 9 FP. If sufficient FP is not available, drains health.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -432,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning2)
 
                 .AddPerkLevel()
-                .Description("Deals 28 DMG to a single target.")
+                .Description("Deals 22 + Willpower Mod * 6 DMG to up to 6 targets around the point of impact. Drains 11 FP. If sufficient FP is not available, drains health.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -440,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning3)
 
                 .AddPerkLevel()
-                .Description("Deals 40 DMG to a single target.")
+                .Description("Deals 30 + Willpower Mod * 8 DMG to up to 6 targets around the point of impact. Drains 13 FP. If sufficient FP is not available, drains health.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -450,23 +448,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceBody()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceBody)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceBody)
                 .Name("Force Body")
 
                 .AddPerkLevel()
-                .Description("Converts 25% of the user's HP into FP.")
+                .Description("Restores Willpower Mod / 2 Force Points per round.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.ForceMind)
                 .GrantsFeat(FeatType.ForceBody1)
 
                 .AddPerkLevel()
-                .Description("Converts 50% of the user's HP into FP.")
+                .Description("Restores Willpower Mod Force Points per round.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.ForceMind)
                 .GrantsFeat(FeatType.ForceBody2);
         }
 
@@ -496,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disturbance")
 
                 .AddPerkLevel()
-                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 2 with an 8DC will check for one minute.")
+                .Description("Deals 10 + Willpower Mod * 2 DMG to a single target and reduces target's accuracy by 2 with an 8DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -504,7 +500,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 4 with a 12DC will check for one minute.")
+                .Description("Deals 30 + Willpower Mod * 4 DMG to a single target and reduces target's accuracy by 4 with a 12DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -512,7 +508,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance2)
 
                 .AddPerkLevel()
-                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 6 with a 14DC will check for one minute.")
+                .Description("Deals 50 + Willpower Mod * 6 DMG to a single target and reduces target's accuracy by 6 with a 14DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -526,7 +522,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Benevolence")
 
                 .AddPerkLevel()
-                .Description("Restores 40 HP to a single target.")
+                .Description("Restores 30 + Willpower Mod * 4 + (Willpower Mod*4)d10 health to target. If targeting another, healing is doubled, cost is increased by 10 FP. Willpower Mod/2 stamina is taken (bonuses not lost on insufficient stamina), to restore Willpower Mod/2 Stamina and FP to target and provide Willpower Mod * 2 regen for 4 rounds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -534,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
-                .Description("Restores 80 HP to a single target.")
+                .Description("Restores 60 + Willpower Mod * 4 + (Willpower Mod*4)d10 health to target. If targeting another, healing is doubled, cost is increased by 10 FP. Willpower Mod/2 stamina is taken (bonuses not lost on insufficient stamina), to restore Willpower Mod/2 Stamina and FP to target and provide Willpower Mod * 2 regen for 4 rounds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -542,7 +538,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
-                .Description("Restores 120 HP to a single target.")
+                .Description("Restores 90 + Willpower Mod * 4 + (Willpower Mod*4)d10 health to target. If targeting another, healing is doubled, cost is increased by 10 FP. Willpower Mod/2 stamina is taken (bonuses not lost on insufficient stamina), to restore Willpower Mod/2 Stamina and FP to target and provide Willpower Mod * 2 regen for 4 rounds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -578,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Spark")
 
                 .AddPerkLevel()
-                .Description("Deals 9 DMG to a single target and reduces target's evasion by 2 with an 8DC will check for one minute.")
+                .Description("Deals 10 + Willpower Mod * 2 DMG to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Costs 1 FP, if FP is not available, drains health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -586,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 DMG to a single target and reduces target's evasion by 4 with a 12DC will check for one minute.")
+                .Description("Deals 30 + Willpower Mod * 4 DMG to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Costs 3 FP, if FP is not available, drains health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -594,7 +590,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 32 DMG to a single target and reduces target's evasion by 6 with a 14DC will check for one minute.")
+                .Description("Deals 50 + Willpower Mod * 6 DMG to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Costs 5 FP, if FP is not available, drains health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -608,7 +604,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Creeping Terror")
 
                 .AddPerkLevel()
-                .Description("Attempts to Paralyze a target for 2 seconds with an 8DC will check and inflicts Terror which deals 8 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 3 seconds with an 8DC will check and inflicts Terror which deals Willpower Modifier / 2 DMG every six seconds for 24 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -616,7 +612,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror1)
 
                 .AddPerkLevel()
-                .Description("Attempts to Paralyze a target for 2 seconds with a 12DC will check and inflicts Terror which deals 12 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 3 seconds with a 12DC will check and inflicts Terror which deals 5 + Willpower Modifier DMG every six seconds for 24 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -624,7 +620,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
-                .Description("Attempts to Paralyze a target for 2 seconds with a 14DC will check and inflicts Terror which deals 16 DMG every six seconds for 24 seconds.")
+                .Description("Attempts to Paralyze a target for 3 seconds with a 14DC will check and inflicts Terror which deals 10 + Willpower MOdifier * 2 DMG every six seconds for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

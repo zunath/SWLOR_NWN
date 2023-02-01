@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Holy), target);
 
             Enmity.ModifyEnmityOnAll(activator, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
@@ -67,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.Disturbance1, PerkType.Disturbance)
                 .Name("Disturbance I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Disturbance, 20f)
-                .RequirementFP(1)
+                .HasRecastDelay(RecastGroup.Disturbance, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -76,7 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 9, 2, 1, Tier1Tag, 8);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 10 + (willBonus * 2);
+                    Impact(activator, target, willDMG, 2, 1, Tier1Tag, 8);
                 });
         }
 
@@ -85,8 +88,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.Disturbance2, PerkType.Disturbance)
                 .Name("Disturbance II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Disturbance, 20f)
-                .RequirementFP(2)
+                .HasRecastDelay(RecastGroup.Disturbance, 6f)
+                .HasActivationDelay(2f)
+                .RequirementFP(1)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -94,7 +98,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 14, 4, 2, Tier2Tag, 12);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 30 + (willBonus * 4);
+                    Impact(activator, target, willDMG, 4, 2, Tier2Tag, 12);
                 });
         }
 
@@ -103,8 +109,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.Disturbance3, PerkType.Disturbance)
                 .Name("Disturbance III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.Disturbance, 20f)
-                .RequirementFP(3)
+                .HasRecastDelay(RecastGroup.Disturbance, 6f)
+                .HasActivationDelay(2f)
+                .RequirementFP(2)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -112,7 +119,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 32, 6, 3, Tier3Tag, 14);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 50 + (willBonus * 6);
+                    Impact(activator, target, willDMG, 6, 3, Tier3Tag, 14);
                 });
         }
     }

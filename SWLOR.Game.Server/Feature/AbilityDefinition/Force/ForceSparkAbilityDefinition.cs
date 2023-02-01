@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Lightning, false, 2f), target);
 
             Enmity.ModifyEnmity(activator, target, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
@@ -67,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(1)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -76,7 +77,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 9, 2, 1, Tier1Tag, 8);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 10 + (willBonus * 2);
+                    if (Stat.GetCurrentFP(activator) == 0)
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(7), activator);
+                    }
+                    else { Stat.ReduceFP(activator, 1); }
+                    Impact(activator, target, willDMG, 2, 1, Tier1Tag, 8);
                 });
         }
 
@@ -85,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(2)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -94,7 +102,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 14, 4, 2, Tier2Tag, 12);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 30 + (willBonus * 4);
+                    if (Stat.GetCurrentFP(activator) < 3)
+                    {
+                        var darkBargain = 7 * (3 - Stat.GetCurrentFP(activator));
+                        Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
+                    }
+                    else { Stat.ReduceFP(activator, 3); }
+                    Impact(activator, target, willDMG, 4, 2, Tier2Tag, 12);
                 });
         }
 
@@ -103,8 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(3)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -112,7 +129,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 32, 6, 3, Tier3Tag, 14);
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 50 + (willBonus * 6);
+                    if (Stat.GetCurrentFP(activator) < 5)
+                    {
+                        var darkBargain = 7 * (5 - Stat.GetCurrentFP(activator));
+                        Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
+                    } 
+                    else { Stat.ReduceFP(activator, 5); }
+                    Impact(activator, target, willDMG, 6, 3, Tier3Tag, 14);
                 });
         }
     }

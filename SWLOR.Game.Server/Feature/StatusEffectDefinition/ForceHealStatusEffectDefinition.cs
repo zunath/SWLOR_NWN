@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -23,11 +24,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyHeal(uint source, uint target, int amount)
         {
-            var wilBonus = GetAbilityModifier(AbilityType.Willpower, source) * 2;
+            var wilBonus = GetAbilityModifier(AbilityType.Willpower, source);
             if (wilBonus < 0)
                 wilBonus = 0;
 
-            amount += wilBonus;
+            amount += (amount / 5 * wilBonus) + Random.D10(wilBonus/2);
 
             ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                 ? EffectDamage(amount)
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
         private void ForceHeal2(StatusEffectBuilder builder)
         {
-            const int Amount = 15;
+            const int Amount = 20;
             builder.Create(StatusEffectType.ForceHeal2)
                 .Name("Force Heal II")
                 .EffectIcon(EffectIconType.Regenerate)
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
         private void ForceHeal3(StatusEffectBuilder builder)
         {
-            const int Amount = 20;
+            const int Amount = 30;
             builder.Create(StatusEffectType.ForceHeal3)
                 .Name("Force Heal III")
                 .EffectIcon(EffectIconType.Regenerate)
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
         private void ForceHeal4(StatusEffectBuilder builder)
         {
-            const int Amount = 25;
+            const int Amount = 40;
             builder.Create(StatusEffectType.ForceHeal4)
                 .Name("Force Heal IV")
                 .EffectIcon(EffectIconType.Regenerate)
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
         private void ForceHeal5(StatusEffectBuilder builder)
         {
-            const int Amount = 30;
+            const int Amount = 50;
             builder.Create(StatusEffectType.ForceHeal5)
                 .Name("Force Heal V")
                 .EffectIcon(EffectIconType.Regenerate)

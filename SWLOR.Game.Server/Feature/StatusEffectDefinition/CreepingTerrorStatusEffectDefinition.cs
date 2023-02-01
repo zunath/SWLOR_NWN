@@ -24,18 +24,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             void ApplyDamage(uint source, uint target, int level)
             {
                 int dmg;
+                var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
 
                 switch (level)
                 {
                     default:
                     case 1:
-                        dmg = 8;
+                        dmg = willBonus / 2;
                         break;
                     case 2:
-                        dmg = 12;
+                        dmg = 5 + willBonus;
                         break;
                     case 3:
-                        dmg = 16;
+                        dmg = 10 + (willBonus * 2);
                         break;
                 }
 
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var level = (int)effectData;
-                    const float Duration = 2f;
+                    const float Duration = 3f;
                     int dc;
 
                     switch (level)

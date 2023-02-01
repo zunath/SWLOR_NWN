@@ -83,14 +83,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.Flamethrower1, PerkType.Flamethrower)
                 .Name("Flamethrower I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Flamethrower, 18f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 6, -1);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 10 + (perBonus * 2);
+                    Impact(activator, targetLocation, perDMG, -1);
                 });
         }
 
@@ -99,14 +101,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.Flamethrower2, PerkType.Flamethrower)
                 .Name("Flamethrower II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Flamethrower, 18f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 10, 8);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 20 + (perBonus * 3);
+                    Impact(activator, targetLocation, perDMG, 8);
                 });
         }
 
@@ -115,14 +119,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.Flamethrower3, PerkType.Flamethrower)
                 .Name("Flamethrower III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.Flamethrower, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Flamethrower, 18f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 12);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 30 + (perBonus * 4);
+                    Impact(activator, targetLocation, perDMG, 12);
                 });
         }
     }

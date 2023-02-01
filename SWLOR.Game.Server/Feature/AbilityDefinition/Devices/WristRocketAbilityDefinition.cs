@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket1, PerkType.WristRocket)
                 .Name("Wrist Rocket I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.WristRocket, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.WristRocket, 240f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(2)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
@@ -77,7 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 8, -1);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 10 + (perBonus * 2);
+                    Impact(activator, target, perDMG, -1);
 
                     Enmity.ModifyEnmity(activator, target, 180);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -89,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket2, PerkType.WristRocket)
                 .Name("Wrist Rocket II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.WristRocket, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.WristRocket, 24f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
@@ -98,7 +100,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 12, 8);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 25 + (perBonus * 4);
+                    Impact(activator, target, perDMG, 8);
 
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -110,8 +114,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket3, PerkType.WristRocket)
                 .Name("Wrist Rocket III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.WristRocket, 60f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.WristRocket, 24f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
@@ -119,7 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    Impact(activator, target, 20, 12);
+                    var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                    var perDMG = 40 + (perBonus * 6);
+                    Impact(activator, target, perDMG, 12);
 
                     Enmity.ModifyEnmity(activator, target, 380);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

@@ -1,0 +1,110 @@
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+
+namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+{
+    public class ForceRestoreStatusEffectDefinition : IStatusEffectListDefinition
+    {
+        public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
+        {
+            var builder = new StatusEffectBuilder();
+            ForceBody1(builder);
+            ForceBody2(builder);
+            ForceMind1(builder);
+            ForceMind2(builder);
+
+
+            return builder.Build();
+        }
+
+        private void ForceBody1(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.ForceBody1)
+                .Name("Force Body I")
+                .EffectIcon(EffectIconType.TemporaryHitpoints)
+                .CannotReplace(StatusEffectType.ForceBody2)
+                .GrantAction((source, target, length, data) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus / 2;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                })
+                .TickAction((source, target, effectData) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus / 2;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                });
+        }
+        private void ForceBody2(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.ForceBody2)
+                .Name("Force Body II")
+                .EffectIcon(EffectIconType.TemporaryHitpoints)
+                .CannotReplace(StatusEffectType.ForceBody2)
+                .GrantAction((source, target, length, data) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                })
+                .TickAction((source, target, effectData) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                });
+        }
+
+        private void ForceMind1(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.ForceMind1)
+                .Name("Force Mind I")
+                .EffectIcon(EffectIconType.TemporaryHitpoints)
+                .CannotReplace(StatusEffectType.ForceMind1)
+                .GrantAction((source, target, length, data) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus / 2;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                })
+                .TickAction((source, target, effectData) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus / 2;
+                    Stat.RestoreFP(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                });
+        }
+        private void ForceMind2(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.ForceMind2)
+                .Name("Force Mind II")
+                .EffectIcon(EffectIconType.TemporaryHitpoints)
+                .CannotReplace(StatusEffectType.ForceMind2)
+                .GrantAction((source, target, length, data) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus;
+                    Stat.RestoreStamina(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
+                })
+                .TickAction((source, target, effectData) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+                    var willRestore = willBonus;
+                    Stat.RestoreStamina(target, willRestore);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
+                });
+        }
+    }
+}

@@ -25,14 +25,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         MindTrick = 8,
         [RecastGroup("Force Burst", "Force Burst", true)]
         ForceBurst = 9,
-        [RecastGroup("Force Body", "Force Body", true)]
-        ForceBody = 10,
+        [RecastGroup("Force Restore", "Force Restore", true)]
+        ForceRestore = 10,
         [RecastGroup("Force Drain", "Force Drain", true)]
         ForceDrain = 11,
         [RecastGroup("Force Lightning", "F. Lightning", true)]
         ForceLightning = 12,
-        [RecastGroup("Force Mind", "Force Mind", true)]
-        ForceMind = 13,
+        [RecastGroup("Grenades", "Grenades", true)]
+        Grenades = 13,
         [RecastGroup("Hacking Blade", "Hacking Blade", true)]
         HackingBlade = 14,
         [RecastGroup("Riot Blade", "Riot Blade", true)]

@@ -239,8 +239,12 @@ namespace SWLOR.Game.Server.Feature
                 DeleteLocalInt(activator, id);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0 || GetCurrentAction(activator) != ActionType.Invalid)
+                {
+                    Activity.ClearBusy(activator);
+                    SendMessageToPC(activator, "Your action was interrupted.");
                     return;
+                }
 
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);

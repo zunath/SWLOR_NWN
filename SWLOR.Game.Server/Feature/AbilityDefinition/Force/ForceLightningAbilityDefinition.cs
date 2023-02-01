@@ -28,50 +28,67 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
 
             switch (level)
             {
                 case 1:
-                    dmg = 12;
+                    dmg = 10 + (willBonus * 2);
                     break;
                 case 2:
-                    dmg = 19;
+                    dmg = 16 + (willBonus * 4);
                     break;
                 case 3:
-                    dmg = 28;
+                    dmg = 22 + (willBonus * 6);
                     break;
                 case 4:
-                    dmg = 40;
+                    dmg = 30 + (willBonus * 8);
                     break;
             }
-
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
-
-            var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
-            
-            AssignCommand(activator, () =>
+            var count = 0;
+            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
+            while (GetIsObjectValid(creature) && count <= 5)
             {
-                PlaySound("frc_lghtning");
-                ActionPlayAnimation(Animation.CastOutAnimation, 1.0f,4.0f);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
-            });
+                if (GetIsReactionTypeHostile(creature, activator))
+                {
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                    var defense = Stat.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
+                    var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
+                    var damage = Combat.CalculateDamage(
+                        attack,
+                        dmg,
+                        attackerStat,
+                        defense,
+                        defenderStat,
+                        0);
 
-            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+                    var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator, BodyNode.Hand);
+                    var elecChain = EffectBeam(VisualEffect.Vfx_Beam_Lightning, creature, BodyNode.Chest);
+                    var dTarget = creature;
+
+                    AssignCommand(activator, () =>
+                    {
+                        PlaySound("frc_lghtning");
+                        ActionPlayAnimation(Animation.CastOutAnimation, 1.0f, 3.0f);
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), dTarget);
+                        ApplyEffectToObject(DurationType.Temporary, elecBeam, dTarget, 3.0f);
+                    });
+
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    Enmity.ModifyEnmity(activator, creature, 100 * level + damage);
+                    count++;
+                }
+                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
+            }
+            if (Stat.GetCurrentFP(activator) < 1 + (level * 2))
+            {
+                var darkBargain = 7 * ((5 + (level * 2) - Stat.GetCurrentFP(activator)));
+                Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
+            }
+            else { Stat.ReduceFP(activator, 5 + (level * 2)); }
         }
 
         private static void ForceLightning1(AbilityBuilder builder)
@@ -80,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -94,8 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -108,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -122,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Lightning IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(7)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)

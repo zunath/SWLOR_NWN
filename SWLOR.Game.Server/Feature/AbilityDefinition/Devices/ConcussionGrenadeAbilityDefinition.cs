@@ -68,8 +68,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
+                .HasRecastDelay(RecastGroup.Grenades, 6f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -82,7 +83,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 6, -1);
+                        var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var perDMG = 10 + (perBonus/2);
+                        Impact(activator, target, perDMG, -1);
                     });
                 });
         }
@@ -92,8 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
+                .HasRecastDelay(RecastGroup.Grenades, 6f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -106,7 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 8);
+                        var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var perDMG = 20 + perBonus;
+                        Impact(activator, target, perDMG, 8);
                     });
                 });
         }
@@ -116,8 +122,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
+                .HasRecastDelay(RecastGroup.Grenades, 6f)
+                .HasActivationDelay(1.5f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -130,7 +137,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 16, 12);
+                        var perBonus = GetAbilityModifier(AbilityType.Perception, activator);
+                        var perDMG = 30 + (perBonus * 2);
+                        Impact(activator, target, perDMG, 12);
                     });
                 });
         }

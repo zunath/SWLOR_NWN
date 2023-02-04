@@ -22,9 +22,6 @@ namespace SWLOR.Game.Server.Feature
 
                 var waypoint = GetWaypointByTag(destination);
 
-                var vfx = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
-                ApplyEffectToObject(DurationType.Instant, vfx, player);
-
                 if (!GetIsObjectValid(waypoint))
                 {
                     SendMessageToPC(player, "Cannot locate waypoint. Inform an admin this trap is broken.");
@@ -34,6 +31,15 @@ namespace SWLOR.Game.Server.Feature
                 var location = GetLocation(waypoint);
                 AssignCommand(player, () => ActionJumpToLocation(location));
             });
+
+            var vfx = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
+
+            // Causes a cloud of dust to plume around the character after the fall.
+            // This is delayed so that the player can actually see the effect when the load is over. 3 seconds is arbitrary, it's about how long I take to load in, but it coincides with the knockdown time.
+            DelayCommand(3f, () => ApplyEffectToObject(DurationType.Instant, vfx, player));
+
+            // This must be a delayed command or it won't work. If the knockdown effect happens at the same time as everything else, the teleportation will not go off.
+            DelayCommand(1.0f, () => ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 3.0f));
         }
     }
 }

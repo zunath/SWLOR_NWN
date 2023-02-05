@@ -501,5 +501,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Togruta = 10096,
         KelDor = 10097,
         Droid = 10098,
+        Nautolan = 10099,
     }
 }

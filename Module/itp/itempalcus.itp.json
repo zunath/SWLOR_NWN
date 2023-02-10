@@ -6290,6 +6290,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gizka Lick"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gizkalick"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kath Hound Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vangrykath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Purbole Bite"
                     },
                     "RESREF": {
@@ -6433,6 +6455,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thune Stomp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dthunestomp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vellen Raptor Bite"
                     },
                     "RESREF": {
@@ -6449,6 +6482,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "viperbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voreitorbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor Boss Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voreitorbossbite"
                     }
                   },
                   {
@@ -6531,6 +6586,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gimp_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iriaz Hoof"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "iriaz_hoof"
                     }
                   },
                   {
@@ -7762,6 +7828,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantari Hunter Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_hunter_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Shaman Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_shaman_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dark Lord Skin"
                     },
                     "RESREF": {
@@ -7817,11 +7905,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Enraged Kathhound Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "enragekathhounds"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Hide"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "ww_gimp_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gizka Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gizka_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hive Kinrath Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "havekinrathskin"
                     }
                   },
                   {
@@ -7844,6 +7965,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunhvyskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iriaz Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "iriazskin"
                     }
                   },
                   {
@@ -8147,6 +8279,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Plains Thune  Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plainsthuskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Purbole Skin"
                     },
                     "RESREF": {
@@ -8185,6 +8328,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qionbeastskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Queen Kinrath Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "queenkinrath_s"
                     }
                   },
                   {
@@ -8867,6 +9021,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "visc_shutt_props"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor Boss Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritorbossskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritor_skin"
                     }
                   },
                   {
@@ -40637,6 +40813,105 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine - Abandon Warehouse Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_73"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Canyon Crystal Fields Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_74"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Canyon River Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_75"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Forsaken Jungles Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_77"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Jungle Mountains Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_76"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Kinrath Caves Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_72"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Lake Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_78"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - South Plains Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_71"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_70"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir - Cave Ruins Map"
                     },
                     "RESREF": {
@@ -49065,6 +49340,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "elkspear001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Janta Shaman Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danshamspear"
                     }
                   },
                   {

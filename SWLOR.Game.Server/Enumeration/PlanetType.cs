@@ -14,44 +14,44 @@ namespace SWLOR.Game.Server.Enumeration
     [Flags]
     public enum PlanetType
     {
-        [Planet("Invalid", 
-            "-- Invalid --", 
-            "", 
+        [Planet("Invalid",
+            "-- Invalid --",
+            "",
             "",
             0,
             false)]
         Invalid = 0,
-        [Planet("Viscara", 
-            "Viscara - ", 
+        [Planet("Viscara",
+            "Viscara - ",
             "Viscara_Orbit",
             "VISCARA_LANDING",
             100,
             true)]
         Viscara = 1,
-        [Planet("Tatooine", 
-            "Tatooine - ", 
+        [Planet("Tatooine",
+            "Tatooine - ",
             "Tatooine_Orbit",
             "TATOOINE_LANDING",
             400,
             true)]
         Tatooine = 2,
-        [Planet("Mon Cala", 
-            "Mon Cala - ", 
+        [Planet("Mon Cala",
+            "Mon Cala - ",
             "MonCala_Orbit",
             "MON_CALA_LANDING",
             200,
             true)]
         MonCala = 4,
-        [Planet("Hutlar", 
-            "Hutlar - ", 
+        [Planet("Hutlar",
+            "Hutlar - ",
             "Hutlar_Orbit",
             "HUTLAR_LANDING",
             300,
             true)]
         Hutlar = 8,
-        [Planet("CZ-220", 
-            "CZ-220 - ", 
-            "CZ220_Orbit", 
+        [Planet("CZ-220",
+            "CZ-220 - ",
+            "CZ220_Orbit",
             "CZ220_LANDING",
             100,
             true)]
@@ -70,6 +70,13 @@ namespace SWLOR.Game.Server.Enumeration
             800,
             true)]
         Dathomir = 64,
+        [Planet("Dantooine",
+               "Dantooine - ",
+               "Dantooine_Orbit",
+               "DANTOOINE_LANDING",
+                900,
+                true)]
+        Dantooine = 168,
     }
 
     public class PlanetAttribute : Attribute
@@ -82,7 +89,7 @@ namespace SWLOR.Game.Server.Enumeration
         public bool IsActive { get; set; }
 
         public PlanetAttribute(
-            string name, 
+            string name,
             string prefix,
             string spaceOrbitWaypointTag,
             string landingWaypointTag,

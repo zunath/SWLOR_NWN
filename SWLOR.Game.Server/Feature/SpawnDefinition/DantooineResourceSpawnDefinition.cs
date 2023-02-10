@@ -1,0 +1,213 @@
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.SpawnService;
+
+namespace SWLOR.Game.Server.Feature.SpawnDefinition
+{
+    public class DantooineResourceSpawnDefinition : ISpawnListDefinition
+    {
+        private readonly SpawnTableBuilder _builder = new();
+
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
+        {
+            DanLake();
+            DanWildPlains();
+            DantooineWareHouse();
+            DanTribeVillage();
+            DantooineCrystalFields();
+            DantooineJantaCaves();
+            DanForsakenJungles();
+            DanDestroy();
+
+            return _builder.Build();
+        }
+
+        private void DanLake()
+        {
+            _builder.Create("DANTOOINE_DAN_LAKE_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(10);
+        }
+
+        private void DanWildPlains()
+        {
+            _builder.Create("DANTOOINE_WILD_PLAINS_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineCrystalFields()
+        {
+            _builder.Create("DANTOOINE_CRYSTAL_FIELDS_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DanDestroy()
+        {
+            _builder.Create("DANTOOINE_RUIN_FARM_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineJantaCaves()
+        {
+            _builder.Create("DANTOOINE_JANTA_CAVES_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(5);
+        }
+
+        private void DanForsakenJungles()
+        {
+            _builder.Create("DANTOOINE_FORSAKEN_JUNGLES_RESOURCES")
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineWareHouse()
+        {
+            _builder.Create("DANTOOINE_WARE_HOUSE_RESOURCES")
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DanTribeVillage()
+        {
+            _builder.Create("DANTOOINE_TRIBE_VILLAGE_RESOURCES")
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(10);
+        }
+
+    }
+}

@@ -54,6 +54,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine - Canyon Caves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danccaves"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Colony"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dannpcs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Janta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danjanta"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Janta Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danbosskath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir - Cave Ruins"
                     },
                     "RESREF": {
@@ -570,6 +614,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ore_vein_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dantooine - Canyon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_034"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dantooine Forsaken Jungles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_033"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dantooine Lake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_030"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dantooine Mountain Jungle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_danmount"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fishing Point - Dantooine South Fields"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fp_031"
                     }
                   },
                   {

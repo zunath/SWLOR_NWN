@@ -10207,6 +10207,288 @@
               "__struct_id": 0,
               "ID": {
                 "type": "byte",
+                "value": 157
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 61.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantarihunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Shaman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantarishaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Farmer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooinefarmer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Farmer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooinefarmer2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Farmer Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danfarmerfemale"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 99.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Enraged Kathhound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vangrykath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gizka"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gizka"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 56.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Herd Leader Thune"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thune"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hive Kinrath"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hkinrath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 31.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iriaz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "iriaz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 31.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plains Thune"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pthune"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 80.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Queen Kinrath"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vqueenkin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 464.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor lizard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritorlizard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 416.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor lizard [Boss]"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritorlizardbos"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16860408
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
                 "value": 156
               },
               "LIST": {

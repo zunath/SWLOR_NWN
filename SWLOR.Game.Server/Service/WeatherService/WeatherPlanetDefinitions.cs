@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Service.WeatherService
         {
             return new Dictionary<PlanetType, WeatherClimate>
             {
+                [PlanetType.Dantooine] = new WeatherClimate
+                {
+                    HeatModifier = -1,
+                    HumidityModifier = +1,
+                    WindModifier = +1,
+                },
                 [PlanetType.Viscara] = new WeatherClimate
                 {
                     HeatModifier = -2, 

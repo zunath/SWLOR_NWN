@@ -52,6 +52,7 @@
         StatRebuild = 47,
         AssociateCharacterSheet = 48,
         HoloNet = 49,
+        AreaManagerNaming = 50,
         DebugEnmity = 900,
     }
 }

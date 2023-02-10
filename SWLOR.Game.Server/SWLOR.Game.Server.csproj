@@ -36,8 +36,4 @@
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).deps.json" />
     </ItemGroup>
   </Target>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cd $(SolutionDir)Build\&#xD;&#xA;SWLOR.CLI.exe -o" />
-  </Target>
 </Project>

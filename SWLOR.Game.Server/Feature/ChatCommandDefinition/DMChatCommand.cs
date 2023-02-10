@@ -51,7 +51,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             Broadcast();
-            AreaManager();
 
             return _builder.Build();
         }
@@ -889,16 +888,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
                         }
                     });
-                });
-        }
-        private void AreaManager()
-        {
-            _builder.Create("am", "areas")
-                .Description("Toggles the Area Manager window.")
-                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Action((user, target, location, args) =>
-                {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaManager);
                 });
         }
     }

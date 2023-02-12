@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.NPCService
         Viscara_MandalorianRangers = 7,
         [NPCGroup("Outlaws")]
         Viscara_WildwoodsOutlaws = 8,
-        [NPCGroup("Gimpassas")]
+        [NPCGroup("Gimpassa Hatchlings")]
         Viscara_WildwoodsGimpassas = 9,
         [NPCGroup("Kinraths")]
         Viscara_WildwoodsKinraths = 10,

@@ -815,7 +815,7 @@
         CookedBibikibo = 2091,
         SlicedSardine = 2092,
         FishBroth = 2093,
-        SardineBall = 2094,
+        CookedSardine = 2094,
         RaKaznarSpecial = 2095,
         Maringna = 2096,
         CookedMackerel = 2097,

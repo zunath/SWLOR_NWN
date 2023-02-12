@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             Broadcast();
+            SetScale();
+            GetScale();
 
             return _builder.Build();
         }
@@ -899,6 +901,69 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
                         }
                     });
+                });
+        }
+
+        private void SetScale()
+        {
+            const int MaxAmount = 50;
+
+            _builder.Create("setscale")
+                .Description("Sets an object's scale.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    // Missing an amount argument?
+                    if (args.Length <= 0)
+                    {
+                        return "Please specify the object's scale you want to set to. Valid range: 0.1-" + MaxAmount;
+                    }
+
+                    // Can't parse the amount?
+                    if (!float.TryParse(args[0], out var value))
+                    {
+                        return "Please specify a value between 0.1 and " + MaxAmount + ".";
+                    }
+
+                    // Amount is outside of our allowed range?
+                    if (value < 0.1f || value > MaxAmount)
+                    {
+                        return "Please specify a value between 0.1 and " + MaxAmount + ".";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    // Allows the scale value to be a decimal number.
+                    var finalValue = float.TryParse(args[0], out var value) ? value : 1f;
+
+                    SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalValue);
+
+                    // Lets the DM know what he set the scale to, but round it to the third decimal place.
+                    var targetName = GetName(target);
+                    var shownValue = finalValue.ToString("0.###");
+
+                    SendMessageToPC(user, $"{targetName} scaled to {shownValue}.");
+                });
+        }
+
+        private void GetScale()
+        {
+            _builder.Create("getscale")
+                .Description("Gets an object's scale.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    var targetScale = GetObjectVisualTransform(target, ObjectVisualTransform.Scale);
+                    var targetName = GetName(target);
+                    var shownScale = targetScale.ToString("0.###");
+
+                    SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
                 });
         }
     }

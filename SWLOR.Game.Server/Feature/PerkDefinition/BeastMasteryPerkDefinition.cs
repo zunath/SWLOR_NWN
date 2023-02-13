@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SoothePet();
             ReviveBeast();
 
-            DNAManipulation();
-            IncubationProcessing();
-            ErraticGenius();
+            //DNAManipulation();
+            //IncubationProcessing();
+            //ErraticGenius();
 
             return _builder.Build();
         }

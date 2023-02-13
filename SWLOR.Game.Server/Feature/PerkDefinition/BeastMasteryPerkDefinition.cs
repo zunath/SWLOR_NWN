@@ -36,28 +36,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability.")
-                .Price(2)
+                .Price(3)
                 .GrantsFeat(FeatType.Tame)
                 .GrantsFeat(FeatType.CallBeast)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 20.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 30.")
-                .Price(2)
+                .Price(4)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 40.")
-                .Price(2)
+                .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 50.")
-                .Price(2)
+                .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 

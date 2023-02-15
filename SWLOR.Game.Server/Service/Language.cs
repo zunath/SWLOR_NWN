@@ -202,6 +202,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
                 case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
+                case SkillType.Nautila: r = 76; g = 230; b = 104; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -227,6 +228,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: return "Mirialan";
                 case SkillType.MonCalamarian: return "Mon Calamarian";
                 case SkillType.Ugnaught: return "Ugnaught";
+                case SkillType.Nautila: return "Nautila";
             }
 
             return "Basic";

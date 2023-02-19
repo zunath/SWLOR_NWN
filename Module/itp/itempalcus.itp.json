@@ -43520,6 +43520,33 @@
                 "type": "byte",
                 "value": 107
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "10 Tips to Survive the War"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "repbook_10tips"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Abridged Guide to Regulations"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "repbook_regulati"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16778250

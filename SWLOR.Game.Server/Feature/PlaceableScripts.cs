@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -60,7 +61,14 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var location = GetLocation(waypoint);
-            AssignCommand(user, () => ActionJumpToLocation(location));
+            AssignCommand(user, () => JumpToLocation(location));
+
+            var henchman = GetAssociate(AssociateType.Henchman, user);
+            if (GetIsObjectValid(henchman))
+            {
+                AssignCommand(henchman, () => JumpToLocation(location));
+            }
+
         }
 
         /// <summary>

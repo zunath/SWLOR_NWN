@@ -2714,6 +2714,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementPerk(PerkType.FurnitureBlueprints, 5)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_imperfect", 3);
+
+            // Beast Stables Terminal
+            _builder.Create(RecipeType.BeastStablesTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0270")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_imperfect", 3);
         }
     }
 }

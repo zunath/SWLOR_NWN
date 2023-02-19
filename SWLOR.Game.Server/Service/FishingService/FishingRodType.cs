@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         Bamboo = 1,
         [FishingRod("carbon_rod")]
         Carbon = 2,
-        [FishingRod("clothespole_rod")]
+        [FishingRod("clothespole")]
         Clothespole = 3,
         [FishingRod("composite_rod")]
         Composite = 4,

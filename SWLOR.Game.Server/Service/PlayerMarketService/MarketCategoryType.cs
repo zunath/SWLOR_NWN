@@ -73,6 +73,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Food = 32,
         [MarketCategory("Fishing", true)]
         Fishing = 33,
+        [MarketCategory("Pet Food", true)]
+        PetFood = 34,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

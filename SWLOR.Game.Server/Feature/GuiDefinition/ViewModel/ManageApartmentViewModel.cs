@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;
         private const int MaxLeaseDays = 30;
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
 
         public GuiBindingList<string> ApartmentNames
         {
@@ -298,12 +296,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (now >= leaseDate)
                 {
                     LeasedUntil = $"Lease EXPIRED on {leaseDate.ToString("G")}";
-                    LeasedUntilColor = _red;
+                    LeasedUntilColor = GuiColor.Red;
                 }
                 else
                 {
                     LeasedUntil = $"Lease Expires on {leaseDate.ToString("G")}";
-                    LeasedUntilColor = _green;
+                    LeasedUntilColor = GuiColor.Green;
                 }
             }
 
@@ -374,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (CustomName.Length < 3)
                 {
                     Instruction = $"Name must be at least 3 characters long.";
-                    InstructionColor = _red;
+                    InstructionColor = GuiColor.Red;
                     return;
                 }
 
@@ -403,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
-                InstructionColor = _green;
+                InstructionColor = GuiColor.Green;
             }
         };
 
@@ -425,7 +423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (newLeaseDate > now.AddDays(MaxLeaseDays))
             {
                 Instruction = $"Leases may only paid a maximum of {MaxLeaseDays} days in advance.";
-                InstructionColor = _red;
+                InstructionColor = GuiColor.Red;
                 return;
             }
 
@@ -436,7 +434,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (price > GetGold(Player))
                     {
                         Instruction = $"Insufficient credits!";
-                        InstructionColor = _red;
+                        InstructionColor = GuiColor.Red;
                         return;
                     }
 
@@ -448,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DB.Set(apartment);
 
                     Instruction = $"Lease extended by {days} {dayWord}!";
-                    InstructionColor = _green;
+                    InstructionColor = GuiColor.Green;
                     RefreshLeaseInfo();
                 });
         }

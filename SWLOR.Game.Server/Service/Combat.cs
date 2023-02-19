@@ -214,24 +214,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Return a damage bonus equal to 0.15 of the player's relevant skill.  This helps abilities 
-        /// as the player progresses. 
+        /// Return a damage bonus equal to 0.15 of the player's relevant skill or an NPC's level.
+        /// This helps abilities as the player progresses. 
         ///
         /// Global scaling on gear is closer to 0.25 DMG per player skill level so low tier abilities will still
         /// become less useful over time, and get replaced by higher tier ones.  But they will have some utility still.
         /// </summary>
-        /// <returns> 0.15 * the player's rank in the specified skill, or 0 for NPCs. </returns>
+        /// <returns> 0.15 * the player's rank in the specified skill, or the level for NPCs.</returns>
 
-        public static int GetAbilityDamageBonus(uint player, SkillType skill)
+        public static int GetAbilityDamageBonus(uint creature, SkillType skill)
         {
-            if (!GetIsPC(player)) return 0;
+            var level = 0;
+            if (!GetIsPC(creature))
+            {
+                var npcStats = Stat.GetNPCStats(creature);
+                level = npcStats.Level;
+            }
+            else
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+                var pcSkill = dbPlayer.Skills[skill];
+                level = pcSkill.Rank;
+            }
 
-            var pcSkill = dbPlayer.Skills[skill];
 
-            return (int)(0.15f * pcSkill.Rank);
+            return (int)(0.15f * level);
         }
 
         /// <summary>

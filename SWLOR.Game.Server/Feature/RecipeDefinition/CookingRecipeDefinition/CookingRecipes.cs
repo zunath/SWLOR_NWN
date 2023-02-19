@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 {
     public class CookingRecipes: IRecipeListDefinition
     {
-        private readonly RecipeBuilder _builder = new RecipeBuilder();
+        private readonly RecipeBuilder _builder = new();
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {

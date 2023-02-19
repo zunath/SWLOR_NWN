@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
+                    var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
                     Impact(activator, target, 350 + enmityBonus);
                 });
         }
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
                         if (!GetIsPC(nearest))
                         {
-                            var enmityBonus = GetAbilityScore(activator, AbilityType.Social) * 50;
+                            var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
                             Impact(activator, nearest, 400 + enmityBonus);
                         }
 

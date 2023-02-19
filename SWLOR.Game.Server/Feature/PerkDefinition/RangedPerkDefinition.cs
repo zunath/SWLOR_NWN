@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponFocusThrowingWeapons)
 
                 .AddPerkLevel()
-                .Description("Your base damage with staves is increased by 2 DMG.")
+                .Description("Your base damage with throwing weapons is increased by 2 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             Food();
+            PetFood();
             
             return _builder.Build();
         }
@@ -59,6 +60,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         DB.Set(dbPlayer);
                     }
                 });
+        }
+
+        private void PetFood()
+        {
+            _builder.Create(StatusEffectType.PetFood)
+                .Name("Pet Food")
+                .EffectIcon(EffectIconType.Food);
         }
     }
 }

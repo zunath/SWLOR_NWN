@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ImmunitySpecificSpell = 53,
         ImmunitySpellSchool = 54,
         ThievesTools = 55,
-        AttackBonus = 56,
+        AccuracyBonus = 56, // NWN Attack Bonus replaced with Accuracy Bonus
         AttackBonusVsAlignmentGroup = 57,
         AttackBonusVsRacialGroup = 58,
         AttackBonusVsSpecificAlignment = 59,
@@ -95,12 +95,13 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         Defense = 94,
         ProgressPenalty = 95,
         NPCHP = 96,
-        // 97-98 are free
+        AccuracyStat = 97,
+        // 98 is free
         NPCLevel = 99,
         UseLimitationPerk = 100,
         ArmorEnhancement = 101,
         WeaponEnhancement = 102,
-        PrimaryStat = 103,
+        DamageStat = 103,
         EnhancementLevel = 104,
         StructureBonus = 105,
         FoodBonus = 106,

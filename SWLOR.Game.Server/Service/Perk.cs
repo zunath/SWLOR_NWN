@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PerkService;
@@ -15,15 +17,15 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
 
         // Active categories only
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _activeCategories = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategories = new();
 
         // All perks, including inactive
         private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
         private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
 
         // Active perks only
-        private static readonly Dictionary<PerkType, PerkDetail> _activePerks = new();
-        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>> _activePerksByCategory = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerks = new();
+        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>> _activePerksByCategory = new();
 
         // Trigger Actions
         private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
@@ -72,7 +74,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (categoryDetail.IsActive)
                 {
-                    _activePerksByCategory[category] = new Dictionary<PerkType, PerkDetail>();
+                    _activePerksByCategory[category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
                 }
             }
 
@@ -96,12 +98,18 @@ namespace SWLOR.Game.Server.Service
                     // Add to active cache if the perk is active
                     if (perkDetail.IsActive)
                     {
-                        _activePerks[perkType] = perkDetail;
+                        if (!_activePerks.ContainsKey(perkDetail.GroupType))
+                            _activePerks[perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
+
+                        _activePerks[perkDetail.GroupType][perkType] = perkDetail;
 
                         if (!_activePerksByCategory.ContainsKey(perkDetail.Category))
-                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkType, PerkDetail>();
+                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
 
-                        _activePerksByCategory[perkDetail.Category][perkType] = perkDetail;
+                        if (!_activePerksByCategory[perkDetail.Category].ContainsKey(perkDetail.GroupType))
+                            _activePerksByCategory[perkDetail.Category][perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
+
+                        _activePerksByCategory[perkDetail.Category][perkDetail.GroupType][perkType] = perkDetail;
 
                         if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
                         {
@@ -119,7 +127,10 @@ namespace SWLOR.Game.Server.Service
                     // Add to active category cache if the perk and category are both active.
                     if (perkDetail.IsActive && categoryDetail.IsActive)
                     {
-                        _activeCategories[perkDetail.Category] = categoryDetail;
+                        if(!_activeCategories.ContainsKey(perkDetail.GroupType))
+                            _activeCategories[perkDetail.GroupType] = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+
+                        _activeCategories[perkDetail.GroupType][perkDetail.Category] = categoryDetail;
                     }
 
                     foreach (var (level, perkLevel) in perkDetail.PerkLevels)
@@ -166,7 +177,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_allPerks.Count} perks.");
+            Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
         }
 
         /// <summary>
@@ -274,12 +285,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves a list of all active perks, excluding inactive ones.
+        /// Retrieves a list of all active perks, excluding inactive ones, by group.
         /// </summary>
         /// <returns>A list of all active perks.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetAllActivePerks()
+        public static Dictionary<PerkType, PerkDetail> GetAllActivePerks(PerkGroupType group)
         {
-            return _activePerks.ToDictionary(x => x.Key, y => y.Value);
+            return _activePerks[group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -295,19 +307,22 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all active perk categories, excluding inactive ones.
         /// </summary>
         /// <returns>A list of all active perk categories.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories()
+        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
         {
-            return _activeCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _activeCategories[group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
-        /// Retrieves a list of all active perks by the specified category.
+        /// Retrieves a list of all active perks by the specified category, by group.
         /// </summary>
+        /// <param name="group">The group to filter by.</param>
         /// <param name="category">The category to search by.</param>
         /// <returns>A list of all active perks in the specified category.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
+        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkGroupType group, PerkCategoryType category)
         {
-            return _activePerksByCategory[category].ToDictionary(x => x.Key, y => y.Value);
+            return _activePerksByCategory[category][group]
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -367,12 +382,18 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The effective perk level of a creature.</returns>
         public static int GetEffectivePerkLevel(uint creature, PerkType perkType)
         {
-            if (GetIsDM(creature) && !GetIsDMPossessed(creature)) return 0;
+            if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
+                return 0;
 
-            // Players only
+            // Players
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
             {
                 return GetPlayerPerkLevel(creature, perkType);
+            }
+            // Beasts
+            else if (BeastMastery.IsPlayerBeast(creature))
+            {
+                return GetBeastPerkLevel(creature, perkType);
             }
             // Creatures or DM-possessed creatures
             else
@@ -430,17 +451,70 @@ namespace SWLOR.Game.Server.Service
             foreach (var (level, detail) in perkLevels)
             {
                 // No requirements set for this perk level. Return the level.
-                if (detail.Requirements.Count <= 0) return level;
+                if (detail.Requirements.Count <= 0) 
+                    return level;
 
                 foreach (var req in detail.Requirements)
                 {
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) return level;
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
+                        return level;
                 }
             }
 
             // Otherwise none of the perk level requirements passed. Player's effective level is zero.
             return 0;
         }
+
+        /// <summary>
+        /// Retrieves a beast's effective perk level.
+        /// </summary>
+        /// <param name="beast"></param>
+        /// <param name="perkType"></param>
+        /// <returns></returns>
+        private static int GetBeastPerkLevel(uint beast, PerkType perkType)
+        {
+
+            // todo: merge with player branch
+            var beastId = BeastMastery.GetBeastId(beast);
+            var dbBeast = DB.Get<Beast>(beastId);
+
+            if (dbBeast == null)
+                return 0;
+
+            var player = GetMaster(beast);
+            if (!GetIsPC(player) || !GetIsObjectValid(player))
+                return 0;
+
+            var beastPerkLevel = dbBeast.Perks.ContainsKey(perkType) ? dbBeast.Perks[perkType] : 0;
+
+            // Early exit if player doesn't have the perk at all.
+            if (beastPerkLevel <= 0) return 0;
+
+            // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
+            var perk = GetPerkDetails(perkType);
+            var perkLevels = perk.PerkLevels
+                .Where(x => x.Key <= beastPerkLevel)
+                .OrderByDescending(o => o.Key);
+
+            // Iterate over each perk level and check requirements.
+            // The first perk level the player passes requirements on is the player's effective level.
+            foreach (var (level, detail) in perkLevels)
+            {
+                // No requirements set for this perk level. Return the level.
+                if (detail.Requirements.Count <= 0) 
+                    return level;
+
+                foreach (var req in detail.Requirements)
+                {
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
+                        return level;
+                }
+            }
+
+
+            return 0;
+        }
+
 
         /// <summary>
         /// This will mark a perk as unlocked for a player.

@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _types.Add(type);
                 names.Add(detail.Name);
                 colors.Add(dbAccount.Achievements.ContainsKey(type)
-                    ? new GuiColor(0, 255, 0)
-                    : new GuiColor(255, 0, 0));
+                    ? GuiColor.Green
+                    : GuiColor.Red);
                 toggles.Add(false);
             }
 
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadAchievement();
             }
 
-            Colors[index] = new GuiColor(0, 255, 0);
+            Colors[index] = GuiColor.Green;
         }
     }
 }

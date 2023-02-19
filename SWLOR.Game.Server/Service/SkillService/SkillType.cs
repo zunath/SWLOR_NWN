@@ -129,7 +129,14 @@ namespace SWLOR.Game.Server.Service.SkillService
             false)]
         Leadership = 12,
 
-        // ID #13 is free
+        [Skill(SkillCategoryType.Combat,
+            "Beast Mastery",
+            50,
+            true,
+            "Ability to tame wild animals, raise them, and train them.",
+            true,
+            false)]
+        BeastMastery = 13,
 
         [Skill(SkillCategoryType.Languages,
             "Mirialan",

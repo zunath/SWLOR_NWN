@@ -21,16 +21,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddSpacer();
-                        var combo = row.AddComboBox()
+                        row.AddToggleButton()
+                            .SetText("My Perks")
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickMyPerks())
+                            .BindIsToggled(model => model.IsInMyPerksMode);
+
+                        row.AddToggleButton()
+                            .SetText("Beast Perks")
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickBeastPerks())
+                            .BindIsEnabled(model => model.HasBeast)
+                            .BindIsToggled(model => model.IsInBeastPerksMode);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedPerkCategoryId)
-                            .SetWidth(200f);
-
-                        combo.AddOption("<All Categories>", 0);
-                        foreach (var (type, detail) in Perk.GetAllActivePerkCategories())
-                        {
-                            combo.AddOption(detail.Name, (int)type);
-                        }
-
+                            .SetWidth(300f)
+                            .BindOptions(model => model.Categories);
                         row.AddSpacer();
                     });
 

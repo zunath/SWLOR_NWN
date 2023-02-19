@@ -13,9 +13,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-
         private bool _isCategory;
         private PropertyType _propertyType;
         private string _cityId;
@@ -434,7 +431,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Instruction = $"Permissions updated!";
-            InstructionColor = _green;
+            InstructionColor = GuiColor.Green;
         };
 
         public Action OnClickReset() => () =>

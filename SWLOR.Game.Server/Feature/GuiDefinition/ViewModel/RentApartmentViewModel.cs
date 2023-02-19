@@ -12,9 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
-        private readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private readonly GuiColor _green = new GuiColor(0, 255, 0);
-
         public string Instructions
         {
             get => Get<string>();
@@ -147,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (credits < layout.InitialPrice)
                     {
                         Instructions = "Not enough credits!";
-                        InstructionsColor = _red;
+                        InstructionsColor = GuiColor.Red;
                         return;
                     }
 
@@ -161,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (apartments.Count > 0)
                     {
                         Instructions = "Apartment already owned!";
-                        InstructionsColor = _red;
+                        InstructionsColor = GuiColor.Red;
                         return;
                     }
 

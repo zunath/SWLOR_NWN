@@ -2,6 +2,7 @@
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -110,6 +111,19 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Sets the group associated with this perk. This determines which window the perk shows up in.
+        /// For example, if you set it to Beast then the perk will only show up in the Beast perk menu.
+        /// If this is unset, it defaults to a player perk.
+        /// </summary>
+        /// <param name="groupType">The type of group to assign</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder GroupType(PerkGroupType groupType)
+        {
+            _activePerk.GroupType = groupType;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a feat to grant to the player when the perk is purchased.
         /// </summary>
         /// <param name="feat">The feat to grant</param>
@@ -194,6 +208,32 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder RequirementCannotHavePerk(PerkType cannotHavePerkType)
         {
             var requirement = new PerkRequirementCannotHavePerk(cannotHavePerkType);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a requirement that the beast must meet a level requirement.
+        /// </summary>
+        /// <param name="level">The level to require</param>
+        /// <returns>A perk builder with the configured options.</returns>
+        public PerkBuilder RequirementBeastLevel(int level)
+        {
+            var requirement = new PerkRequirementBeastLevel(level);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a requirement that the beast must be of a certain role.
+        /// </summary>
+        /// <param name="role">The type of role to require</param>
+        /// <returns>A perk builder with the configured options.</returns>
+        public PerkBuilder RequirementBeastRole(BeastRoleType role)
+        {
+            var requirement = new PerkRequirementBeastRole(role);
             _activeLevel.Requirements.Add(requirement);
 
             return this;

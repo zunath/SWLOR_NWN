@@ -12,9 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageBansViewModel: GuiViewModelBase<ManageBansViewModel, GuiPayloadBase>
     {
-        private readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private readonly GuiColor _green = new GuiColor(0, 255, 0);
-
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -143,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 SelectedUserIndex = -1;
                 StatusText = "User ban deleted successfully.";
-                StatusColor = _green;
+                StatusColor = GuiColor.Green;
 
                 AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
@@ -156,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (ActiveUserCDKey.Length != 8)
             {
                 StatusText = "CD Keys must be 8 exactly digits.";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
                 return;
             }
 
@@ -175,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CDKeys[SelectedUserIndex] = dbUser.CDKey;
 
             StatusText = "Saved successfully.";
-            StatusColor = _green;
+            StatusColor = GuiColor.Green;
 
             Log.Write(LogGroup.Server, $"User added to ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
         };

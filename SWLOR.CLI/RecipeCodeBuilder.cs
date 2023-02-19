@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CLI
 {
@@ -40,6 +38,7 @@ namespace SWLOR.CLI
                 var enhancementCategory = data[10].Trim();
                 var resref = data[9].Trim();
                 var level = data[7].Trim();
+                var quantity = data[8].Trim();
                 var perkLevel = data[5].Trim();
                 var enhancementSlots = data[11].Trim();
                 var component1Resref = data[12].Trim();
@@ -67,7 +66,8 @@ namespace SWLOR.CLI
                     .Replace("%%RESREF%%", resref)
                     .Replace("%%LEVEL%%", level)
                     .Replace("%%PERKLEVEL%%", perkLevel)
-                    .Replace("%%RECIPECATEGORY%%", recipeCategory);
+                    .Replace("%%RECIPECATEGORY%%", recipeCategory)
+                    .Replace("%%QUANTITY%%", quantity);
 
                 var recipeRequirement = string.Empty;
                 if (!string.IsNullOrWhiteSpace(requiresRecipe))

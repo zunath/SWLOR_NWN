@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
+
+namespace SWLOR.Game.Server.Feature.BeastDefinition
+{
+    public class %%CLASSNAME%%: IBeastListDefinition
+    {
+        private readonly BeastBuilder _builder = new();
+
+        public Dictionary<BeastType, BeastDetail> Build()
+        {
+            _builder.Create(BeastType.%%BEASTTYPE%%)
+                .Appearance(AppearanceType.%%APPEARANCETYPE%%)
+                .SoundSetId(%%SOUNDSETID%%)
+                .PortraitId(%%PORTRAITID%%)
+                .CombatStats(AbilityType.%%ACCURACYSTAT%%, AbilityType.%%DAMAGESTAT%%)
+                .Role(BeastRoleType.%%BEASTROLE%%);
+
+%%LEVELCALLS%%
+
+            return _builder.Build();
+        }
+
+        %%LEVELLIST%%
+    }
+}

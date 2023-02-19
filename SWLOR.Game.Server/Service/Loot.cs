@@ -116,19 +116,19 @@ namespace SWLOR.Game.Server.Service
         {
             var creditFinderLevel = GetLocalInt(creature, "CREDITFINDER_LEVEL");
             var creditPercentIncrease = creditFinderLevel * 0.2f;
-            var treasureHunterLevel = GetLocalInt(creature, "TREASURE_HUNTER_LEVEL");
+            var rareBonusChance = GetLocalInt(creature, "RARE_BONUS_CHANCE");
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
-            if (treasureHunterLevel > 0 && table.IsRare)
+            if (rareBonusChance > 0 && table.IsRare)
             {
-                chance += treasureHunterLevel * 10;
+                chance += rareBonusChance;
             }
             for (int x = 1; x <= attempts; x++)
             {
                 if (Random.D100(1) > chance) continue;
 
-                var item = table.GetRandomItem(treasureHunterLevel);
+                var item = table.GetRandomItem(rareBonusChance);
                 var quantity = Random.Next(item.MaxQuantity) + 1;
 
                 // CreditFinder perk - Increase the quantity of gold found.
@@ -221,26 +221,45 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("item_on_hit")]
         public static void MarkCreditfinderAndTreasureHunterOnTarget()
         {
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player)) return;
-
+            var attacker = OBJECT_SELF;
             var target = GetSpellTargetObject();
-            if (GetIsPC(target) || GetIsDM(target)) return;
+            if (GetIsPC(target) || GetIsDM(target)) 
+                return;
 
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
-            var currentTreasureHunter = GetLocalInt(target, "TREASURE_HUNTER_LEVEL");
+            var currentTreasureHunter = GetLocalInt(target, "RARE_BONUS_CHANCE");
 
-            var effectiveCreditFinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.CreditFinder);
-            var effectiveTreasureHunterLevel = Perk.GetEffectivePerkLevel(player, PerkType.TreasureHunter);
-
-            if (effectiveCreditFinderLevel > currentCreditFinder)
+            var creditFinderLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.CreditFinder);
+            var treasureHunterLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.TreasureHunter) * 10;
+            var sniffLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.Sniff);
+            switch (sniffLevel)
             {
-                SetLocalInt(target, "CREDITFINDER_LEVEL", effectiveCreditFinderLevel);
+                case 1:
+                    sniffLevel = 8;
+                    break;
+                case 2:
+                    sniffLevel = 15;
+                    break;
+                case 3:
+                    sniffLevel = 25;
+                    break;
+                default:
+                    sniffLevel = 0;
+                    break;
             }
 
-            if (effectiveTreasureHunterLevel > currentTreasureHunter)
+            var rareBonusChance = treasureHunterLevel;
+            if (sniffLevel > rareBonusChance)
+                rareBonusChance = sniffLevel;
+
+            if (creditFinderLevel > currentCreditFinder)
             {
-                SetLocalInt(target, "TREASURE_HUNTER_LEVEL", effectiveTreasureHunterLevel);
+                SetLocalInt(target, "CREDITFINDER_LEVEL", creditFinderLevel);
+            }
+
+            if (rareBonusChance > currentTreasureHunter)
+            {
+                SetLocalInt(target, "RARE_BONUS_CHANCE", rareBonusChance);
             }
         }
 

@@ -52,6 +52,8 @@
         StatRebuild = 47,
         AssociateCharacterSheet = 48,
         HoloNet = 49,
+        Stables = 50,
+
         DebugEnmity = 900,
     }
 }

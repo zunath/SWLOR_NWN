@@ -16,9 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAIViewModel : GuiViewModelBase<DroidAIViewModel, DroidAIPayload>
     {
-        private static GuiColor _white = new GuiColor(255, 255, 255);
-        private static GuiColor _red = new GuiColor(255, 0, 0);
-
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
         private List<DroidPerk> _activeDroidPerks;
@@ -138,9 +135,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AISlots = $"{aiSlots} / {controllerStats.AISlots}";
 
             if (aiSlots >= controllerStats.AISlots)
-                AISlotsColor = _red;
+                AISlotsColor = GuiColor.Red;
             else
-                AISlotsColor = _white;
+                AISlotsColor = GuiColor.White;
         }
 
         public Action AddInstructionDisk() => () =>

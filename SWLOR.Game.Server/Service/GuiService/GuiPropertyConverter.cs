@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         private Json ColorToJson(GuiColor color)
         {
-            return Nui.Color(color.Red, color.Green, color.Blue, color.Alpha);
+            return Nui.Color(color.R, color.G, color.B, color.Alpha);
         }
 
         private GuiRectangle JsonToRectangle(Json json)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public string IconResref { get; set; }
+        public PerkGroupType GroupType { get; set; }
 
         public PerkPurchaseRequirementAction PurchaseRequirement { get; set; }
         public PerkRefundRequirementAction RefundRequirement { get; set; }
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public PerkDetail()
         {
+            GroupType = PerkGroupType.Player;
             PerkLevels = new Dictionary<int, PerkLevel>();
 
             EquippedTriggers = new List<PerkTriggerEquippedAction>();

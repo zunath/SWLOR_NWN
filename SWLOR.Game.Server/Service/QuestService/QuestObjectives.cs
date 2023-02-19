@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.KillProgresses[Group]--;
             DB.Set(dbPlayer);
 
-            var npcGroup = Quest.GetNPCGroup(Group);
+            var npcGroup = NPCGroup.GetNPCGroup(Group);
             var questDetail = Quest.GetQuestById(questId);
 
             var statusMessage = $"[{questDetail.Name}] {npcGroup.Name} remaining: {quest.KillProgresses[Group]}";
@@ -163,7 +164,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
 
-            var npcGroup = Quest.GetNPCGroup(Group);
+            var npcGroup = NPCGroup.GetNPCGroup(Group);
             var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
             
             return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";

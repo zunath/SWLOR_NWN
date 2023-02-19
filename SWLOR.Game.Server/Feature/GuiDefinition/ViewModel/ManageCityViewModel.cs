@@ -14,9 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
 
@@ -286,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var level = dbCity.Upgrades[PropertyUpgradeType.CityLevel];
             Instructions = string.Empty;
-            InstructionsColor = _green;
+            InstructionsColor = GuiColor.Green;
             CityName = dbCity.CustomName;
             Treasury = $"Treasury: {dbCity.Treasury} cr";
             CityLevel = $"Level: {Property.GetCityLevelName(level)} (Lvl. {level})";
@@ -400,28 +397,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (currentLevel >= MaxUpgradeLevel)
             {
                 Instructions = "Cannot upgrade further.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return false;
             }
 
             if (dbCity.Upgrades[PropertyUpgradeType.CityLevel] <= currentLevel)
             {
                 Instructions = "Increase city level to upgrade.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return false;
             }
 
             if (mayor.Perks[PerkType.CityManagement] + 1 <= currentLevel)
             {
                 Instructions = "Mayor city management perk too low.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return false;
             }
 
             if (dbCity.Treasury < price)
             {
                 Instructions = $"Treasury needs at least {price} cr to upgrade.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return false;
             }
 
@@ -458,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     RefreshUpgradeLevels();
 
                     Instructions = "Upgrade purchased successfully!";
-                    InstructionsColor = _green;
+                    InstructionsColor = GuiColor.Green;
 
                     Log.Write(LogGroup.Property, $"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
@@ -521,7 +518,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbCity.Upkeep > dbCity.Treasury)
                     {
                         Instructions = "Insufficient treasury funds.";
-                        InstructionsColor = _red;
+                        InstructionsColor = GuiColor.Red;
                         return;
                     }
 
@@ -533,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DB.Set(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
-                    InstructionsColor = _green;
+                    InstructionsColor = GuiColor.Green;
 
                     RefreshPropertyDetails();
                     RefreshUpkeep();
@@ -546,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (CityName.Length <= 0)
             {
                 Instructions = "City name must be at least one character.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -583,7 +580,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshTaxesAndFees();
 
             Instructions = "City details saved successfully.";
-            InstructionsColor = _green;
+            InstructionsColor = GuiColor.Green;
 
         };
 
@@ -601,7 +598,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!CanAccessTreasury)
             {
                 Instructions = "Insufficient permissions.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -610,7 +607,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbCity.Treasury < amount)
                 {
                     Instructions = "Insufficient funds in treasury.";
-                    InstructionsColor = _red;
+                    InstructionsColor = GuiColor.Red;
                     return;
                 }
 
@@ -622,14 +619,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 RefreshPropertyDetails();
                 Instructions = $"Withdrew {amount} credits from treasury.";
-                InstructionsColor = _green;
+                InstructionsColor = GuiColor.Green;
             }
             else if (recordId == "DEPOSIT")
             {
                 if (GetGold(Player) < amount)
                 {
                     Instructions = "Insufficient credits in your inventory.";
-                    InstructionsColor = _red;
+                    InstructionsColor = GuiColor.Red;
                     return;
                 }
 
@@ -640,7 +637,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 RefreshPropertyDetails();
                 Instructions = $"Deposited {amount} credits into treasury.";
-                InstructionsColor = _green;
+                InstructionsColor = GuiColor.Green;
             }
         }
     }

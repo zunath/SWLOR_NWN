@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace SWLOR.Game.Server.Service.QuestService
+namespace SWLOR.Game.Server.Service.NPCService
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum NPCGroupType
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         Viscara_MandalorianRangers = 7,
         [NPCGroup("Outlaws")]
         Viscara_WildwoodsOutlaws = 8,
-        [NPCGroup("Gimpassas")]
+        [NPCGroup("Gimpassa Hatchlings")]
         Viscara_WildwoodsGimpassas = 9,
         [NPCGroup("Kinraths")]
         Viscara_WildwoodsKinraths = 10,

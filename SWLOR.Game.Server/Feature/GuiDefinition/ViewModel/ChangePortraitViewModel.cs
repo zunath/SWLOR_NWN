@@ -1,7 +1,9 @@
 ﻿using System;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -119,6 +121,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 Droid.SaveConstructedDroid(controller, constructedDroid);
             }
+            else if (BeastMastery.IsPlayerBeast(_target))
+            {
+                var beastId = BeastMastery.GetBeastId(_target);
+                var dbBeast = DB.Get<Beast>(beastId);
+
+                dbBeast.PortraitId = portraitId;
+                DB.Set(dbBeast);
+            }
+
 
             Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
         };

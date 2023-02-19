@@ -255,18 +255,8 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 // If this is an attack make the NPC react.
-                if (ability.IsHostileAbility)
-                {
-                    if (!GetIsInCombat(target) && !GetIsPC(target))
-                    {
-                        AssignCommand(target, () =>
-                        {
-                            ClearAllActions(); 
-                            ActionAttack(activator);
-                        });
-                    }
-                }
-
+                Enmity.AttackHighestEnmityTarget(target);
+                
                 if (!GetIsPC(activator))
                 {
                     var combatRoundEndScript = GetEventScript(activator, EventScript.Creature_OnEndCombatRound);

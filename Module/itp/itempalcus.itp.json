@@ -2314,6 +2314,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantari Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_heavy_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DEAR-001"
                     },
                     "RESREF": {
@@ -6246,6 +6257,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bol Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bolbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Card Bulette Bite"
                     },
                     "RESREF": {
@@ -6328,6 +6350,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hu_qutig_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Queenrath Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "queenrathbite"
                     }
                   },
                   {
@@ -6499,17 +6532,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Voritor Boss Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "voreitorbossbite"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Womprat Bite"
                     },
                     "RESREF": {
@@ -6586,6 +6608,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gimp_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hive Kinrath Stab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hivekinrathstab"
                     }
                   },
                   {
@@ -8900,6 +8933,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "test_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thune Leader Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thuneleaderskin"
                     }
                   },
                   {
@@ -14141,6 +14185,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Ice Resist Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_kin_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Immortal Boots"
                           },
                           "RESREF": {
@@ -15020,6 +15075,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dantari Heavy Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_h_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DECL-001"
                           },
                           "RESREF": {
@@ -15756,6 +15822,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "com_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dantari Hyper Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_hyper_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dantari Light Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_light_gloves"
                           }
                         },
                         {
@@ -18458,6 +18546,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bol Leather"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bol_leather"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Boncexdryn"
                     },
                     "RESREF": {
@@ -18727,6 +18826,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "carnuinch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carrot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "carrot"
                     }
                   },
                   {
@@ -30030,6 +30140,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Milk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "milk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moat Carp"
                     },
                     "RESREF": {
@@ -38339,6 +38460,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Carrotcake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_carrotcake"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Flapjacks"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_flapjack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dath Herb Soup"
                     },
                     "RESREF": {
@@ -38680,6 +38823,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Krafter's Kebab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "krafters_kebab"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Large Bag"
                     },
                     "RESREF": {
@@ -38828,6 +38982,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "moncal_hsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Munch Fungus Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "munch_fungusb"
                     }
                   },
                   {
@@ -39768,6 +39933,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Bol Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_bolrifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Chaos Belt"
                     },
                     "RESREF": {
@@ -40257,6 +40433,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_imtunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Krafter's Kebab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_krafterk"
                     }
                   },
                   {
@@ -42644,6 +42831,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Dantooine Carrotcake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dancarrot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Dantooine Flapjacks"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_danflap"
                     }
                   },
                   {
@@ -45998,6 +46207,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "chi_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dantari Ice Dagger"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dantari_iknife"
                           }
                         },
                         {
@@ -49467,6 +49687,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantari Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Delta Spear"
                     },
                     "RESREF": {
@@ -50355,6 +50586,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Bol Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bol_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Byysk Rifle"
                           },
                           "RESREF": {
@@ -50724,6 +50966,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "chi_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_shuriken"
                     }
                   },
                   {

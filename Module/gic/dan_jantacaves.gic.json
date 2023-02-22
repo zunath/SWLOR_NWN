@@ -73,13 +73,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "volition's Bio Placeables by volition\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: Torture, Taxidermy, and High Tea by Gnomad"
         }
       },
@@ -535,13 +528,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "volition's Bio Placeables by volition\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: LOKPak v3 by Danmar"
         }
       },
@@ -844,6 +830,55 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
         }
       }
     ]

@@ -34,12 +34,11 @@
         DathomirMountains = 25,
         DathomirTribeVillage = 26,
 
-        DantooineMountainJunglesFish = 27,
+        DantooineLake = 27,
         DantooineMountainJungles = 28,
         DantooineCanyon = 29,
         DantooineSouthFields = 30,
         DantooineForsakenJungles = 31,
-        DantooineJantaCaves = 32,
-        DanLake = 33
+
     }
 }

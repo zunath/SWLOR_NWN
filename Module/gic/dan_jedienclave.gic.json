@@ -6,7 +6,15 @@
   },
   "Door List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Fancy Door"
+        }
+      }
+    ]
   },
   "Encounter List": {
     "type": "list",
@@ -1522,6 +1530,20 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Flower Pack by Adam Miller"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       }
     ]

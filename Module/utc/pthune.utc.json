@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The thune was a large herbivorous creature with gray, wrinkled, and hard hide. Living in small herds on the grasslands of Dantooine, they were typically not aggressive; only when angered did they became dangerous opponents.\n\nThe size of a small shuttle, they were magnificent-looking creatures. From the center of the thune's face hung a huge, noselike appendage, while thin, full ears circled its head like a halo.\n\nThe thune could flap its ears filled with thousands of blood vessels—in order to cool down. The cooled blood in the ears would flow through the rest of the body, lowering its overall temperature. "
+    }
   },
   "Dex": {
     "type": "byte",
@@ -534,6 +536,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANTOOINE_PLAINS_THUNE_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 58
         }
       }
     ]

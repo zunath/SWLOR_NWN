@@ -3094,68 +3094,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dantooine - Janta Boss"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DANTOOINE_JANTA_BOSS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "danbosskath"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 2.091429378856327e-015
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 53.32978057861328
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 34.69546127319336
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      }
-    ]
+    "value": []
   }
 }

@@ -440,6 +440,7 @@
         ImmortalCap = 403,
         ImmortalGloves = 404,
         ImmortalBoots = 405,
+        BolRifle = 406,
 
         // Fabrication:  1001-2000
         BedRoll = 1001,
@@ -861,6 +862,10 @@
         WildSushi = 2137,
         TentacleSushi = 2138,
         DoradoSushi = 2139,
+        DantooineFlapJack = 2140,
+        DantooineCarrotCake = 2141,
+        MunchFungusBread = 2142,
+        KraftersKebab = 2143,
 
         // Engineering: 3001-6000
         BasicCapacitorBooster = 3001,
@@ -2295,5 +2300,6 @@
         InstructionShielding4 = 4686,
         InstructionInfusion1 = 4687,
         InstructionInfusion2 = 4688,
+        
     }
 }

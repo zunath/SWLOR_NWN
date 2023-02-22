@@ -1453,6 +1453,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("ruddy_seema", 3)
                 .Component("distilled_water", 1);
 
+            // Munch Fungus Bread
+            _builder.Create(RecipeType.MunchFungusBread, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("munch_fungusb")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("b_flour", 3)
+                .Component("mushroom", 3)
+                .Component("distilled_water", 1);
+
             // Rancid Broth
             _builder.Create(RecipeType.RancidBroth, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -1536,6 +1548,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("alzabi", 6)
                 .Component("distilled_water", 2);
 
+            // Dantooine Flapjack
+            _builder.Create(RecipeType.DantooineFlapJack, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dan_flapjack")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("milk", 6)
+                .Component("b_flour", 3);
+
+            // Dantooine Carrotcake
+            _builder.Create(RecipeType.DantooineCarrotCake, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dan_carrotcake")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("milk", 6)
+                .Component("carrot", 3);
+
+            // Krafters Kebab
+            _builder.Create(RecipeType.KraftersKebab, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("krafters_kebab")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("wild_meat", 10)
+                .Component("cultured_butter", 3)
+                .Component("ref_jasioclase", 1);
         }
     }
 }

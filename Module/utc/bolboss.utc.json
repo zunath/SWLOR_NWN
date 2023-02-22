@@ -79,7 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "voreitorbossbite"
+          "value": "bolbite"
+        }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "bolbite"
         }
       },
       {
@@ -117,7 +124,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Voritor lizard [Boss]"
+      "0": "Bol"
     }
   },
   "fortbonus": {
@@ -481,11 +488,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Voritorlizardboss"
+    "value": "bolboss"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 2857
+    "value": 2886
   },
   "TemplateList": {
     "type": "list",
@@ -493,7 +500,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "voritorlizardbos"
+    "value": "bolboss"
   },
   "VarTable": {
     "type": "list",
@@ -510,7 +517,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS,100,1"
+          "value": "DANTOOINE_BOL_BOSS,100,1"
         }
       },
       {
@@ -525,22 +532,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS,40,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS_RARES,5,1"
+          "value": "DANTOOINE_BOL_BOSS,40,1"
         }
       },
       {
@@ -555,7 +547,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS_GEMS,100,1"
+          "value": "DANTOOINE_BOL_BOSS_RECIPES,95,1"
         }
       },
       {
@@ -570,14 +562,29 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS_GEMS,30,1"
+          "value": "DANTOOINE_BOL_BOSS_RECIPES,20,1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_6"
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 61
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
         },
         "Type": {
           "type": "dword",
@@ -585,22 +592,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS_RECIPES,95,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_7"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DANTOOINE_VORITOR_BOSS_RECIPES,20,1"
+          "value": "DANTOOINE_BOL_BOSS_RARES,5,1"
         }
       }
     ]

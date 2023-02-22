@@ -54,11 +54,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine - Canyon Caves"
+                      "value": "Dantooine - Bol Boss"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "danccaves"
+                      "value": "danbolboss"
                     }
                   },
                   {
@@ -87,11 +87,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine - Janta Boss"
+                      "value": "Dantooine - Lake"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "danbosskath"
+                      "value": "danlakewp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - South Plains"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dansplains"
                     }
                   },
                   {

@@ -54,7 +54,7 @@
         "__struct_id": 8,
         "AnimationState": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Appearance": {
           "type": "dword",
@@ -122,7 +122,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_dan_tojedilibr"
+          "value": ""
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -134,11 +134,11 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LocName": {
           "type": "cexolocstring",
@@ -208,7 +208,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -20836,7 +20836,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "TO_DAN_JEDI_LIBRARY"
+                "value": "TO_DAN_JEDI_LIBRARY1"
               }
             },
             {

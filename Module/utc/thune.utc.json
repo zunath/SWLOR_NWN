@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 57.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 45
+          "value": 47
         }
       }
     ]
@@ -82,6 +82,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "dthunestomp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "thuneleaderskin"
         }
       }
     ]
@@ -156,7 +163,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1630
+    "value": 1658
   },
   "NaturalAC": {
     "type": "byte",
@@ -529,6 +536,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANTOOINE_THUNE_LEADER,40,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 52
         }
       }
     ]

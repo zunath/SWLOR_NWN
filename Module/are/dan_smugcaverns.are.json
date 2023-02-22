@@ -2710,15 +2710,15 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1602
+          "value": 103
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 5
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 0
+          "value": 13
         },
         "Tile_Orientation": {
           "type": "int",
@@ -4289,7 +4289,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 11
   },
   "Width": {
     "type": "int",

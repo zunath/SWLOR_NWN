@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 865
+    "value": 463
   },
   "BodyBag": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitechiro"
+          "value": "queenrathbite"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitechiro"
+          "value": "queenrathbite"
         }
       },
       {
@@ -212,7 +212,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 1293
   },
   "Race": {
     "type": "byte",
@@ -586,7 +586,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_KINRATH_QUEEN_GEMS,30,1"
+          "value": "DANTOOINE_KINRATH_QUEEN_RECIPES,95,1"
         }
       },
       {
@@ -601,22 +601,22 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_KINRATH_QUEEN_RECIPES,95,1"
+          "value": "DANTOOINE_KINRATH_QUEEN_RECIPES,20,1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_7"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
-          "value": 3
+          "value": 1
         },
         "Value": {
-          "type": "cexostring",
-          "value": "DANTOOINE_KINRATH_QUEEN_RECIPES,20,1"
+          "type": "int",
+          "value": 59
         }
       }
     ]

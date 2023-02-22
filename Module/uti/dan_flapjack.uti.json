@@ -2,15 +2,15 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 9
   },
   "BaseItem": {
     "type": "int",
-    "value": 70
+    "value": 311
   },
   "Charges": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -18,11 +18,11 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 9
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Voritor Boss Bite"
+      "0": "Dantooine Flapjacks"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 242
   },
   "PaletteID": {
     "type": "byte",
-    "value": 55
+    "value": 23
   },
   "Plot": {
     "type": "byte",
@@ -65,7 +67,38 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
         },
         "CostValue": {
           "type": "word",
@@ -81,42 +114,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 112
         },
         "Subtype": {
           "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 34
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 80
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
           "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 93
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 1
         }
       }
     ]
@@ -131,10 +133,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "VoritorBossBite"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "voreitorbossbite"
+    "value": "dan_flapjack"
   }
 }

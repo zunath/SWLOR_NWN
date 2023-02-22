@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()
         {
-            DanLakeFish();
+            DantooineLakeFish();
             DantooineMountainJunglesFish();
             DantooineCanyonFish();
             DantooineSouthFieldsFish();
@@ -18,17 +18,10 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
             return _builder.Build();
         }
 
-        private void DanLakeFish()
+        private void DantooineLakeFish()
         {
             _builder
-                .Create(FishingLocationType.DanLake)
-
-                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.Meatball)
-                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.Meatball)
-                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.Meatball)
+                .Create(FishingLocationType.DantooineLake)
 
                 .AddFish(FishType.Crayfish, FishingRodType.Clothespole, FishingBaitType.RobberRig)
                 .AddFish(FishType.Crayfish, FishingRodType.Clothespole, FishingBaitType.ShellBug)
@@ -75,14 +68,6 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
         {
             _builder
                 .Create(FishingLocationType.DantooineCanyon)
-
-
-                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Bamboo, FishingBaitType.Meatball)
-                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Carbon, FishingBaitType.Meatball)
-                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.LittleWorm)
-                .AddFish(FishType.MoatCarp, FishingRodType.Clothespole, FishingBaitType.Meatball)
 
                 .AddFish(FishType.CobaltJellyfish, FishingRodType.Carbon, FishingBaitType.DrillCalamary)
                 .AddFish(FishType.CobaltJellyfish, FishingRodType.Carbon, FishingBaitType.SardineBall)
@@ -131,16 +116,7 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
                 .AddFish(FishType.Lakerda, FishingRodType.Tranquility, FishingBaitType.SinkingMinnow)
                 .DaytimeOnly()
                 .AddFish(FishType.Lakerda, FishingRodType.Tranquility, FishingBaitType.Bluetail)
-                .DaytimeOnly()
-
-                .AddFish(FishType.Frigorifish, FishingRodType.Tranquility, FishingBaitType.DrillCalamary)
-                .NighttimeOnly()
-                .AddFish(FishType.Frigorifish, FishingRodType.Tranquility, FishingBaitType.GiantShellBug)
-                .NighttimeOnly()
-                .AddFish(FishType.Frigorifish, FishingRodType.LuShang, FishingBaitType.DrillCalamary)
-                .NighttimeOnly()
-                .AddFish(FishType.Frigorifish, FishingRodType.LuShang, FishingBaitType.GiantShellBug)
-                .NighttimeOnly();
+                .DaytimeOnly();
         }
 
         private void DantooineForsakenJunglesFish()

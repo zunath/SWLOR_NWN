@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Enumeration
                "DANTOOINE_LANDING",
                 900,
                 true)]
-        Dantooine = 168,
+        Dantooine = 128,
     }
 
     public class PlanetAttribute : Attribute

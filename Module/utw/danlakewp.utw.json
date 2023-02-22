@@ -10,7 +10,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "HasMapNote": {
     "type": "byte",
@@ -23,7 +25,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dantooine - Janta Boss"
+      "0": "Dantooine - Lake"
     }
   },
   "MapNote": {
@@ -40,10 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "DANTOOINE_JANTA_BOSS"
+    "value": "DANTOOINE_LAKE"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "danbosskath"
+    "value": "danlakewp"
   }
 }

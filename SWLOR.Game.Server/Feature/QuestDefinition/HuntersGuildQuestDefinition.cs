@@ -169,6 +169,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_811", NPCGroupType.Dathomir_Ssurian, 10, 4);
             BuildKillTask("hun_tsk_812", NPCGroupType.Dathomir_SwamplandBug, 10, 4);
 
+            // Tier 5 (Rank 4)
+            BuildItemTask("hun_tsk_813", "diamond", 3, 4);
+            BuildItemTask("hun_tsk_814", "elec_high", 10, 4);
+            BuildItemTask("hun_tsk_815", "emerald", 6, 4);
+            BuildKillTask("hun_tsk_816", NPCGroupType.Dantooine_EnragedKathHound, 10, 4);
+            BuildKillTask("hun_tsk_817", NPCGroupType.Dantooine_ThuneHerdLeader, 10, 4);
+            BuildKillTask("hun_tsk_818", NPCGroupType.Dantooine_DantariShaman, 10, 4);
+            BuildKillTask("hun_tsk_819", NPCGroupType.Dantooine_DantariHunter, 10, 4);
+            BuildKillTask("hun_tsk_820", NPCGroupType.Dantooine_Gizka, 10, 4);
+            BuildKillTask("hun_tsk_821", NPCGroupType.Dantooine_HiveKinrath, 10, 4);
+            BuildKillTask("hun_tsk_822", NPCGroupType.Dantooine_Iriaz, 10, 4);
+            BuildKillTask("hun_tsk_823", NPCGroupType.Dantoonie_PlainsThune, 10, 4);
+            BuildKillTask("hun_tsk_824", NPCGroupType.Dantooine_KinrathQueen, 10, 4);
+            BuildKillTask("hun_tsk_825", NPCGroupType.Dantooine_VoritorLizard, 10, 4);
+            BuildKillTask("hun_tsk_826", NPCGroupType.Dantooine_BolBoss, 10, 4);
+
 
             return _builder.Build();
         }

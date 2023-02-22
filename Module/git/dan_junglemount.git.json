@@ -17895,11 +17895,11 @@
         },
         "X": {
           "type": "float",
-          "value": 59.87371063232422
+          "value": 60.19063568115234
         },
         "Y": {
           "type": "float",
-          "value": 45.66980361938477
+          "value": 45.90992736816406
         },
         "Z": {
           "type": "float",
@@ -18124,11 +18124,11 @@
         },
         "X": {
           "type": "float",
-          "value": 60.35459899902344
+          "value": 60.25757598876953
         },
         "Y": {
           "type": "float",
-          "value": 25.64346313476563
+          "value": 25.99765014648438
         },
         "Z": {
           "type": "float",
@@ -19833,6 +19833,21 @@
         "Value": {
           "type": "int",
           "value": 76
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 118
         }
       }
     ]

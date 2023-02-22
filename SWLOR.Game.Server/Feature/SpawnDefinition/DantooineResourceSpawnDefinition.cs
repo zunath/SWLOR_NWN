@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
-            DanLake();
+            DantooineLake();
             DanWildPlains();
             DantooineWareHouse();
             DanTribeVillage();
@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             return _builder.Build();
         }
 
-        private void DanLake()
+        private void DantooineLake()
         {
-            _builder.Create("DANTOOINE_DAN_LAKE_RESOURCES")
+            _builder.Create("DANTOOINE_LAKE_RESOURCES")
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_5")

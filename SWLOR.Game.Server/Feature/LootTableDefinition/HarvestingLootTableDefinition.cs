@@ -136,7 +136,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("turnip", 20)
                 .AddItem("tofu", 20)
                 .AddItem("dried_bonito", 10)
-                .AddItem("tomato", 10);
+                .AddItem("tomato", 10)
+                .AddItem("carrot", 10);
         }
 
         private void AsteroidMining()

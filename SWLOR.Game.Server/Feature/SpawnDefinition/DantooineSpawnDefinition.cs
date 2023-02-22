@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineKinrathCaves();
             DantooineJungle();
             DantooineRuinFarm();
-            DanLake();
-            Janta();
-            DanBoss();
-            DanBoss2();
+            DantooineLake();
+            DantooineJanta();
+            DantooineKinrathBoss();
             DantooineMountains();
             DantooineCanyon();
+            DantooineBolBoss();
             DantooineSouthPlains();
             DantooineNpcs();
 
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "hkinrath")
                 .RandomlyWalks()
                 .WithFrequency(100)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
         private void DantooineJungle()
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
                 .WithFrequency(5)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
         private void DantooineRuinFarm()
@@ -63,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pthune")
                 .RandomlyWalks()
                 .WithFrequency(100)
-
                 .AddSpawn(ObjectType.Creature, "gizka")
                 .RandomlyWalks()
                 .WithFrequency(20)
@@ -71,15 +70,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
                 .WithFrequency(5)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
-        private void DanLake()
+        private void DantooineLake()
         {
             _builder.Create("DANTOOINE_LAKE")
-                .AddSpawn(ObjectType.Creature, "Thune")
+                .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
-                .WithFrequency(1)
+                .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Creature, "iriaz")
                 .RandomlyWalks()
@@ -88,10 +87,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "hkinrath")
                 .RandomlyWalks()
                 .WithFrequency(100)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
-        private void Janta()
+        private void DantooineJanta()
         {
             _builder.Create("DANTOOINE_JANTA")
                 .AddSpawn(ObjectType.Creature, "gizka")
@@ -101,41 +100,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "voritorlizard")
                 .RandomlyWalks()
                 .WithFrequency(50)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
-        private void DanBoss()
-        {
-            _builder.Create("DANTOOINE_JANTA_BOSS")
-                .AddSpawn(ObjectType.Creature, "vangrykath")
-                .RandomlyWalks()
-                .WithFrequency(1)
-                .RespawnDelay(60 + Random.D100(1))
-            .ReturnsHome();
-        }
-
-        private void DanBoss2()
+        private void DantooineKinrathBoss()
         {
             _builder.Create("DANTOOINE_KIN_BOSS")
                 .AddSpawn(ObjectType.Creature, "vqueenkin")
                 .RandomlyWalks()
                 .WithFrequency(1)
                 .RespawnDelay(60 + Random.D100(1))
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
         private void DantooineMountains()
         {
             _builder.Create("DANTOOINE_MOUNTAINS")
-                .AddSpawn(ObjectType.Creature, "Iriaz")
+                .AddSpawn(ObjectType.Creature, "iriaz")
                 .RandomlyWalks()
                 .WithFrequency(100)
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "Thune")
+                .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
                 .WithFrequency(100)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
         private void DantooineCanyon()
@@ -143,12 +132,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("DANTOOINE_CANYON")
                 .AddSpawn(ObjectType.Creature, "gizka")
                 .RandomlyWalks()
-                .WithFrequency(80)
+                .WithFrequency(100)
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "Iriaz")
+                .AddSpawn(ObjectType.Creature, "iriaz")
                 .RandomlyWalks()
-                .WithFrequency(50)
+                .WithFrequency(100)
                 .ReturnsHome();
         }
 
@@ -159,23 +148,20 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(100)
 
-                .AddSpawn(ObjectType.Creature, "jantashaman")
+                .AddSpawn(ObjectType.Creature, "dantarishaman")
                 .RandomlyWalks()
                 .WithFrequency(100)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
-        private void DantooineCrystalCaves()
+        private void DantooineBolBoss()
         {
-            _builder.Create("DANTOOINE_CRYSTAL_CAVES")
-                .AddSpawn(ObjectType.Creature, "voritorlizardbos")
+            _builder.Create("DANTOOINE_BOL")
+                .AddSpawn(ObjectType.Creature, "bolboss")
                 .RandomlyWalks()
-                .WithFrequency(100)
+                .RespawnDelay(60 + Random.D100(1))
+                .WithFrequency(100);
 
-                .AddSpawn(ObjectType.Creature, "gizka")
-                .RandomlyWalks()
-                .WithFrequency(100)
-            .ReturnsHome();
         }
 
         private void DantooineNpcs()
@@ -194,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "danfarmerfemale")
                 .RandomlyWalks()
                 .WithFrequency(100)
-            .ReturnsHome();
+                .ReturnsHome();
         }
 
     }

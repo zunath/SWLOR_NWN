@@ -109,6 +109,29 @@ namespace SWLOR.Game.Server.Service.QuestService
         Dathomir_Ssurian = 49,
         [NPCGroup("Swampland Bug")]
         Dathomir_SwamplandBug = 50,
+
+        [NPCGroup("Enraged Kathhound")]
+        Dantooine_EnragedKathHound = 51,
+        [NPCGroup("Thune Herd Leader")]
+        Dantooine_ThuneHerdLeader = 52,
+        [NPCGroup("Dantari Shaman")]
+        Dantooine_DantariShaman = 53,
+        [NPCGroup("Dantari Hunter")]
+        Dantooine_DantariHunter = 54,
+        [NPCGroup("Gizka")]
+        Dantooine_Gizka = 55,
+        [NPCGroup("Hive Kinrath")]
+        Dantooine_HiveKinrath = 56,
+        [NPCGroup("Iriaz")]
+        Dantooine_Iriaz = 57,
+        [NPCGroup("Plains Thune")]
+        Dantoonie_PlainsThune = 58,
+        [NPCGroup("Kinrath Queen")]
+        Dantooine_KinrathQueen = 59,
+        [NPCGroup("Voritor lizard")]
+        Dantooine_VoritorLizard = 60,
+        [NPCGroup("Bol Boss")]
+        Dantooine_BolBoss = 61,
     }
 
     public class NPCGroupAttribute : Attribute

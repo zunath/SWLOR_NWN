@@ -10216,6 +10216,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 416.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bolboss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 61.0
                     },
                     "FACTION": {
@@ -10311,25 +10330,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 99.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Enraged Kathhound"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vangrykath"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 43.0
                     },
                     "FACTION": {
@@ -10349,7 +10349,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 57.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10457,25 +10457,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "voritorlizard"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 416.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Voritor lizard [Boss]"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "voritorlizardbos"
                     }
                   }
                 ]

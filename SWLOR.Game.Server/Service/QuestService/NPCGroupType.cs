@@ -110,8 +110,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         [NPCGroup("Swampland Bug")]
         Dathomir_SwamplandBug = 50,
 
-        [NPCGroup("Enraged Kathhound")]
-        Dantooine_EnragedKathHound = 51,
+
         [NPCGroup("Thune Herd Leader")]
         Dantooine_ThuneHerdLeader = 52,
         [NPCGroup("Dantari Shaman")]

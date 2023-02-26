@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            Enmity.ModifyEnmityOnAll(activator, 300 + amount);
+            Enmity.ModifyEnmityOnAll(activator, 200 + amount);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 

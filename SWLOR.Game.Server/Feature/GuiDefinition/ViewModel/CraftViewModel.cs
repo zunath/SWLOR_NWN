@@ -29,9 +29,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
         private const string BlankTexture = "Blank";
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _cyan = new GuiColor(0, 255, 255);
 
         private RecipeType _recipe;
         
@@ -293,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemName = Cache.GetItemNameByResref(detail.Resref);
             
             SwitchToSetUpMode();
-            StatusColor = _green;
+            StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
             IsEnhancement1Visible = detail.EnhancementSlots >= 1;
@@ -885,7 +882,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SwitchToCraftMode()
         {
             StatusText = string.Empty;
-            StatusColor = _green;
+            StatusColor = GuiColor.Green;
 
             IsInCraftMode = true;
             IsInSetupMode = false;
@@ -912,7 +909,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SwitchToAutoCraftMode()
         {
             StatusText = "Auto-crafting....";
-            StatusColor = _cyan;
+            StatusColor = GuiColor.Cyan;
 
             IsInCraftMode = false;
             IsInSetupMode = false;
@@ -981,7 +978,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 !string.IsNullOrWhiteSpace(_enhancement2))
             {
                 StatusText = $"Enhancements cannot be installed with auto-craft.";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
                 return;
             }
 
@@ -999,7 +996,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (aggregateList.Count <= 0)
             {
                 StatusText = $"Missing components!";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
 
                 return false;
             }
@@ -1142,7 +1139,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadCraftingState();
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
-            StatusColor = _green;
+            StatusColor = GuiColor.Green;
 
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
@@ -1191,7 +1188,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadCraftingState();
             RefreshRecipeStats();
             StatusText = "Failed to craft the item...";
-            StatusColor = _red;
+            StatusColor = GuiColor.Red;
 
             // 15% of XP is gained for failures.
             var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
@@ -1211,7 +1208,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_cp < cpCost)
             {
                 StatusText = "Not enough CP!";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
                 return;
             }
 
@@ -1235,12 +1232,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 successAction();
 
                 StatusText = $"{abilityName}: Success!";
-                StatusColor = _green;
+                StatusColor = GuiColor.Green;
             }
             else
             {
                 StatusText = $"{abilityName}: FAILURE";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
             }
 
             if (_progress >= _maxProgress)

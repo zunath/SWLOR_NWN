@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -56,7 +57,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         var waypoint = GetWaypointByTag(waypointTag);
                         var waypointLocation = GetLocation(waypoint);
 
-                        AssignCommand(player, () => ActionJumpToLocation(waypointLocation));
+                        AssignCommand(player, () => JumpToLocation(waypointLocation));
+
+                        var henchman = GetAssociate(AssociateType.Henchman, player);
+                        if (GetIsObjectValid(henchman))
+                        {
+                            AssignCommand(henchman, () => JumpToLocation(waypointLocation));
+                        }
                     }
 
                     EndConversation();

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
@@ -14,12 +17,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
-        private static readonly Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>> _creatureCombatPointTracker = new Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>();
+        private static readonly Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>> _creatureCombatPointTracker = new();
 
         /// <summary>
         /// Tracks the combat point lists associated with a player back to a creature.
         /// </summary>
-        private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new Dictionary<uint, HashSet<uint>>();
+        private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
 
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
@@ -52,6 +55,13 @@ namespace SWLOR.Game.Server.Service
                 levelDelta <= 5)
             {
                 AddCombatPoint(player, target, SkillType.Force);
+            }
+
+            // If player has a beast active, add a combat point for Beast Mastery.
+            var associate = GetAssociate(AssociateType.Henchman, player);
+            if (BeastMastery.IsPlayerBeast(associate))
+            {
+                AddCombatPoint(player, target, SkillType.BeastMastery);
             }
         }
 
@@ -121,7 +131,8 @@ namespace SWLOR.Game.Server.Service
                         if (cpCategory != CombatPointCategoryType.Exempt)
                         {
                             var validCPs = cpList
-                                .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory);
+                                .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
+                                .ToList();
                             if (!validCPs.Any()) continue;
                             if (!validSkills.Any()) continue;
 
@@ -160,8 +171,10 @@ namespace SWLOR.Game.Server.Service
                             }
                         }
                     }
-                }
 
+                    EventsPlugin.PushEventData("NPC", ObjectToString(npc));
+                    EventsPlugin.SignalEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", player);
+                }
             }
 
             DistributeSkillXP();

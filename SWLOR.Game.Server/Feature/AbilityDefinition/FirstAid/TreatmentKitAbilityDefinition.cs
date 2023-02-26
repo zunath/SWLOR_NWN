@@ -100,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     StatusEffect.Remove(target, StatusEffectType.Poison);
                     StatusEffect.Remove(target, StatusEffectType.Shock);
                     StatusEffect.Remove(target, StatusEffectType.Burn);
+                    StatusEffect.Remove(target, StatusEffectType.Disease);
 
                     TakeMedicalSupplies(activator);
 

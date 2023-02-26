@@ -19,6 +19,8 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
 using System.Buffers.Text;
+using System.Collections;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -88,7 +90,12 @@ namespace SWLOR.Game.Server.Service
                 baseFP = npcStats.FP;
             }
 
-            return baseFP + modifier * 10 + foodBonus;
+            return GetMaxFP(baseFP, modifier, foodBonus);
+        }
+
+        public static int GetMaxFP(int baseFP, int modifier, int bonus)
+        {
+            return baseFP + modifier * 10 + bonus;
         }
 
         /// <summary>
@@ -155,7 +162,12 @@ namespace SWLOR.Game.Server.Service
                 baseStamina = npcStats.Stamina;
             }
 
-            return baseStamina + modifier * 5 + foodBonus;
+            return GetMaxStamina(baseStamina, modifier, foodBonus);
+        }
+
+        public static int GetMaxStamina(int baseFP, int modifier, int bonus)
+        {
+            return baseFP + modifier * 5 + bonus;
         }
 
         /// <summary>
@@ -674,27 +686,39 @@ namespace SWLOR.Game.Server.Service
 
             if (type == CombatDamageType.Physical)
             {
+                // Iron Shell
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
                     defense += 20;
 
+                // Shielding
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
                     defense += 5;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
                     defense += 10;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
                     defense += 15;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
                     defense += 20;
 
+                // Force Valor
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
                     defense += 10;
-
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
                     defense += 20;
 
+                // Bolster Armor
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor1))
+                    defense += 5;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor2))
+                    defense += 10;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor3))
+                    defense += 15;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor4))
+                    defense += 20;
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterArmor5))
+                    defense += 25;
+
+                // Frenzied Shout
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.FrenziedShout))
                 {
                     var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.FrenziedShout);
@@ -717,6 +741,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                // Food Effects
                 if(foodEffect != null)
                     defense += foodEffect.DefensePhysical;
             }
@@ -751,11 +776,13 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAttack(uint creature, int attack)
         {
+            // Force Rage
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage1))
                 attack += 10;
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceRage2))
                 attack += 20;
 
+            // Soldiers Strike
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersStrike))
             {
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
@@ -779,11 +806,24 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Food Effects
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
             if (foodEffect != null)
             {
                 attack += foodEffect.Attack;
             }
+
+            // Bolster Attack
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack1))
+                attack += 5;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack2))
+                attack += 10;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack3))
+                attack += 15;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack4))
+                attack += 20;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.BolsterAttack5))
+                attack += 25;
 
             return attack;
         }
@@ -842,7 +882,7 @@ namespace SWLOR.Game.Server.Service
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
 
-            return 8 + (2 * skillLevel) + stat + attackBonus;
+            return GetAttack(skillLevel, stat, attackBonus);
         }
 
         public static int GetAttackNative(CNWSCreature creature, BaseItem itemType)
@@ -886,8 +926,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
+            
+            return GetAttack(skillLevel, stat, attackBonus);
+        }
 
-            return 8 + (2 * skillLevel) + stat + attackBonus;
+        /// <summary>
+        /// Retrieves the raw attack based on the level, stat, and any bonuses.
+        /// </summary>
+        /// <param name="level">The level (NPC or skill)</param>
+        /// <param name="stat">The raw stat points</param>
+        /// <param name="bonus">The amount of bonus attack or force attack</param>
+        /// <returns></returns>
+        public static int GetAttack(int level, int stat, int bonus)
+        {
+            return 8 + (2 * level) + stat + bonus;
         }
 
         /// <summary>
@@ -1069,6 +1121,26 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
         public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
         {
+            var accuracyBonus = 0;
+
+            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+            {
+                var type = GetItemPropertyType(ip);
+
+                // Attack Bonus / Enhancement Bonus found on the weapon.
+                if (type == ItemPropertyType.AccuracyBonus ||
+                    type == ItemPropertyType.EnhancementBonus)
+                {
+                    accuracyBonus += GetItemPropertyCostTableValue(ip);
+                }
+                // Accuracy Stat Override - Always "wins" even if another override was passed in.
+                else if (type == ItemPropertyType.AccuracyStat)
+                {
+                    statOverride = (AbilityType)GetItemPropertySubType(ip);
+                }
+            }
+
+
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ? 
                 Item.GetWeaponAccuracyAbilityType(baseItemType) :
@@ -1076,18 +1148,7 @@ namespace SWLOR.Game.Server.Service
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
             var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
             var skillLevel = 0;
-            var accuracyBonus = 0;
 
-            // Attack Bonus / Enhancement Bonus found on the weapon.
-            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
-            {
-                var type = GetItemPropertyType(ip);
-                if (type == ItemPropertyType.AttackBonus ||
-                    type == ItemPropertyType.EnhancementBonus)
-                {
-                    accuracyBonus += GetItemPropertyCostTableValue(ip);
-                }
-            }
 
             // Creature skill level / NPC level
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -1113,7 +1174,7 @@ namespace SWLOR.Game.Server.Service
             else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
                 accuracyBonus -= 10;
 
-            return stat * 3 + skillLevel + accuracyBonus;
+            return GetAccuracy(skillLevel, stat, accuracyBonus);
         }
 
         /// <summary>
@@ -1125,6 +1186,26 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
         public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
         {
+            var accuracyBonus = 0;
+
+            if (weapon != null)
+            {
+                foreach (var ip in weapon.m_lstPassiveProperties)
+                {
+                    // Attack Bonus / Enhancement Bonus found on the weapon.
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
+                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    {
+                        accuracyBonus += ip.m_nCostTableValue;
+                    }
+                    // Accuracy Stat Override - Always "wins" even if another override was passed in.
+                    else if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyStat)
+                    {
+                        statOverride = (AbilityType)ip.m_nSubType;
+                    }
+                }
+            }
+
             var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
                 Item.GetWeaponAccuracyAbilityType(baseItemType) :
@@ -1132,20 +1213,7 @@ namespace SWLOR.Game.Server.Service
             var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
-            var accuracyBonus = 0;
 
-            // Attack Bonus / Enhancement Bonus found on the weapon.
-            if (weapon != null)
-            {
-                foreach (var ip in weapon.m_lstPassiveProperties)
-                {
-                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
-                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
-                    {
-                        accuracyBonus += ip.m_nCostTableValue;
-                    }
-                }
-            }
 
             // Creature skill level / NPC level
             if (creature.m_bPlayerCharacter == 1)
@@ -1165,8 +1233,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
+            
+            return GetAccuracy(skillLevel, stat, accuracyBonus);
+        }
 
-            return stat * 3 + skillLevel + accuracyBonus;
+        /// <summary>
+        /// Gets the calculated accuracy for a given level, stat, and bonus.
+        /// </summary>
+        /// <param name="level">The level (skill/NPC)</param>
+        /// <param name="stat">The raw accuracy stat amount</param>
+        /// <param name="bonus">The amount of bonus accuracy.</param>
+        /// <returns>The calculated accuracy result.</returns>
+        public static int GetAccuracy(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
         }
 
         private static int CalculateEffectAccuracy(uint creature, int accuracy)
@@ -1229,6 +1309,7 @@ namespace SWLOR.Game.Server.Service
             var evasionBonus = 0;
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
 
+            // Soldiers Speed
             if (StatusEffect.HasStatusEffect(creature, StatusEffectType.SoldiersSpeed))
             {
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
@@ -1252,10 +1333,28 @@ namespace SWLOR.Game.Server.Service
 
                 }
             }
+
+            // Food Effects
             if (foodEffect != null)
             {
                 evasionBonus += foodEffect.Evasion;
             }
+
+            // Evasive Maneuver
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver1))
+                evasionBonus += 5;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver2))
+                evasionBonus += 10;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver3))
+                evasionBonus += 15;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver4))
+                evasionBonus += 20;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver5))
+                evasionBonus += 25;
+
+            // Assault
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Assault))
+                evasionBonus += 10;
 
             return evasionBonus;
         }
@@ -1325,7 +1424,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
+            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
 
         /// <summary>
@@ -1374,10 +1473,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
-
-            return stat * 3 + skillLevel + ac * 5 + evasionBonus;
+            
+            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
-        
+
+        /// <summary>
+        /// Gets the evasion based on level, stat, and bonuses.
+        /// </summary>
+        /// <param name="level">The level (skill/NPC)</param>
+        /// <param name="stat">The raw agility stat</param>
+        /// <param name="bonus">The amount of bonus evasion</param>
+        /// <returns></returns>
+        public static int GetEvasion(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
+        }
+
         /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
@@ -1605,6 +1716,9 @@ namespace SWLOR.Game.Server.Service
 
             var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
+
+            // Beast Speed (1-3)
+            numberOfAttacks += Perk.GetEffectivePerkLevel(creature, PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);

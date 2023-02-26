@@ -12,9 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageDMsViewModel: GuiViewModelBase<ManageDMsViewModel, GuiPayloadBase>
     {
-        private readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private readonly GuiColor _green = new GuiColor(0, 255, 0);
-
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -151,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbUser.CDKey == userCDKey)
                 {
                     StatusText = "You can't delete yourself.";
-                    StatusColor = _red;
+                    StatusColor = GuiColor.Red;
                     return;
                 }
 
@@ -168,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 SelectedUserIndex = -1;
                 StatusText = "User deleted successfully.";
-                StatusColor = _green;
+                StatusColor = GuiColor.Green;
 
                 Log.Write(LogGroup.DM, $"User deleted from authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
             });
@@ -179,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (ActiveUserCDKey.Length != 8)
             {
                 StatusText = "CD Keys must be 8 exactly digits.";
-                StatusColor = _red;
+                StatusColor = GuiColor.Red;
                 return;
             }
 
@@ -198,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Names[SelectedUserIndex] = dbUser.Name;
 
             StatusText = "Saved successfully.";
-            StatusColor = _green;
+            StatusColor = GuiColor.Green;
 
             Log.Write(LogGroup.DM, $"User updated on authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
         };

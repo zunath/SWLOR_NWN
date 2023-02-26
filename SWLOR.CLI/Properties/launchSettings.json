@@ -2,7 +2,7 @@
   "profiles": {
     "SWLOR.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "-r"
+      "commandLineArgs": "-b"
     }
   }
 }

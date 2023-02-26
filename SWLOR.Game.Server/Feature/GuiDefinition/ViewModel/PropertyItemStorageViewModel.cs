@@ -17,9 +17,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxNumberOfCategories = 20;
 
-        private static readonly GuiColor _green = new(0, 255, 0);
-        private static readonly GuiColor _red = new(255, 0, 0);
-
         private readonly List<string> _categoryIds = new();
 
         public string Instructions
@@ -133,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ClearInstructions()
         {
             Instructions = string.Empty;
-            InstructionsColor = _green;
+            InstructionsColor = GuiColor.Green;
         }
 
         private int GetItemCount()
@@ -299,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (categoryCount >= MaxNumberOfCategories)
             {
                 Instructions = $"Maximum number of categories reached.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -363,14 +360,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (category == null)
                     {
                         Instructions = $"Category no longer exists.";
-                        InstructionsColor = _red;
+                        InstructionsColor = GuiColor.Red;
                         return;
                     }
 
                     if (category.Items.Count > 0)
                     {
                         Instructions = $"Remove all items from the category and try again.";
-                        InstructionsColor = _red;
+                        InstructionsColor = GuiColor.Red;
                         return;
                     }
 
@@ -397,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LoadCategory();
 
                     Instructions = $"Category deleted successfully.";
-                    InstructionsColor = _green;
+                    InstructionsColor = GuiColor.Green;
                 });
         };
 
@@ -423,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (CategoryName.Length <= 0)
             {
                 Instructions = $"Categories must have a name.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -444,7 +441,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CategoryNames[SelectedCategoryIndex] = CategoryName;
 
             Instructions = $"Category renamed successfully.";
-            InstructionsColor = _green;
+            InstructionsColor = GuiColor.Green;
         };
 
         public Action OnStoreItem() => () =>
@@ -457,7 +454,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!string.IsNullOrWhiteSpace(canBeStored))
                 {
                     Instructions = canBeStored;
-                    InstructionsColor = _red;
+                    InstructionsColor = GuiColor.Red;
                     return;
                 }
 
@@ -476,7 +473,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (itemCount >= property.ItemStorageCount)
                 {
                     Instructions = $"Property item storage limit reached!";
-                    InstructionsColor = _red;
+                    InstructionsColor = GuiColor.Red;
                     return;
                 }
 
@@ -505,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RefreshItemCount(itemCount+1, property.ItemStorageCount);
 
                 Instructions = $"Item stored successfully.";
-                InstructionsColor = _green;
+                InstructionsColor = GuiColor.Green;
 
                 DestroyObject(item);
             });
@@ -533,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!category.Items.ContainsKey(itemId))
             {
                 Instructions = $"Item no longer exists.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -568,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!category.Items.ContainsKey(itemId))
             {
                 Instructions = "Item no longer in storage.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 

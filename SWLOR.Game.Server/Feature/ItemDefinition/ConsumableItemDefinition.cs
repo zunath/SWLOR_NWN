@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -21,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             SlugShake();
             Food();
+            PetFood();
             RebuildToken();
 
             return _builder.Build();
@@ -197,6 +200,64 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     StatusEffect.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                });
+        }
+
+        private void PetFood()
+        {
+            _builder.Create("PET_FOOD")
+                .Delay(1f)
+                .PlaysAnimation(Animation.LoopingGetLow)
+                .ReducesItemCharge()
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    var minimumLevel = (GetLocalInt(item, "BEAST_FOOD_TIER") - 1) * 10;
+                    var beast = GetAssociate(AssociateType.Henchman, user);
+
+                    if (!BeastMastery.IsPlayerBeast(beast))
+                    {
+                        return "You do not have a beast active.";
+                    }
+
+                    if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
+                    {
+                        return "Your beast is not hungry.";
+                    }
+
+                    var beastId = BeastMastery.GetBeastId(beast);
+                    var dbBeast = DB.Get<Beast>(beastId);
+
+                    if (dbBeast.Level < minimumLevel)
+                    {
+                        return $"Your beast's level is too low for that food. (Required: {minimumLevel}, current level: {dbBeast.Level})";
+                    }
+
+                    return string.Empty;
+                })
+                .ApplyAction((user, item, target, location, index) =>
+                {
+                    var foodType = (BeastFoodType)GetLocalInt(item, "BEAST_FOOD_TYPE_ID");
+                    var foodTier = GetLocalInt(item, "BEAST_FOOD_TIER");
+                    var beast = GetAssociate(AssociateType.Henchman, user);
+                    var beastId = BeastMastery.GetBeastId(beast);
+                    var dbBeast = DB.Get<Beast>(beastId);
+
+                    var xpBonus = foodTier * 10;
+
+                    if (dbBeast.FavoriteFood == foodType)
+                    {
+                        xpBonus += 10;
+                        SendMessageToPC(user, "Your beast likes this food a lot!");
+                    }
+                    else if (dbBeast.HatedFood == foodType)
+                    {
+                        xpBonus -= 5;
+                        SendMessageToPC(user, "Your beast doesn't like this food very much...");
+                    }
+
+                    StatusEffect.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
+
+                    Item.ReduceItemStack(item, 1);
                 });
         }
 

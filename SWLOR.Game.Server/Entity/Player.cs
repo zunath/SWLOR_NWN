@@ -12,8 +12,8 @@ using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 
@@ -148,6 +148,7 @@ namespace SWLOR.Game.Server.Entity
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
         public bool RebuildComplete { get; set; }
+        public string ActiveBeastId { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

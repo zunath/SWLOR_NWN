@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("RECIPE")
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
-                .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
@@ -100,6 +99,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     DB.Set(dbPlayer);
+
+                    Item.ReduceItemStack(item, 1);
                 });
         }
     }

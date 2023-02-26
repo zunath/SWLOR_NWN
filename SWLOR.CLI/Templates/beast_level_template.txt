@@ -1,0 +1,28 @@
+
+		private void Level%%LEVEL%%()
+		{
+			_builder
+				.AddLevel()
+				.HP(%%HP%%)
+				.FP(%%FP%%)
+				.STM(%%STM%%)
+				.DMG(%%DMG%%)
+				.Stat(AbilityType.Might, %%MGT%%)
+				.Stat(AbilityType.Perception, %%PER%%)
+				.Stat(AbilityType.Vitality, %%VIT%%)
+				.Stat(AbilityType.Willpower, %%WIL%%)
+				.Stat(AbilityType.Agility, %%AGI%%)
+				.Stat(AbilityType.Social, %%SOC%%)
+				.MaxAttackBonus(%%MAXATTACKBONUS%%)
+				.MaxAccuracyBonus(%%MAXACCURACYBONUS%%)
+				.MaxEvasionBonus(%%MAXEVASIONBONUS%%)
+				.MaxDefenseBonus(CombatDamageType.Physical, %%MAXPHYSICALDEFENSE%%)
+				.MaxDefenseBonus(CombatDamageType.Force, %%MAXFORCEDEFENSE%%)
+				.MaxDefenseBonus(CombatDamageType.Fire, %%MAXFIREDEFENSE%%)
+				.MaxDefenseBonus(CombatDamageType.Poison, %%MAXPOISONDEFENSE%%)
+				.MaxDefenseBonus(CombatDamageType.Electrical, %%MAXELECTRICALDEFENSE%%)
+				.MaxDefenseBonus(CombatDamageType.Ice, %%MAXICEDEFENSE%%)
+				.MaxSavingThrowBonus(SavingThrow.Will, %%MAXWILL%%)
+				.MaxSavingThrowBonus(SavingThrow.Fortitude, %%MAXFORTITUDE%%)
+				.MaxSavingThrowBonus(SavingThrow.Reflex, %%MAXREFLEX%%);
+		}

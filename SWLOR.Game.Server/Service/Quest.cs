@@ -11,13 +11,13 @@ using Player = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.NPCService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Quest
     {
         private static readonly Dictionary<string, QuestDetail> _quests = new();
-        private static readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new();
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
 
@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
-            RegisterNPCGroups();
             RegisterQuests();
         }
 
@@ -99,20 +98,6 @@ namespace SWLOR.Game.Server.Service
             return _questsByGuildType[guild][rank].ToList();
         }
 
-        /// <summary>
-        /// When the module loads, all of the NPCGroupTypes are iterated over and their data is stored into the cache.
-        /// </summary>
-        private static void RegisterNPCGroups()
-        {
-            var npcGroups = Enum.GetValues(typeof(NPCGroupType)).Cast<NPCGroupType>();
-            foreach (var npcGroupType in npcGroups)
-            {
-                var npcGroupDetail = npcGroupType.GetAttribute<NPCGroupType, NPCGroupAttribute>();
-                _npcGroups[npcGroupType] = npcGroupDetail;
-            }
-
-            Console.WriteLine($"Loaded {_npcGroups.Count} NPC groups.");
-        }
 
         /// <summary>
         /// When a player enters the module, load their quests.
@@ -163,16 +148,6 @@ namespace SWLOR.Game.Server.Service
                 throw new KeyNotFoundException($"Quest '{questId}' was not registered. Did you set the right Id?");
 
             return _quests[questId];
-        }
-
-        /// <summary>
-        /// Retrieves an NPC group detail by the type.
-        /// </summary>
-        /// <param name="npcGroupType">The type of NPC group to retrieve.</param>
-        /// <returns>An NPC group detail</returns>
-        public static NPCGroupAttribute GetNPCGroup(NPCGroupType npcGroupType)
-        {
-            return _npcGroups[npcGroupType];
         }
 
         /// <summary>

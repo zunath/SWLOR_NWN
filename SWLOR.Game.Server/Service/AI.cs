@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service
         {
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
             _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
+            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition();
         }
 
         /// <summary>

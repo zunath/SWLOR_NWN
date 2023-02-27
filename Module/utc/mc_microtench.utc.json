@@ -566,6 +566,21 @@
           "type": "cexostring",
           "value": "MONCALA_MICROTENCH_RARES,5,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "BEAST_TYPE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 7
+        }
       }
     ]
   },

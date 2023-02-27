@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     public abstract class FirstAidBaseAbilityDefinition: IAbilityListDefinition
     {
         protected readonly AbilityBuilder Builder = new AbilityBuilder();
-        private const string MedicalSuppliesItemResref = "med_supplies";
-        private const string StimPackItemResref = "stim_pack";
+        private const string MedicalSuppliesItemTag = "med_supplies";
+        private const string StimPackItemTag = "stim_pack";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return true;
 
-            var item = GetItemPossessedBy(activator, MedicalSuppliesItemResref);
+            var item = GetItemPossessedBy(activator, MedicalSuppliesItemTag);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;
         }
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return true;
 
-            var item = GetItemPossessedBy(activator, StimPackItemResref);
+            var item = GetItemPossessedBy(activator, StimPackItemTag);
 
             return GetIsObjectValid(item) && GetItemStackSize(item) > 0;
         }
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return;
 
-            TakeItem(activator, MedicalSuppliesItemResref);
+            TakeItem(activator, MedicalSuppliesItemTag);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return;
 
-            TakeItem(activator, StimPackItemResref);
+            TakeItem(activator, StimPackItemTag);
         }
 
         /// <summary>

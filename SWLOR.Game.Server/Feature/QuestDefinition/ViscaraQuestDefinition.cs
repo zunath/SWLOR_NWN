@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             WarWithTheMandalorianWarriors();
             KathHoundPartCollection();
             TaxiTerminalRepairs();
+            JoiningTheRepublic();
 
             return _builder.Build();
         }
@@ -511,6 +513,34 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to Dessta Bocktorb for your reward.")
 
                 .AddKeyItemReward(KeyItemType.TaxiHailingDevice);
+        }
+
+        private void JoiningTheRepublic()
+        {
+            _builder.Create("joining_the_republic", "Joining the Republic")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Viscara_DeepMountainRaivors, 10)
+                .SetStateJournalText("Lieutenant Marbury Grant has instructed you to thin out the raivors that roam the Viscaran mountains to prove yourself worthy of enlisting in the Republic's Special Forces.")
+
+                .AddState()
+                .SetStateJournalText("You have hunted down ten raivors. Return to the Lieutenant to continue your path towards enlisting as a soldier of the Republic.")
+
+                .AddState()
+                .SetStateJournalText("Lieutenant Marbury Grant has instructed you to speak to a training droid located in the mess hall at Outpost Hope.")
+
+                .AddState()
+                .SetStateJournalText("You have completed the Lieutenant's test. Return to the Lieutenant to continue your path towards enlisting as a soldier of the Republic.")
+
+                .AddState()
+                .SetStateJournalText("Lieutenant Marbury Grant has instructed you to speak to Sergeant Nahulu, who awaits you are the parade square of Outpost Hope to reaffirm your oath of allegiance.")
+
+                .AddState()
+                .SetStateJournalText("You have reaffirmed your oath of allegiance to the Republic and the Senate. Return to the Lieutenant and conclude your enlistment as a soldier of the Republic.")
+
+                .AddXPReward(10000)
+                .AddGoldReward(2000)
+                .AddItemReward("key_rep_01", 1);
         }
     }
 }

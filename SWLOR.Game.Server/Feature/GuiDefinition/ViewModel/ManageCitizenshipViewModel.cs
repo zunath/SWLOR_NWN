@@ -13,9 +13,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCitizenshipViewModel: GuiViewModelBase<ManageCitizenshipViewModel, GuiPayloadBase>
     {
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
-
         private string _cityPropertyId;
         private string _electionId;
 
@@ -117,14 +114,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbPlayer.CitizenPropertyId == dbCity.Id)
             {
                 RegisterRevokeButtonName = "Revoke Citizenship";
-                RegisterRevokeButtonColor = _red;
+                RegisterRevokeButtonColor = GuiColor.Red;
                 IsPayTaxesEnabled = dbPlayer.PropertyOwedTaxes > 0;
                 PayTaxesButtonName = $"Pay Taxes ({dbPlayer.PropertyOwedTaxes} cr)";
             }
             else
             {
                 RegisterRevokeButtonName = "Register Citizenship";
-                RegisterRevokeButtonColor = _white;
+                RegisterRevokeButtonColor = GuiColor.White;
                 PayTaxesButtonName = "Pay Taxes";
             }
         }

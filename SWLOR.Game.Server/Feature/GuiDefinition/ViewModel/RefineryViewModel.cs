@@ -14,9 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
     {
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-
         private class OreDetail
         {
             public int RequiredLevel { get; }
@@ -252,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (ItemCount <= 0)
             {
                 Instructions = "Please add items.";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -262,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (totalPowerCores < _powerCoresRequired)
             {
                 Instructions = "Insufficient power cores!";
-                InstructionsColor = _red;
+                InstructionsColor = GuiColor.Red;
                 return;
             }
 
@@ -292,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (totalPowerCores < _powerCoresRequired)
                 {
                     Instructions = "Insufficient power cores!";
-                    InstructionsColor = _red;
+                    InstructionsColor = GuiColor.Red;
                     return;
                 }
 
@@ -343,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 OutputItemNames.Clear();
 
                 Instructions = "Success!";
-                InstructionsColor = _green;
+                InstructionsColor = GuiColor.Green;
                 _isRefining = false;
                 IsCloseEnabled = true;
 

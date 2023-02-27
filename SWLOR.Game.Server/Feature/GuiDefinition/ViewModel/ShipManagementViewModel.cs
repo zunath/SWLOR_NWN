@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
@@ -19,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
         private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }

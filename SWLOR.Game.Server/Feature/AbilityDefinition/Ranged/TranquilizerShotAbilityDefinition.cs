@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private void ApplyEffect(uint activator, uint target, int level, float duration)
         {
-            var effectTag = $"StatusEffectType.{StatusEffectType.Tranquilize}";
-            var enmity = level * 3000;
+            var effectTag = $"StatusEffectType.Tranquilize";
+            var enmity = level * 1000;
 
             var vfx = EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue);
             vfx = TagEffect(vfx, effectTag);
@@ -47,9 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
             Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
 
-
             Enmity.ModifyEnmity(activator, target, enmity);
-            StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, duration);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 

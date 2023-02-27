@@ -48,49 +48,18 @@ namespace SWLOR.Game.Server.Native
             var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
             var pCombatRound = attacker.m_pcCombatRound;
             var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-
+            var weapon = pCombatRound.GetCurrentAttackWeapon();
+            
             // On a critical hit, this method appears to be invoked multiple times, with an invalid target the second and
             // subsequent times.  Bail out early.
-            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID)
+            if (targetObject == null || targetObject.m_idSelf == OBJECT_INVALID)
             {
                 ProfilerPlugin.PopPerfScope();
                 return 0;
             }
 
             var attackType = (uint) AttackType.Melee;
-            var weapon = bOffHand == 1
-                    ? attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand)
-                    : attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-
-            // Twin blades need special handling. 
-            if (bOffHand == 1 && weapon == null) weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand); 
-
-            if (weapon == null)
-            {
-                // Check for creature weapons.  Randomise the order of slots.
-                var slot1 = (uint)EquipmentSlot.CreatureWeaponBite;
-                var slot2 = (uint)EquipmentSlot.CreatureWeaponLeft;
-                var slot3= (uint)EquipmentSlot.CreatureWeaponRight;
-
-                switch (Random.Next(1, 3))
-                {
-                    case 2:
-                        slot3 = (uint)EquipmentSlot.CreatureWeaponBite;
-                        slot1 = (uint)EquipmentSlot.CreatureWeaponLeft;
-                        slot2 = (uint)EquipmentSlot.CreatureWeaponRight;
-                        break;
-                    case 3:
-                        slot2 = (uint)EquipmentSlot.CreatureWeaponBite;
-                        slot3 = (uint)EquipmentSlot.CreatureWeaponLeft;
-                        slot1 = (uint)EquipmentSlot.CreatureWeaponRight;
-                        break;
-                }
-
-                weapon = attacker.m_pInventory.GetItemInSlot(slot1);
-                if (weapon == null) weapon = attacker.m_pInventory.GetItemInSlot(slot2);
-                if (weapon == null) weapon = attacker.m_pInventory.GetItemInSlot(slot3);
-            }
-
+            
             // Figure out what sort of attack this is.  Note - damage from abilities does not go through this function.
             if (attacker.GetRangeWeaponEquipped() == 1)
             {
@@ -118,14 +87,19 @@ namespace SWLOR.Game.Server.Native
                 weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.Arms);
             }
 
+            var attackerStatType = weapon == null
+                ? AbilityType.Might
+                : Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+
             if (weapon != null)
             {
-                // Weapons may have multiple DMG properties, especially if enhanced.  The DMG types may not all be the
-                // same. Add all DMG properties of the same type together.
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
                     if (ip == null) continue;
+
+                    // Weapons may have multiple DMG properties, especially if enhanced.  The DMG types may not all be the
+                    // same. Add all DMG properties of the same type together.
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         // Catch old-style DMG properties here, and correct the damage type by hand.
@@ -142,6 +116,12 @@ namespace SWLOR.Game.Server.Native
                         dmgValues[damageType] = dmg;
                         foundDMG = true;
                     }
+                    // Some weapons, such as creature claws, may have a stat override assigned.
+                    else if (ip.m_nPropertyName == (ushort)ItemPropertyType.DamageStat)
+                    {
+                        var abilityType = (AbilityType)ip.m_nSubType;
+                        attackerStatType = abilityType;
+                    }
 
                     if (weaponPerkLevel == 0 && ip.m_nPropertyName == (ushort)ItemPropertyType.UseLimitationPerk)
                     {
@@ -157,9 +137,6 @@ namespace SWLOR.Game.Server.Native
                 dmgValues[CombatDamageType.Physical] = 1;
             }
 
-            var attackerStatType = weapon == null
-                ? AbilityType.Might
-                : Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
             var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
             // Weapon Style Toggle
@@ -497,11 +474,8 @@ namespace SWLOR.Game.Server.Native
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
-
             var wil = Stat.GetStatValueNative(attacker, AbilityType.Willpower);
-
             var weaponDamageAbilityType = Item.GetWeaponDamageAbilityType(baseItemType);
-
             var weaponDamageAbilityStat = Stat.GetStatValueNative(attacker, weaponDamageAbilityType);
 
             if (Item.LightsaberBaseItemTypes.Contains(baseItemType))

@@ -124,7 +124,7 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 14
+    "value": 63
   },
   "SunAmbientColor": {
     "type": "dword",
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 11
   },
   "Width": {
     "type": "int",

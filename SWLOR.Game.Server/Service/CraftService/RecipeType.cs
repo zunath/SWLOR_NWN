@@ -815,7 +815,7 @@
         CookedBibikibo = 2091,
         SlicedSardine = 2092,
         FishBroth = 2093,
-        CookedSardine = 2094,
+        SardineBall = 2094,
         RaKaznarSpecial = 2095,
         Maringna = 2096,
         CookedMackerel = 2097,
@@ -861,6 +861,7 @@
         WildSushi = 2137,
         TentacleSushi = 2138,
         DoradoSushi = 2139,
+        CookedSardine = 2140,
 
         // Engineering: 3001-6000
         BasicCapacitorBooster = 3001,

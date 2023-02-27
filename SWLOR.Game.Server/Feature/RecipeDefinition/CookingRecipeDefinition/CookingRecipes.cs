@@ -362,6 +362,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("klorslug_claw", 2)
                 .Component("klorslug_innards", 1);
 
+            // Sardine Ball
+            _builder.Create(RecipeType.SardineBall, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sardine_ball")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 2)
+                .EnhancementSlots(RecipeEnhancementType.Food, 1)
+                .Component("sen_sardine", 3)
+                .Component("distilled_water", 1);
+
             // Cooked Sardine
             _builder.Create(RecipeType.CookedSardine, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)

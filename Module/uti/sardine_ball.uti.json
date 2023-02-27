@@ -36,7 +36,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -58,7 +58,101 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 15
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 106
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",

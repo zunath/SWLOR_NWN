@@ -9719,11 +9719,11 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 48
+          "value": 39
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 4
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
@@ -10364,7 +10364,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 48
+          "value": 39
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -10380,11 +10380,11 @@
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 0
+          "value": 2
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 109
+    "value": 114
   },
   "Width": {
     "type": "int",

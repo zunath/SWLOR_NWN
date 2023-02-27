@@ -904,7 +904,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
-            const float MinimumScale = 0.85f;
+            const float MinimumScale = 0.80f;
 
             if (scale - Increment < MinimumScale)
             {
@@ -919,8 +919,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnIncreaseAppearanceScale() => () =>
         {
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
+            var playerRace = GetRacialType(_target);
             const float Increment = 0.01f;
-            const float MaximumScale = 1.15f;
+            var MaximumScale = 1.15f;
+            if (playerRace == RacialType.Wookiee)
+            {
+                MaximumScale = 1.5f;
+            }
+            if (playerRace == RacialType.Droid || playerRace == RacialType.Trandoshan || playerRace == RacialType.Zabrak)
+            {
+                MaximumScale = 1.25f;
+            }
 
             if (scale + Increment > MaximumScale)
             {

@@ -20973,7 +20973,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 4
+    "value": 6
   },
   "Width": {
     "type": "int",

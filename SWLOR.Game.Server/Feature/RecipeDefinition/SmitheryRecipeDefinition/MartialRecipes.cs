@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_staff")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .RequirementPerk(PerkType.MartialBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);

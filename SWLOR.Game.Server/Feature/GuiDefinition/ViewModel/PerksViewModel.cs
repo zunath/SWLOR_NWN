@@ -759,8 +759,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
-
                     if (IsInMyPerksMode)
                     {
                         var perkLevel = dbPlayer.Perks[selectedPerk];
@@ -796,6 +794,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
                     DB.Set(dbPlayer);
+                    Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
                     Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 

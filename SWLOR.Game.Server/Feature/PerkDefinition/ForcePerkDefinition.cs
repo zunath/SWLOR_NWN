@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disturbance")
 
                 .AddPerkLevel()
-                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 2 with an 8DC will check for one minute.")
+                .Description("Deals 9 DMG to a single target and reduces target's accuracy by 10 with an 8DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -504,7 +504,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 4 with a 12DC will check for one minute.")
+                .Description("Deals 14 DMG to a single target and reduces target's accuracy by 20 with a 12DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance2)
 
                 .AddPerkLevel()
-                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 6 with a 14DC will check for one minute.")
+                .Description("Deals 32 DMG to a single target and reduces target's accuracy by 30 with a 14DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -814,7 +814,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 4)
+                .Component("fine_wood", 4)
                 .Component("lth_flawed", 6);
 
             // Flaming Statue

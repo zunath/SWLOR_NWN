@@ -2125,13 +2125,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "vis_cz_inte_ka1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscara_cave_2ka"
         }
       }

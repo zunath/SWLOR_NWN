@@ -44,7 +44,13 @@ namespace SWLOR.Game.Server.Service
         public static void Load()
         {
             _appSettings = ApplicationSettings.Get();
-            _multiplexer = ConnectionMultiplexer.Connect(_appSettings.RedisIPAddress);
+            var options = new ConfigurationOptions
+            {
+                AbortOnConnectFail = false,
+                EndPoints = { _appSettings.RedisIPAddress }
+            };
+
+            _multiplexer = ConnectionMultiplexer.Connect(options);
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.

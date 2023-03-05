@@ -135,7 +135,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
-                .WithFrequency(15);
+                .WithFrequency(15)
+                
+                .AddSpawn(ObjectType.Placeable, "hyphae_tree")
+                .WithFrequency(5);
         }
 
         private void Mountains()
@@ -185,7 +188,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
-                .WithFrequency(15);
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "hyphae_tree")
+                .WithFrequency(5);
         }
 
         private void TarnishedJunglesNorth()
@@ -206,7 +212,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
-                .WithFrequency(15);
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "hyphae_tree")
+                .WithFrequency(5);
         }
 
         private void TribeVillage()

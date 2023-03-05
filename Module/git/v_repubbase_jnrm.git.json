@@ -341,7 +341,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "RepBase_JuniorMessFrom"
+          "value": "ToJuniorMess"
         },
         "LinkedToFlags": {
           "type": "byte",

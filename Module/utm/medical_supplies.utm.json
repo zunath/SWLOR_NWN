@@ -1,0 +1,154 @@
+{
+  "__data_type": "UTM ",
+  "BlackMarket": {
+    "type": "byte",
+    "value": 0
+  },
+  "BM_MarkDown": {
+    "type": "int",
+    "value": 25
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "ID": {
+    "type": "byte",
+    "value": 5
+  },
+  "IdentifyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Medical Supplies"
+    }
+  },
+  "MarkDown": {
+    "type": "int",
+    "value": 40
+  },
+  "MarkUp": {
+    "type": "int",
+    "value": 150
+  },
+  "MaxBuyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "OnOpenStore": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnStoreClosed": {
+    "type": "resref",
+    "value": ""
+  },
+  "ResRef": {
+    "type": "resref",
+    "value": "medical_supplies"
+  },
+  "StoreGold": {
+    "type": "int",
+    "value": -1
+  },
+  "StoreList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0
+      },
+      {
+        "__struct_id": 4
+      },
+      {
+        "__struct_id": 2
+      },
+      {
+        "__struct_id": 3
+      },
+      {
+        "__struct_id": 1,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "InventoryRes": {
+                "type": "resref",
+                "value": "med_supplies"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "InventoryRes": {
+                "type": "resref",
+                "value": "med_supplies_50"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "InventoryRes": {
+                "type": "resref",
+                "value": "stim_pack"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "InventoryRes": {
+                "type": "resref",
+                "value": "stim_pack_50"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "medical_supplies"
+  },
+  "WillNotBuy": {
+    "type": "list",
+    "value": []
+  },
+  "WillOnlyBuy": {
+    "type": "list",
+    "value": []
+  }
+}

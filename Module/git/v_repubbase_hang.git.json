@@ -18209,19 +18209,19 @@
         },
         "KeyName": {
           "type": "cexostring",
-          "value": ""
+          "value": "Key_R_1"
         },
         "KeyRequired": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": ""
+          "value": "RepBase_MedicalToHangar"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -18233,12 +18233,12 @@
         },
         "Locked": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Elevator Door"
+            "0": "Medical Bay Door"
           }
         },
         "OnClick": {
@@ -18303,7 +18303,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -18315,7 +18315,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "_mdrn_dt_elev"
+          "value": "RepBase_HangarToMedical"
         },
         "TemplateResRef": {
           "type": "resref",

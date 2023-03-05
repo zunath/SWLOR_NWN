@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
 
             // Brazier, Round
@@ -693,7 +693,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
 
             // Dining Chair, Orange
@@ -704,7 +704,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
             
             // Brazier, Stone

@@ -25,8 +25,8 @@ void main()
 {
     ExecuteScript("crea_death_bef", OBJECT_SELF);
 
-    int nClass = GetLevelByClass(CLASS_TYPE_COMMONER);
-    int nAlign = GetAlignmentGoodEvil(OBJECT_SELF);
+    //int nClass = GetLevelByClass(CLASS_TYPE_COMMONER);
+    //int nAlign = GetAlignmentGoodEvil(OBJECT_SELF);
     object oKiller = GetLastKiller();
 
     if (GetLocalInt(GetModule(),"X3_ENABLE_MOUNT_DB")&&GetIsObjectValid(GetMaster(OBJECT_SELF))) SetLocalInt(GetMaster(OBJECT_SELF),"bX3_STORE_MOUNT_INFO",TRUE);
@@ -34,10 +34,10 @@ void main()
 
     // If we're a good/neutral commoner,
     // adjust the killer's alignment evil
-    if(nClass > 0 && (nAlign == ALIGNMENT_GOOD || nAlign == ALIGNMENT_NEUTRAL))
-    {
-        AdjustAlignment(oKiller, ALIGNMENT_EVIL, 5);
-    }
+    //if(nClass > 0 && (nAlign == ALIGNMENT_GOOD || nAlign == ALIGNMENT_NEUTRAL))
+    //{
+    //    AdjustAlignment(oKiller, ALIGNMENT_EVIL, 5);
+    //}
 
     // Call to allies to let them know we're dead
     //SpeakString("NW_I_AM_DEAD", TALKVOLUME_SILENT_TALK);

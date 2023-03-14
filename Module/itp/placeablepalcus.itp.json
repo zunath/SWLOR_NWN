@@ -60149,6 +60149,171 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Space Station - Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Civilian 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Civilian 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Civilian 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Comms"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Factory"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Massive"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs011"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Refinery"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Republic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Satellite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Shipyard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Shipyard, Big"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Sith"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Starbase"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Space Station - Starforge"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_spcs008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Space Station (Style 1, Firefly Niska)"
                     },
                     "RESREF": {

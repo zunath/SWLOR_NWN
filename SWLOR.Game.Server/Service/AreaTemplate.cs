@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AreaTemplate
+    static class AreaTemplate
     {
         public static Dictionary<string, uint> TemplateAreaByResRef { get; } = new();
         private static Dictionary<uint, List<uint>> TemplateAreaCustomObjectsByArea { get; } = new();
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
             TotalCountAppearancePlaceables = actualRowCount;
-            Console.WriteLine($"Loaded {PlaceableAppearanceByPage.Count} placeable appearance pages ({AreaTemplate.PageSize} per page)  into cache.");
+            Console.WriteLine($"Loaded {PlaceableAppearanceByPage.Count} placeable appearance pages ({AreaTemplate.PageSize} per page) into cache.");
 
             rowCount = UtilPlugin.Get2DARowCount("appearance");
             pageNumber = 0;
@@ -81,14 +81,12 @@ namespace SWLOR.Game.Server.Service
                 }
             }
             TotalCountAppearanceCreatures = actualRowCount;
-            Console.WriteLine($"Loaded {CreatureAppearanceByPage.Count} creature appearance pages ({AreaTemplate.PageSize} per page)  into cache.");
+            Console.WriteLine($"Loaded {CreatureAppearanceByPage.Count} creature appearance pages ({PageSize} per page)  into cache.");
         }
 
         [NWNEventHandler("mod_exit")]
         public static void OnModuleExit()
         {
-            //return;
-
             // For some reason I can't determine, the below is not actually working.
             // I.E. The visual effect is not removed.
             // The intent is to just have the OnClose GUI binding for this window called
@@ -133,10 +131,8 @@ namespace SWLOR.Game.Server.Service
             return TemplateAreaByResRef[resref];
         }
 
-        public static void LoadTemplateAreas()
+        private static void LoadTemplateAreas()
         {
-            Console.WriteLine("Loading Area Templates, please wait...");
-
             var areaDataQuery = new DBQuery<TemplateArea>();
             var areaDataCount = DB.SearchCount(areaDataQuery);
             var areaDatas = DB.Search(areaDataQuery
@@ -145,12 +141,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var templateArea in areaDatas)
             {
-                Console.WriteLine($"Loaded Template Area Name: {templateArea.TemplateAreaName}.");
-                Console.WriteLine($"Loaded Template Area Data: {templateArea.TemplateAreaData}.");
-                Console.WriteLine($"Loaded Template Area ResRef: {templateArea.TemplateAreaResRef}.");
-                Console.WriteLine($"Loaded Template Area Tag: {templateArea.TemplateAreaTag}.");
-
-                var createdArea = CreateArea(templateArea.TemplateAreaResRef, templateArea.TemplateAreaTag, templateArea.TemplateAreaName);
+                var createdArea = CreateArea(templateArea.ResRef, templateArea.Tag, templateArea.Name);
                 SetLocalBool(createdArea, "IS_TEMPLATE_AREA", true);
 
                 // This deletes all of the creatures, waypoints, and transitions. Since many of our transitions are
@@ -176,7 +167,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// This loads objects for the Template Areas upon module load.
         /// </summary>
-        public static void LoadTemplateAreaObjects()
+        private static void LoadTemplateAreaObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -270,9 +261,6 @@ namespace SWLOR.Game.Server.Service
                         LocationZ = GetPosition(spawn).Z,
                         LocationOrientation = GetFacing(spawn)
                     };
-                    
-                    var areaName = GetName(area);
-                    var objectName = GetName(spawn);
 
                     DB.Set<AreaTemplateObject>(areaTemplate);
                     SetLocalString(spawn, "DBID", areaTemplate.Id);
@@ -286,9 +274,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsTemplateArea(area))
                 return;
 
-            foreach(var _customObject in TemplateAreaCustomObjectsByArea[area])
+            foreach(var customObject in TemplateAreaCustomObjectsByArea[area])
             {                
-                var customObject = _customObject;
                 var dbId = GetLocalString(customObject, "DBID");
 
                 var dbObject = DB.Get<AreaTemplateObject>(dbId);

@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
-using Pipelines.Sockets.Unofficial.Arenas;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -25,9 +24,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static Dictionary<int, Dictionary<int, string>> _creatureAppearanceByPage { get; } = new();
         private static int _totalCountAppearancePlaceables;
         private static int _totalCountAppearanceCreatures;
-
-        // Despite being greyed out, this private bool is actually used - if deleted, it'll cause a lot of errors.
-        private bool _skipPaginationSearch;
 
         public string SearchText
         {
@@ -173,7 +169,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectArea() => () =>
         {
-            _skipPaginationSearch = true;
             ClearObjectHighlight();
 
             if (SelectedAreaIndex > -1)
@@ -190,19 +185,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadAreaObjectList();
 
-            SelectedAreaObjectName = String.Empty;
+            SelectedAreaObjectName = string.Empty;
 
             IsDeleteObjectEnabled = false;
             IsResetAreaEnabled = true;
             IsResaveAllObjectsEnabled = true;
 
             AreaToggled[index] = true;
-            _skipPaginationSearch = false;
         };
 
         public Action OnSelectAreaObject() => () =>
         {
-            _skipPaginationSearch = true;
             ClearObjectHighlight();
 
             if (SelectedAreaObjectIndex > -1)
@@ -227,7 +220,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsDeleteObjectEnabled = true;
             AreaObjectToggled[index] = true;
-            _skipPaginationSearch = false;
         };
 
         public Action OnClickDeleteObject() => () =>
@@ -347,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var areaTemplateQuery = new DBQuery<TemplateArea>()
-                    .AddFieldSearch(nameof(TemplateArea.TemplateAreaTag), GetTag(_areas[SelectedAreaIndex]), false);
+                    .AddFieldSearch(nameof(TemplateArea.Tag), GetTag(_areas[SelectedAreaIndex]), false);
                 var templateArea = DB.Search(areaTemplateQuery)
                     .ToList();
 
@@ -356,7 +348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var playerName = GetName(Player);
                     
                     DB.Delete<TemplateArea>(dbRecord.Id);
-                    Console.WriteLine($"{playerName} has deleted {dbRecord.TemplateAreaName}");
+                    Console.WriteLine($"{playerName} has deleted {dbRecord.Name}");
                 }
 
                 DestroyArea(_areas[SelectedAreaIndex]);
@@ -392,8 +384,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Init()
         {
-            _skipPaginationSearch = true;
-
             var areaResrefs = new GuiBindingList<string>();
             var areaNames = new GuiBindingList<string>();
             var areaToggled = new GuiBindingList<bool>();
@@ -412,18 +402,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedAreaIndex = -1;
             SelectedAreaObjectIndex = -1;
             SearchText = string.Empty;
-            SearchAppearanceText = String.Empty;
+            SearchAppearanceText = string.Empty;
 
             _totalCountAppearancePlaceables = 0;
             _totalCountAppearanceCreatures = 0;
-
-            _skipPaginationSearch = false;
         }
 
         private void Search()
         {
-            _skipPaginationSearch = true;
-
             ClearObjectHighlight();
 
             var areaResrefs = new GuiBindingList<string>();
@@ -432,15 +418,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaObjectList = new GuiBindingList<string>();
             var areaObjectToggled = new GuiBindingList<bool>();
             var objectAppearanceToggled = new GuiBindingList<bool>();
-
-            _areas.Clear();
-            _objects.Clear();
-
-            AreaToggled.Clear();
-            AreaNames.Clear();
-            AreaResrefs.Clear();
-            AreaObjectList.Clear();
-            AreaObjectToggled.Clear();
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
@@ -484,11 +461,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsResetAreaEnabled = false;
             IsResaveAllObjectsEnabled = false;
 
-            SelectedAreaObjectName = String.Empty;
+            SelectedAreaObjectName = string.Empty;
 
             IsSelectedObjectPlaceableOrCreature = false;
-
-            _skipPaginationSearch = false;
         }
 
         public void SearchAppearances(ObjectType objectType)
@@ -602,8 +577,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     UpdatePaginationAppearances(GetObjectType(_objects[SelectedAreaObjectIndex]));
                     break;
-                default:
-                    break;
             }
 
             ObjectAppearanceList = objectAppearanceList;
@@ -623,14 +596,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case ObjectType.Creature:
                     totalCount = _totalCountAppearanceCreatures;
                     break;
-                default:
-                    break;
             }
 
             var pages = (int)(totalCount / AreaTemplate.PageSize + (totalCount % AreaTemplate.PageSize == 0 ? 0 : 1));
 
-            // Always add page 1. In the event no structures are available,
-            // it still needs to be displayed.
             pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
             for (var x = 2; x <= pages; x++)
             {
@@ -646,8 +615,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // set it to the last page in the list.
             else if (SelectedPageIndexAppearances > pages - 1)
                 SelectedPageIndexAppearances = pages - 1;
-
-            _skipPaginationSearch = false;
         }
 
         private void ClearObjectHighlight()
@@ -660,8 +627,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadAreaObjectList()
         {
-            _skipPaginationSearch = true;
-
             if (SelectedAreaIndex < 0)
                 return;
 
@@ -682,7 +647,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AreaObjectToggled = areaObjectToggled;
 
             IsDeleteObjectEnabled = false;
-            _skipPaginationSearch = true;
         }
 
         public Action OnClickGoToArea() => () =>
@@ -698,7 +662,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var vectorOfTemplateArea = Vector3(centerHeightOfTemplateAreaInMeters, centerWidthOfTemplateAreaInMeters, 0.0f);
             var position = Location(area, vectorOfTemplateArea, 0.0f);
 
-            AssignCommand(Player, () => ActionJumpToLocation(position));
+            AssignCommand(Player, () => JumpToLocation(position));
         };
 
         public Action OnClickGoToObject() => () =>
@@ -709,7 +673,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var obj = _objects[SelectedAreaObjectIndex];
             var position = GetLocation(obj);
 
-            AssignCommand(Player, () => ActionJumpToLocation(position));
+            AssignCommand(Player, () => JumpToLocation(position));
         };
 
         public Action OnRotateClockwise() => () =>
@@ -854,7 +818,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPreviousPageAppearance() => () =>
         {
-            _skipPaginationSearch = true;
             var newPage = SelectedPageIndexAppearances - 1;
             if (newPage < 0)
                 newPage = 0;
@@ -862,13 +825,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndexAppearances = newPage;
 
             SearchAppearances(GetObjectType(_objects[SelectedAreaObjectIndex]));
-
-            _skipPaginationSearch = false;
         };
 
         public Action OnNextPageAppearance() => () =>
         {
-            _skipPaginationSearch = true;
             var newPage = SelectedPageIndexAppearances + 1;
             if (newPage > PageNumbersAppearances.Count - 1)
                 newPage = PageNumbersAppearances.Count - 1;
@@ -876,8 +836,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndexAppearances = newPage;
 
             SearchAppearances(GetObjectType(_objects[SelectedAreaObjectIndex]));
-
-            _skipPaginationSearch = false;
         };
 
         public Action OnSelectObjectAppearance() => () =>

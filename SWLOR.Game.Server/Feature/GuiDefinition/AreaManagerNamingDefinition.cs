@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Please type in your new template area's name. Remember, it should not be longer than 40 characters!)")
+                            .SetText($"Please type in your new template area's name. Remember, it should not be longer than {AreaManagerNamingViewModel.MaxTemplateAreaNewNameLength} characters!)")
                             .SetIsVisible(true)
                             .SetWidth(800f);
 

@@ -893,7 +893,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         }
         private void AreaManager()
         {
-            _builder.Create("am", "areas")
+            _builder.Create("am", "areamanager")
                 .Description("Toggles the Area Manager window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>

@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public const int MaxTemplateAreaNewNameLength = 40;
+        public const int MaxTemplateAreaNewNameLength = 25;
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (templateAreaName.Length > MaxTemplateAreaNewNameLength)
             {
-                SendMessageToPC(Player, $"The template area's new name is to long. Please shorten it to no longer than {TemplateAreaNewName} characters and resubmit.");
+                SendMessageToPC(Player, $"The template area's new name is too long. Please shorten it to no longer than {MaxTemplateAreaNewNameLength} characters and resubmit.");
                 return;
             }
 
@@ -70,9 +69,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var templateArea = new TemplateArea
             {
-                TemplateAreaName = templateAreaName,
-                TemplateAreaTag = templateAreaTag,
-                TemplateAreaResRef = templateAreaResRef,
+                Name = templateAreaName,
+                Tag = templateAreaTag,
+                ResRef = templateAreaResRef,
             };
             DB.Set(templateArea);
 

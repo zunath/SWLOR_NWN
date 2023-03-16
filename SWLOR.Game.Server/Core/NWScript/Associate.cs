@@ -27,11 +27,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Returns the associate type of the specified creature.
         ///   - Returns ASSOCIATE_TYPE_NONE if the creature is not the associate of anyone.
         /// </summary>
-        public static int GetAssociateType(uint oAssociate)
+        public static AssociateType GetAssociateType(uint oAssociate)
         {
             VM.StackPush(oAssociate);
             VM.Call(748);
-            return VM.StackPopInt();
+            return (AssociateType)VM.StackPopInt();
         }
 
         /// <summary>

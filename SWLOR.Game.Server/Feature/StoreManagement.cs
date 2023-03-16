@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -117,6 +118,9 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// Destroys items sold to NPC stores immediately.
+        /// </summary>
         [NWNEventHandler("store_sell_aft")]
         public static void DestroySoldItem()
         {
@@ -129,5 +133,21 @@ namespace SWLOR.Game.Server.Feature
             DestroyObject(item);
         }
 
+        /// <summary>
+        /// Prevents items from being sold from a henchman's inventory.
+        /// </summary>
+        [NWNEventHandler("store_sell_bef")]
+        public static void PreventSalesFromHenchmenInventory()
+        {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var owner = GetItemPossessor(item);
+            var master = GetMaster(owner);
+
+            if (GetIsObjectValid(master))
+            {
+                EventsPlugin.SkipEvent();
+                SendMessageToPC(master, ColorToken.Red("Items cannot be directly sold from your henchman's inventory."));
+            }
+        }
     }
 }

@@ -35,7 +35,7 @@
       },
       "MusicDelay": {
         "type": "int",
-        "value": 240000
+        "value": 0
       },
       "MusicNight": {
         "type": "int",

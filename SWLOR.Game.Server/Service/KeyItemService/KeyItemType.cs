@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Forsaken Jungles Map", true, "Map of the Forsaken Jungles Caverns on Dantooine.")]
         DantooineForsakenJungleMap = 74,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Mountain Jungles Map", true, "Map of the Mountain Jungles on Dantooine.")]
-        DantooineMountianJunglesMap = 75,
+        DantooineMountainJunglesMap = 75,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Crystal Cave Map", true, "Map of the Crystal Cave on Dantooine.")]
         DantooineCrystalCaveMap = 76,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Abandoned Warehouse Map", true, "Map of the Abandoned Warehouse Base on Dantooine.")]

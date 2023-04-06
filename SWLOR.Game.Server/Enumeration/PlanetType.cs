@@ -71,12 +71,12 @@ namespace SWLOR.Game.Server.Enumeration
             true)]
         Dathomir = 64,
         [Planet("Dantooine",
-    "Dantooine - ",
-    "Dantooine_Orbit",
-    "DANTOOINE_LANDING",
-    900,
-    true)]
-        Dantooine = 128,
+            "Dantooine - ",
+            "Dantooine_Orbit",
+            "DANTOOINE_LANDING",
+            900,
+            true)]
+            Dantooine = 128,
     }
 
     public class PlanetAttribute : Attribute

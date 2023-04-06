@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kinrath leggings"
+      "0": "Kinrath Leggings"
     }
   },
   "ModelPart1": {
@@ -201,10 +201,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "dan_kin_boots"
+    "value": "dan_kin_leggings"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "dan_kin_boots"
+    "value": "dan_kin_leggings"
   }
 }

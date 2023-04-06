@@ -166,10 +166,10 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineMountianJunglesMap = 75,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Crystal Cave Map", true, "Map of the Crystal Cave on Dantooine.")]
         DantooineCrystalCaveMap = 76,
-        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Abandon Warehouse  Map", true, "Map of the Abandon Warehouse Base on Dantooine.")]
-        DantooineWareHouseMap = 77,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Abandoned Warehouse Map", true, "Map of the Abandoned Warehouse Base on Dantooine.")]
+        DantooineWarehouseMap = 77,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Canyon River Map", true, "Map of the Canyon Rivers on Dantooine.")]
-        DantooineCanyonRivereMap = 78,
+        DantooineCanyonRiverMap = 78,
     }
 
     public class KeyItemAttribute : Attribute

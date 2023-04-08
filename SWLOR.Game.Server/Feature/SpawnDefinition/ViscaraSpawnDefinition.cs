@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void TwilightPraxeum()
         {
-            _builder.Create("REV_MAZE")
+            _builder.Create("VISCARA_REVANITE_MAZE")
                 .AddSpawn(ObjectType.Creature, "revmynock")
                 .WithFrequency(1)
                 .RespawnDelay(20)

@@ -239,8 +239,11 @@ namespace SWLOR.Game.Server.Feature
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0 || GetCurrentAction(activator) != ActionType.Invalid)
+                {
+                    Activity.ClearBusy(activator);
                     return;
+                }
                 
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
                     return;

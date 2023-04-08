@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -24,16 +25,52 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return _builder.Build();
         }
-        private void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
+
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
+            var dmg = 0;
+            string effectTag = "";
+            int dc = 0;
+            int evaDecrease = 0;
+
+            switch (level)
+            {
+                case 1:
+                    dmg = willBonus;
+                    effectTag = "Tier1Tag";
+                    dc = 8;
+                    evaDecrease = 2;
+                    break;
+                case 2:
+                    dmg = 10 + (willBonus * 3 / 2);
+                    effectTag = "Tier2Tag";
+                    dc = 12;
+                    evaDecrease = 4;
+                    break;
+                case 3:
+                    dmg = 20 + (willBonus * 2);
+                    effectTag = "Tier3Tag";
+                    dc = 14;
+                    evaDecrease = 6;
+                    break;
+            }
+
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+            var damage = Combat.CalculateDamage(
+                attack,
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
+                0);
 
-
-            if (HasMorePowerfulEffect(target, tier,
+            if (HasMorePowerfulEffect(target, level,
                     new(Tier1Tag, 1),
                     new(Tier2Tag, 2),
                     new(Tier3Tag, 3)))
@@ -44,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
+                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)
@@ -54,12 +91,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
                 }
             }
+            var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
+            var elecImpact = EffectBeam(VisualEffect.Vfx_Com_Hit_Electrical, activator, BodyNode.Hand);
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
+            AssignCommand(activator, () =>
+            {
+                PlaySound("frc_lghtning");
+                ActionPlayAnimation(Animation.CastOutAnimation, 1.0f, 4.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 1.0f);
+            });
 
-            Enmity.ModifyEnmity(activator, target, 300 + damage);
+            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+
+            if (Stat.GetCurrentFP(activator) < 2 + (level))
+            {
+                var darkBargain = 7 * ((2 + level - Stat.GetCurrentFP(activator)));
+                Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
+            }
+            else { Stat.ReduceFP(activator, 2 + level); }
         }
 
         private void ForceSpark1()
@@ -67,17 +119,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(1)
+                .HasRecastDelay(RecastGroup.ForceSpark, 30f)
+                .HasActivationDelay(2f)
+                .HasMaxRange(15.0f)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 9, 2, 1, Tier1Tag, 8);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private void ForceSpark2()
@@ -85,17 +133,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(2)
+                .HasRecastDelay(RecastGroup.ForceSpark, 30f)
+                .HasActivationDelay(2f)
+                .HasMaxRange(15.0f)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 14, 4, 2, Tier2Tag, 12);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private void ForceSpark3()
@@ -103,17 +147,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(3)
+                .HasRecastDelay(RecastGroup.ForceSpark, 30f)
+                .HasActivationDelay(2f)
+                .HasMaxRange(15.0f)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 32, 6, 3, Tier3Tag, 14);
-                });
+                .HasImpactAction(ImpactAction);
         }
     }
 }

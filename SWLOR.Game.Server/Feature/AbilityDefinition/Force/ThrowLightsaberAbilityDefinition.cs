@@ -1,6 +1,4 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -33,7 +31,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var validWeapon = GetIsObjectValid(weapon) &&
                                  (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
                                   Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)));
+                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -57,19 +57,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // Make the activator face their target.
             ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, activator);
-            
+
             AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
+            var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
+            var perBonus = GetAbilityScore(activator, AbilityType.Perception);
 
             switch (level)
             {
                 case 1:
-                    dmg = 8;
+                    dmg = (willBonus + perBonus) / 2;
                     break;
                 case 2:
-                    dmg = 17;
+                    dmg = 20 + ((willBonus + perBonus) * 3 / 4);
                     break;
                 case 3:
-                    dmg = 24;
+                    dmg = 40 + (willBonus + perBonus);
                     break;
             }
 
@@ -83,16 +85,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                 var damage = Combat.CalculateDamage(
-                    attack, 
-                    dmg, 
-                    attackerStat, 
-                    defense, 
-                    defenderStat, 
+                    attack,
+                    dmg,
+                    attackerStat,
+                    defense,
+                    defenderStat,
                     0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
                 Enmity.ModifyEnmity(activator, target, damage + 200 * level);
             });
-                        
+
             // apply to next nearest creature in the spellcylinder
             var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             while (GetIsObjectValid(nearby) && count < level)
@@ -107,10 +109,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(
                             attack,
-                            dmg, 
+                            dmg,
                             attackerStat,
-                            defense, 
-                            defenderStat, 
+                            defense,
+                            defenderStat,
                             0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
                         CombatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
@@ -129,9 +131,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(2)
+                .RequirementFP(1)
+                .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -143,9 +147,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(4)
+                .RequirementFP(2)
+                .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -157,9 +163,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasActivationDelay(1.5f)
                 .HasMaxRange(15.0f)
-                .RequirementFP(6)
+                .RequirementFP(2)
+                .RequirementStamina(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()

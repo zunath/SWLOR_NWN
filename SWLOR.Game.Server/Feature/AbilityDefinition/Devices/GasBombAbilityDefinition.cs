@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
+            dmg += attackerStat / 2;
 
             var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);

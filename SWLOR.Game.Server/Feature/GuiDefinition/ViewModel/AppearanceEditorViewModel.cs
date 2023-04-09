@@ -920,7 +920,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
-            const float MaximumScale = 1.15f;
+            var MaximumScale = 1.15f;
+            var race = GetRacialType(_target);
+
+            if (race == RacialType.Wookiee)
+            {
+                MaximumScale = 1.5f;
+            }
+
+            if (race == RacialType.Zabrak || race == RacialType.Trandoshan || race == RacialType.Droid || race == RacialType.KelDor)
+            {
+                MaximumScale = 1.3f;
+            }
 
             if (scale + Increment > MaximumScale)
             {

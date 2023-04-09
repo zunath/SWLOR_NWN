@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ForceRestore(uint source, uint target, bool forceBody, int level)
         {
-            int willBonus = GetAbilityScore(source, AbilityType.Willpower);
+            var willBonus = GetAbilityScore(source, AbilityType.Willpower);
 
-            int forceAmount = willBonus * level / 4;
-            int staminaAmount = (2 * level) + willBonus * level / 4;
+            var forceAmount = willBonus * level / 4;
+            var staminaAmount = (2 * level) + willBonus * level / 4;
 
-            if (forceBody == true)
+            if (forceBody)
             {
                 Stat.RestoreFP(target, forceAmount);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);

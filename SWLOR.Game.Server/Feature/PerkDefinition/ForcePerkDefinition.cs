@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lightning")
 
                 .AddPerkLevel()
-                .Description("Deals DMG equal to your Willpower Score to up to 5 targets in a radius. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals DMG equal to your Willpower Score to up to 5 targets in a radius. Consumes FP, but if none remain, will consume HP instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 10 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals 10 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes FP, but if none remain, will consume HP instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -430,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning2)
 
                 .AddPerkLevel()
-                .Description("Deals 20 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals 20 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes FP, but if none remain, will consume HP instead.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning3)
 
                 .AddPerkLevel()
-                .Description("Deals 3 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals 3 DMG, scaling with your Willpower Score, to up to 5 targets in a radius. Consumes FP, but if none remain, will consume HP instead.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -452,14 +452,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Body")
 
                 .AddPerkLevel()
-                .Description("Grants Force Point regeneration based on your Willpower Score, at the cost of your Vitality.")
+                .Description("Grants FP regeneration based on your Willpower Score, at the cost of your Vitality.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBody1)
 
                 .AddPerkLevel()
-                .Description("Grants Force Point regeneration based on your Willpower Score, at the cost of your Vitality.")
+                .Description("Grants FP regeneration based on your Willpower Score, at the cost of your Vitality.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -522,7 +522,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Benevolence")
 
                 .AddPerkLevel()
-                .Description("Restores 30 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased force point cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
+                .Description("Restores 30 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased FP cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
-                .Description("Restores 60 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased force point cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
+                .Description("Restores 60 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased FP cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -538,7 +538,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
-                .Description("Restores 90 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased force point cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
+                .Description("Restores 90 HP to a single target. If your target is not yourself, you will heal significantly more and restore FP and STM while providing minor regeneration. This comes at the cost of an increased FP cost. It will also drain your stamina, though a lack of stamina won't prevent this added effect.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Spark")
 
                 .AddPerkLevel()
-                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -582,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 10 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 4 with a 12DC will check for one minute. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals 10 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 4 with a 12DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -590,7 +590,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 20 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 6 with a 14DC will check for one minute. Consumes Force Points, but if none remain, will consume Health instead.")
+                .Description("Deals 20 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 6 with a 14DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

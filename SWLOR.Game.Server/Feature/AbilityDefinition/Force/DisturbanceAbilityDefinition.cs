@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -26,51 +25,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return _builder.Build();
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag, int dc)
         {
-            var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
-            var dmg = 0;
-            string effectTag = "";
-            int dc = 0;
-            int accDecrease = 0;
-
-            switch (level)
-            {
-                case 1:
-                    dmg = willBonus;
-                    effectTag = "Tier1Tag";
-                    dc = 8;
-                    accDecrease = 2;
-                    break;
-                case 2:
-                    dmg = 10 + (willBonus * 3 / 2);
-                    effectTag = "Tier2Tag";
-                    dc = 12;
-                    accDecrease = 4;
-                    break;
-                case 3:
-                    dmg = 20 + (willBonus * 2);
-                    effectTag = "Tier3Tag";
-                    dc = 14;
-                    accDecrease = 6;
-                    break;
-            }
-
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg,
-                attackerStat,
-                defense,
-                defenderStat,
-                0);
+            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
+            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
-            if (HasMorePowerfulEffect(target, level,
+            if (HasMorePowerfulEffect(target, tier,
                     new(Tier1Tag, 1),
                     new(Tier2Tag, 2),
                     new(Tier3Tag, 3)))
@@ -95,9 +59,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Holy), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
 
-            Enmity.ModifyEnmity(activator, target, level * 150 + damage);
+            Enmity.ModifyEnmityOnAll(activator, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
@@ -108,13 +71,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Disturbance, 6f)
                 .HasActivationDelay(2f)
-                .RequirementFP(1)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction(ImpactAction);
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    Impact(activator, target, 0, 2, 1, Tier1Tag, 8);
+                });
         }
 
         private void Disturbance2()
@@ -124,13 +89,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Disturbance, 6f)
                 .HasActivationDelay(2f)
-                .RequirementFP(2)
+                .RequirementFP(1)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction(ImpactAction);
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
+                    var willDMG = 30 + (willBonus * 4);
+                    Impact(activator, target, 15, 4, 2, Tier2Tag, 12);
+                });
         }
 
         private void Disturbance3()
@@ -140,13 +110,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Disturbance, 6f)
                 .HasActivationDelay(2f)
-                .RequirementFP(3)
+                .RequirementFP(2)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction(ImpactAction);
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    Impact(activator, target, 30, 6, 3, Tier3Tag, 14);
+                });
         }
     }
 }

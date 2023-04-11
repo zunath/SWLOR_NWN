@@ -7554,6 +7554,72 @@
                       "type": "resref",
                       "value": "vkorrdun4melee"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Brusier Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisemel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain's Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakecaprifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Flamer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeburnerran"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Flamer Fuel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeflamerfue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Repeater"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegungungun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Shiv"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegruntmele"
+                    }
                   }
                 ]
               },
@@ -8785,6 +8851,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakebruises"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Burner Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakeburners"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakecapts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Crimeboss Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakebossskn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Grunt Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakegrunts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Gunner Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakegunskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Raider Skin"
                     },
                     "RESREF": {
@@ -9499,6 +9631,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "it_crewpb003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisea"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisehel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Burner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeburnarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakecaparmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Crimeboss Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebossarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Grunt Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegruntarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegunnerarm"
                     }
                   }
                 ]
@@ -29969,6 +30178,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "men_mod5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus X"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod10"
                     }
                   },
                   {

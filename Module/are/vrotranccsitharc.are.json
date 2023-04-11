@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "honoghrsa"
+    "value": "vrotranccsitharc"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -3644,7 +3644,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 4
+    "value": 5
   },
   "Width": {
     "type": "int",

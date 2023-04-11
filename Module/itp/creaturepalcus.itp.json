@@ -11645,6 +11645,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegrunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruiser"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 5.0
                     },
                     "FACTION": {

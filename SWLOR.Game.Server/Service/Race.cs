@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Service
                 AppearanceType = AppearanceType.Nautolan,
                 SkinColorId = 81,
                 HairColorId = 79,
-                HeadId = 233
+                HeadId = 235
             };
 
             // Female appearances
@@ -460,7 +460,7 @@ namespace SWLOR.Game.Server.Service
                 AppearanceType = AppearanceType.Nautolan,
                 SkinColorId = 81,
                 HairColorId = 79,
-                HeadId = 240
+                HeadId = 235
             };
 
         }

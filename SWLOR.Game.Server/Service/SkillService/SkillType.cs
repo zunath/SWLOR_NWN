@@ -319,6 +319,15 @@ namespace SWLOR.Game.Server.Service.SkillService
             CombatPointCategoryType.Utility,
             CharacterType.Standard)]
         Devices = 33,
+
+        [Skill(SkillCategoryType.Languages,
+            "Nautila",
+            20,
+            true,
+            "Ability to speak the Nautila language.",
+            false,
+            false)]
+            Nautila = 34,
     }
 
     public class SkillAttribute : Attribute

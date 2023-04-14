@@ -53,6 +53,7 @@
         AssociateCharacterSheet = 48,
         HoloNet = 49,
         Stables = 50,
+        TrainingStore = 51,
 
         DebugEnmity = 900,
     }

@@ -830,34 +830,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_2"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_3"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_4"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscara_czerktow"
         }
       },
@@ -1034,13 +1006,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "ship_firstlight"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_ext"
         }
       },
       {
@@ -1677,13 +1642,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_hang"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "sol_hutlarqfooth"
         }
       },
@@ -1980,6 +1938,195 @@
           "type": "resref",
           "value": "area_template"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_cd"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_hang"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_jnrm"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_off"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "dath_cz_baseok"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_crnt_corellia"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_dropsh_cr_sno"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_dropship_spac"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_drps_crsh_kor"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_drps_crsh_vis"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_vis_mntscrapy"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "karthviscdun1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "na_ka_pref_scene"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "narshad_czklab"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "narshadaar_pr001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "narshadaar_promi"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "nashada_czlabf2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "nashadaa_czlabin"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ns_comrcial_ka"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ns_industrialsec"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ns_prfb_nsinteri"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefab_space2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_derelict_k"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_cave_2ka"
+        }
       }
     ]
   },
@@ -2015,19 +2162,19 @@
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
-    "value": 0.9972904920578003
+    "value": 1.0
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": -0.07356446236371994
+    "value": 7.549790126404332e-008
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 24.0
+    "value": 26.66098785400391
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 27.0
+    "value": 27.19030952453613
   },
   "Mod_Entry_Z": {
     "type": "float",

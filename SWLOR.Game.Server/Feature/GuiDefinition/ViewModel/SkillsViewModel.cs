@@ -237,12 +237,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private GuiColor GetDecayLockColor(bool isLocked, bool contributesToSkillCap)
         {
             if (!contributesToSkillCap)
-                return new GuiColor(169, 169, 169);
+                return GuiColor.Grey;
 
             if (isLocked)
-                return new GuiColor(255, 0, 0);
+                return GuiColor.Red;
             else
-                return new GuiColor(0, 255, 0);
+                return GuiColor.Green;
         }
 
         public Action ToggleDecayLock() => () =>

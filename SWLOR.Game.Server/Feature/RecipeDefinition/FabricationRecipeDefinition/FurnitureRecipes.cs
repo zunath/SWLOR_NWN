@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
 
             // Brazier, Round
@@ -693,7 +693,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
 
             // Dining Chair, Orange
@@ -704,7 +704,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 2)
+                .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
             
             // Brazier, Stone
@@ -814,7 +814,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("wood_fine", 4)
+                .Component("fine_wood", 4)
                 .Component("lth_flawed", 6);
 
             // Flaming Statue
@@ -2709,6 +2709,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             _builder.Create(RecipeType.DroidAssemblyTerminal, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0269")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_imperfect", 3);
+
+            // Beast Stables Terminal
+            _builder.Create(RecipeType.BeastStablesTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0270")
                 .Level(50)
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 5)

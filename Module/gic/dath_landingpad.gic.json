@@ -51,6 +51,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -398,6 +405,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -408,6 +422,13 @@
   "StoreList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
       {
         "__struct_id": 11,
         "Comment": {

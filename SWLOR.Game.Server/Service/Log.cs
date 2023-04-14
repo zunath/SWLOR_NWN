@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
 
             // If the log group isn't configured for this environment, skip it.
             if (logDetail.Environment != ServerEnvironmentType.All &&
-                logDetail.Environment != settings.ServerEnvironment)
+                !logDetail.Environment.HasFlag(settings.ServerEnvironment))
             {
                 return;
             }

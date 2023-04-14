@@ -9,12 +9,12 @@ namespace SWLOR.CLI
     {
         public void Process()
         {
-            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "172.22.0.1");
+            Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", "localhost");
 
             DB.Load();
 
             var query = new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.Name), "adel", true);
+                .AddFieldSearch(nameof(Player.Name), "Yasila", true);
             var entities = DB.Search(query);
 
             foreach (var entity in entities)

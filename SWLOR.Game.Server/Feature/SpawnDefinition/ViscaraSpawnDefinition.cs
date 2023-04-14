@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             CrystalSpiders();
             Swamplands();
             VelesSewers();
+            TwilightPraxeum();
 
             return _builder.Build();
         }
@@ -224,5 +225,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
+        private void TwilightPraxeum()
+        {
+            _builder.Create("VISCARA_REVANITE_MAZE")
+                .AddSpawn(ObjectType.Creature, "revmynock")
+                .WithFrequency(1)
+                .RespawnDelay(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -53,6 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Temporary, effect, target, Duration);
 
             TakeStimPack(activator);
+            Enmity.ModifyEnmityOnAll(activator, 5 * amount);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
         }
 
         private void Infusion1()

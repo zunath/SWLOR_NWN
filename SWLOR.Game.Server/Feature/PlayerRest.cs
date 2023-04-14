@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -70,6 +71,12 @@ namespace SWLOR.Game.Server.Feature
             }
 
             StatusEffect.Apply(player, player, StatusEffectType.Rest, 0f);
+
+            var henchman = GetAssociate(AssociateType.Henchman, player);
+            if (GetIsObjectValid(henchman))
+            {
+                StatusEffect.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
+            }
 
             ExecuteScript("rest_started", player);
         }

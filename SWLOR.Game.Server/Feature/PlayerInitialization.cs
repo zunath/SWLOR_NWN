@@ -269,6 +269,9 @@ namespace SWLOR.Game.Server.Feature
                 case RacialType.Droid:
                     languages.Add(SkillType.Droidspeak);
                     break;
+                case RacialType.Nautolan:
+                    languages.Add(SkillType.Nautila);
+                    break;
             }
 
             // Fair warning: We're short-circuiting the skill system here.

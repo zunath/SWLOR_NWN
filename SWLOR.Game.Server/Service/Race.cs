@@ -246,6 +246,13 @@ namespace SWLOR.Game.Server.Service
                 LeftShinId = 1,
                 LeftFootId = 1
             };
+            _defaultRaceAppearancesMale[RacialType.Nautolan] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Nautolan,
+                SkinColorId = 81,
+                HairColorId = 79,
+                HeadId = 235
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
@@ -447,6 +454,13 @@ namespace SWLOR.Game.Server.Service
                 LeftThighId = 1,
                 LeftShinId = 1,
                 LeftFootId = 1
+            };
+            _defaultRaceAppearancesFemale[RacialType.Nautolan] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Nautolan,
+                SkinColorId = 81,
+                HairColorId = 79,
+                HeadId = 235
             };
 
         }

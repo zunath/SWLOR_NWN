@@ -904,11 +904,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnDecreaseAppearanceScale() => () =>
         {
+            var appearanceType = GetAppearanceType(_target);
+            if (!_racialAppearances.ContainsKey(appearanceType))
+            {
+                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                return;
+            }
+
+            var appearance = _racialAppearances[appearanceType];
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
-            const float MinimumScale = 0.85f;
 
-            if (scale - Increment < MinimumScale)
+            if (scale - Increment < appearance.MinimumScale)
             {
                 SendMessageToPC(_target, "You cannot decrease your height any further.");
             }
@@ -920,22 +927,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
         public Action OnIncreaseAppearanceScale() => () =>
         {
+            var appearanceType = GetAppearanceType(_target);
+            if (!_racialAppearances.ContainsKey(appearanceType))
+            {
+                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                return;
+            }
+
+            var appearance = _racialAppearances[appearanceType];
+
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
-            var MaximumScale = 1.15f;
-            var race = GetRacialType(_target);
 
-            if (race == RacialType.Wookiee)
-            {
-                MaximumScale = 1.5f;
-            }
-
-            if (race == RacialType.Zabrak || race == RacialType.Trandoshan || race == RacialType.Droid || race == RacialType.KelDor)
-            {
-                MaximumScale = 1.3f;
-            }
-
-            if (scale + Increment > MaximumScale)
+            if (scale + Increment > appearance.MaximumScale)
             {
                 SendMessageToPC(_target, "You cannot increase your height any further.");
             }

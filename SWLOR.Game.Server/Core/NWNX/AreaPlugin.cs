@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         // type = NWNX_AREA_COLOR_TYPE_*
         //
         // Returns FOG_COLOR_* or a custom value, -1 on error
-        public static int GetSunMoonColors(uint area, ColorType type)
+        public static int GetSunMoonColors(uint area, AreaLightColorType type)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSunMoonColors");
             NWNCore.NativeFunctions.nwnxPushInt((int)type);
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         // FF would represent the amount of red in the color
         // EE would represent the amount of green in the color
         // DD would represent the amount of blue in the color.
-        public static void SetSunMoonColors(uint area, ColorType type, int color)
+        public static void SetSunMoonColors(uint area, AreaLightColorType type, int color)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSunMoonColors");
             NWNCore.NativeFunctions.nwnxPushInt(color);

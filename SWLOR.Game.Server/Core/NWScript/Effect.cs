@@ -1614,5 +1614,37 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(959);
             return VM.StackPopStruct((int)EngineStructure.Effect);
         }
+
+        /// <summary>
+        /// Set the subtype of eEffect to Unyielding and return eEffect.
+        /// (Effects default to magical if the subtype is not set)
+        /// Unyielding effects are not removed by resting, death or dispel magic, only by RemoveEffect().
+        /// Note: effects that modify state, Stunned/Knockdown/Deaf etc, WILL be removed on death.
+        /// </summary>
+        public static Effect UnyieldingEffect(Effect eEffect)
+        {
+            VM.StackPush(eEffect);
+            VM.Call(1036);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Set eEffect to ignore immunities and return eEffect.
+        /// </summary>
+        public static Effect IgnoreEffectImmunity(Effect eEffect)
+        {
+            VM.StackPush(eEffect);
+            VM.Call(1037);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Create a Pacified effect, making the creature unable to attack anyone
+        /// </summary>
+        public static Effect EffectPacified()
+        {
+            VM.Call(1089);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
     }
 }

@@ -2,8 +2,8 @@
 {
     public abstract class RacialAppearanceBaseDefinition: IRacialAppearanceDefinition
     {
-        public virtual float MaximumScale { get; } = 1.15f;
-        public virtual float MinimumScale { get; } = 0.85f;
+        public virtual float MaximumScale => 1.15f;
+        public virtual float MinimumScale => 0.85f;
         public abstract int[] MaleHeads { get; }
         public abstract int[] FemaleHeads { get; }
         public virtual int[] Torsos { get; } = { 1, 2, 166 };

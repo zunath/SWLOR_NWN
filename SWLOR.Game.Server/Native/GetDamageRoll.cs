@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
@@ -15,10 +14,8 @@ using SWLOR.Game.Server.Service.LogService;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
-using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
-using Random = SWLOR.Game.Server.Service.Random;
 using DamageType = NWN.Native.API.DamageType;
 
 namespace SWLOR.Game.Server.Native
@@ -33,7 +30,10 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii), (IntPtr)pHook, -1000000);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii"),
+                (IntPtr)pHook, -1000000);
+                
             _callOriginal = Marshal.GetDelegateForFunctionPointer<GetDamageRollHook>(hookPtr);
         }
 

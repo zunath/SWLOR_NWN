@@ -3625,12 +3625,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         /// Returns the number of defined rows in the 2da s2DA.
         /// </summary>
-        public static string Get2DARowCount(string s2DA)
+        public static int Get2DARowCount(string s2DA)
         {
             VM.StackPush(s2DA);
             VM.Call(1035);
 
-            return VM.StackPopString();
+            return VM.StackPopInt();
         }
 
         /// <summary>

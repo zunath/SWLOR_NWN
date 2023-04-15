@@ -278,7 +278,9 @@ namespace SWLOR.Game.Server.Service
             // Add the status effect icon if there is one.
             if (addIcon && statusEffectDetail.EffectIconId != EffectIconType.Invalid)
             {
-                ObjectPlugin.AddIconEffect(target, (int)statusEffectDetail.EffectIconId);
+                var iconEffect = EffectIcon(statusEffectDetail.EffectIconId);
+                iconEffect = TagEffect(iconEffect, $"EFFECT_ICON_{statusEffectDetail.EffectIconId}");
+                ApplyEffectToObject(DurationType.Temporary, iconEffect, target, length);
             }
 
             if(sendApplicationMessage)
@@ -417,7 +419,7 @@ namespace SWLOR.Game.Server.Service
 
             if (removeIcon && statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
-                ObjectPlugin.RemoveIconEffect(creature, (int)statusEffectDetail.EffectIconId);
+                RemoveEffectByTag(creature, $"EFFECT_ICON_{statusEffectDetail.EffectIconId}");
             }
 
             if(showMessage)

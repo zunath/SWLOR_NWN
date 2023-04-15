@@ -31,9 +31,9 @@ namespace SWLOR.Game.Server.Service
         public static void LoadSongList()
         {
             const string File = "ambientmusic";
-            int rowCount = UtilPlugin.Get2DARowCount(File);
+            var rowCount = Get2DARowCount(File);
 
-            for (int row = 0; row < rowCount; row++)
+            for (var row = 0; row < rowCount; row++)
             {
                 var description = Get2DAString(File, "Description", row);
                 var displayName = Get2DAString(File, "DisplayName", row);

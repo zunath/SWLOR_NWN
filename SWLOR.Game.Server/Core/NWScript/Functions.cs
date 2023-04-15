@@ -4168,5 +4168,251 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(1079);
         }
 
+        /// <summary>
+        /// In the spell script returns the feat used, or -1 if no feat was used
+        /// </summary>
+        public static int GetSpellFeatId()
+        {
+            VM.Call(1095);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// If oCreature has nFeat, and nFeat is useable, returns the number of remaining uses left
+        /// or the maximum int value if the feat has unlimited uses (eg FEAT_KNOCKDOWN)
+        /// - nFeat: FEAT_*
+        /// - oCreature: Creature to check the feat of
+        /// </summary>
+        public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature)
+        {
+            VM.StackPush(oCreature);
+            VM.StackPush((int)nFeat);
+            VM.Call(1097);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Change a tile in an area, it will also update the tile for all players in the area.
+        /// * Notes:
+        ///   - For optimal use you should be familiar with how tilesets / .set files work.
+        ///   - Will not update the height of non-creature objects.
+        ///   - Creatures may get stuck on non-walkable terrain.
+        ///
+        /// - locTile: The location of the tile.
+        /// - nTileID: the ID of the tile, for values see the .set file of the tileset.
+        /// - nOrientation: the orientation of the tile, 0-3.
+        ///                 0 = Normal orientation
+        ///                 1 = 90 degrees counterclockwise
+        ///                 2 = 180 degrees counterclockwise
+        ///                 3 = 270 degrees counterclockwise
+        /// - nHeight: the height of the tile.
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        ///           - SETTILE_FLAG_RELOAD_GRASS: reloads the area's grass, use if your tile used to have grass or should have grass now.
+        ///           - SETTILE_FLAG_RELOAD_BORDER: reloads the edge tile border, use if you changed a tile on the edge of the area.
+        ///           - SETTILE_FLAG_RECOMPUTE_LIGHTING: recomputes the area's lighting and static shadows, use most of time.
+        /// </summary>
+        public static void SetTile(
+            Location locTile, 
+            int nTileID, 
+            int nOrientation, 
+            int nHeight = 0, 
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting)
+        {
+            VM.StackPush((int)nFlags);
+            VM.StackPush(nHeight);
+            VM.StackPush(nOrientation);
+            VM.StackPush(nTileID);
+            VM.StackPush(locTile);
+            VM.Call(1098);
+        }
+
+        /// <summary>
+        ///  Get the ID of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileID(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1099);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Get the orientation of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileOrientation(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1100);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Get the height of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileHeight(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1101);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the area's grass.
+        /// This can be used to update the grass of an area after changing a tile with SetTile() that will have or used to have grass.
+        /// </summary>
+        public static void ReloadAreaGrass(uint oArea)
+        {
+            VM.StackPush(oArea);
+            VM.Call(1102);
+        }
+
+        /// <summary>
+        /// Set the state of the tile animation loops of the tile at location locTile.
+        /// </summary>
+        public static void SetTileAnimationLoops(Location locTile, bool bAnimLoop1, bool bAnimLoop2, bool bAnimLoop3)
+        {
+            VM.StackPush(bAnimLoop3 ? 1 : 0);
+            VM.StackPush(bAnimLoop2 ? 1 : 0);
+            VM.StackPush(bAnimLoop1 ? 1 : 0);
+            VM.StackPush(locTile);
+            VM.Call(1103);
+        }
+
+        /// <summary>
+        /// Change multiple tiles in an area, it will also update the tiles for all players in the area.
+        /// Note: See SetTile() for additional information.
+        /// - oArea: the area to change one or more tiles of.
+        /// - jTileData: a JsonArray() with one or more JsonObject()s with the following keys:
+        ///               - index: the index of the tile as a JsonInt()
+        ///                        For example, a 3x3 area has the following tile indexes:
+        ///                        6 7 8
+        ///                        3 4 5
+        ///                        0 1 2
+        ///               - tileid: the ID of the tile as a JsonInt(), defaults to 0 if not set
+        ///               - orientation: the orientation of the tile as JsonInt(), defaults to 0 if not set
+        ///               - height: the height of the tile as JsonInt(), defaults to 0 if not set
+        ///               - animloop1: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop2: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop3: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        /// - sTileset: if not empty, it will also change the area's tileset
+        ///             Warning: only use this if you really know what you're doing, it's very easy to break things badly.
+        ///                      Make sure jTileData changes *all* tiles in the area and to a tile id that's supported by sTileset.
+        /// </summary>
+        public static void SetTileJson(
+            uint oArea, 
+            Json jTileData, 
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting, 
+            string sTileset = "")
+        {
+            VM.StackPush(sTileset);
+            VM.StackPush((int)nFlags);
+            VM.StackPush(jTileData);
+            VM.StackPush(oArea);
+            VM.Call(1104);
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the inaccesible border tiles.
+        /// This can be used to update the edge tiles after changing a tile with SetTile().
+        /// </summary>
+        public static void ReloadAreaBorder(uint oArea)
+        {
+            VM.StackPush(oArea);
+            VM.Call(1105);
+        }
+
+        /// <summary>
+        /// Sets whether or not oCreatures's nIconId is flashing in their GUI icon bar.  If oCreature does not
+        /// have an icon associated with nIconId, nothing happens. This function does not add icons to 
+        /// oCreatures's GUI icon bar. The icon will flash until the underlying effect is removed or this 
+        /// function is called again with bFlashing = FALSE.
+        /// - oCreature: Player object to affect
+        /// - nIconId: Referenced to effecticons.2da or EFFECT_ICON_*
+        /// - bFlashing: TRUE to force an existing icon to flash, FALSE to to stop.
+        /// </summary>
+        public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing = true)
+        {
+            VM.StackPush(bFlashing ? 1 : 0);
+            VM.StackPush(nIconId);
+            VM.StackPush(oCreature);
+            VM.Call(1106);
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item equipped.  Can only be used in the
+        /// module's OnPlayerEquip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastEquippedSlot()
+        {
+            VM.Call(1108);
+            return (InventorySlot)VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item unequipped.  Can only be used in the
+        /// module's OnPlayerUnequip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastUnequippedSlot()
+        {
+            VM.Call(1109);
+            return (InventorySlot)VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns TRUE if the last spell was cast spontaneously
+        /// eg; a Cleric casting SPELL_CURE_LIGHT_WOUNDS when it is not prepared, using another level 1 slot
+        /// </summary>
+        public static bool GetSpellCastSpontaneously()
+        {
+            VM.Call(1110);
+            return VM.StackPopInt() == 1;
+        }
+
+        /// <summary>
+        /// Return the current game tick rate (mainloop iterations per second).
+        /// This is equivalent to graphics frames per second when the module is running inside a client.
+        /// </summary>
+        public static int GetTickRate()
+        {
+            VM.Call(1113);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the level of the last spell cast. This value is only valid in a Spell script.
+        /// </summary>
+        public static int GetLastSpellLevel()
+        {
+            VM.Call(1114);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the 32bit integer hash of sString
+        /// This hash is stable and will always have the same value for same input string, regardless of platform.
+        /// The hash algorithm is the same as the one used internally for strings in case statements, so you can do:
+        ///    switch (HashString(sString))
+        ///    {
+        ///         case "AAA":    HandleAAA(); break;
+        ///         case "BBB":    HandleBBB(); break;
+        ///    }
+        /// NOTE: The exact algorithm used is XXH32(sString) ^ XXH32(""). This means that HashString("") is 0.
+        /// </summary>
+        public static int HashString(string sString)
+        {
+            VM.StackPush(sString);
+            VM.Call(1115);
+            return VM.StackPopInt();
+        }
+
+        public static int GetMicrosecondCounter()
+        {
+            VM.Call(1116);
+            return VM.StackPopInt();
+        }
     }
 }

@@ -14438,11 +14438,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Kinrath Boots"
+                            "value": "Kinrath Leggings"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "dan_kin_boots"
+                            "value": "dan_kin_leggings"
                           }
                         },
                         {
@@ -40846,7 +40846,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Bol Rilfe"
+                      "value": "Blueprint: Bol Rifle"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -51581,17 +51581,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Chiro Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "chi_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Delta Rifle"
                           },
                           "RESREF": {
@@ -51884,17 +51873,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cer_shuriken"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chiro Shuriken"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "chi_shuriken"
                     }
                   },
                   {

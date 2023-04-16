@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Overgrown Scrapyard"
+      "0": "[Prefab] Scrapyard"
     }
   },
   "NoRest": {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 4
   },
   "Width": {
     "type": "int",

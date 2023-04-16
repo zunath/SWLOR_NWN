@@ -24202,15 +24202,15 @@
         },
         "X": {
           "type": "float",
-          "value": 104.5247039794922
+          "value": 104.5199966430664
         },
         "Y": {
           "type": "float",
-          "value": 26.85359382629395
+          "value": 26.85000038146973
         },
         "Z": {
           "type": "float",
-          "value": -0.5951137542724609
+          "value": -0.5799999833106995
         }
       },
       {
@@ -24369,7 +24369,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -24381,7 +24381,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -24423,21 +24423,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 105.1238479614258
+          "value": 105.120002746582
         },
         "Y": {
           "type": "float",
-          "value": 32.93151092529297
+          "value": 32.93000030517578
         },
         "Z": {
           "type": "float",
-          "value": -0.6400032043457031
+          "value": -4.6251540184021
         }
       },
       {
@@ -24456,7 +24475,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.981747567653656
+          "value": 0.9808750748634338
         },
         "BodyBag": {
           "type": "byte",
@@ -24594,7 +24613,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -24606,7 +24625,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -24648,21 +24667,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 105.9827194213867
+          "value": 105.9800033569336
         },
         "Y": {
           "type": "float",
-          "value": 26.78487586975098
+          "value": 26.78000068664551
         },
         "Z": {
           "type": "float",
-          "value": -0.6562761068344116
+          "value": -4.635149002075195
         }
       },
       {
@@ -37112,7 +37150,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.374446630477905
+          "value": -1.373574495315552
         },
         "BodyBag": {
           "type": "byte",
@@ -37250,7 +37288,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -37262,7 +37300,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -37304,21 +37342,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 105.4311370849609
+          "value": 105.4300003051758
         },
         "Y": {
           "type": "float",
-          "value": 83.99240112304688
+          "value": 83.98999786376953
         },
         "Z": {
           "type": "float",
-          "value": -0.7130661010742188
+          "value": -4.599042415618897
         }
       },
       {
@@ -37475,7 +37532,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -37487,7 +37544,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -37529,21 +37586,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 113.0339813232422
+          "value": 113.0299987792969
         },
         "Y": {
           "type": "float",
-          "value": 84.49298095703125
+          "value": 84.48999786376953
         },
         "Z": {
           "type": "float",
-          "value": -0.6554003953933716
+          "value": -4.648765563964844
         }
       },
       {
@@ -37700,7 +37776,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -37712,7 +37788,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -37754,21 +37830,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 104.7894439697266
+          "value": 104.7900009155273
         },
         "Y": {
           "type": "float",
-          "value": 63.44004821777344
+          "value": 63.43999862670898
         },
         "Z": {
           "type": "float",
-          "value": -0.6544959545135498
+          "value": -4.644215106964111
         }
       },
       {
@@ -37787,7 +37882,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.374446630477905
+          "value": -1.373574495315552
         },
         "BodyBag": {
           "type": "byte",
@@ -37925,7 +38020,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -37937,7 +38032,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -37979,21 +38074,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 105.1891555786133
+          "value": 105.1900024414063
         },
         "Y": {
           "type": "float",
-          "value": 36.37829971313477
+          "value": 36.38000106811523
         },
         "Z": {
           "type": "float",
-          "value": -0.6544959545135498
+          "value": -4.648841857910156
         }
       },
       {
@@ -38150,7 +38264,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -38162,7 +38276,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -38204,21 +38318,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 74.93112182617188
+          "value": 74.93000030517578
         },
         "Y": {
           "type": "float",
-          "value": 30.23776435852051
+          "value": 30.23999977111816
         },
         "Z": {
           "type": "float",
-          "value": -0.6610977649688721
+          "value": -4.645153999328613
         }
       },
       {
@@ -38257,7 +38390,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -38375,7 +38510,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -38387,7 +38522,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -38429,21 +38564,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 3.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 74.95514678955078
+          "value": 74.95999908447266
         },
         "Y": {
           "type": "float",
-          "value": 41.86609268188477
+          "value": 41.86999893188477
         },
         "Z": {
           "type": "float",
-          "value": -0.6455086469650269
+          "value": -3.539999961853027
         }
       },
       {
@@ -38687,7 +38841,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963495314121246
+          "value": 0.1954768598079681
         },
         "BodyBag": {
           "type": "byte",
@@ -38825,7 +38979,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -38837,7 +38991,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -38879,21 +39033,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 75.81223297119141
+          "value": 75.80999755859375
         },
         "Y": {
           "type": "float",
-          "value": 61.30869293212891
+          "value": 61.31000137329102
         },
         "Z": {
           "type": "float",
-          "value": 0.1284389495849609
+          "value": -3.95028018951416
         }
       },
       {
@@ -45236,7 +45409,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.374446630477905
+          "value": -1.373574495315552
         },
         "BodyBag": {
           "type": "byte",
@@ -45376,7 +45549,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -45388,7 +45561,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -45430,21 +45603,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 64.95578765869141
+          "value": 64.95999908447266
         },
         "Y": {
           "type": "float",
-          "value": 110.6822509765625
+          "value": 110.6800003051758
         },
         "Z": {
           "type": "float",
-          "value": -0.5308265686035156
+          "value": -4.609545230865479
         }
       },
       {
@@ -45603,7 +45795,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -45615,7 +45807,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -45657,21 +45849,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 57.25381469726563
+          "value": 57.25
         },
         "Y": {
           "type": "float",
-          "value": 114.51611328125
+          "value": 114.5199966430664
         },
         "Z": {
           "type": "float",
-          "value": -0.5443668365478516
+          "value": -4.569273471832275
         }
       },
       {
@@ -65299,7 +65510,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.5890485644340515
+          "value": -0.5881760716438294
         },
         "BodyBag": {
           "type": "byte",
@@ -65437,7 +65648,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -65449,7 +65660,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -65491,21 +65702,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 115.4823684692383
+          "value": 115.4800033569336
         },
         "Y": {
           "type": "float",
-          "value": 94.2938232421875
+          "value": 94.29000091552734
         },
         "Z": {
           "type": "float",
-          "value": 0.09123039245605469
+          "value": -3.994107246398926
         }
       },
       {
@@ -65524,7 +65754,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963495314121246
+          "value": -0.1954772919416428
         },
         "BodyBag": {
           "type": "byte",
@@ -65662,7 +65892,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -65674,7 +65904,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -65716,21 +65946,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 92.20453643798828
+          "value": 92.19999694824219
         },
         "Y": {
           "type": "float",
-          "value": 104.4753646850586
+          "value": 104.4800033569336
         },
         "Z": {
           "type": "float",
-          "value": -0.5427780151367188
+          "value": -4.552295684814453
         }
       },
       {
@@ -65749,7 +65998,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945242881774902
+          "value": -2.944370031356812
         },
         "BodyBag": {
           "type": "byte",
@@ -65887,7 +66136,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -65899,7 +66148,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -65941,21 +66190,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 77.15610504150391
+          "value": 77.16000366210938
         },
         "Y": {
           "type": "float",
-          "value": 104.4195251464844
+          "value": 104.4199981689453
         },
         "Z": {
           "type": "float",
-          "value": -0.5402259826660156
+          "value": -4.52988338470459
         }
       },
       {
@@ -65974,7 +66242,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963495314121246
+          "value": 0.1954768598079681
         },
         "BodyBag": {
           "type": "byte",
@@ -66112,7 +66380,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -66124,7 +66392,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -66166,21 +66434,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 59.9084587097168
+          "value": 59.90999984741211
         },
         "Y": {
           "type": "float",
-          "value": 124.6698150634766
+          "value": 124.6699981689453
         },
         "Z": {
           "type": "float",
-          "value": -0.6345100402832031
+          "value": -4.659435749053955
         }
       },
       {
@@ -66337,7 +66624,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -66349,7 +66636,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -66391,21 +66678,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 45.32548141479492
+          "value": 45.33000183105469
         },
         "Y": {
           "type": "float",
-          "value": 110.1924133300781
+          "value": 110.1900024414063
         },
         "Z": {
           "type": "float",
-          "value": -0.6126461029052734
+          "value": -4.59023904800415
         }
       },
       {
@@ -66562,7 +66868,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -66574,7 +66880,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -66616,21 +66922,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 44.72951126098633
+          "value": 44.72999954223633
         },
         "Y": {
           "type": "float",
-          "value": 98.93043518066406
+          "value": 98.93000030517578
         },
         "Z": {
           "type": "float",
-          "value": -0.5258064270019531
+          "value": -4.425841808319092
         }
       },
       {
@@ -79909,7 +80234,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -79921,7 +80246,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -79963,21 +80288,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 1.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 100.0800552368164
+          "value": 101.4338150024414
         },
         "Y": {
           "type": "float",
-          "value": 61.81328964233398
+          "value": 62.88154983520508
         },
         "Z": {
           "type": "float",
-          "value": 0.002397537231445313
+          "value": -4.007247447967529
         }
       },
       {
@@ -79996,7 +80340,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.981747567653656
+          "value": -0.9808752536773682
         },
         "BodyBag": {
           "type": "byte",
@@ -80134,7 +80478,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -80146,7 +80490,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -80188,21 +80532,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 87.19766235351563
+          "value": 87.19999694824219
         },
         "Y": {
           "type": "float",
-          "value": 60.60686874389648
+          "value": 60.61000061035156
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -4.015719890594482
         }
       },
       {
@@ -80359,7 +80722,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -80371,7 +80734,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -80413,21 +80776,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 89.94171905517578
+          "value": 89.94000244140625
         },
         "Y": {
           "type": "float",
-          "value": 62.21389007568359
+          "value": 62.20999908447266
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -4.002806186676025
         }
       },
       {
@@ -80809,7 +81191,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -80821,7 +81203,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -80863,21 +81245,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 79.45515441894531
+          "value": 79.45999908447266
         },
         "Y": {
           "type": "float",
-          "value": 59.07564544677734
+          "value": 59.08000183105469
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -4.015718936920166
         }
       },
       {
@@ -81934,7 +82335,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -81946,7 +82347,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -81988,21 +82389,284 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 4.0
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 87.51765441894531
+          "value": 87.51999664306641
         },
         "Y": {
           "type": "float",
-          "value": 24.87108993530273
+          "value": 24.8700008392334
         },
         "Z": {
           "type": "float",
-          "value": -0.5077788829803467
+          "value": -4.526231288909912
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 7848
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -1.963495254516602
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Rubbish, Papers, Line"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_rubb031"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_rubb031"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "TranslateX": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateY": {
+              "type": "float",
+              "value": 0.0
+            },
+            "TranslateZ": {
+              "type": "float",
+              "value": 5.0
+            }
+          }
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 106.25
+        },
+        "Y": {
+          "type": "float",
+          "value": 75.44999694824219
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.442460536956787
         }
       }
     ]

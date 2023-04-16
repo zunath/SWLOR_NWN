@@ -33,5 +33,11 @@
         DathomirGrottos = 24,
         DathomirMountains = 25,
         DathomirTribeVillage = 26,
+
+        DantooineLake = 27,
+        DantooineMountainJungles = 28,
+        DantooineCanyon = 29,
+        DantooineSouthFields = 30,
+        DantooineForsakenJungles = 31,
     }
 }

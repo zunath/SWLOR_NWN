@@ -32,12 +32,14 @@ Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights
 1. Fork this repo.
 
 2. At command line: ``git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git``
+
+3. Run SWLOR_NWN/Module/PackModule.cmd to generate the Star Wars LOR v2.mod file.
   
-3. Open SWLOR.Game.Server.sln with Visual Studio
+4. Open SWLOR.Game.Server.sln with Visual Studio
   
-4. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
+5. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
   
-5. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
+6. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
 
 # Troubleshooting
 

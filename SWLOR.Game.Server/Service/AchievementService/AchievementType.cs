@@ -299,6 +299,33 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("The Legendary Rod", "Completed the quest 'The Legendary Rod'.", true)]
         TheLegendaryRod = 110,
+
+        [Achievement("Explore Dantooine Orbit", "Explore Dantooine's Orbit.", true)]
+        ExploreDantooineOrbit = 111,
+
+        [Achievement("Explore Dantooine Fields", "Explore Dantooine's Fields.", true)]
+        ExploreDantooineFields = 112,
+
+        [Achievement("Explore Dantooine Colony", "Explore Dantooine's Colony.", true)]
+        ExploreDantooineColony = 113,
+
+        [Achievement("Explore Dantooine Lake", "Explore Dantooine's Lake.", true)]
+        ExploreDantooineLake = 114,
+        
+        [Achievement("Explore Dantooine Kinrath Tunnels", "Explore Dantooine's Kinrath Tunnels.", true)]
+        ExploreDantooineKinrathTunnels = 115,
+
+        [Achievement("Explore Dantooine Wild Plains", "Explore Dantooine's Wild Plains.", true)]
+        ExploreDantooineWildPlains = 116,
+
+        [Achievement("Explore Dantooine Tribe", "Explore Dantooine's Tribe.", true)]
+        ExploreDantooineTribe = 117,
+
+        [Achievement("Explore Dantooine Abandoned Warehouse", "Explore Dantooine's Abandoned Base.", true)]
+        ExploreDantooineAbandonedWarehouse = 118,
+
+        [Achievement("Explore Dantooine Jungle Mountain ", "Explore Dantooine's Jungle Mountains.", true)]
+        ExploreDantooineJungleMountain = 119,
     }
 
     public class AchievementAttribute: Attribute

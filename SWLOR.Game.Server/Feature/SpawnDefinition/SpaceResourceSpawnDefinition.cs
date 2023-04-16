@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TatooineOrbit();
             KorribanOrbit();
             DathomirOrbit();
+            DantooineOrbit();
 
             return _builder.Build();
         }
@@ -82,6 +83,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
                 
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(10);
+        }
+        private void DantooineOrbit()
+        { 
+            _builder.Create("SPACE_RESOURCES_DANTOOINE_ORBIT", "Space Resources - Dantooine Orbit")
+
                 .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
                 .WithFrequency(50)
 

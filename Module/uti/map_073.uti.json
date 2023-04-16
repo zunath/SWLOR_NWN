@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 1172
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 59
+    "value": 307
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 1172
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -30,28 +30,25 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
   "LocalizedName": {
-    "id": 1553,
     "type": "cexolocstring",
     "value": {
-      "0": "Chiro Shuriken"
+      "0": "Dantooine - South Plains"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 32
+    "value": 106
   },
   "PaletteID": {
     "type": "byte",
-    "value": 52
+    "value": 26
   },
   "Plot": {
     "type": "byte",
@@ -68,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 3
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -84,42 +81,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 15
         },
         "Subtype": {
           "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 79
+          "value": 335
         }
       }
     ]
@@ -134,10 +100,30 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "chi_shuriken"
+    "value": "KEY_ITEM"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "chi_shuriken"
+    "value": "map_073"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 73
+        }
+      }
+    ]
   }
 }

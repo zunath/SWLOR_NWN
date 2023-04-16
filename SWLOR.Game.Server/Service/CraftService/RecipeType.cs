@@ -440,6 +440,7 @@
         ImmortalCap = 403,
         ImmortalGloves = 404,
         ImmortalBoots = 405,
+        BolRifle = 406,
 
         // Fabrication:  1001-2000
         BedRoll = 1001,
@@ -923,6 +924,11 @@
         TenderMeatSubstitute3 = 2197,
         TenderMeatSubstitute4 = 2198,
         TenderMeatSubstitute5 = 2199,
+        MunchFungusBread = 2200,
+        DantooineFlapJack = 2201,
+        DantooineCarrotCake = 2202,
+        KraftersKebab = 2203,
+
 
         // Engineering: 3001-6000
         BasicCapacitorBooster = 3001,

@@ -1819,7 +1819,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 9488
+          "value": 3892
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1981,7 +1981,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -2021,7 +2021,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "VarTable": {
           "type": "list",

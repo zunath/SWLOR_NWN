@@ -16673,7 +16673,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 7
   },
   "Width": {
     "type": "int",

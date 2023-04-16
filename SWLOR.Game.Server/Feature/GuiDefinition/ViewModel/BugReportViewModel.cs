@@ -121,7 +121,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
 
 
-                    await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                    await client.SendMessageAsync(
+                        string.Empty, 
+                        embeds: new[] { embed.Build() },
+                        threadName: title);
                 }
             });
 

@@ -2,8 +2,9 @@
 {
     public class DroidRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
-        public override int[] MaleHeads { get; } = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-        public override int[] FemaleHeads { get; } = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+        public override float MaximumScale => 1.3f;
+        public override int[] MaleHeads { get; } = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
+        public override int[] FemaleHeads { get; } = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 
         public override int[] Torsos { get; } = { 1 };
         public override int[] Pelvis { get; } = { 1, };

@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(6f)
-                .RequirementStamina(15)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>

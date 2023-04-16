@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Nar Shaddaa, Interior"
+      "0": "[Prefab] Nar Shaddaa - Interior"
     }
   },
   "NoRest": {
@@ -13319,7 +13319,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 8
   },
   "Width": {
     "type": "int",

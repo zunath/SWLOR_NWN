@@ -34,12 +34,12 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Bol Rilfe"
+      "0": "Blueprint: Bol Rifle"
     }
   },
   "ModelPart1": {

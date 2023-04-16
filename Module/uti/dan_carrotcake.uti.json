@@ -34,7 +34,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -100,7 +100,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -123,7 +123,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 99
+    "value": 1
   },
   "Stolen": {
     "type": "byte",

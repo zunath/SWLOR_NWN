@@ -406,10 +406,66 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     SendMessageToPC(user, "Local string set: " + variableName + " = " + value);
                 });
+
+            _builder.Create("settag")
+                .Description("Sets a local tag on a target.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Missing arguments. Format should be: /SetTag <VALUE>. Example: /SetTag DUNGEON_ENTRANCE";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target))
+                    {
+                        SendMessageToPC(user, "Target is invalid. Please target a creature, placeable or door.");
+                    }
+                    else
+                    {
+                        SetTag(target, args[0]);
+
+                        SendMessageToPC(user, "Tag set to: " + args[0] + ".");
+                    }
+                });
+
+            _builder.Create("destination")
+                .Description("Sets the DESTINATION localstring to the given value on a target.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Missing arguments. Format should be: /destionation <VALUE>. Example: /destination EventEntrance";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target))
+                    {
+                        SendMessageToPC(user, "Target is invalid. Please target a placeable.");
+                    }
+                    else
+                    {
+                        SetEventScript(target, EventScript.Placeable_OnUsed, "teleport");
+                        SetLocalString(target, "DESTINATION", args[0]);
+                        SendMessageToPC(user, "Applied teleport script to object. Destination tag set to " + args[0] + ".");
+                    }
+                }); 
         }
 
-        private void SetPortrait()
-        {
+            private void SetPortrait()
+            {
             _builder.Create("setportrait")
                 .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)

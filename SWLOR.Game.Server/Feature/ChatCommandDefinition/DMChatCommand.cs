@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Broadcast();
             SetScale();
             GetScale();
+            MusicManager();
 
             return _builder.Build();
         }
@@ -964,6 +965,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var shownScale = targetScale.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
+                });
+        }
+        private void MusicManager()
+        {
+            _builder.Create("music", "mm")
+                .Description("Toggles the Music Manager window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicManager);
                 });
         }
     }

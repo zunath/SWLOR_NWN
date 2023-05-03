@@ -36,11 +36,9 @@ namespace SWLOR.Game.Server.Feature
         public static void MessageOnDeath()
         {
             if (GetTag(OBJECT_SELF) != "qion_hive_larvae")
-            return;
-
-            uint sender = OBJECT_SELF;
-
-            Messaging.SendMessageNearbyToPlayers(sender, "A ravenous larvae that had been clinging onto the Qion Hive Slug dislodges itself upon its host's demise; and with it, clouds of buzzing flesh flies.", 30f);
+                return;
+                
+            Messaging.SendMessageNearbyToPlayers(OBJECT_SELF, "A ravenous larvae that had been clinging onto the Qion Hive Slug dislodges itself upon its host's demise; and with it, clouds of buzzing flesh flies.", 30f);
         }
     }
 }

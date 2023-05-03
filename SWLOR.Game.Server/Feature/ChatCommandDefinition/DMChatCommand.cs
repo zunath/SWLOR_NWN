@@ -407,25 +407,24 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Local string set: " + variableName + " = " + value);
                 });
 
-            _builder.Create("settag")
-                .Description("Sets a local tag on a target.")
+            _builder.Create("tptag")
+                .Description("Sets a local tag on a target Teleport Object placeable.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length <= 0)
                     {
-                        return "Missing arguments. Format should be: /SetTag <VALUE>. Example: /SetTag DUNGEON_ENTRANCE";
+                        return "Missing arguments. Format should be: /TPTag <VALUE>. Example: /TPTag DUNGEON_ENTRANCE";
                     }
 
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target))
+                    if (GetResRef(target) != "tele_obj")
                     {
-                        SendMessageToPC(user, "Target is invalid. Please target a creature, placeable or door.");
+                        SendMessageToPC(user, "This command can only be used on the Teleport Object placeable.");
                     }
                     else
                     {
@@ -438,13 +437,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("destination")
                 .Description("Sets the DESTINATION localstring to the given value on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length <= 0)
                     {
-                        return "Missing arguments. Format should be: /destionation <VALUE>. Example: /destination EventEntrance";
+                        return "Missing arguments. Format should be: /destination <VALUE>. Example: /destination EventEntrance";
                     }
 
                     return string.Empty;

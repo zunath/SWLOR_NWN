@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.Emit;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;

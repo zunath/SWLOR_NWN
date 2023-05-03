@@ -449,9 +449,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target))
+                    if (GetResRef(target) != "tele_obj")
                     {
-                        SendMessageToPC(user, "Target is invalid. Please target a placeable.");
+                        SendMessageToPC(user, "Target is invalid. Please target a Teleport Object placeable.");
                     }
                     else
                     {

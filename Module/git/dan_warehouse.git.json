@@ -54149,67 +54149,6 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine - Kin Boss"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DANTOOINE_KIN_BOSS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "danboss1"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 5.969391328177288e-039
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 67.41124725341797
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 70.47463989257813
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
             "0": "Dantooine - Kinrath Caves"
           }
         },

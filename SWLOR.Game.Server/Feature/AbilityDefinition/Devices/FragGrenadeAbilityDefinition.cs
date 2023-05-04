@@ -66,8 +66,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
                 .Name("Frag Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.FragGrenade, 30f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
+                .HasActivationDelay(2f)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
+                .HasMaxRange(15f)
+                .HasCustomValidation(ExplosiveValidation)
+                .HasImpactAction((activator, _, _, location) =>
+                {
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
+                    {
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        Impact(activator, target, perBonus, -1, 0f);
+                    });
+                });
+        }
+
+        private void FragGrenade2()
+        {
+            _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+                .Name("Frag Grenade II")
+                .Level(2)
+                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(2)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -78,18 +100,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 6, -1, 0f);
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var perDMG = 20 + (perBonus * 3 / 2);
+                        Impact(activator, target, perDMG, 8, 30f);
                     });
                 });
         }
 
-        private void FragGrenade2()
+        private void FragGrenade3()
         {
-            _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
-                .Name("Frag Grenade II")
-                .Level(2)
-                .HasRecastDelay(RecastGroup.FragGrenade, 30f)
-                .HasActivationDelay(1f)
+            _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+                .Name("Frag Grenade III")
+                .Level(3)
+                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -100,29 +124,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 8, 30f);
-                    });
-                });
-        }
-
-        private void FragGrenade3()
-        {
-            _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
-                .Name("Frag Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.FragGrenade, 30f)
-                .HasActivationDelay(1f)
-                .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
-                    {
-                        Impact(activator, target, 16, 12, 60f);
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var perDMG = 40 + (perBonus * 2);
+                        Impact(activator, target, perDMG, 12, 60f);
                     });
                 });
         }

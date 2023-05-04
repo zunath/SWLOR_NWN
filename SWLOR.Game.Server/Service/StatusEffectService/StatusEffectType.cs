@@ -75,5 +75,9 @@
         Disease = 70,
         Assault = 71,
         Freezing = 72,
+        ForceBody1 = 73,
+        ForceBody2 = 74,
+        ForceMind1 = 75,
+        ForceMind2 = 76,
     }
 }

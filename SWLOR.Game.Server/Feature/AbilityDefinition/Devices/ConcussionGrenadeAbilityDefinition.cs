@@ -68,8 +68,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .HasActivationDelay(1f)
+                .RequirementStamina(2)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
+                .HasMaxRange(15f)
+                .HasCustomValidation(ExplosiveValidation)
+                .HasImpactAction((activator, _, _, location) =>
+                {
+                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
+                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
+                    ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
+                    {
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        Impact(activator, target, perBonus, -1);
+                    });
+                });
+        }
+
+        private void ConcussionGrenade2()
+        {
+            _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+                .Name("Concussion Grenade II")
+                .Level(2)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -82,18 +107,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 6, -1);
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var perDMG = perBonus + 15;
+                        Impact(activator, target, 10, 8);
                     });
                 });
         }
 
-        private void ConcussionGrenade2()
+        private void ConcussionGrenade3()
         {
-            _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
-                .Name("Concussion Grenade II")
-                .Level(2)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
-                .HasActivationDelay(1f)
+            _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
+                .Name("Concussion Grenade III")
+                .Level(3)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -106,31 +133,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 10, 8);
-                    });
-                });
-        }
-
-        private void ConcussionGrenade3()
-        {
-            _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
-                .Name("Concussion Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 30f)
-                .HasActivationDelay(1f)
-                .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
-                    ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        Impact(activator, target, 16, 12);
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var perDMG = perBonus + 30;
+                        Impact(activator, target, perDMG, 12);
                     });
                 });
         }

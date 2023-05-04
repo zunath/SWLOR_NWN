@@ -253,6 +253,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceTouch = 122,
         [RecastGroup("Innervate", "Innervate", true)]
         Innervate = 123,
+        [RecastGroup("Force Restore", "F. Restore", true)]
+        ForceRestore = 124,
     }
 
     public class RecastGroupAttribute: Attribute

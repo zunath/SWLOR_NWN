@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            dmg += (attackerStat * ((tier - 1) / 2)) + attackerStat;
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
 
@@ -57,6 +58,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Lightning, false, 2f), target);
+
+            if (Stat.GetCurrentFP(activator) < 2 + (tier))
+            {
+                var darkBargain = 7 * ((2 + tier - Stat.GetCurrentFP(activator)));
+                Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
+            }
+            else { Stat.ReduceFP(activator, 2 + tier); }
 
             Enmity.ModifyEnmity(activator, target, 300 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
@@ -67,8 +77,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(1)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -76,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 9, 2, 1, Tier1Tag, 8);
+                    Impact(activator, target, 0, 2, 1, Tier1Tag, 8);
                 });
         }
 
@@ -85,8 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(2)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -94,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 14, 4, 2, Tier2Tag, 12);
+                    Impact(activator, target, 15, 4, 2, Tier2Tag, 12);
                 });
         }
 
@@ -103,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ForceSpark, 20f)
-                .RequirementFP(3)
+                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
+                .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
@@ -112,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 32, 6, 3, Tier3Tag, 14);
+                    Impact(activator, target, 30, 6, 3, Tier3Tag, 14);
                 });
         }
     }

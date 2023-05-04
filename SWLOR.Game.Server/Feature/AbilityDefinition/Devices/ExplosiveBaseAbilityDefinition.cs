@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var dmgBonus = Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+            dmgBonus += attackerStat / 2;
 
             DelayCommand(delay, () =>
             {

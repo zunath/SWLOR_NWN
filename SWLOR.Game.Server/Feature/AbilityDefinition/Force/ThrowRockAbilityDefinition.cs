@@ -27,23 +27,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
+            var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
+            var perBonus = GetAbilityScore(activator, AbilityType.Perception);
 
             switch (level)
             {
                 case 1:
-                    dmg = 10;
+                    dmg = willBonus;
                     break;
                 case 2:
-                    dmg = 15;
+                    dmg = 10 + willBonus * 3 / 2;
                     break;
                 case 3:
-                    dmg = 25;
+                    dmg = 15 + willBonus * 2;
                     break;
                 case 4:
-                    dmg = 34;
+                    dmg = 20 + willBonus * 5 / 2;
                     break;
                 case 5:
-                    dmg = 43;
+                    dmg = 25 + willBonus * 3;
                     break;
             }
 
@@ -82,9 +84,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock1, PerkType.ThrowRock)
                 .Name("Throw Rock I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 12f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(4)
+                .RequirementFP(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -97,9 +100,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock2, PerkType.ThrowRock)
                 .Name("Throw Rock II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 12f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(5)
+                .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -112,9 +116,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock3, PerkType.ThrowRock)
                 .Name("Throw Rock III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 12f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(6)
+                .RequirementFP(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -127,9 +132,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock4, PerkType.ThrowRock)
                 .Name("Throw Rock IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 12f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
-                .RequirementFP(7)
+                .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
@@ -141,9 +147,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ThrowRock5, PerkType.ThrowRock)
                 .Name("Throw Rock V")
                 .Level(5)
-                .HasRecastDelay(RecastGroup.ThrowRock, 30f)
+                .HasRecastDelay(RecastGroup.ThrowRock, 12f)
+                .HasActivationDelay(2f)
                 .HasMaxRange(40.0f)
-                .RequirementFP(8)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)

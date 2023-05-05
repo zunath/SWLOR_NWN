@@ -406,6 +406,59 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     SendMessageToPC(user, "Local string set: " + variableName + " = " + value);
                 });
+
+            _builder.Create("tptag")
+                .Description("Sets a local tag on a target Teleport Object placeable.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Missing arguments. Format should be: /TPTag <VALUE>. Example: /TPTag DUNGEON_ENTRANCE";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (GetResRef(target) != "tele_obj")
+                    {
+                        SendMessageToPC(user, "This command can only be used on the Teleport Object placeable.");
+                    }
+                    else
+                    {
+                        SetTag(target, args[0]);
+
+                        SendMessageToPC(user, "Tag set to: " + args[0] + ".");
+                    }
+                });
+
+            _builder.Create("tpdest")
+                .Description("Changes the destination of a selected Teleport Object placeable to point toward a given waypoint or placeable tag.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Missing arguments. Format should be: /destination <VALUE>. Example: /destination EventEntrance";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (GetResRef(target) != "tele_obj")
+                    {
+                        SendMessageToPC(user, "Target is invalid. Please target a Teleport Object placeable.");
+                    }
+                    else
+                    {
+                        SetLocalString(target, "DESTINATION", args[0]);
+                        SendMessageToPC(user, "Destination tag set to " + args[0] + ".");
+                    }
+                }); 
         }
 
         private void SetPortrait()

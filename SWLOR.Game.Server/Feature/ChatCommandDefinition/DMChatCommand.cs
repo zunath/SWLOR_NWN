@@ -434,8 +434,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
 
-            _builder.Create("destination")
-                .Description("Sets the DESTINATION localstring to the given value on a target.")
+            _builder.Create("tpdest")
+                .Description("Changes the destination of a selected Teleport Object placeable to point toward a given waypoint or placeable tag.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
                 .Validate((user, args) =>
@@ -455,15 +455,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else
                     {
-                        SetEventScript(target, EventScript.Placeable_OnUsed, "teleport");
                         SetLocalString(target, "DESTINATION", args[0]);
-                        SendMessageToPC(user, "Applied teleport script to object. Destination tag set to " + args[0] + ".");
+                        SendMessageToPC(user, "Destination tag set to " + args[0] + ".");
                     }
                 }); 
         }
 
-            private void SetPortrait()
-            {
+        private void SetPortrait()
+        {
             _builder.Create("setportrait")
                 .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)

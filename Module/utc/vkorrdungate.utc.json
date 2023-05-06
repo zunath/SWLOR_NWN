@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 70.0
+    "value": 73.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1600
+    "value": 1680
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -340,11 +340,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1600
+    "value": 1680
   },
   "Int": {
     "type": "byte",
-    "value": 36
+    "value": 50
   },
   "Interruptable": {
     "type": "byte",

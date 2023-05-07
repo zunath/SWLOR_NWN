@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         defenderStat,
                         0);
 
-                    var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator, BodyNode.Hand);
-                    var elecChain = EffectBeam(VisualEffect.Vfx_Beam_Lightning, creature, BodyNode.Chest);
+                    var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
+                    var elecBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
                     var dTarget = creature;
 
                     AssignCommand(activator, () =>
@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         PlaySound("frc_lghtning");
                         ActionPlayAnimation(Animation.CastOutAnimation, 1.0f, 3.0f);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), dTarget);
-                        ApplyEffectToObject(DurationType.Temporary, elecBeam, dTarget, 3.0f);
+                        ApplyEffectToObject(DurationType.Temporary, elecBeam, dTarget, 2.5f);
+                        ApplyEffectToObject(DurationType.Instant, elecBurst, dTarget);
                     });
 
                     CombatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);

@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = baseRecovery + moduleBonus * 2;
                     Space.RestoreHull(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {baseRecovery} hull HP to {GetName(target)}'s ship.");
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
 

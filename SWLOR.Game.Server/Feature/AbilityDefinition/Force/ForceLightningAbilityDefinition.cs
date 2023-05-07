@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count <= 5)
             {
-                if (GetIsReactionTypeHostile(creature, activator))
+                if (GetIsReactionTypeHostile(creature, activator) && GetIsDead(creature) == false)
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
                     var defense = Stat.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);

@@ -56,8 +56,13 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsObjectValid(waypoint))
             {
-                SendMessageToPC(user, "Cannot locate waypoint. Inform an admin this teleporter is broken.");
-                return;
+                waypoint = GetObjectByTag(destination);
+
+                if (!GetIsObjectValid(waypoint))
+                {
+                    SendMessageToPC(user, "Cannot locate waypoint. Inform an admin this teleporter is broken.");
+                    return;
+                }
             }
 
             var location = GetLocation(waypoint);

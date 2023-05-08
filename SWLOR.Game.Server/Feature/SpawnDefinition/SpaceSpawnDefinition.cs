@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TatooineOrbit();
             KorribanOrbit();
             DathomirOrbit();
+            DantooineOrbit();
 
             return _builder.Build();
         }
@@ -327,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DathomirOrbit()
         {
             _builder.Create("SPACE_DATHOMIR_ORBIT", "Space - Dathomir Orbit")
-                
+
                 .AddSpawn(ObjectType.Creature, "pirate_drake")
                 .WithFrequency(12500)
                 .RandomlyWalks()
@@ -377,6 +378,63 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+        }
+
+        private void DantooineOrbit()
+        {
+               _builder.Create("SPACE_DANTOOINE_ORBIT", "Space - Dantooine Orbit")
+
+                .AddSpawn(ObjectType.Creature, "pirate_drake")
+                .WithFrequency(12500)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_borealis")
+                .WithFrequency(15000)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "pirate_eleyna")
+                .WithFrequency(15000)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_corvette")
+                .WithFrequency(200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_frigate")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_cruiser")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_hvycrui")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_btlcrui")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_btlship")
+                .WithFrequency(3)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cap_dread")
+                .WithFrequency(1)
+                .RandomlyWalks()
+                .ReturnsHome();
+
         }
     }
 }

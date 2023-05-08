@@ -10134,6 +10134,98 @@
               "__struct_id": 0,
               "ID": {
                 "type": "byte",
+                "value": 150
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Experiment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "colicoidexp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malfunctioning Patrol Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malsecdroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malfunctioning Probe Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malspiderdroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mynock"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mynock"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859853
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
                 "value": 157
               },
               "LIST": {
@@ -10227,7 +10319,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hive kinrath"
+                      "value": "Hive Kinrath"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -10334,98 +10426,6 @@
               "STRREF": {
                 "type": "dword",
                 "value": 16778365
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 150
-              },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Colicoid Experiment"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "colicoidexp"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Malfunctioning Patrol Droid"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "malsecdroid"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Malfunctioning Probe Droid"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "malspiderdroid"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mynock"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "mynock"
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859853
               }
             },
             {
@@ -10777,7 +10777,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 84.0
+                      "value": 60.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10796,7 +10796,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 71.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10948,7 +10948,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 145.0
+                      "value": 100.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10967,7 +10967,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10980,25 +10980,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunmarauder"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 55.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Sorceress"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vkorrdunsorc"
                     }
                   },
                   {
@@ -11043,7 +11024,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 102.0
+                      "value": 86.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -11062,7 +11043,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 94.0
+                      "value": 89.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -11081,7 +11062,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 73.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",

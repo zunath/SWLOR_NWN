@@ -223,6 +223,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_835", "sea_bass_croute", 1, 4);
             BuildItemTask(builder, "agr_tsk_836", "shimm_broth", 1, 4);
             BuildItemTask(builder, "agr_tsk_837", "rancid_broth", 1, 4);
+            BuildItemTask(builder, "agr_tsk_838", "dan_carrotcake", 1, 4);
+            BuildItemTask(builder, "agr_tsk_839", "munch_fungusb", 1, 4);
+            BuildItemTask(builder, "agr_tsk_840", "dan_flapjack", 1, 4);
 
             return builder.Build();
         }

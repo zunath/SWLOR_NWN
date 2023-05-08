@@ -151,6 +151,25 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DathomirRuinsBaseMap = 68,
         [KeyItem(KeyItemCategoryType.Maps, "Dathomir - Tribes Village Map", true, "Map of the Tribes Village on Dathomir.")]
         DathomirTribeVillageMap = 69,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine Orbit Map", true, "Map of the space surrounding Dantooine.")]
+        DantooineOrbitMap = 70,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Lake Map", true, "Map of the Lake on Dantooine.")]
+        DantooineLakeMap = 71,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Kinrath Cave Map", true, "Map of the Kinrath Tunnels on Dantooine.")]
+        DantooineKinrathMap = 72,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Tribal Map", true, "Map of the South Plains Tribes on Dantooine.")]
+        DantooineTribalMap = 73,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Forsaken Jungles Map", true, "Map of the Forsaken Jungles Caverns on Dantooine.")]
+        DantooineForsakenJungleMap = 74,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Mountain Jungles Map", true, "Map of the Mountain Jungles on Dantooine.")]
+        DantooineMountainJunglesMap = 75,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Crystal Cave Map", true, "Map of the Crystal Cave on Dantooine.")]
+        DantooineCrystalCaveMap = 76,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Abandoned Warehouse Map", true, "Map of the Abandoned Warehouse Base on Dantooine.")]
+        DantooineWarehouseMap = 77,
+        [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Canyon River Map", true, "Map of the Canyon Rivers on Dantooine.")]
+        DantooineCanyonRiverMap = 78,
     }
 
     public class KeyItemAttribute : Attribute

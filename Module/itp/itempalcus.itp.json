@@ -2237,6 +2237,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Carapace Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_robes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chaos Breastplate"
                     },
                     "RESREF": {
@@ -3204,6 +3237,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Headdress"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_headdress"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_helmet"
                     }
                   },
                   {
@@ -6356,6 +6422,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Hive Broodmother"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vhivebroodmother"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Tunneler Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qiontunnelerbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Tiger Bite"
                     },
                     "RESREF": {
@@ -6740,6 +6828,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "droidclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Bug Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hivebugs001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Slug Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionhiveslugatt"
                     }
                   },
                   {
@@ -7559,6 +7669,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Byysk Guardian Shield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_shield002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Autoblaster"
                     },
                     "RESREF": {
@@ -7575,6 +7696,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunautobolt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Chieftain Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbyyskchiefsw001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Guardian Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbyyskguardsword"
                     }
                   },
                   {
@@ -7767,6 +7910,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bolskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Guardian Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hu_byyskgua_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Shaman Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hu_byyskshaman01"
                     }
                   },
                   {
@@ -8416,6 +8581,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "purbole_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Bug Swarm Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_bugswarmhi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Broodmother Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbroodmother_001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Slug Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hiveslug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Tunneler Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qiontunnel001"
                     }
                   },
                   {
@@ -13899,6 +14108,39 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Carapace Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Shoes"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_shoes"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Chaos Leggings"
                           },
                           "RESREF": {
@@ -14712,6 +14954,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_bracer"
                           }
                         },
                         {
@@ -16042,6 +16295,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "agent_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_wraps"
                           }
                         },
                         {
@@ -45819,6 +46094,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Chieftain's Chamber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_shamankey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Outer Hive"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_chieftainke"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Shaman's Chamber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_championkey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jedi Knight ID Codes"
                     },
                     "RESREF": {
@@ -50484,6 +50792,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Byysk Shaman's Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdhutbyyskshaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Elk's Antler"
                     },
                     "RESREF": {
@@ -51581,6 +51900,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chiro Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chi_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Rifle"
                           },
                           "RESREF": {
@@ -51873,6 +52203,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cer_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "chi_shuriken"
                     }
                   },
                   {

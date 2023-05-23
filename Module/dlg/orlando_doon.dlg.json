@@ -240,7 +240,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Eh, let's just say me an' them Mandalorians don't get along too well. If yer headed tha' way, how's about taking a few of them out fo' me?"
+            "0": "Eh, let's just say me an' them Mandalorians don't get along too well. Word is that one of them clan's been setting up a base nearby, an' they have been raiding refugee convoys and seizing our supplies. Karkin' dull-helmets. If yer headed tha' way, how's about taking a few of them out fo' me?"
           }
         }
       },
@@ -772,7 +772,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 207
+    "value": 233
   },
   "PreventZoomIn": {
     "type": "byte",

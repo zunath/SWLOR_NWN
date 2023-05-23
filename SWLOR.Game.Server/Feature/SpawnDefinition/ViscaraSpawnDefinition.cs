@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DeepMountainRaivors();
             CrystalSpiders();
             Swamplands();
+            Veles();
             VelesSewers();
             TwilightPraxeum();
 
@@ -210,6 +211,76 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
         }
+
+        private void Veles()
+        {
+            _builder.Create("VELES_COLONIST")
+                .AddSpawn(ObjectType.Creature, "colonistbith")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistbothan")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistbothan2")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistduro")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistgran")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistkeldor")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistmoncala")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistrodian")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistrodian2")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisttrando")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisttrando2")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisttwilek")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisttwilek3")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonistwq")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisthuman1")
+                .WithFrequency(20)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "colonisthuman2")
+                .WithFrequency(20)
+                .RandomlyWalks();
+        }
+
+
 
         private void VelesSewers()
         {

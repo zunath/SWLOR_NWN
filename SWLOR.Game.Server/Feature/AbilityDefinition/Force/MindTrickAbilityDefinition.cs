@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            Enmity.ModifyEnmity(activator, target, 190);
+            Enmity.ModifyEnmity(activator, target, 400);
         }
 
         private static void MindTrick1(AbilityBuilder builder)

@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
             else { Stat.ReduceFP(activator, 2 + tier); }
 
-            Enmity.ModifyEnmity(activator, target, 300 + damage);
+            Enmity.ModifyEnmity(activator, target, 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

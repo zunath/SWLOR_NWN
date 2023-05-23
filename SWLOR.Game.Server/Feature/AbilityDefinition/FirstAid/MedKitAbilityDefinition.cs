@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);
 
-            Enmity.ModifyEnmityOnAll(activator, 250 + amount);
+            Enmity.ModifyEnmityOnAll(activator, 150 + amount);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
             if (CombatPoint.GetTaggedCreatureCount(activator) == 0)
             {

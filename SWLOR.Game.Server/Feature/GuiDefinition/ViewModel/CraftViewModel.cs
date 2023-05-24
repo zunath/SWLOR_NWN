@@ -94,8 +94,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private bool _isInAutoCraftMode;
-
         public string ControlTotal
         {
             get => Get<string>();
@@ -140,12 +138,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Enhancement2Tooltip
         {
             get => Get<string>();
-            set => Set(value);
-        }
-
-        public bool IsAutoCraftEnabled
-        {
-            get => Get<bool>();
             set => Set(value);
         }
 
@@ -243,12 +235,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string StatusText
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string AutoCraft
         {
             get => Get<string>();
             set => Set(value);
@@ -457,11 +443,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshRecipeStats()
         {
-            var autoCraftChance = CalculateAutoCraftChance();
-            AutoCraft = IsAutoCraftEnabled
-                ? $"Auto Craft [{autoCraftChance:F}%]"
-                : "Auto Craft";
-
             CP = $"CP: {_cp}/{_maxCP}";
 
             DurabilityPercentage = (float)_durability / (float)_maxDurability;
@@ -844,7 +825,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsInCraftMode = false;
             IsInSetupMode = true;
-            IsAutoCraftEnabled = dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             IsClosable = true;
             RefreshYourSkill(dbPlayer);
 
@@ -886,7 +866,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsInCraftMode = true;
             IsInSetupMode = false;
-            IsAutoCraftEnabled = false;
             IsClosable = false;
 
             IsRapidSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _rapidSynthesisPerk) > 0;
@@ -913,9 +892,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsInCraftMode = false;
             IsInSetupMode = false;
-            IsAutoCraftEnabled = false;
             IsClosable = false;
-            _isInAutoCraftMode = true;
 
             ApplyImmobility();
         }
@@ -944,50 +921,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return chance;
         }
-
-        public Action OnClickAutoCraft() => () =>
-        {
-            void ProcessAutoCraft()
-            {
-                _progress += (int)(_maxProgress * 0.1f);
-                RefreshRecipeStats();
-
-                if (_progress >= _maxProgress)
-                {
-                    var chance = CalculateAutoCraftChance();
-
-                    // Auto craft is based solely on the player's calculated craft chance
-                    if (Random.NextFloat(1f, 100f) <= chance)
-                    {
-                        ProcessSuccess();
-                        _isInAutoCraftMode = false;
-                    }
-                    else
-                    {
-                        ProcessFailure();
-                        _isInAutoCraftMode = false;
-                    }
-                }
-                else
-                {
-                    DelayCommand(1.0f, ProcessAutoCraft);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(_enhancement1) ||
-                !string.IsNullOrWhiteSpace(_enhancement2))
-            {
-                StatusText = $"Enhancements cannot be installed with auto-craft.";
-                StatusColor = GuiColor.Red;
-                return;
-            }
-
-            if (ProcessComponents())
-            {
-                SwitchToAutoCraftMode();
-                DelayCommand(1.0f, ProcessAutoCraft);
-            }
-        };
 
         private bool ProcessComponents()
         {
@@ -1081,7 +1014,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessSuccess()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
-            if (!IsInCraftMode && !_isInAutoCraftMode)
+            if (!IsInCraftMode)
                 return;
 
             var playerId = GetObjectUUID(Player);

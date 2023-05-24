@@ -99,13 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddButton()
-                            .BindText(model => model.AutoCraft)
-                            .BindIsEnabled(model => model.IsAutoCraftEnabled)
-                            .BindOnClicked(model => model.OnClickAutoCraft())
-                            .SetHeight(35f);
-
-                        row.AddButton()
-                            .SetText("Manual Craft")
+                            .SetText("Craft")
                             .BindOnClicked(model => model.OnClickManualCraft())
                             .BindIsEnabled(model => model.IsInSetupMode)
                             .SetHeight(35f);

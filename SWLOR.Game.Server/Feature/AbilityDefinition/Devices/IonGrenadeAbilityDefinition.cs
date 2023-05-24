@@ -71,8 +71,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
                 .Name("Ion Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.IonGrenade, 30f)
-                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.IonGrenade, 12f)
+                .HasActivationDelay(2f)
+                .RequirementStamina(1)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
+                .HasMaxRange(15f)
+                .HasCustomValidation(ExplosiveValidation)
+                .HasImpactAction((activator, _, _, location) =>
+                {
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
+                    {
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var race = GetRacialType(target);
+                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
+                        {
+                            perBonus *= 3 / 2;
+                        }
+                        Impact(activator, target, perBonus, -1);
+                    });
+                });
+        }
+
+        private void IonGrenade2()
+        {
+            _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+                .Name("Ion Grenade II")
+                .Level(2)
+                .HasRecastDelay(RecastGroup.IonGrenade, 12f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(2)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -83,18 +111,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 4, -1);
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var race = GetRacialType(target);
+                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
+                        {
+                            perBonus *= 3 / 2;
+                        }
+                        var perDMG = 15 + (perBonus * 3 / 2);
+                        Impact(activator, target, perDMG, 10);
                     });
                 });
         }
 
-        private void IonGrenade2()
+        private void IonGrenade3()
         {
-            _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
-                .Name("Ion Grenade II")
-                .Level(2)
-                .HasRecastDelay(RecastGroup.IonGrenade, 30f)
-                .HasActivationDelay(1f)
+            _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
+                .Name("Ion Grenade III")
+                .Level(3)
+                .HasRecastDelay(RecastGroup.IonGrenade, 12f)
+                .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
@@ -105,28 +140,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 8, 10);
-                    });
-                });
-        }
-
-        private void IonGrenade3()
-        {
-            _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
-                .Name("Ion Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.IonGrenade, 30f)
-                .HasActivationDelay(1f)
-                .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
-                    {
+                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
+                        var race = GetRacialType(target);
+                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
+                        {
+                            perBonus *= 3 / 2;
+                        }
+                        var perDMG = 30 + (perBonus * 2);
                         Impact(activator, target, 14, 14);
                     });
                 });

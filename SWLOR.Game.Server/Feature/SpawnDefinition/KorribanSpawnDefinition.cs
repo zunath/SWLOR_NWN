@@ -141,6 +141,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vkorrdunmarauder")
                 .RandomlyWalks()
                 .WithFrequency(1)
+                .RespawnDelay(5)
+
+                .AddSpawn(ObjectType.Creature, "vkorrdunsorc")
+                .RandomlyWalks()
+                .WithFrequency(1)
                 .RespawnDelay(5);
 
             _builder.Create("KorribanDungeonTrooper")
@@ -156,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             _builder.Create("KorribanDungeonWarform")
                 .AddSpawn(ObjectType.Creature, "vkorrdunwarform")
-                .WithFrequency(1)
+                .WithFrequency(2)
                 .RespawnDelay(20);
 
             _builder.Create("KorribanDungeonInquisitor")
@@ -168,7 +173,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vkorrdundroidhvy")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(10);
+                .RespawnDelay(10)
+
+                .AddSpawn(ObjectType.Creature, "vkorrdunmarauder")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(5)
+
+                .AddSpawn(ObjectType.Creature, "vkorrdunsorc")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(5);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Valley();
             Wastes();
             FrozenCave();
+            QionHiveResources();
 
             return _builder.Build();
         }
@@ -101,7 +102,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(40)
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);
+        }
 
+        private void QionHiveResources()
+        {
+            _builder.Create("RESOURCES_HUTLAR_DUNGEON_BYYSK")
+                .AddSpawn(ObjectType.Placeable, "qion_byyskchest")
+                .WithFrequency(1);
+
+            _builder.Create("RESOURCES_HUTLAR_DUNGEON_HIVE")
+                .AddSpawn(ObjectType.Placeable, "qion_hivechest")
+                .WithFrequency(1);
         }
     }
 }

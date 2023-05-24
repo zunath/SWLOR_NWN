@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cara_wraps", 1)
                 .AddItem("dlrg005s", 1);
 
-            _builder.Create("QIONHIVE_BROODMOTHER_RESOURCE")
+            _builder.Create("QIONHIVE_BROODMOTHER")
                 .AddItem("chiro_shard", 1);
 
             _builder.Create("QIONHIVE_CREDITS")

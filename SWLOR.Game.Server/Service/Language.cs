@@ -279,6 +279,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
                         new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
                         new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Nautila", SkillType.Nautila, new []{ "nautilan" }),
                         new LanguageCommand("Rodese", SkillType.Rodese, new []{"rodese", "rodian"}),
                         new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
                         new LanguageCommand("Togruti", SkillType.Togruti, new []{"togruti"}),

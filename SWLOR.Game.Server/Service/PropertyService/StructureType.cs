@@ -1538,6 +1538,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0)]
         DroidAssemblyTerminal = 269,
 
+        [Structure("Beast Stable Terminal",
+            "bst_stables_term",
+            "",
+            true,
+            0)]
+        BeastStableTerminal = 270,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",

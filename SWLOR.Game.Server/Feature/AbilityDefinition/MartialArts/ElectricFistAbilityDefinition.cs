@@ -69,7 +69,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
@@ -90,6 +89,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             {
                 StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
             }
+
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void ElectricFist1(AbilityBuilder builder)

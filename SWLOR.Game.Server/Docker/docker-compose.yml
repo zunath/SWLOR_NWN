@@ -22,7 +22,7 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
-        image: swlor/server:latest
+        image: swlor/server:8193.35.40
         env_file: ${PWD-.}/swlor.env
         links:
             - "redis:redis"

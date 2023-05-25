@@ -167,38 +167,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
         }
 
-        // Set a script with optional data that runs when an effect expires
-        // Only works for TEMPORARY and PERMANENT effects applied to an object
-        // Note: OBJECT_SELF in the script is the object the effect is applied to
-        public static Core.Effect SetEffectExpiredScript(Core.Effect effect, string script, string data = "")
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectExpiredScript");
-            NWNCore.NativeFunctions.nwnxPushString(data);
-            NWNCore.NativeFunctions.nwnxPushString(script);
-            NWNCore.NativeFunctions.nwnxPushEffect(effect.Handle);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
-        }
-
-        // Get the data set with NWNX_Effect_SetEffectExpiredScript()
-        // THIS SHOULD ONLY BE CALLED FROM WITHIN A SCRIPT THAT WAS EXECUTED BY SetEffectExpiredScript()    
-        public static string GetEffectExpiredData()
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredData");
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopString();
-        }
-
-        // Get the effect creator of NWNX_Effect_SetEffectExpiredScript()
-        // THIS SHOULD ONLY BE CALLED FROM WITHIN A SCRIPT THAT WAS EXECUTED BY NWNX_Effect_SetEffectExpiredScript()
-        public static uint GetEffectExpiredCreator()
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredCreator");
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopObject();
-        }
-
-
         /// @brief replace an already applied effect on an object
         /// Only duration, subtype, tag and spell related fields can be overwritten.
         /// @note eNew and eOld need to have the same type.

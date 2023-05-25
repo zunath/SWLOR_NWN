@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
 
             // Cache 2da values that we need.  Create a new array for each row, otherwise they
             // end up pointing to the same array object (and get overwritten).
-            for (var row = 0; row < UtilPlugin.Get2DARowCount("baseitems"); row++)
+            for (var row = 0; row < Get2DARowCount("baseitems"); row++)
             {
                 var threatString = Get2DAString("baseitems", "CritThreat", row);
                 var multString = Get2DAString("baseitems", "CritHitMult", row);

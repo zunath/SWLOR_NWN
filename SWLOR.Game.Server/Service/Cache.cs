@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
         private static void CachePortraitsById()
         {
             const string Portraits2DA = "portraits";
-            var twoDACount = UtilPlugin.Get2DARowCount(Portraits2DA);
+            var twoDACount = Get2DARowCount(Portraits2DA);
             var internalId = 1;
 
             for (var row = 0; row < twoDACount; row++)

@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Service
 
             SetCreatureAppearanceType(beast, beastDetail.Appearance);
             SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
-            CreaturePlugin.SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
+            SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
             
             ApplyStats(beast);
 

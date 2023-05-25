@@ -1614,5 +1614,78 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(959);
             return VM.StackPopStruct((int)EngineStructure.Effect);
         }
+
+        /// <summary>
+        /// Set the subtype of eEffect to Unyielding and return eEffect.
+        /// (Effects default to magical if the subtype is not set)
+        /// Unyielding effects are not removed by resting, death or dispel magic, only by RemoveEffect().
+        /// Note: effects that modify state, Stunned/Knockdown/Deaf etc, WILL be removed on death.
+        /// </summary>
+        public static Effect UnyieldingEffect(Effect eEffect)
+        {
+            VM.StackPush(eEffect);
+            VM.Call(1036);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Set eEffect to ignore immunities and return eEffect.
+        /// </summary>
+        public static Effect IgnoreEffectImmunity(Effect eEffect)
+        {
+            VM.StackPush(eEffect);
+            VM.Call(1037);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Create a Pacified effect, making the creature unable to attack anyone
+        /// </summary>
+        public static Effect EffectPacified()
+        {
+            VM.Call(1089);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Returns the given effects Link ID. There is no guarantees about this identifier other than
+        /// it is unique and the same for all effects linked to it.
+        /// </summary>
+        public static string GetEffectLinkId(Effect eEffect)
+        {
+            VM.StackPush(eEffect);
+            VM.Call(1096);
+            return VM.StackPopString();
+        }
+
+        /// <summary>
+        /// Creates a bonus feat effect. These act like the Bonus Feat item property,
+        /// and do not work as feat prerequisites for levelup purposes.
+        /// - nFeat: FEAT_*
+        /// </summary>
+        public static Effect EffectBonusFeat(int nFeat)
+        {
+            VM.StackPush(nFeat);
+            VM.Call(1107);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Provides immunity to the effects of EffectTimeStop which allows actions during other creatures time stop effects
+        /// </summary>
+        public static Effect EffectTimeStopImmunity()
+        {
+            VM.Call(1112);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Forces the creature to always walk
+        /// </summary>
+        public static Effect EffectForceWalk()
+        {
+            VM.Call(1117);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
+        }
     }
 }

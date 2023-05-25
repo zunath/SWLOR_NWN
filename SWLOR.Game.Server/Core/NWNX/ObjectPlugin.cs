@@ -147,16 +147,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
-        // Return true if an item of baseitem type can fit in object's inventory
-        public static int CheckFit(uint obj, int baseitem)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CheckFit");
-            NWNCore.NativeFunctions.nwnxPushInt(baseitem);
-            NWNCore.NativeFunctions.nwnxPushObject(obj);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
         // Return damage immunity (in percent) against given damage type
         // Use DAMAGE_TYPE_* constants for damageType
         public static int GetDamageImmunity(uint obj, int damageType)
@@ -237,26 +227,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTriggerGeometry");
             NWNCore.NativeFunctions.nwnxPushString(sGeometry);
             NWNCore.NativeFunctions.nwnxPushObject(oTrigger);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
-        // Add an effect to an object that displays an icon and has no other effect.
-        // See effecticons.2da for a list of possible effect icons.
-        public static void AddIconEffect(uint obj, int nIcon, float fDuration = 0f)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddIconEffect");
-            NWNCore.NativeFunctions.nwnxPushFloat(fDuration);
-            NWNCore.NativeFunctions.nwnxPushInt(nIcon);
-            NWNCore.NativeFunctions.nwnxPushObject(obj);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
-        // Remove an icon effect from an object that was added by the NWNX_Object_AddIconEffect() function.
-        public static void RemoveIconEffect(uint obj, int nIcon)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveIconEffect");
-            NWNCore.NativeFunctions.nwnxPushInt(nIcon);
-            NWNCore.NativeFunctions.nwnxPushObject(obj);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 

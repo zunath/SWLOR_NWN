@@ -38,5 +38,20 @@ namespace SWLOR.Game.Server.Core.NWScript
             return VM.StackPopString();
         }
 
+        /// <summary>
+        /// Get the contents of a file as string, as seen by the server's resman.
+        /// Note: If the file contains binary data it will return data up to the first null byte.
+        /// - nResType: a RESTYPE_* constant.
+        /// Returns "" if the file does not exist.
+        /// </summary>
+        public static string ResManGetFileContents(string sResRef, int nResType)
+        {
+            VM.StackPush(nResType);
+            VM.StackPush(sResRef);
+            VM.Call(1071);
+
+            return VM.StackPopString();
+        }
+
     }
 }

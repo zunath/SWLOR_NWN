@@ -18,7 +18,9 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN17CNWSCreatureStats18GetFortSavingThrowEi), (IntPtr)pHook, -1000001);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi"),
+                (IntPtr)pHook, -1000000);
             _callOriginal = Marshal.GetDelegateForFunctionPointer<GetFortitudeSavingThrowHook>(hookPtr);
         }
 

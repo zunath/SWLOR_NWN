@@ -225,52 +225,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
-        // Gets the memorized spell of the provided creature for the provided class, level, and index.
-        // Index bounds: 0 <= index < GetMemorizedSpellCountByLevel(creature, class, level).
-        public static MemorizedSpellSlot GetMemorizedSpell(uint creature, ClassType classId, int level, int index)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMemorisedSpell");
-            var spell = new MemorizedSpellSlot();
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            spell.Domain = NWNCore.NativeFunctions.nwnxPopInt();
-            spell.Meta = NWNCore.NativeFunctions.nwnxPopInt();
-            spell.Ready = NWNCore.NativeFunctions.nwnxPopInt();
-            spell.ID = NWNCore.NativeFunctions.nwnxPopInt();
-            return spell;
-        }
-
-        // Gets the count of memorized spells of the provided classId and level belonging to the provided creature.
-        public static int GetMemorizedSpellCountByLevel(uint creature, ClassType classId, int level)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMemorisedSpellCountByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
-        // Sets the memorized spell of the provided creature for the provided class, level, and index.
-        // Index bounds: 0 <= index < GetMemorizedSpellCountByLevel(creature, class, level).
-        public static void SetMemorizedSpell(uint creature, ClassType classId, int level, int index,
-            MemorizedSpellSlot spell)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMemorisedSpell");
-            NWNCore.NativeFunctions.nwnxPushInt(spell.ID);
-            NWNCore.NativeFunctions.nwnxPushInt(spell.Ready);
-            NWNCore.NativeFunctions.nwnxPushInt(spell.Meta);
-            NWNCore.NativeFunctions.nwnxPushInt(spell.Domain);
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
         // Gets the remaining spell slots (innate casting) for the provided creature for the provided classId and level.
         public static int GetRemainingSpellSlots(uint creature, ClassType classId, int level)
         {
@@ -291,28 +245,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxPushInt((int)classId);
             NWNCore.NativeFunctions.nwnxPushObject(creature);
             NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
-        // Get the spell at index in level in creature's spellbook from class.
-        public static int GetKnownSpell(uint creature, ClassType classId, int level, int index)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetKnownSpell");
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
-        public static int GetKnownSpellCount(uint creature, ClassType classId, int level)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetKnownSpellCount");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Remove a spell from creature's spellbook for class.
@@ -413,24 +345,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
-        // Get the soundset index for creature.
-        public static int GetSoundset(uint creature)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSoundset");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
-        // Set the soundset index for creature.
-        public static void SetSoundset(uint creature, int soundset)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSoundset");
-            NWNCore.NativeFunctions.nwnxPushInt(soundset);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
         // Set the base ranks in a skill for creature
         public static void SetSkillRank(uint creature, NWNSkillType skill, int rank)
         {
@@ -483,15 +397,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
-        // Sets the creature gender
-        public static void SetGender(uint creature, Gender gender)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetGender");
-            NWNCore.NativeFunctions.nwnxPushInt((int)gender);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
         // Restore all creature feat uses
         public static void RestoreFeats(uint creature)
         {
@@ -504,16 +409,6 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void RestoreSpecialAbilities(uint creature)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreSpecialAbilities");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-        }
-
-        // Restore all creature spells per day for given level.
-        // If level is -1, all spells are restored
-        public static void RestoreSpells(uint creature, int level)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreSpells");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
             NWNCore.NativeFunctions.nwnxPushObject(creature);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
@@ -916,21 +811,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxCallFunction();
 
             return NWNCore.NativeFunctions.nwnxPopObject();
-        }
-
-
-        /// @brief Set whether an effect icon is flashing or not.
-        /// @param oCreature The target creature.
-        /// @param nIconId The icon id, see effecticons.2da.
-        /// @param bFlashing TRUE for flashing, FALSE for not flashing.
-        public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectIconFlashing");
-
-            NWNCore.NativeFunctions.nwnxPushInt(bFlashing ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nIconId);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 

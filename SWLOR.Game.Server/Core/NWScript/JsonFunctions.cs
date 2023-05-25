@@ -460,5 +460,152 @@ namespace SWLOR.Game.Server.Core.NWScript
             return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
+        /// <summary>
+        /// Returns a modified copy of jArray with the value order changed according to nTransform:
+        /// JSON_ARRAY_SORT_ASCENDING, JSON_ARRAY_SORT_DESCENDING
+        ///    Sorting is dependent on the type and follows json standards (.e.g. 99 < "100").
+        /// JSON_ARRAY_SHUFFLE
+        ///   Randomises the order of elements.
+        /// JSON_ARRAY_REVERSE
+        ///   Reverses the array.
+        /// JSON_ARRAY_UNIQUE
+        ///   Returns a modified copy of jArray with duplicate values removed.
+        ///   Coercable but different types are not considered equal (e.g. 99 != "99"); int/float equivalence however applies: 4.0 == 4.
+        ///   Order is preserved.
+        /// JSON_ARRAY_COALESCE
+        ///   Returns the first non-null entry. Empty-ish values (e.g. "", 0) are not considered null, only the json scalar type.
+        /// </summary>
+
+        public static Json JsonArrayTransform(Json jArray, JsonArraySort nTransform)
+        {
+            VM.StackPush((int)nTransform);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(1030);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
+
+        /// <summary>
+        /// Returns the nth-matching index or key of jNeedle in jHaystack.
+        /// Supported haystacks: object, array
+        /// Ordering behaviour for objects is unspecified.
+        /// Return null when not found or on any error.
+        /// </summary>
+        public static Json JsonFind(
+            Json jHaystack, 
+            Json jNeedle, 
+            int nNth = 0,
+            JsonFind nConditional = Enum.JsonFind.Equal)
+        {
+            VM.StackPush((int)nConditional);
+            VM.StackPush(nNth);
+            VM.StackPush((int)EngineStructure.Json, jNeedle);
+            VM.StackPush((int)EngineStructure.Json, jHaystack);
+            VM.Call(1031);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
+
+        /// <summary>
+        /// Returns a copy of the range (nBeginIndex, nEndIndex) inclusive of jArray.
+        /// Negative nEndIndex values count from the other end.
+        /// Out-of-bound values are clamped to the array range.
+        /// Examples:
+        ///  json a = JsonParse("[0, 1, 2, 3, 4]");
+        ///  JsonArrayGetRange(a, 0, 1)    // => [0, 1]
+        ///  JsonArrayGetRange(a, 1, -1)   // => [1, 2, 3, 4]
+        ///  JsonArrayGetRange(a, 0, 4)    // => [0, 1, 2, 3, 4]
+        ///  JsonArrayGetRange(a, 0, 999)  // => [0, 1, 2, 3, 4]
+        ///  JsonArrayGetRange(a, 1, 0)    // => []
+        ///  JsonArrayGetRange(a, 1, 1)    // => [1]
+        /// Returns a null type on error, including type mismatches.
+        /// </summary>
+        public static Json JsonArrayGetRange(Json jArray, int nBeginIndex, int nEndIndex)
+        {
+            VM.StackPush((int)nEndIndex);
+            VM.StackPush(nBeginIndex);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(1032);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
+
+        /// <summary>
+        /// Returns the result of a set operation on two arrays.
+        /// Operations:
+        /// JSON_SET_SUBSET (v <= o):
+        ///   Returns true if every element in jValue is also in jOther.
+        /// JSON_SET_UNION (v | o):
+        ///   Returns a new array containing values from both sides.
+        /// JSON_SET_INTERSECT (v & o):
+        ///   Returns a new array containing only values common to both sides.
+        /// JSON_SET_DIFFERENCE (v - o):
+        ///   Returns a new array containing only values not in jOther.
+        /// JSON_SET_SYMMETRIC_DIFFERENCE (v ^ o):
+        ///   Returns a new array containing all elements present in either array, but not both.
+        /// </summary>
+        public static Json JsonSetOp(Json jValue, JsonSet nOp, Json jOther)
+        {
+            VM.StackPush((int)EngineStructure.Json, jOther);
+            VM.StackPush((int)nOp);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(1033);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
+
+        /// <summary>
+        /// Applies sRegExp on sValue, returning an array containing all matching groups.
+        /// * The regexp is not bounded by default (so /t/ will match "test").
+        /// * A matching result with always return a JSON_ARRAY with the full match as the first element.
+        /// * All matching groups will be returned as additional elements, depth-first.
+        /// * A non-matching result will return a empty JSON_ARRAY.
+        /// * If there was an error, the function will return JSON_NULL, with a error string filled in.
+        /// * nSyntaxFlags is a mask of REGEXP_*
+        /// * nMatchFlags is a mask of REGEXP_MATCH_* and REGEXP_FORMAT_*.
+        /// Examples:
+        /// * RegExpMatch("[", "test value")             -> null (error: "The expression contained mismatched [ and ].")
+        /// * RegExpMatch("nothing", "test value")       -> []
+        /// * RegExpMatch("^test", "test value")         -> ["test"]
+        /// * RegExpMatch("^(test) (.+)$", "test value") -> ["test value", "test", "value"]
+        /// </summary>
+        public static Json RegExpMatch(
+            string sRegExp, 
+            string sValue, 
+            RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript, 
+            RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
+        {
+            VM.StackPush((int)nMatchFlags);
+            VM.StackPush((int)nSyntaxFlags);
+            VM.StackPush(sValue);
+            VM.StackPush(sRegExp);
+            VM.Call(1068);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
+
+        /// <summary>
+        ///  Iterates sValue with sRegExp.
+        /// * Returns an array of arrays; where each sub-array contains first the full match and then all matched groups.
+        /// * Returns empty JSON_ARRAY if no matches are found.
+        /// * If there was an error, the function will return JSON_NULL, with a error string filled in.
+        /// * nSyntaxFlags is a mask of REGEXP_*
+        /// * nMatchFlags is a mask of REGEXP_MATCH_* and REGEXP_FORMAT_*.
+        /// Example: RegExpIterate("(\\d)(\\S+)", "1i 2am 3 4asentence"); -> [["1i", "1", "i"], ["2am", "2", "am"], ["4sentence", "4", "sentence"]]
+        /// </summary>
+        public static Json RegExpIterate(
+            string sRegExp, 
+            string sValue,
+            RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
+            RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
+        {
+            VM.StackPush((int)nMatchFlags);
+            VM.StackPush((int)nSyntaxFlags);
+            VM.StackPush(sValue);
+            VM.StackPush(sRegExp);
+            VM.Call(1069);
+
+            return VM.StackPopStruct((int)EngineStructure.Json);
+        }
     }
 }

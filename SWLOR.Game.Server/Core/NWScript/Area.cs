@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 
@@ -905,6 +906,86 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(vDirection);
             VM.StackPush(oArea);
             VM.Call(919);
+        }
+
+        /// <summary>
+        /// Gets the light color in the area specified.
+        /// nColorType specifies the color type returned.
+        ///    Valid values for nColorType are the AREA_LIGHT_COLOR_* values.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// </summary>
+        public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush(oArea);
+            VM.StackPush((int)nColorType);
+            VM.Call(1080);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Sets the light color in the area specified.
+        /// nColorType = AREA_LIGHT_COLOR_* specifies the color type.
+        /// nColor = FOG_COLOR_* specifies the color the fog is being set to.
+        /// The color can also be represented as a hex RGB number if specific color shades
+        /// are desired.
+        /// The format of a hex specified color would be 0xFFEEDD where
+        /// FF would represent the amount of red in the color
+        /// EE would represent the amount of green in the color
+        /// DD would represent the amount of blue in the color.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// If fFadeTime is above 0.0, it will fade to the new color in the amount of seconds specified. 
+        /// </summary>
+        public static void SetAreaLightColor(
+            AreaLightColorType nColorType, 
+            FogColor nColor, 
+            uint oArea = OBJECT_INVALID, 
+            float fFadeTime = 0.0f)
+        {
+            VM.StackPush(fFadeTime);
+            VM.StackPush(oArea);
+            VM.StackPush((int)nColor);
+            VM.StackPush((int)nColorType);
+            VM.Call(1081);
+        }
+
+        /// <summary>
+        /// Gets the light direction of origin in the area specified.
+        /// nLightType specifies whether the Moon or Sun light direction is returned.
+        ///    Valid values for nColorType are the AREA_LIGHT_DIRECTION_* values.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// </summary>
+        public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush((int)nLightType);
+            VM.StackPush(oArea);
+            VM.Call(1082);
+
+            return VM.StackPopVector();
+        }
+
+        /// <summary>
+        /// Sets the light direction of origin in the area specified.
+        /// nLightType = AREA_LIGHT_DIRECTION_* specifies the light type.
+        /// vDirection = specifies the direction of origin of the light type, i.e. the direction the sun/moon is in from the area.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// If fFadeTime is above 0.0, it will fade to the new color in the amount of seconds specified. 
+        /// </summary>
+        public static void SetAreaLightDirection(
+            AreaLightDirectionType nLightType, 
+            Vector3 vDirection, 
+            uint oArea = OBJECT_INVALID, 
+            float fFadeTime = 0.0f)
+        {
+            VM.StackPush(fFadeTime);
+            VM.StackPush(oArea);
+            VM.StackPush(vDirection);
+            VM.StackPush((int)nLightType);
+            VM.Call(1083);
         }
 
     }

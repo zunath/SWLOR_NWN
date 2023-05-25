@@ -36,12 +36,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Instant, EffectRegenerate(willRestore * 4, 24f), target);
                 targetBonus = willBonus * 4;
             }
-            var willHeal = baseAmount + targetBonus * 4 + Random.D10(targetBonus * 4);
+            var willHeal = baseAmount + targetBonus * 4 + Random.D10(targetBonus * 3);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            Enmity.ModifyEnmityOnAll(activator, 300 + (willHeal / 3));
+            Enmity.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 

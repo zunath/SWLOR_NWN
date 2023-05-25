@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = willBonus + Random.D2(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 80);
+                    Enmity.ModifyEnmityOnAll(source, 75);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 150);
+                    Enmity.ModifyEnmityOnAll(source, 125);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 200);
+                    Enmity.ModifyEnmityOnAll(source, 150);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 250);
+                    Enmity.ModifyEnmityOnAll(source, 175);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });

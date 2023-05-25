@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             });
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void CrossCut1(AbilityBuilder builder)

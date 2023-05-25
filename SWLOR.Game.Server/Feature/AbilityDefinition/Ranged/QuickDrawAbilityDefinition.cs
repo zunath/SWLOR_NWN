@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             AssignCommand(activator, () => ActionPlayAnimation(Animation.QuickDraw));
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void QuickDraw1(AbilityBuilder builder)

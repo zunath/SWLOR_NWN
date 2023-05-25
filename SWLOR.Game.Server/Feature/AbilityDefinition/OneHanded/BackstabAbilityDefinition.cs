@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void Backstab1(AbilityBuilder builder)

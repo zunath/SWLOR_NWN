@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
 
-                var enmity = level * 120 + damage + 6;
+                var enmity = level * 50 + damage + 6;
                 Enmity.ModifyEnmity(source, target, enmity);
                 CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
             }

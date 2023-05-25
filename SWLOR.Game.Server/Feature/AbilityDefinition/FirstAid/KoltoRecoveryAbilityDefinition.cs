@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 15);
 
-                    Enmity.ModifyEnmityOnAll(activator, 350);
+                    Enmity.ModifyEnmityOnAll(activator, 150);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 60);
 
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    Enmity.ModifyEnmityOnAll(activator, 300);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 100);
 
-                    Enmity.ModifyEnmityOnAll(activator, 750);
+                    Enmity.ModifyEnmityOnAll(activator, 450);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }

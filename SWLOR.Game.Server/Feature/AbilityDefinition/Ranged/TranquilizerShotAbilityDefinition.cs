@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         private void ApplyEffect(uint activator, uint target, int level, float duration)
         {
             var effectTag = $"StatusEffectType.Tranquilize";
-            var enmity = level * 1000;
+            var enmity = level * 500;
 
             var vfx = EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue);
             vfx = TagEffect(vfx, effectTag);

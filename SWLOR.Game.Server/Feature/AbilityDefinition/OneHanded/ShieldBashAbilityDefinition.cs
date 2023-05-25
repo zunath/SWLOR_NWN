@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 400 * level + damage);
         }
 
         private static void ShieldBash1(AbilityBuilder builder)

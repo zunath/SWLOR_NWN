@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            Enmity.ModifyEnmityOnAll(activator, 250 * level);
+            Enmity.ModifyEnmityOnAll(activator, 100 * level);
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             int attackerStat;

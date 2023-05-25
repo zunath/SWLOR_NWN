@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             }
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void PiercingToss1(AbilityBuilder builder)

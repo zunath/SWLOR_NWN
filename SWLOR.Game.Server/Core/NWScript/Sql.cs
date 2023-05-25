@@ -268,5 +268,16 @@ namespace SWLOR.Game.Server.Core.NWScript
             return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
+        /// <summary>
+        /// Reset the given sqlquery, readying it for re-execution after it has been stepped.
+        /// All existing binds are kept untouched, unless bClearBinds is TRUE.
+        /// This command only works on successfully-prepared queries that have not errored out.
+        /// </summary>
+        public static void SqlResetQuery(SQLQuery sqlQuery, bool bClearBinds = false)
+        {
+            VM.StackPush(bClearBinds ? 1 : 0);
+            VM.StackPush(sqlQuery);
+            VM.Call(1111);
+        }
     }
 }

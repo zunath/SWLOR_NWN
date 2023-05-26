@@ -13,21 +13,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            Mobility();
             Dash();
 
             return _builder.Build();
-        }
-
-        private void Mobility()
-        {
-            _builder.Create(PerkCategoryType.General, PerkType.Mobility)
-                .Name("Mobility")
-
-                .AddPerkLevel()
-                .Description("Improves your ability to avoid attacks of opportunity.")
-                .Price(3)
-                .GrantsFeat(FeatType.Mobility);
         }
 
         private void Dash()

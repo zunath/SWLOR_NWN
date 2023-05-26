@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
             }
 
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void PoisonStab1(AbilityBuilder builder)

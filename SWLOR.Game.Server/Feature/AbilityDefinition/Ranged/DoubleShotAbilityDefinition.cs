@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
 
-            Enmity.ModifyEnmity(activator, target, 450 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 200 * level + damage);
         }
 
         private static void DoubleShot1(AbilityBuilder builder)

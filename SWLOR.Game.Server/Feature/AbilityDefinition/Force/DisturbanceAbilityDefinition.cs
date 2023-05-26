@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Holy), target);
 
-            Enmity.ModifyEnmityOnAll(activator, 300 + damage);
+            Enmity.ModifyEnmityOnAll(activator, 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 

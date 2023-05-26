@@ -10319,7 +10319,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hive kinrath"
+                      "value": "Hive Kinrath"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -10777,7 +10777,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 84.0
+                      "value": 60.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10796,7 +10796,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 71.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10948,7 +10948,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 145.0
+                      "value": 100.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10967,7 +10967,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 56.0
+                      "value": 55.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10980,25 +10980,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunmarauder"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 55.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Sorceress"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vkorrdunsorc"
                     }
                   },
                   {
@@ -11043,7 +11024,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 102.0
+                      "value": 86.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -11062,7 +11043,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 94.0
+                      "value": 89.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -11081,7 +11062,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 73.0
+                      "value": 70.0
                     },
                     "FACTION": {
                       "type": "cexostring",

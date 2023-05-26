@@ -552,6 +552,14 @@ namespace SWLOR.Game.Server.Feature
             // Input Drop Item Events
             EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_BEFORE", "item_drop_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_AFTER", "item_drop_aft");
+
+            // Broadcast Attack of Opportunity Events
+            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_BEFORE", "brdcast_aoo_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_AFTER", "brdcast_aoo_aft");
+
+            // Combat Attack of Opportunity Events
+            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_BEFORE", "combat_aoo_bef");
+            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", "combat_aoo_aft");
         }
 
         /// <summary>

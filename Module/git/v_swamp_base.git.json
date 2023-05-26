@@ -2281,7 +2281,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -3603,7 +3603,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -4925,7 +4925,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -6247,7 +6247,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -7569,7 +7569,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -9823,7 +9823,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -10305,7 +10305,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -11423,7 +11423,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -12745,7 +12745,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -14999,7 +14999,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 36
+                "value": 35
               },
               "Cursed": {
                 "type": "byte",
@@ -15481,7 +15481,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -16204,7 +16204,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -16918,7 +16918,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
@@ -31800,66 +31800,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "WP_v_swampbase_to_swamp"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": ""
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.9987954497337341
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 196.0052642822266
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.04906776919960976
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 69.61225128173828
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.5741601586341858
-        }
-      }
-    ]
+    "value": []
   }
 }

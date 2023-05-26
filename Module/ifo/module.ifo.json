@@ -2440,6 +2440,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "v_swamp_ruins001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "ziyhutdung1a"
         }
       },
@@ -2462,6 +2469,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "ziyhutdung1d"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_undergro"
         }
       }
     ]

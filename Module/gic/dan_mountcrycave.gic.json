@@ -13,6 +13,20 @@
           "type": "cexostring",
           "value": "Breach"
         }
+      },
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Places an Area Transition in the Doorway (Similar to how a transition would appear after a Door is destroyed)."
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Places an Area Transition in the Doorway (Similar to how a transition would appear after a Door is destroyed)."
+        }
       }
     ]
   },
@@ -543,6 +557,34 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: LOKPak v3 by Danmar"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       },
       {

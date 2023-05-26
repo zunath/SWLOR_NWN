@@ -1423,7 +1423,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_RESOURCES_DANTOOINE_ORBIT"
+          "value": "SPACE_DANTOOINE_ORBIT"
         }
       }
     ]

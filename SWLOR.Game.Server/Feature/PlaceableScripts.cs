@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Feature
 
             var location = GetLocation(waypoint);
             AssignCommand(user, () => JumpToLocation(location));
+            AssignCommand(user, () => SetFacing(GetFacing(waypoint)));
 
             var henchman = GetAssociate(AssociateType.Henchman, user);
             if (GetIsObjectValid(henchman))

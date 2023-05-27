@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Burst")
 
                 .AddPerkLevel()
-                .Description("Deals DMG equal to your Willpower Score to a single target.")
+                .Description("Deals DMG equal to your Willpower Score to target and nearby enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 10 DMG, scaling with your Willpower Score, to a single target.")
+                .Description("Deals 10 DMG, scaling with your Willpower Score, to target and nearby enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 20 DMG, scaling with your Willpower Score, to a single target.")
+                .Description("Deals 20 DMG, scaling with your Willpower Score, to target and nearby enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
-                .Description("Deals 30 DMG, scaling with your Willpower Score, to a single target.")
+                .Description("Deals 30 DMG, scaling with your Willpower Score, to target and nearby enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

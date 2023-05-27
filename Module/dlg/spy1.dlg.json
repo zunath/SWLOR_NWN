@@ -103,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "[Whispering] Hey stranger, come closer.\n\nWanna know what's going on around here?\n\nFor 50 credits I'll tell you the latest rumors I could pick up."
+            "0": "[Whispering] Hey stranger, come closer.\n\nWanna know what's going on around here? You seem like you are new here, so I don't mind telling you the latest rumors I've picked up."
           }
         }
       },
@@ -613,7 +613,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 230
+    "value": 236
   },
   "PreventZoomIn": {
     "type": "byte",

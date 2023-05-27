@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -60,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Move along, citizen!"
+            "0": "Don't cause any trouble now. If I have to do paperwork because of you, you aren't going to have a good kriffing time."
           }
         }
       }
@@ -68,7 +72,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 3
+    "value": 23
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -86,6 +90,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

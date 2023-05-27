@@ -11,22 +11,22 @@ namespace SWLOR.Game.Server.Service.TaxiService
 
         [TaxiDestination(1, "Veles Entrance", "TAXI_VELES_ENTRANCE", 100)]
         VelesEntrance = 1,
-        [TaxiDestination(1, "Veles Bank", "TAXI_VELES_BANK", 100)]
-        VelesBank = 2,
-        [TaxiDestination(1, "Czerka Offices", "TAXI_VELES_CZERKA", 100)]
-        VelesCzerkaOffices = 3,
-        [TaxiDestination(1, "Veles General Store", "TAXI_VELES_GENERAL", 100)]
-        VelesGeneralStore = 4,
+        [TaxiDestination(1, "Veles Market", "TAXI_VELES_MARKET", 100)]
+        VelesMarket = 2,
+        [TaxiDestination(1, "Czerka Tower", "TAXI_VELES_CZERKATOWER", 100)]
+        VelesCzerkaTower = 3,
+        [TaxiDestination(1, "Veles Council Chamber", "TAXI_VELES_COUNCIL", 100)]
+        VelesCouncilChamber = 4,
         [TaxiDestination(1, "Veles Medical Center", "TAXI_VELES_MEDICAL", 100)]
         VelesMedicalCenter = 5,
         [TaxiDestination(1, "Veles Starport", "TAXI_VELES_STARPORT", 100)]
         VelesStarport = 6,
-        [TaxiDestination(1, "Veles Research & Development", "TAXI_VELES_RD", 100)]
-        VelesResearchAndDevelopment = 7,
+        [TaxiDestination(1, "Veles Industrial District", "TAXI_VELES_INDUSTRIAL", 100)]
+        VelesIndustrial = 7,
         [TaxiDestination(1, "Veles Cantina", "TAXI_VELES_CANTINA", 100)]
         VelesCantina = 8,
-        [TaxiDestination(1, "Veles Fosz Estate", "VELES_FOSZ_ESTATE", 100)]
-        VelesFoszEstate = 9,
+        [TaxiDestination(1, "Veles Residential District", "TAXI_VELES_RESIDENTIAL", 100)]
+        VelesResidential = 9,
         [TaxiDestination(1, "Veles Apartments", "TAXI_VELES_APARTMENTS", 100)]
         VelesApartments = 10,
     }

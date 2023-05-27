@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Veles Colony - Former Fosz Estate - Exterior"
+      "0": "[Prefab] Former Fosz Estate - Exterior"
     }
   },
   "NoRest": {
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 9
   },
   "Width": {
     "type": "int",

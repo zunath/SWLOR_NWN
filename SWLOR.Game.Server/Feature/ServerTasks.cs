@@ -35,11 +35,16 @@ namespace SWLOR.Game.Server.Feature
             {
                 for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 {
+                    ExportSingleCharacter(player);
                     BootPC(player, "The server is automatically restarting.");
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-                AdministrationPlugin.ShutdownServer();
+                
+                DelayCommand(0.1f, () =>
+                {
+                    AdministrationPlugin.ShutdownServer();
+                });
             }
         }
 

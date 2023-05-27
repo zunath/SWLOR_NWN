@@ -13,7 +13,7 @@
 			never-close-bif = true
 [masterserver]
 	[masterserver.key-authentication]
-		mode = "always"
+		mode = "if-reachable"
 [net]
 	[net.http]
 		max-concurrent-connections = 20

@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Veles Colony - Former Fosz Estate"
+      "0": "[Prefab] Former Fosz Estate"
     }
   },
   "NoRest": {
@@ -17189,7 +17189,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 14
+    "value": 15
   },
   "Width": {
     "type": "int",

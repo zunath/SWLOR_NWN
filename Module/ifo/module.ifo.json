@@ -88,13 +88,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscarawildlands"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscaradeepmount"
         }
       },
@@ -158,20 +151,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "velesinterior"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "velescolony"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "visc_forcevision"
         }
       },
@@ -180,13 +159,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "manda_facility"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "viscara_cantina"
         }
       },
       {
@@ -390,13 +362,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "gl_ksthacdmyextr"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_sewers"
         }
       },
       {
@@ -830,13 +795,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscara_czerktow"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "pref_caves"
         }
       },
@@ -1153,13 +1111,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "randoncity_02"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_sheriffbhoff"
         }
       },
       {
@@ -2477,6 +2428,104 @@
           "type": "resref",
           "value": "v_swamp_undergro"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "dan_medinterior"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "shuttle"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscarawildlands"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "velesinterior"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_slums_inte"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_slums"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_shops"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_sheriff"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_sewers"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_holonews"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_genstore"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_exterior"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_cz_tower"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_cantina"
+        }
       }
     ]
   },
@@ -2495,6 +2544,10 @@
   "Mod_DawnHour": {
     "type": "byte",
     "value": 6
+  },
+  "Mod_DefaultBic": {
+    "type": "resref",
+    "value": ""
   },
   "Mod_Description": {
     "type": "cexolocstring",
@@ -2777,7 +2830,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.86"
+    "value": "1.87"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -2821,6 +2874,10 @@
     "type": "resref",
     "value": ""
   },
+  "Mod_OnNuiEvent": {
+    "type": "resref",
+    "value": ""
+  },
   "Mod_OnPlrChat": {
     "type": "resref",
     "value": "mod_on_chat"
@@ -2837,6 +2894,10 @@
     "type": "resref",
     "value": "mod_on_equip"
   },
+  "Mod_OnPlrGuiEvt": {
+    "type": "resref",
+    "value": ""
+  },
   "Mod_OnPlrLvlUp": {
     "type": "resref",
     "value": "mod_on_levelup"
@@ -2844,6 +2905,14 @@
   "Mod_OnPlrRest": {
     "type": "resref",
     "value": "mod_on_rest"
+  },
+  "Mod_OnPlrTarget": {
+    "type": "resref",
+    "value": ""
+  },
+  "Mod_OnPlrTileAct": {
+    "type": "resref",
+    "value": ""
   },
   "Mod_OnPlrUnEqItm": {
     "type": "resref",
@@ -2860,6 +2929,10 @@
   "Mod_OnUsrDefined": {
     "type": "resref",
     "value": "mod_on_user"
+  },
+  "Mod_PartyControl": {
+    "type": "int",
+    "value": 0
   },
   "Mod_StartDay": {
     "type": "byte",

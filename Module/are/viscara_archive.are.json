@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Veles Colony - Czerka Archives"
+      "0": "[Prefab] Czerka Archives"
     }
   },
   "NoRest": {
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 8
   },
   "Width": {
     "type": "int",

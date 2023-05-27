@@ -159,6 +159,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Training Gear"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "training_gear"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Veles Colony General Store"
               },
               "RESREF": {

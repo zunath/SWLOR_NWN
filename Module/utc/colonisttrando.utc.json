@@ -134,7 +134,7 @@
   },
   "Conversation": {
     "type": "resref",
-    "value": ""
+    "value": "veles_colonist10"
   },
   "CRAdjust": {
     "type": "int",
@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The largest population centre on Viscara is Veles, a burgeoning city with a fast-growing population as refugees and colonists from across the Randon sector stream towards the planet. Some are forced to seek refuge amidst the turmoil of war, while others are attracted by the opportunities that Czerka corporation has been offering. As rumors abound of riches and secrets hidden within Viscara's crust, the population of Veles has grown into the tens of thousands."
+    }
   },
   "Dex": {
     "type": "byte",

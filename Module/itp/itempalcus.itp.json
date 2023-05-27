@@ -47670,6 +47670,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Training Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Vreego's Shiv"
                           },
                           "RESREF": {
@@ -47988,6 +47999,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tit_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_greatsword"
                           }
                         }
                       ]
@@ -48571,6 +48593,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Training Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Training Saber I"
                           },
                           "RESREF": {
@@ -48922,6 +48966,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tit_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_katar"
                           }
                         }
                       ]
@@ -49869,6 +49924,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "trn_saberstaff_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_twin_elec"
                     }
                   },
                   {
@@ -51133,6 +51221,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Training Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Baton"
                     },
                     "RESREF": {
@@ -51758,6 +51857,17 @@
                             "type": "resref",
                             "value": "tit_pistol"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_pistol"
+                          }
                         }
                       ]
                     },
@@ -52093,6 +52203,17 @@
                             "type": "resref",
                             "value": "tit_rifle"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_rifle"
+                          }
                         }
                       ]
                     },
@@ -52390,6 +52511,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tit_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_shuriken"
                     }
                   },
                   {

@@ -88,13 +88,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscarawildlands"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscaradeepmount"
         }
       },
@@ -152,20 +145,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "apartment_3"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "velesinterior"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "velescolony"
         }
       },
       {
@@ -390,13 +369,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "gl_ksthacdmyextr"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_sewers"
         }
       },
       {
@@ -830,13 +802,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscara_czerktow"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "pref_caves"
         }
       },
@@ -1153,13 +1118,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "randoncity_02"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_sheriffbhoff"
         }
       },
       {
@@ -2490,6 +2448,76 @@
         "Area_Name": {
           "type": "resref",
           "value": "shuttle"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscarawildlands"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "velesinterior"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_shops"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_sheriff"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_sewers"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_holonews"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_genstore"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_exterior"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_cz_tower"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_cantina"
         }
       }
     ]

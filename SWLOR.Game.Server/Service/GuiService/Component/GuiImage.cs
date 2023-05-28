@@ -24,6 +24,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
+        private GuiRectangle Region { get; set; }
+        private string RegionBindName { get; set; }
+        private bool IsRegionBound => !string.IsNullOrWhiteSpace(RegionBindName);
+
         /// <summary>
         /// Sets a static value for the image resref.
         /// </summary>
@@ -108,6 +112,28 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+
+        /// <summary>
+        /// Sets a static value for the image region.
+        /// </summary>
+        /// <param name="region">The region value to set.</param>
+        public GuiImage<T> SetRegion(GuiRectangle region)
+        {
+            Region = region;
+            return this;
+        }
+
+        /// <summary>
+        /// Binds a dynamic value to the image region.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public GuiImage<T> BindRegion<TProperty>(Expression<Func<T, TProperty>> expression)
+        {
+            RegionBindName = GuiHelper<T>.GetPropertyName(expression);
+            return this;
+        }
+
         /// <summary>
         /// Builds the GuIImage element.
         /// </summary>
@@ -118,8 +144,19 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var aspect = IsAspectBound ? Nui.Bind(AspectBindName) : JsonInt((int) Aspect);
             var hAlign = IsHorizontalAlignBound ? Nui.Bind(HorizontalAlignBindName) : JsonInt((int) HorizontalAlign);
             var vAlign = IsVerticalAlignBound ? Nui.Bind(VerticalAlignBindName) : JsonInt((int) VerticalAlign);
+            
+            var image = Nui.Image(resref, aspect, hAlign, vAlign);
 
-            return Nui.Image(resref, aspect, hAlign, vAlign);
+            if (IsRegionBound)
+            {
+                image = Nui.ImageRegion(image, Nui.Bind(RegionBindName));
+            }
+            else if(Region != null)
+            {
+                image = Nui.ImageRegion(image, Region.ToJson());
+            }
+
+            return image;
         }
     }
 }

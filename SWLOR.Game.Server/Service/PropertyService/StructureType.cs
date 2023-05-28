@@ -1378,7 +1378,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         ShelvesWarehouseFull = 242,
         [Structure("Bookshelf, Jedi",
-            "swlor_0001",
+            "swlor_0486",
             "",
             true,
             1)]

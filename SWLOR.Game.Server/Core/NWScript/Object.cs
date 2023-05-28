@@ -110,8 +110,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Set oPlaceable's useable object status.
-        ///   Note: Only works on non-static placeables.
+        /// Set oTarget's useable object status.
+        /// Note: Only works on non-static placeables, creatures, doors and items.
+        /// On items, it affects interactivity when they're on the ground, and not useability in inventory.
         /// </summary>
         public static void SetUseableFlag(uint oPlaceable, bool nUseable)
         {

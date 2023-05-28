@@ -3241,14 +3241,29 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///  Sets a visual transform on the given object.
+        /// Sets a visual transform on the given object.
         /// - oObject can be any valid Creature, Placeable, Item or Door.
         /// - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
         /// - fValue depends on the transformation to apply.
+        /// - nScope is one of OBJECT_VISUAL_TRANSFORM_DATA_SCOPE_* and specific to the object type being VT'ed.
+        /// - nBehaviorFlags: bitmask of OBJECT_VISUAL_TRANSFORM_BEHAVIOR_*.
+        /// - nRepeats: If > 0: N times, jump back to initial/from state after completing the transform. If -1: Do forever.
         /// Returns the old/previous value.
         /// </summary>
-        public static float SetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform, float fValue, Lerp nLerpType = Lerp.None, float fLerpDuration = 0.0f, bool bPauseWithGame = true)
+        public static float SetObjectVisualTransform(
+            uint oObject, 
+            ObjectVisualTransform nTransform, 
+            float fValue, 
+            Lerp nLerpType = Lerp.None, 
+            float fLerpDuration = 0.0f, 
+            bool bPauseWithGame = true, 
+            ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base, 
+            ObjectVisualTransformBehaviorType nBehaviorFlags = ObjectVisualTransformBehaviorType.Default , 
+            int nRepeats = 0)
         {
+            VM.StackPush(nRepeats);
+            VM.StackPush((int)nBehaviorFlags);
+            VM.StackPush((int)nScope);
             VM.StackPush(bPauseWithGame ? 1 : 0);
             VM.StackPush(fLerpDuration);
             VM.StackPush((int)nLerpType);

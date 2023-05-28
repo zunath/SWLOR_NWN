@@ -429,17 +429,16 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         /// Disable a gui panel for the client that controls oPlayer.
-        /// Notes: Will close the gui panel if currently open.
+        /// Notes: Will close the gui panel if currently open, except GUI_PANEL_LEVELUP / GUI_PANEL_GOLD_*
         ///        Does not persist through relogging or in savegames.
         ///        Will fire a GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN OnPlayerGuiEvent for some gui panels if a player attempts to open them.
         ///        You can still force show a panel with PopUpGUIPanel().
+        ///        You can still force examine an object with ActionExamine().
         /// * nGuiPanel: A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH.
         /// </summary>
-        /// <param name="oPlayer"></param>
-        /// <param name="nGuiPanel"></param>
-        /// <param name="bDisabled"></param>
-        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled)
+        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
+            VM.StackPush(oTarget);
             VM.StackPush(bDisabled ? 1 : 0);
             VM.StackPush((int)nGuiPanel);
             VM.StackPush(oPlayer);

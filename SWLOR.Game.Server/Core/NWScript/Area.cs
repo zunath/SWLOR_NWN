@@ -3,6 +3,7 @@ using System.Numerics;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using ObjectType = SWLOR.Game.Server.Core.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.Core.NWScript
 {
@@ -529,24 +530,30 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Get the first object in oArea.
-        ///   If no valid area is specified, it will use the caller's area.
-        ///   * Return value on error: OBJECT_INVALID
+        /// Get the first object in oArea.
+        /// If no valid area is specified, it will use the caller's area.
+        /// - nObjectFilter: This allows you to filter out undesired object types, using bitwise "or".
+        ///   For example, to return only creatures and doors, the value for this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        /// * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID)
+        public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            VM.StackPush((int)nObjectFilter);
             VM.StackPush(oArea);
             VM.Call(93);
             return VM.StackPopObject();
         }
 
         /// <summary>
-        ///   Get the next object in oArea.
-        ///   If no valid area is specified, it will use the caller's area.
-        ///   * Return value on error: OBJECT_INVALID
+        /// Get the next object in oArea.
+        /// If no valid area is specified, it will use the caller's area.
+        /// - nObjectFilter: This allows you to filter out undesired object types, using bitwise "or".
+        ///   For example, to return only creatures and doors, the value for this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        /// * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID)
+        public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            VM.StackPush((int)nObjectFilter);
             VM.StackPush(oArea);
             VM.Call(94);
             return VM.StackPopObject();

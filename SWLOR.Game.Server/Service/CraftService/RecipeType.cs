@@ -2337,6 +2337,12 @@
         DABR005 = 4362,
         DALG005 = 4363,
 
+        WeaponEnhancementAccuracy1 = 4364,
+        WeaponEnhancementAccuracy2 = 4365,
+        WeaponEnhancementAccuracy3 = 4366,
+        WeaponEnhancementAccuracy4 = 4367,
+        WeaponEnhancementAccuracy5 = 4368,
+
         ArmorEnhancementAttack1 = 4664,
         ArmorEnhancementAttack2 = 4665,
         ArmorEnhancementAttack3 = 4666,

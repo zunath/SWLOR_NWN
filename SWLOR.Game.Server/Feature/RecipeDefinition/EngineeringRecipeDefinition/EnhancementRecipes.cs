@@ -466,8 +466,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Structure Enhancement - Structure Bonus I
-			_builder.Create(RecipeType.StructureEnhancementStructureBonus1, SkillType.Engineering)
+            // Weapon Enhancement - Accuracy I
+            _builder.Create(RecipeType.WeaponEnhancementAccuracy1, SkillType.Engineering)
+                .Category(RecipeCategoryType.WeaponEnhancement)
+                .Resref("wen_acc1")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 1)
+                .Component("ref_tilarium", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 2)
+                ;
+
+            // Structure Enhancement - Structure Bonus I
+            _builder.Create(RecipeType.StructureEnhancementStructureBonus1, SkillType.Engineering)
 				.Category(RecipeCategoryType.StructureEnhancement)
 				.Resref("sten_sb1")
 				.Level(9)
@@ -1227,8 +1239,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Structure Enhancement - Structure Bonus II
-			_builder.Create(RecipeType.StructureEnhancementStructureBonus2, SkillType.Engineering)
+            // Weapon Enhancement - Accuracy II
+            _builder.Create(RecipeType.WeaponEnhancementAccuracy2, SkillType.Engineering)
+                .Category(RecipeCategoryType.WeaponEnhancement)
+                .Resref("wen_acc2")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 2)
+                .Component("ref_currian", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 2)
+                ;
+
+            // Structure Enhancement - Structure Bonus II
+            _builder.Create(RecipeType.StructureEnhancementStructureBonus2, SkillType.Engineering)
 				.Category(RecipeCategoryType.StructureEnhancement)
 				.Resref("sten_sb2")
 				.Level(19)
@@ -1964,8 +1988,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Structure Enhancement - Structure Bonus III
-			_builder.Create(RecipeType.StructureEnhancementStructureBonus3, SkillType.Engineering)
+            // Weapon Enhancement - Accuracy III
+            _builder.Create(RecipeType.WeaponEnhancementAccuracy3, SkillType.Engineering)
+                .Category(RecipeCategoryType.WeaponEnhancement)
+                .Resref("wen_acc3")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .Component("ref_idailia", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 2)
+                ;
+
+            // Structure Enhancement - Structure Bonus III
+            _builder.Create(RecipeType.StructureEnhancementStructureBonus3, SkillType.Engineering)
 				.Category(RecipeCategoryType.StructureEnhancement)
 				.Resref("sten_sb3")
 				.Level(29)
@@ -2725,8 +2761,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Structure Enhancement - Structure Bonus IV
-			_builder.Create(RecipeType.StructureEnhancementStructureBonus4, SkillType.Engineering)
+            // Weapon Enhancement - Accuracy IV
+            _builder.Create(RecipeType.WeaponEnhancementAccuracy4, SkillType.Engineering)
+                .Category(RecipeCategoryType.WeaponEnhancement)
+                .Resref("wen_acc4")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 4)
+                .Component("ref_barinium", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 2)
+                ;
+
+            // Structure Enhancement - Structure Bonus IV
+            _builder.Create(RecipeType.StructureEnhancementStructureBonus4, SkillType.Engineering)
 				.Category(RecipeCategoryType.StructureEnhancement)
 				.Resref("sten_sb4")
 				.Level(39)
@@ -3462,8 +3510,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Structure Enhancement - Structure Bonus V
-			_builder.Create(RecipeType.StructureEnhancementStructureBonus5, SkillType.Engineering)
+            // Weapon Enhancement - Accuracy V
+            _builder.Create(RecipeType.WeaponEnhancementAccuracy5, SkillType.Engineering)
+                .Category(RecipeCategoryType.WeaponEnhancement)
+                .Resref("wen_acc5")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .Component("ref_gostian", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 2)
+                ;
+
+            // Structure Enhancement - Structure Bonus V
+            _builder.Create(RecipeType.StructureEnhancementStructureBonus5, SkillType.Engineering)
 				.Category(RecipeCategoryType.StructureEnhancement)
 				.Resref("sten_sb5")
 				.Level(49)

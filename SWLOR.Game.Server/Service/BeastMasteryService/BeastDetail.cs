@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
     public class BeastDetail
     {
         public AppearanceType Appearance { get; set; }
+        public float AppearanceScale { get; set; }
         public int PortraitId { get; set; }
         public int SoundSetId { get; set; }
         public BeastRoleType Role { get; set; }
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
         public BeastDetail()
         {
+            AppearanceScale = 1f;
             Levels = new Dictionary<int, BeastLevel>();
         }
     }

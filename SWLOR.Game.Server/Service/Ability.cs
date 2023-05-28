@@ -570,6 +570,10 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Removes all auras which are currently active on a creature.
+        /// </summary>
+        /// <param name="activator">The creature who originally activated the auras.</param>
         private static void RemoveAllAuras(uint activator)
         {
             if (!_playerAuras.ContainsKey(activator))
@@ -661,6 +665,16 @@ namespace SWLOR.Game.Server.Service
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
+            RemoveAllAuras(player);
+        }
+
+        /// <summary>
+        /// When a player enters space mode, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("space_enter")]
+        public static void ClearAurasOnSpaceEntry()
+        {
+            var player = OBJECT_SELF;
             RemoveAllAuras(player);
         }
 

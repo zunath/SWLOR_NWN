@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .SetIsTransparent(false)
                 .SetShowBorder(true)
+                .SetAcceptsInput(false)
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>

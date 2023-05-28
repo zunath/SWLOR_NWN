@@ -45,8 +45,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 0
             );
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
+            });
             
             dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);

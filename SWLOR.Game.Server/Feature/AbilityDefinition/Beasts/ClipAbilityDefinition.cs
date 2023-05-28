@@ -44,8 +44,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 0
             );
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
+            });
 
             const float Duration = 3f;
             dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);

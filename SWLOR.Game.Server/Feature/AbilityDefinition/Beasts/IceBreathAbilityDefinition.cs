@@ -65,7 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     var targetCopy = target;
                     DelayCommand(0.1f, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
+                        AssignCommand(activator, () =>
+                        {
+                            ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
+                        });
 
                         dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);

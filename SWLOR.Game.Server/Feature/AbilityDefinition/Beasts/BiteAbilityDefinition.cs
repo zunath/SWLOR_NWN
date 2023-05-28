@@ -44,8 +44,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 defenderStat,
                 0
             );
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), target);
+
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), target);
+            });
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);
         }

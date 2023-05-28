@@ -54,7 +54,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     var dTarget = creature;
 
                     DelayCommand(0.1f, () =>
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
+                    {
+                        AssignCommand(activator, () =>
+                        {
+                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget);
+                        });
+                    });
 
                     Enmity.ModifyEnmity(activator, creature, 250 + damage);
                     count++;

@@ -2282,7 +2282,7 @@ namespace SWLOR.Game.Server.Service
             if (buildingCount <= 0)
                 return 0;
 
-            return effectiveLevel - 1;
+            return effectiveLevel;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -17,6 +19,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var player = GetPCSpeaker();
             Gui.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
         }
+
+        private class TerminalItem
+        {
+            public string Icon { get; set; }
+            public string Resref { get; set; }
+            public int BasePrice { get; set; }
+            public string Name { get; set; }
+
+            public TerminalItem(string icon, string resref, int basePrice)
+            {
+                Icon = icon;
+                Resref = resref;
+                BasePrice = basePrice;
+
+                Name = Cache.GetItemNameByResref(resref);
+            }
+        }
+
+        private static readonly List<TerminalItem> _availableItems = new()
+        {
+            new("iIT_BOOK_244", "refund_tome", 10000),
+            new("iIT_BOOK_246", "recond_tome", 300000),
+        };
 
         public string AvailableXP
         {
@@ -50,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
 
@@ -59,19 +85,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Resrefs = new List<string>();
             Prices = new List<int>();
 
-            // Retraining Tome (Perk Refund)
-            icons.Add("iIT_BOOK_244");
-            names.Add("Retraining Tome");
-            Resrefs.Add("refund_tome");
-            priceTexts.Add("10,000 XP");
-            Prices.Add(10000);
+            foreach (var item in _availableItems)
+            {
+                icons.Add(item.Icon);
+                names.Add(item.Name);
+                Resrefs.Add(item.Resref);
 
-            // Reconditioning Tome (Stat Rebuild)
-            icons.Add("iIT_BOOK_246");
-            names.Add("Reconditioning Tome");
-            Resrefs.Add("recond_tome");
-            priceTexts.Add("300,000 XP");
-            Prices.Add(300000);
+                var adjustedPrice = (int)(item.BasePrice - item.BasePrice * cantinaBonus);
+                Prices.Add(adjustedPrice);
+                priceTexts.Add($"{adjustedPrice.ToString("N0", CultureInfo.InvariantCulture)} XP");
+            }
 
             Icons = icons;
             Names = names;

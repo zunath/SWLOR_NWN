@@ -35222,6 +35222,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Weapon Enhancement - Attack Bonus I"
                     },
                     "RESREF": {

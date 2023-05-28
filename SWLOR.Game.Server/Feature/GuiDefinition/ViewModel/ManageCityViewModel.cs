@@ -308,15 +308,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (level)
             {
                 case 1:
-                    return "Storage Cap: 20 items per citizen";
-                case 2:
                     return "Storage Cap: 40 items per citizen";
-                case 3:
+                case 2:
                     return "Storage Cap: 60 items per citizen";
-                case 4:
+                case 3:
                     return "Storage Cap: 80 items per citizen";
-                case 5:
+                case 4:
                     return "Storage Cap: 100 items per citizen";
+                case 5:
+                    return "Storage Cap: 120 items per citizen";
                 default:
                     return "UPGRADES MAXED";
             }
@@ -326,15 +326,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (level)
             {
                 case 1:
-                    return "No benefit";
-                case 2:
                     return "-5% XP debt on death";
-                case 3:
+                case 2:
                     return "-10% XP debt on death";
-                case 4:
+                case 3:
                     return "-15% XP debt on death";
-                case 5:
+                case 4:
                     return "-20% XP debt on death";
+                case 5:
+                    return "-25% XP debt on death";
                 default:
                     return "UPGRADES MAXED";
             }
@@ -344,15 +344,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (level)
             {
                 case 1:
-                    return "No benefit";
-                case 2:
                     return "-5% repair price";
-                case 3:
+                case 2:
                     return "-10% repair price";
-                case 4:
+                case 3:
                     return "-15% repair price";
-                case 5:
+                case 4:
                     return "-20% repair price";
+                case 5:
+                    return "-25% repair price";
                 default:
                     return "UPGRADES MAXED";
             }
@@ -362,15 +362,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (level)
             {
                 case 1:
-                    return "No benefit";
+                    return "+5% RPXP, -10% Training Terminal Costs";
                 case 2:
-                    return "+5% RPXP";
+                    return "+10% RPXP, -20% Training Terminal Costs";
                 case 3:
-                    return "+10% RPXP";
+                    return "+15% RPXP, -30% Training Terminal Costs";
                 case 4:
-                    return "+15% RPXP";
+                    return "+20% RPXP, -40% Training Terminal Costs";
                 case 5:
-                    return "+20% RPXP";
+                    return "+25% RPXP, -50% Training Terminal Costs";
                 default:
                     return "UPGRADES MAXED";
             }

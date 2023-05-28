@@ -4,7 +4,6 @@
     {
         /// <summary>
         /// Window
-
         /// Special cases:
         /// * Set the window title to JsonBool(FALSE), Collapse to JsonBool(FALSE) and bClosable to FALSE
         ///   to hide the title bar.
@@ -32,6 +31,10 @@
         /// <param name="jBorder">
         /// Bind:Bool
         /// Do not render border</param>
+        /// <param name="jAcceptsInput">
+        /// Bind:Bool        Set JsonBool(FALSE) to disable all input.
+        /// All hover, clicks and keypresses will fall through.
+        /// </param>
         public static Json Window(
             Json jRoot,
             Json jTitle,
@@ -40,7 +43,8 @@
             Json jCollapsed,
             Json jClosable,
             Json jTransparent,
-            Json jBorder
+            Json jBorder,
+            Json jAcceptsInput
         )
         {
             Json ret = JsonObject();
@@ -54,6 +58,7 @@
             ret = JsonObjectSet(ret, "closable", jClosable);
             ret = JsonObjectSet(ret, "transparent", jTransparent);
             ret = JsonObjectSet(ret, "border", jBorder);
+            ret = JsonObjectSet(ret, "accepts_input", jAcceptsInput);
             return ret;
         }
         

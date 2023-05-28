@@ -39,6 +39,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
+        private bool AcceptsInput { get; set; }
+        private string AcceptsInputBindName { get; set; }
+        private bool IsAcceptsInputBound => !string.IsNullOrWhiteSpace(AcceptsInputBindName);
+
         public Dictionary<string, IGuiWidget> PartialViews { get; }
         public List<IGuiWidget> Elements { get; }
 
@@ -262,6 +266,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Sets a static value for whether the window accepts input from the user.
+        /// </summary>
+        /// <param name="acceptsInput">true if the window accepts input, false otherwise</param>
+        public GuiWindow<T> SetAcceptsInput(bool acceptsInput)
+        {
+            AcceptsInput = acceptsInput;
+            return this;
+        }
+
+        /// <summary>
+        /// Binds a dynamic value for whether the window accepts input from the user.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public GuiWindow<T> BindAcceptsInput<TProperty>(Expression<Func<T, TProperty>> expression)
+        {
+            AcceptsInputBindName = GuiHelper<T>.GetPropertyName(expression);
+            return this;
+        }
+
         public GuiWindow()
         {
             Title = "New Window";
@@ -298,8 +323,9 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var isClosable = IsClosableBound ? Nui.Bind(IsClosableBindName) : JsonBool(IsClosable);
             var isTransparent = IsTransparentBound ? Nui.Bind(IsTransparentBindName) : JsonBool(IsTransparent);
             var showBorder = IsShowBorderBound ? Nui.Bind(ShowBorderBindName) : JsonBool(ShowBorder);
+            var acceptsInput = IsAcceptsInputBound ? Nui.Bind(AcceptsInputBindName) : JsonBool(AcceptsInput);
 
-            return Nui.Window(root, title, geometry, isResizable, isCollapsible, isClosable, isTransparent, showBorder);
+            return Nui.Window(root, title, geometry, isResizable, isCollapsible, isClosable, isTransparent, showBorder, acceptsInput);
         }
     }
 }

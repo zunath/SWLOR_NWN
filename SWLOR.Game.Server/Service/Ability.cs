@@ -570,6 +570,40 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        private static void RemoveAllAuras(uint activator)
+        {
+            if (!_playerAuras.ContainsKey(activator))
+                return;
+
+            var auraDetails = _playerAuras[activator];
+
+            foreach (var aura in auraDetails.Auras)
+            {
+                if (aura.TargetsSelf)
+                {
+                    StatusEffect.Remove(activator, aura.Type);
+                }
+
+                if (aura.TargetsParty)
+                {
+                    foreach (var member in auraDetails.PartyMembersInRange)
+                    {
+                        StatusEffect.Remove(member, aura.Type, false);
+                    }
+                }
+
+                if (aura.TargetsNPCs)
+                {
+                    foreach (var npc in auraDetails.CreaturesInRange)
+                    {
+                        StatusEffect.Remove(npc, aura.Type, false);
+                    }
+                }
+            }
+
+            _playerAuras.Remove(activator);
+        }
+
         private static AreaOfEffect GetAuraAOE(int level)
         {
             switch (level)
@@ -608,6 +642,26 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
             ReapplyPlayerAuraAOE(player);
+        }
+
+        /// <summary>
+        /// When a player exits the server, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void ClearAurasOnExit()
+        {
+            var player = GetExitingObject();
+            RemoveAllAuras(player);
+        }
+
+        /// <summary>
+        /// When a player dies, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("mod_death")]
+        public static void ClearAurasOnDeath()
+        {
+            var player = GetLastPlayerDied();
+            RemoveAllAuras(player);
         }
 
         /// <summary>

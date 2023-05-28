@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                             perBonus *= 3 / 2;
                         }
                         var perDMG = 30 + (perBonus * 2);
-                        Impact(activator, target, 14, 14);
+                        Impact(activator, target, perDMG, 14);
                     });
                 });
         }

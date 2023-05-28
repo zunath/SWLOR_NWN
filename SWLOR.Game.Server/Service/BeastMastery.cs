@@ -233,6 +233,7 @@ namespace SWLOR.Game.Server.Service
             SetBeastType(beast, dbBeast.Type);
 
             SetCreatureAppearanceType(beast, beastDetail.Appearance);
+            SetObjectVisualTransform(beast, ObjectVisualTransform.Scale, beastDetail.AppearanceScale);
             SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
             

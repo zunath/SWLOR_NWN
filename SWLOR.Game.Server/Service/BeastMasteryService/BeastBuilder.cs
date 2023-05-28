@@ -36,6 +36,18 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         }
 
         /// <summary>
+        /// Specifies the appearance's scaling used. This can be adjusted to increase or decrease the size of the beast.
+        /// </summary>
+        /// <param name="scale">The scale to use. 1.0 is default</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder AppearanceScale(float scale)
+        {
+            _activeBeast.AppearanceScale = scale;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies the portrait used for the beast.
         /// </summary>
         /// <param name="portraitId">The Id of the portrait</param>

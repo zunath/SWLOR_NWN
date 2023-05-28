@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -361,13 +363,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    var droid = Droid.GetDroid(user);
-                    if (!GetIsObjectValid(droid))
+                    var associate = GetAssociate(AssociateType.Henchman, user);
+                    if (!GetIsObjectValid(associate))
                     {
                         return "You do not have an active associate.";
                     }
 
-                    if (GetIsDead(droid))
+                    if (GetIsDead(associate))
                     {
                         return "Your associate is dead.";
                     }
@@ -381,10 +383,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var droid = Droid.GetDroid(user);
+                    var associate = GetAssociate(AssociateType.Henchman, user);
                     var message = string.Join(' ', args);
 
-                    AssignCommand(droid, () => SpeakString(message));
+                    AssignCommand(associate, () => SpeakString(message));
                 });
         }
     }

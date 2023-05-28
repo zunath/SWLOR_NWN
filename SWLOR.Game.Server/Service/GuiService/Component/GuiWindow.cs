@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
-        private bool AcceptsInput { get; set; }
+        private bool AcceptsInput { get; set; } = true;
         private string AcceptsInputBindName { get; set; }
         private bool IsAcceptsInputBound => !string.IsNullOrWhiteSpace(AcceptsInputBindName);
 

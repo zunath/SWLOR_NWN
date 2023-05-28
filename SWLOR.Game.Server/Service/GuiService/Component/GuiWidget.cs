@@ -33,6 +33,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string TooltipBindName { get; set; }
         private bool IsTooltipBound => !string.IsNullOrWhiteSpace(TooltipBindName);
         
+        private string DisabledTooltip { get; set; }
+        private string DisabledTooltipBindName { get; set; }
+        private bool IsDisabledTooltipBound => !string.IsNullOrWhiteSpace(DisabledTooltipBindName);
+
+        private bool IsEncouraged { get; set; }
+        private string IsEncouragedBindName { get; set; }
+        private bool IsEncouragedBound { get; set; }
+
         private GuiColor? Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
@@ -161,6 +169,48 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public TDerived BindTooltip<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
             TooltipBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
+        }
+
+        /// <summary>
+        /// Sets a static value for the disabled tooltip text.
+        /// </summary>
+        /// <param name="disabledTooltip">The disabled tooltip text to set.</param>
+        public TDerived SetDisabledTooltip(string disabledTooltip)
+        {
+            DisabledTooltip = disabledTooltip;
+            return (TDerived)this;
+        }
+
+        /// <summary>
+        /// Binds a dynamic value for the disabled tooltip text.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public TDerived BindDisabledTooltip<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
+        {
+            DisabledTooltipBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
+        }
+
+        /// <summary>
+        /// Sets a static value for whether the element is encouraged.
+        /// </summary>
+        /// <param name="isEncouraged">true if encouraged, false otherwise</param>
+        public TDerived SetIsEncouraged(bool isEncouraged)
+        {
+            IsEncouraged = isEncouraged;
+            return (TDerived)this;
+        }
+
+        /// <summary>
+        /// Binds a dynamic value which determines whether the element is encouraged or not.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public TDerived BindIsEncouraged<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
+        {
+            IsEncouragedBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
             return (TDerived)this;
         }
 
@@ -334,6 +384,28 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             else if(!string.IsNullOrWhiteSpace(Tooltip))
             {
                 element = Nui.Tooltip(element, JsonString(Tooltip));
+            }
+
+            // Disabled Tooltip (Can be bound)
+            if (IsDisabledTooltipBound)
+            {
+                var binding = Nui.Bind(DisabledTooltipBindName);
+                element = Nui.DisabledTooltip(element, binding);
+            }
+            else if (!string.IsNullOrWhiteSpace(DisabledTooltip))
+            {
+                element = Nui.DisabledTooltip(element, JsonString(DisabledTooltip));
+            }
+
+            // Is Encouraged (Can be bound)
+            if (IsEncouragedBound)
+            {
+                var binding = Nui.Bind(IsEncouragedBindName);
+                element = Nui.Encouraged(element, binding);
+            }
+            else if (!string.IsNullOrWhiteSpace(IsEncouragedBindName))
+            {
+                element = Nui.Encouraged(element, JsonBool(IsEncouraged));
             }
 
             // Color

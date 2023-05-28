@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         private int MaxLength { get; set; } = 32;
         private bool IsMultiLine { get; set; }
+        private bool HasWordWrap { get; set; } = true;
 
         /// <summary>
         /// Sets a static value for the placeholder text.
@@ -82,6 +83,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
+        /// Sets a static value for whether the text editor has word wrap.
+        /// </summary>
+        /// <param name="hasWordWrap">true if it has word wrap, false otherwise</param>
+        public GuiTextEdit<T> SetHasWordWrap(bool hasWordWrap)
+        {
+            HasWordWrap = hasWordWrap;
+            return this;
+        }
+
+        /// <summary>
         /// Builds the GuiTextEdit element.
         /// </summary>
         /// <returns>Json representing the text editor element.</returns>
@@ -90,7 +101,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var placeholder = IsPlaceholderBound ? Nui.Bind(PlaceholderBindName) : JsonString(Placeholder);
             var value = IsValueBound ? Nui.Bind(ValueBindName) : JsonString(Value);
 
-            return Nui.TextEdit(placeholder, value, MaxLength, IsMultiLine);
+            return Nui.TextEdit(placeholder, value, MaxLength, IsMultiLine, HasWordWrap);
         }
     }
 }

@@ -13,7 +13,10 @@
         /// <param name="jTitle">Bind:String</param>
         /// <param name="jGeometry">
         /// Bind:Rect
-        /// Set x and y to -1.0 to center window</param>
+        /// Set x and/or y to -1.0 to center the window on that axis
+        /// Set x and/or y to -2.0 to position the window's top left at the mouse cursor's position of that axis
+        /// Set x and/or y to -3.0 to center the window on the mouse cursor's position of that axis
+        /// </param>
         /// <param name="jResizable">
         /// Bind:Bool
         /// Set to JsonBool(TRUE) or JsonNull() to let user resize without binding.</param>
@@ -47,7 +50,7 @@
             Json jAcceptsInput
         )
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             // Currently hardcoded and here to catch backwards-incompatible data in the future.
             ret = JsonObjectSet(ret, "version", JsonInt(1));
             ret = JsonObjectSet(ret, "title", jTitle);
@@ -68,7 +71,7 @@
           Json jValue
         )
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "type", JsonString(sType));
             ret = JsonObjectSet(ret, "label", jLabel);
             ret = JsonObjectSet(ret, "value", jValue);
@@ -97,6 +100,17 @@
         }
 
         /// <summary>
+        /// A shim/helper that can be used to render or bind a strref where otherwise
+        /// a string value would go.
+        /// </summary>
+        public static Json StrRef(int nStrRef)
+        {
+            var ret = JsonObject();
+            ret = JsonObjectSet(ret, "strref", JsonInt(nStrRef));
+            return ret;
+        }
+
+        /// <summary>
         /// A column will auto-space all elements inside of it and advise the parent about it's desired size.
         /// </summary>
         public static Json Column(Json jList)
@@ -119,7 +133,7 @@
         /// </summary>
         public static Json Group(Json jChild, bool bBorder = true, NuiScrollbars nScroll = NuiScrollbars.Auto)
         {
-            Json ret = NuiElement("group", JsonNull(), JsonNull());
+            var ret = NuiElement("group", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "children", JsonArrayInsert(JsonArray(), jChild));
             ret = JsonObjectSet(ret, "border", JsonBool(bBorder));
             ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)nScroll));
@@ -193,10 +207,26 @@
         {
             return JsonObjectSet(jElem, "tooltip", jTooltip);
         }
+
+        /// <summary>
+        /// Tooltips for disabled elements show on mouse hover.
+        /// </summary>
+        public static Json DisabledTooltip(Json jElem, Json jTooltip)
+        {
+            return JsonObjectSet(jElem, "disabled_tooltip", jTooltip);
+        }
         
+        /// <summary>
+        /// Encouraged elements have a breathing animated glow inside of it. 
+        /// </summary>
+        public static Json Encouraged(Json jElem, Json jEncouraged)
+        {
+            return JsonObjectSet(jElem, "encouraged", jEncouraged);
+        }
+
         public static Json Vec(float x, float y)
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "x", JsonFloat(x));
             ret = JsonObjectSet(ret, "y", JsonFloat(y));
             return ret;
@@ -204,7 +234,7 @@
 
         public static Json Rect(float x, float y, float w, float h)
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "x", JsonFloat(x));
             ret = JsonObjectSet(ret, "y", JsonFloat(y));
             ret = JsonObjectSet(ret, "w", JsonFloat(w));
@@ -214,7 +244,7 @@
 
         public static Json Color(int r, int g, int b, int a = 255)
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "r", JsonInt(r));
             ret = JsonObjectSet(ret, "g", JsonInt(g));
             ret = JsonObjectSet(ret, "b", JsonInt(b));
@@ -252,7 +282,7 @@
         /// <param name="jVAlign">BIND:Int:NUI_VALIGN_*</param>
         public static Json Label(Json jValue, Json jHAlign, Json jVAlign)
         {
-            Json ret = NuiElement("label", JsonNull(), jValue);
+            var ret = NuiElement("label", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "text_halign", jHAlign);
             ret = JsonObjectSet(ret, "text_valign", jVAlign);
             return ret;
@@ -267,7 +297,7 @@
         /// <param name="scrollbars">int</param>
         public static Json Text(Json jValue, bool showBorder = true, NuiScrollbars scrollbars = NuiScrollbars.Auto)
         {
-            Json ret = NuiElement("text", JsonNull(), jValue);
+            var ret = NuiElement("text", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "border", JsonBool(showBorder));
             ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)scrollbars));
 
@@ -325,11 +355,22 @@
         /// <param name="jVAlign">Bind:Int:NUI_VALIGN_*</param>
         public static Json Image(Json jResRef, Json jAspect, Json jHAlign, Json jVAlign)
         {
-            Json img = NuiElement("image", JsonNull(), jResRef);
+            var img = NuiElement("image", JsonNull(), jResRef);
             img = JsonObjectSet(img, "image_aspect", jAspect);
             img = JsonObjectSet(img, "image_halign", jHAlign);
             img = JsonObjectSet(img, "image_valign", jVAlign);
             return img;
+        }
+
+        /// <summary>
+        /// Optionally render only subregion of jImage.
+        /// jRegion is a NuiRect (x, y, w, h) to indicate the render region inside the image.
+        /// </summary>
+        /// <param name="jImage">NuiImage</param>
+        /// <param name="jRegion">Bind:NuiRect</param>
+        public static Json ImageRegion(Json jImage, Json jRegion)
+        {
+            return JsonObjectSet(jImage, "image_region", jRegion);
         }
 
         /// <summary>
@@ -359,7 +400,7 @@
         /// <param name="jStepSize">Bind:Float</param>
         public static Json SliderFloat(Json jValue, Json jMin, Json jMax, Json jStepSize)
         {
-            Json ret = NuiElement("sliderf", JsonNull(), jValue);
+            var ret = NuiElement("sliderf", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "min", jMin);
             ret = JsonObjectSet(ret, "max", jMax);
             ret = JsonObjectSet(ret, "step", jStepSize);
@@ -375,7 +416,7 @@
         /// <param name="jStepSize">Bind:Int</param>
         public static Json Slider(Json jValue, Json jMin, Json jMax, Json jStepSize)
         {
-            Json ret = NuiElement("slider", JsonNull(), jValue);
+            var ret = NuiElement("slider", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "min", jMin);
             ret = JsonObjectSet(ret, "max", jMax);
             ret = JsonObjectSet(ret, "step", jStepSize);
@@ -399,12 +440,13 @@
         /// <param name="jValue">Bind:String</param>
         /// <param name="nMaxLength">UInt >= 1, <= 65535</param>
         /// <param name="bMultiline">Bool</param>
-        /// <returns></returns>
-        public static Json TextEdit(Json jPlaceholder, Json jValue, int nMaxLength, bool bMultiline)
+        /// <param name="bWordWrap">Bool</param>
+        public static Json TextEdit(Json jPlaceholder, Json jValue, int nMaxLength, bool bMultiline, bool bWordWrap = true)
         {
-            Json ret = NuiElement("textedit", jPlaceholder, jValue);
+            var ret = NuiElement("textedit", jPlaceholder, jValue);
             ret = JsonObjectSet(ret, "max", JsonInt(nMaxLength));
             ret = JsonObjectSet(ret, "multiline", JsonBool(bMultiline));
+            ret = JsonObjectSet(ret, "wordwrap", JsonBool(bWordWrap));
             return ret;
         }
 
@@ -429,7 +471,7 @@
             bool showBorder = true,
             NuiScrollbars scrollbars = NuiScrollbars.Y)
         {
-            Json ret = NuiElement("list", JsonNull(), JsonNull());
+            var ret = NuiElement("list", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "row_template", jTemplate);
             ret = JsonObjectSet(ret, "row_count", jRowCount);
             ret = JsonObjectSet(ret, "row_height", JsonFloat(fRowHeight));
@@ -447,7 +489,7 @@
         /// <param name="bVariable">Bool:Cell can grow if space is available; otherwise static</param>
         public static Json ListTemplateCell(Json jElem, float fWidth, bool bVariable)
         {
-            Json ret = JsonArray();
+            var ret = JsonArray();
             ret = JsonArrayInsert(ret, jElem);
             ret = JsonArrayInsert(ret, JsonFloat(fWidth));
             ret = JsonArrayInsert(ret, JsonBool(bVariable));
@@ -460,7 +502,7 @@
         /// <param name="jColor">Bind:Color</param>
         public static Json ColorPicker(Json jColor)
         {
-            Json ret = NuiElement("color_picker", JsonNull(), jColor);
+            var ret = NuiElement("color_picker", JsonNull(), jColor);
             return ret;
         }
 
@@ -474,7 +516,20 @@
         /// <param name="jValue">Bind:UInt</param>
         public static Json Options(NuiDirection nDirection, Json jElements, Json jValue)
         {
-            Json ret = NuiElement("options", JsonNull(), jValue);
+            var ret = NuiElement("options", JsonNull(), jValue);
+            ret = JsonObjectSet(ret, "direction", JsonInt((int)nDirection));
+            ret = JsonObjectSet(ret, "elements", jElements);
+            return ret;
+        }
+
+        /// <summary>
+        /// A group of buttons.  Only one can be selected at a time.  jValue
+        /// is updated every time a different button is selected.  The special
+        /// value -1 means "nothing".
+        /// </summary>
+        public static Json Toggles(NuiDirection nDirection, Json jElements, Json jValue)
+        {
+            var ret = NuiElement("tabbar", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "direction", JsonInt((int)nDirection));
             ret = JsonObjectSet(ret, "elements", jElements);
             return ret;
@@ -489,7 +544,7 @@
         /// <param name="jData">Bind:Float[]</param>
         public static Json ChartSlot(NuiChartType nType, Json jLegend, Json jColor, Json jData)
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "type", JsonInt((int)nType));
             ret = JsonObjectSet(ret, "legend", jLegend);
             ret = JsonObjectSet(ret, "color", jColor);
@@ -505,18 +560,27 @@
         /// <param name="jSlots">NuiChartSlot[]</param>
         public static Json Chart(Json jSlots)
         {
-            Json ret = NuiElement("chart", JsonNull(), jSlots);
+            var ret = NuiElement("chart", JsonNull(), jSlots);
             return ret;
         }
         
-        private static Json NuiDrawListItem(NuiDrawListItemType nType, Json jEnabled, Json jColor, Json jFill, Json jLineThickness)
+        private static Json NuiDrawListItem(
+            NuiDrawListItemType nType, 
+            Json jEnabled, 
+            Json jColor, 
+            Json jFill, 
+            Json jLineThickness,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = JsonObject();
+            var ret = JsonObject();
             ret = JsonObjectSet(ret, "type", JsonInt((int)nType));
             ret = JsonObjectSet(ret, "enabled", jEnabled);
             ret = JsonObjectSet(ret, "color", jColor);
             ret = JsonObjectSet(ret, "fill", jFill);
             ret = JsonObjectSet(ret, "line_thickness", jLineThickness);
+            ret = JsonObjectSet(ret, "order", JsonInt((int)nOrder));
+            ret = JsonObjectSet(ret, "render", JsonInt((int)nRender));
             return ret;
         }
 
@@ -528,9 +592,18 @@
         /// <param name="jFill">Bind:Bool</param>
         /// <param name="jLineThickness">Bind:Float</param>
         /// <param name="jPoints">Bind:Float[]    Always provide points in pairs</param>
-        public static Json DrawListPolyLine(Json jEnabled, Json jColor, Json jFill, Json jLineThickness, Json jPoints)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListPolyLine(
+            Json jEnabled, 
+            Json jColor, 
+            Json jFill, 
+            Json jLineThickness, 
+            Json jPoints,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.PolyLine, jEnabled, jColor, jFill, jLineThickness);
+            var ret = NuiDrawListItem(NuiDrawListItemType.PolyLine, jEnabled, jColor, jFill, jLineThickness, nOrder, nRender);
             ret = JsonObjectSet(ret, "points", jPoints);
             return ret;
         }
@@ -545,9 +618,20 @@
         /// <param name="jB">Bind:Vec2</param>
         /// <param name="jCtrl0">Bind:Vec2</param>
         /// <param name="jCtrl1">Bind:Vec2</param>
-        public static Json DrawListCurve(Json jEnabled, Json jColor, Json jLineThickness, Json jA, Json jB, Json jCtrl0, Json jCtrl1)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListCurve(
+            Json jEnabled, 
+            Json jColor, 
+            Json jLineThickness, 
+            Json jA, 
+            Json jB, 
+            Json jCtrl0, 
+            Json jCtrl1,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Curve, jEnabled, jColor, JsonBool(false), jLineThickness);
+            var ret = NuiDrawListItem(NuiDrawListItemType.Curve, jEnabled, jColor, JsonBool(false), jLineThickness, nOrder, nRender);
             ret = JsonObjectSet(ret, "a", jA);
             ret = JsonObjectSet(ret, "b", jB);
             ret = JsonObjectSet(ret, "ctrl0", jCtrl0);
@@ -563,9 +647,18 @@
         /// <param name="jFill">Bind:Bool</param>
         /// <param name="jLineThickness">Bind:Float</param>
         /// <param name="jRect">Bind:Rect</param>
-        public static Json DrawListCircle(Json jEnabled, Json jColor, Json jFill, Json jLineThickness, Json jRect)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListCircle(
+            Json jEnabled, 
+            Json jColor, 
+            Json jFill, 
+            Json jLineThickness, 
+            Json jRect,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Circle, jEnabled, jColor, jFill, jLineThickness);
+            var ret = NuiDrawListItem(NuiDrawListItemType.Circle, jEnabled, jColor, jFill, jLineThickness, nOrder, nRender);
             ret = JsonObjectSet(ret, "rect", jRect);
             return ret;
         }
@@ -581,9 +674,21 @@
         /// <param name="jRadius">Bind:Float</param>
         /// <param name="jAMin">Bind:Float</param>
         /// <param name="jAMax">Bind:Float</param>
-        public static Json DrawListArc(Json jEnabled, Json jColor, Json jFill, Json jLineThickness, Json jCenter, Json jRadius, Json jAMin, Json jAMax)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListArc(
+            Json jEnabled, 
+            Json jColor, 
+            Json jFill, 
+            Json jLineThickness, 
+            Json jCenter, 
+            Json jRadius, 
+            Json jAMin, 
+            Json jAMax,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Arc, jEnabled, jColor, jFill, jLineThickness);
+            var ret = NuiDrawListItem(NuiDrawListItemType.Arc, jEnabled, jColor, jFill, jLineThickness, nOrder, nRender);
             ret = JsonObjectSet(ret, "c", jCenter);
             ret = JsonObjectSet(ret, "radius", jRadius);
             ret = JsonObjectSet(ret, "amin", jAMin);
@@ -598,9 +703,17 @@
         /// <param name="jColor">Bind:Color</param>
         /// <param name="jRect">Bind:Rect</param>
         /// <param name="jText">Bind:String</param>
-        public static Json DrawListText(Json jEnabled, Json jColor, Json jRect, Json jText)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListText(
+            Json jEnabled, 
+            Json jColor, 
+            Json jRect, 
+            Json jText,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Text, jEnabled, jColor, JsonNull(), JsonNull());
+            var ret = NuiDrawListItem(NuiDrawListItemType.Text, jEnabled, jColor, JsonNull(), JsonNull(), nOrder, nRender);
             ret = JsonObjectSet(ret, "rect", jRect);
             ret = JsonObjectSet(ret, "text", jText);
             return ret;
@@ -615,14 +728,55 @@
         /// <param name="jAspect">Bind:Int:NUI_ASPECT_*</param>
         /// <param name="jHAlign">Bind:Int:NUI_HALIGN_*</param>
         /// <param name="jVAlign">Bind:Int:NUI_VALIGN_*</param>
-        public static Json DrawListImage(Json jEnabled, Json jResRef, Json jRect, Json jAspect, Json jHAlign, Json jVAlign)
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json DrawListImage(
+            Json jEnabled, 
+            Json jResRef, 
+            Json jRect, 
+            Json jAspect, 
+            Json jHAlign, 
+            Json jVAlign,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Image, jEnabled, JsonNull(), JsonNull(), JsonNull());
+            var ret = NuiDrawListItem(NuiDrawListItemType.Image, jEnabled, JsonNull(), JsonNull(), JsonNull(), nOrder, nRender);
             ret = JsonObjectSet(ret, "image", jResRef);
             ret = JsonObjectSet(ret, "rect", jRect);
             ret = JsonObjectSet(ret, "image_aspect", jAspect);
             ret = JsonObjectSet(ret, "image_halign", jHAlign);
             ret = JsonObjectSet(ret, "image_valign", jVAlign);
+            return ret;
+        }
+
+        public static Json DrawListImageRegion(Json jDrawListImage, Json jRegion)
+        {
+            return JsonObjectSet(jDrawListImage, "image_region", jRegion);
+        }
+
+        /// <summary>
+        /// Draws a line for a list.
+        /// </summary>
+        /// <param name="jEnabled">Bind:Bool</param>
+        /// <param name="jColor">Bind:Color</param>
+        /// <param name="jLineThickness">Bind:Float</param>
+        /// <param name="jA">Bind:Vec2</param>
+        /// <param name="jB">Bind:Vec2</param>
+        /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
+        /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
+        public static Json NuiDrawListLine(
+            Json jEnabled,
+            Json jColor,
+            Json jLineThickness,
+            Json jA,
+            Json jB,
+            NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
+            NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always
+            )
+        {
+            Json ret = NuiDrawListItem(NuiDrawListItemType.Line, jEnabled, jColor, JsonNull(), jLineThickness, nOrder, nRender);
+            ret = JsonObjectSet(ret, "a", jA);
+            ret = JsonObjectSet(ret, "b", jB);
             return ret;
         }
 
@@ -634,7 +788,7 @@
         /// <param name="jList">DrawListItem[]</param>
         public static Json DrawList(Json jElem, Json jScissor, Json jList)
         {
-            Json ret = JsonObjectSet(jElem, "draw_list", jList);
+            var ret = JsonObjectSet(jElem, "draw_list", jList);
             ret = JsonObjectSet(ret, "draw_list_scissor", jScissor);
             return ret;
         }

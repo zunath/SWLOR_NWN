@@ -83,6 +83,11 @@ namespace SWLOR.Game.Server.Native
             // If we get to this point, we are fighting a creature.  Pull the target's stats.
             var defender = CNWSCreature.FromPointer(pTarget);
 
+            if (pCombatRound.m_bRoundStarted == 1)
+            {
+                defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 0);
+            }
+
             var attackType = (uint)AttackType.Melee; 
             var weapon = pCombatRound.GetCurrentAttackWeapon();
 
@@ -293,58 +298,41 @@ namespace SWLOR.Game.Server.Native
 
             var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
             var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-            var saberBlock = false;
-            var shieldBlock = false;
-
-            var defenderPER = defender.m_pStats.GetDEXStat();
-            var defenderVIT = defender.m_pStats.GetCONStat();
-
-            if(defenderWeapon != null && (
-                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
-                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
-            {
-                saberBlock = true;
-            }
-
-            // Checking for Bulwark shield reflect - need to have the feat and a shield equipped
-            if (defenderOffhand != null)
-                shieldBlock = defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&
-                    Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
+            var saberBlock = defenderWeapon != null && Item.LightsaberBaseItemTypes.Contains((BaseItem)defenderWeapon.m_nBaseItem);
+            var shieldBlock = defenderOffhand != null && 
+                              defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
+                              Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
 
             // Deflect Ranged Attacks
             var deflected = false;
+            var hasDeflected = defender.m_ScriptVars.GetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"));
 
             if (attackType == (uint)AttackType.Ranged &&            // Ranged Attacks only
-                isHit && defender.GetFlatFooted() == 0 &&           // Only triggers on hits and the defender isn't incapacitated
-                defender.m_pcCombatRound.m_bDeflectArrow == 0 &&    // Can only trigger once per combat round
+                isHit &&                                            // Only triggers on hits 
+                hasDeflected == 0 &&                                // Can only trigger once per combat round
                 (shieldBlock || saberBlock))                        // Must have either a lightsaber or Bulwark + a shield equipped
             {
-                var defenderStat = saberBlock ? defenderPER : defenderVIT;
-                if (shieldBlock && saberBlock && (defenderVIT > defenderPER))
-                    defenderStat = defenderVIT;
-
-                defender.m_pcCombatRound.SetDeflectArrow(1);        // We set the Deflect Arrow var to true for this round so it doesn't fire again
-
+                defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 1);
                 var deflectRoll = Random.Next(1, 100);
-                var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
-                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid 
-                    ? Item.GetWeaponAccuracyAbilityType(baseItemType) 
-                    : weaponStyleAbilityOverride;
-                var attackerStatValue = Stat.GetStatValueNative(attacker, attackerStat);
+                var deflectChance = 0;
+                if (saberBlock)
+                    deflectChance += 5;
+                if (shieldBlock)
+                    deflectChance += 10;
+                
+                deflected = deflectRoll <= deflectChance;
 
-                var statDelta = Math.Clamp((defenderStat - attackerStatValue) * 5, -50, 75);
-
-                isHit = deflectRoll + statDelta < attackRoll;
-                deflected = !isHit;
+                if (deflected)
+                    isHit = false;
 
                 var feedbackString = deflected ? "*success*" : "*failure*";
                 var attackerName = ColorToken.GetNameColorNative(attacker);
                 var defenderName = ColorToken.GetNameColorNative(defender);
-                feedbackString = $"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}";
+                feedbackString = ColorToken.Combat($"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}");
 
                 attacker.SendFeedbackString(new CExoString(feedbackString));
                 defender.SendFeedbackString(new CExoString(feedbackString));
-                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, statDelta: {statDelta}, attackRoll: {attackRoll} -- Hit: {isHit}");
+                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Hit: {isHit}");
             }
 
             // Hit

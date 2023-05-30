@@ -11379,6 +11379,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 67.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krayt Dragon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtattkrayt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 63.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtattbountyhunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 11.0
                     },
                     "FACTION": {

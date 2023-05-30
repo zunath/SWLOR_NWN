@@ -7790,6 +7790,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbountyhunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter's Vibroknife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmbhunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Prototype Pyroform Rifle"
                     },
                     "RESREF": {
@@ -9675,6 +9697,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeecloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcabountyhunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchbhunter"
                     }
                   },
                   {

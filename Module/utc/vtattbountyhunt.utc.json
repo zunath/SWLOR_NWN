@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 1
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 2146
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -27,10 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 40
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -38,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 38
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -34
+    "value": -19
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4865
+    "value": 2440
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rancors. The size of a freighter, with the power to match. Insatiably hungry, highly territorial, extremely aggressive, these creatures are not merely the apex predators of the worlds they are found on, but are known to dominate and ravage entire ecosystems when they somehow find their way to yet another world."
+      "0": "A mighty Canyon Krayt. Though among the lesser of the variety of species called Krayt, it is nonetheless among the apex predators of any planet it finds itself on. Deadly venom, a thick, resilient hide and peerless strength spell a sure end to any who would dare challenge it."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -78,10 +170,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbiterancor"
+          "value": "vnpchbhunter"
+        }
+      },
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcabountyhunt"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcrbountyhunt"
         }
       },
       {
@@ -104,7 +210,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1883
+          "value": 1605
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1349
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1590
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1617
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1599
         }
       },
       {
@@ -118,7 +252,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1882
+          "value": 411
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1346
         }
       },
       {
@@ -127,13 +268,20 @@
           "type": "word",
           "value": 289
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rancor"
+      "0": "Peerless Bounty Hunter"
     }
   },
   "fortbonus": {
@@ -150,11 +298,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4865
+    "value": 2440
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 50
   },
   "Interruptable": {
     "type": "byte",
@@ -167,6 +315,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcmbhunter"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -184,7 +352,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5000
+    "value": 3000
   },
   "NaturalAC": {
     "type": "byte",
@@ -196,7 +364,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 156
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -212,7 +380,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 4202
   },
   "Race": {
     "type": "byte",
@@ -477,7 +645,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 30
+    "value": 931
   },
   "SpecAbilityList": {
     "type": "list",
@@ -489,7 +657,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -497,7 +665,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Rancor"
+    "value": "PeerlessBountyHunter"
   },
   "Tail_New": {
     "type": "dword",
@@ -509,7 +677,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vdatthrancor"
+    "value": "vtattbountyhunt"
   },
   "VarTable": {
     "type": "list",
@@ -650,6 +818,82 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 30
+  },
+  "xAppearance_Head": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Pelvis": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Torso": {
+    "type": "word",
+    "value": 1
   }
 }

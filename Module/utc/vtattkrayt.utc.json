@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2146
+    "value": 10022
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 63.0
+    "value": 67.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -34
+    "value": -125
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4865
+    "value": 9892
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rancors. The size of a freighter, with the power to match. Insatiably hungry, highly territorial, extremely aggressive, these creatures are not merely the apex predators of the worlds they are found on, but are known to dominate and ravage entire ecosystems when they somehow find their way to yet another world."
+      "0": "A mighty Canyon Krayt. Though among the lesser of the variety of species called Krayt, it is nonetheless among the apex predators of any planet it finds itself on. Deadly venom, a thick, resilient hide and peerless strength spell a sure end to any who would dare challenge it."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -81,7 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbiterancor"
+          "value": "vdathbitechiro"
+        }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vdathbitechiro"
         }
       },
       {
@@ -133,7 +140,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rancor"
+      "0": "Krayt Dragon"
     }
   },
   "fortbonus": {
@@ -150,7 +157,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4865
+    "value": 9892
   },
   "Int": {
     "type": "byte",
@@ -184,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5000
+    "value": 10000
   },
   "NaturalAC": {
     "type": "byte",
@@ -196,7 +203,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 156
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -477,7 +484,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 30
+    "value": 441
   },
   "SpecAbilityList": {
     "type": "list",
@@ -489,7 +496,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 50
   },
   "Subrace": {
     "type": "cexostring",
@@ -497,7 +504,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Rancor"
+    "value": "KraytDragon"
   },
   "Tail_New": {
     "type": "dword",
@@ -509,7 +516,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vdatthrancor"
+    "value": "vtattkrayt"
   },
   "VarTable": {
     "type": "list",
@@ -650,6 +657,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 24
   }
 }

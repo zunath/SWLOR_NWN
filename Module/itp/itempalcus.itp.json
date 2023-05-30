@@ -6466,6 +6466,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rancor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbiterancor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Riktasha Weapon"
                     },
                     "RESREF": {
@@ -7718,6 +7729,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vbyyskguardsword"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Adept's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathsaberstaff"
                     }
                   },
                   {
@@ -9521,6 +9543,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcjediweapm001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Adept Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcadarkadept"
                     }
                   },
                   {

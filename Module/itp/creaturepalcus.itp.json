@@ -10460,6 +10460,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 90.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Side Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathdarkadept"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 93.0
                     },
                     "FACTION": {
@@ -10568,6 +10587,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathpurbole"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 63.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rancor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdatthrancor"
                     }
                   },
                   {

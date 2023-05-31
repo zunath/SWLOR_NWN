@@ -284,6 +284,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 SendMessageToPC(player, "This fishing point has been exhausted.");
+                Activity.ClearBusy(player);
                 return;
             }
 

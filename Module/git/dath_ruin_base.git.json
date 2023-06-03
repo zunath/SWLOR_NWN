@@ -12318,7 +12318,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir - Ruin Base"
+            "0": "Dathomir - Grottos Boss"
           }
         },
         "MapNote": {
@@ -12331,11 +12331,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "DATHOMIR_RUIN_BASE"
+          "value": "DATHOMIR_GROTTOS_BOSS"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "dath_ruinbase"
+          "value": "dath_grottosboss"
         },
         "XOrientation": {
           "type": "float",
@@ -12343,7 +12343,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 60.05905532836914
+          "value": 64.77404022216797
         },
         "YOrientation": {
           "type": "float",
@@ -12351,263 +12351,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 13.7735538482666
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -7.152557373046875e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir - Ruin Base"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DATHOMIR_RUIN_BASE"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dath_ruinbase"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -3.365130396559835e-011
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 60.25915145874023
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 6.943220138549805
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -1.192092895507813e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir - Ruin Base"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DATHOMIR_RUIN_BASE"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dath_ruinbase"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.085918822487368e-029
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 69.77089691162109
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 5.178977012634277
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -2.384185791015625e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir - Ruin Base"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DATHOMIR_RUIN_BASE"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dath_ruinbase"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -6.089240223161596e-012
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 69.65925598144531
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 12.32967758178711
+          "value": 9.60289192199707
         },
         "ZPosition": {
           "type": "float",
           "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir - Ruin Base"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DATHOMIR_RUIN_BASE"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dath_ruinbase"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 64.53526306152344
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 9.693161964416504
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 9.5367431640625e-007
         }
       }
     ]

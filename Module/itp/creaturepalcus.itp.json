@@ -861,7 +861,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 15.0
+                      "value": 23.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10460,6 +10460,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 90.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Side Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathdarkadept"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 93.0
                     },
                     "FACTION": {
@@ -10568,6 +10587,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathpurbole"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 63.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rancor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdatthrancor"
                     }
                   },
                   {
@@ -11335,6 +11373,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ext_jawa004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 67.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krayt Dragon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtattkrayt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 63.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtattbountyhunt"
                     }
                   },
                   {

@@ -338,7 +338,11 @@ namespace SWLOR.Game.Server.Feature
             if (string.IsNullOrWhiteSpace(abilityId))
                 return;
 
-            var featType = (FeatType)GetLocalInt(target, ActiveAbilityIdName);
+            var featId = GetLocalInt(target, ActiveAbilityFeatIdName);
+            if (featId == 0)
+                return;
+
+            var featType = (FeatType)featId;
             var abilityDetail = Ability.GetAbilityDetail(featType);
 
             // Remove the local variables.

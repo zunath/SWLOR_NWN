@@ -46149,6 +46149,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "HoloNet News Employee Key"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_hnn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Qion Hive Key - Chieftain's Chamber"
                     },
                     "RESREF": {
@@ -46341,6 +46352,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_sith_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_smuggler01"
                     }
                   }
                 ]

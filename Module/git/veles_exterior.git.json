@@ -4521,241 +4521,6 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 16,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 7
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "id": 174,
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Sharpshooter Blaster Rifle"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 11
-              },
-              "ModelPart2": {
-                "type": "byte",
-                "value": 203
-              },
-              "ModelPart3": {
-                "type": "byte",
-                "value": 11
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 1
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 56
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 14
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 61
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  }
-                ]
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "rifle_s"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "rifle_s"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 203
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
-              },
-              "XOrientation": {
-                "type": "float",
                 "value": 6.473998905180655e-043
               },
               "XPosition": {
@@ -37350,7 +37115,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 9.78707703325199e-007
+                "value": 9.024362110251822e-043
               },
               "XPosition": {
                 "type": "float",
@@ -37373,7 +37138,7 @@
               "__struct_id": 16,
               "AddCost": {
                 "type": "dword",
-                "value": 0
+                "value": 8788
               },
               "BaseItem": {
                 "type": "int",
@@ -37385,11 +37150,11 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 8789
               },
               "Cursed": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -37397,17 +37162,19 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": ""
+                }
               },
               "Identified": {
                 "type": "byte",
                 "value": 1
               },
               "LocalizedName": {
-                "id": 174,
+                "id": 173,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Sharpshooter Blaster Rifle"
+                  "0": "Carbide Rifle"
                 }
               },
               "ModelPart1": {
@@ -37416,7 +37183,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 203
+                "value": 21
               },
               "ModelPart3": {
                 "type": "byte",
@@ -37424,7 +37191,7 @@
               },
               "Plot": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "PropertiesList": {
                 "type": "list",
@@ -37437,89 +37204,27 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 34
                     },
                     "CostValue": {
+                      "type": "word",
+                      "value": 34
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
                       "type": "word",
                       "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 56
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
                     }
                   },
                   {
@@ -37552,6 +37257,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 33
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 91
+                    }
                   }
                 ]
               },
@@ -37565,11 +37301,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "rifle_s"
+                "value": "car_rifle"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rifle_s"
+                "value": "car_rifle"
               },
               "xModelPart1": {
                 "type": "word",
@@ -37577,7 +37313,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 203
+                "value": 21
               },
               "xModelPart3": {
                 "type": "word",
@@ -37585,7 +37321,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 9.024362110251822e-043
+                "value": 9.78707703325199e-007
               },
               "XPosition": {
                 "type": "float",
@@ -38591,7 +38327,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 9.80634013103554e-007
+                "value": 9.796735866984818e-007
               },
               "XPosition": {
                 "type": "float",
@@ -38614,7 +38350,7 @@
               "__struct_id": 16,
               "AddCost": {
                 "type": "dword",
-                "value": 0
+                "value": 1023
               },
               "BaseItem": {
                 "type": "int",
@@ -38626,11 +38362,11 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 1024
               },
               "Cursed": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -38638,17 +38374,19 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": ""
+                }
               },
               "Identified": {
                 "type": "byte",
                 "value": 1
               },
               "LocalizedName": {
-                "id": 174,
+                "id": 173,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Sharpshooter Blaster Rifle"
+                  "0": "Hunter Rifle IV"
                 }
               },
               "ModelPart1": {
@@ -38657,7 +38395,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 203
+                "value": 21
               },
               "ModelPart3": {
                 "type": "byte",
@@ -38665,7 +38403,7 @@
               },
               "Plot": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "PropertiesList": {
                 "type": "list",
@@ -38682,7 +38420,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 1
+                      "value": 2
                     },
                     "Param1": {
                       "type": "byte",
@@ -38709,11 +38447,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 0
+                      "value": 34
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 38
                     },
                     "Param1": {
                       "type": "byte",
@@ -38725,42 +38463,11 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 127
+                      "value": 93
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
+                      "value": 1
                     }
                   },
                   {
@@ -38793,6 +38500,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 33
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 91
+                    }
                   }
                 ]
               },
@@ -38806,11 +38544,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "rifle_s"
+                "value": "h_rifle_4"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rifle_s"
+                "value": "h_rifle_4"
               },
               "xModelPart1": {
                 "type": "word",
@@ -38818,7 +38556,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 203
+                "value": 21
               },
               "xModelPart3": {
                 "type": "word",
@@ -38826,7 +38564,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 9.796735866984818e-007
+                "value": 9.80634013103554e-007
               },
               "XPosition": {
                 "type": "float",

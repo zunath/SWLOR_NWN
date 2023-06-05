@@ -82885,7 +82885,7 @@
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 101
+                      "value": 111
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
@@ -82893,7 +82893,7 @@
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 105
+                      "value": 50
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
@@ -82901,7 +82901,7 @@
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 102
+                      "value": 93
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -82921,7 +82921,7 @@
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 101
+                      "value": 111
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
@@ -82929,7 +82929,7 @@
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 105
+                      "value": 50
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
@@ -82941,7 +82941,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 102
+                      "value": 93
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -83247,7 +83247,7 @@
                     },
                     "xArmorPart_LBice": {
                       "type": "word",
-                      "value": 101
+                      "value": 111
                     },
                     "xArmorPart_LFArm": {
                       "type": "word",
@@ -83255,7 +83255,7 @@
                     },
                     "xArmorPart_LFoot": {
                       "type": "word",
-                      "value": 105
+                      "value": 50
                     },
                     "xArmorPart_LHand": {
                       "type": "word",
@@ -83263,7 +83263,7 @@
                     },
                     "xArmorPart_LShin": {
                       "type": "word",
-                      "value": 102
+                      "value": 93
                     },
                     "xArmorPart_LShou": {
                       "type": "word",
@@ -83283,7 +83283,7 @@
                     },
                     "xArmorPart_RBice": {
                       "type": "word",
-                      "value": 101
+                      "value": 111
                     },
                     "xArmorPart_RFArm": {
                       "type": "word",
@@ -83291,7 +83291,7 @@
                     },
                     "xArmorPart_RFoot": {
                       "type": "word",
-                      "value": 105
+                      "value": 50
                     },
                     "xArmorPart_RHand": {
                       "type": "word",
@@ -83303,7 +83303,7 @@
                     },
                     "xArmorPart_RShin": {
                       "type": "word",
-                      "value": 102
+                      "value": 93
                     },
                     "xArmorPart_RShou": {
                       "type": "word",

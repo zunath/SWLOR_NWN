@@ -9609,7 +9609,7 @@
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 161
+                "value": 1
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -9770,7 +9770,7 @@
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 161
+                "value": 1
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
@@ -12118,7 +12118,7 @@
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 1
+                "value": 156
               },
               "ArmorPart_LHand": {
                 "type": "byte",
@@ -12138,7 +12138,7 @@
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 4
+                "value": 101
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -12154,7 +12154,7 @@
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 1
+                "value": 156
               },
               "ArmorPart_RHand": {
                 "type": "byte",
@@ -12178,7 +12178,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 40
+                "value": 170
               },
               "BaseItem": {
                 "type": "int",
@@ -12276,7 +12276,7 @@
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 1
+                "value": 156
               },
               "xArmorPart_LHand": {
                 "type": "word",
@@ -12296,7 +12296,7 @@
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 4
+                "value": 101
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
@@ -12312,7 +12312,7 @@
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 1
+                "value": 156
               },
               "xArmorPart_RHand": {
                 "type": "word",
@@ -12336,7 +12336,7 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 40
+                "value": 170
               },
               "XOrientation": {
                 "type": "float",

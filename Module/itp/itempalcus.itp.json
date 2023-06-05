@@ -901,17 +901,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Jolee's Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pil_joleerobes"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Linen Belt"
                     },
                     "RESREF": {

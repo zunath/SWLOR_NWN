@@ -15096,19 +15096,19 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -15116,7 +15116,7 @@
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 186
+                "value": 141
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
@@ -15132,19 +15132,19 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -15156,7 +15156,7 @@
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 0
+                "value": 141
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
@@ -15565,19 +15565,19 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 75
+                "value": 101
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 75
+                "value": 101
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 200
+                "value": 75
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 198
+                "value": 155
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -15585,7 +15585,7 @@
               },
               "xArmorPart_LShou": {
                 "type": "word",
-                "value": 186
+                "value": 141
               },
               "xArmorPart_LThig": {
                 "type": "word",
@@ -15601,19 +15601,19 @@
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 75
+                "value": 101
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 75
+                "value": 101
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 200
+                "value": 75
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 198
+                "value": 155
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -15625,7 +15625,7 @@
               },
               "xArmorPart_RShou": {
                 "type": "word",
-                "value": 0
+                "value": 141
               },
               "xArmorPart_RThig": {
                 "type": "word",
@@ -16895,7 +16895,7 @@
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 161
+                "value": 1
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -17056,7 +17056,7 @@
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 161
+                "value": 1
               },
               "xArmorPart_Pelvi": {
                 "type": "word",

@@ -18,7 +18,7 @@
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 1
+    "value": 50
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -38,11 +38,11 @@
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 3
+    "value": 2
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 34
+    "value": 35
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 1
+    "value": 50
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -78,7 +78,7 @@
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 121
+    "value": 58
   },
   "BaseItem": {
     "type": "int",
@@ -169,5 +169,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dancer_f_1"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 50
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 51
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 2
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 35
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 50
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 51
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 58
   }
 }
